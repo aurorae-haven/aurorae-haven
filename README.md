@@ -76,4 +76,3 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
 
 ## 🙌 Contributing
 Contributions, feedback, and ideas are welcome!  
-Please open an [issue](./issues) or start a [discussion](./discussions).
