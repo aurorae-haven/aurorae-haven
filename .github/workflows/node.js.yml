@@ -29,7 +29,7 @@ jobs:
 
       - name: Add dependencies
         run: |
-          npm install -lts
+          npm install
           npm install react react-dom express
 
       - name: Set environment variables
