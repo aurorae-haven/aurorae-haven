@@ -27,7 +27,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           npm install -lts
-          npm --save-dev eslint 
+          npm --save-dev lint 
           git add package.json
           if [ ! -f package-lock.json ]; then
             git add package-lock.json
