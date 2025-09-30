@@ -28,7 +28,7 @@ generate-and-build:
           npm init -y
         fi
 
-    - name: Add dependencies (example: React & Express)
+    - name: Add dependencies
       run: |
         npm install -lts
         npm install react react-dom express
