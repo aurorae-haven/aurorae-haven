@@ -5,7 +5,7 @@ permissions:
 on:
   push:
     branches:
-      - feature-mockup
+      - '**'
   pull_request:
 
 jobs:
