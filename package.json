@@ -1,6 +1,8 @@
-"scripts": {
-  "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-  "format": "prettier --write .",
-  "test": "jest",
-  "build": "react-scripts build"
+{
+  "scripts": {
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier --write .",
+    "test": "jest",
+    "build": "react-scripts build"
+  }
 }
