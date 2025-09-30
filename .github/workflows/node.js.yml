@@ -61,8 +61,8 @@ generate-and-build:
           echo "package-lock.json already exists."
         fi
 
-      - name: Test app (optional)
-        run: |
-          if [ -f package.json ]; then
-            npm test || echo "No test script defined, skipping."
-          fi
+    - name: Test app (optional)
+      run: |
+        if [ -f package.json ]; then
+          npm test || echo "No test script defined, skipping."
+        fi
