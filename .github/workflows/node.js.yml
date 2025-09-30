@@ -45,7 +45,7 @@ jobs:
             npm run build || echo "No build script defined, skipping."
             git add package.json
             git commit -m "Add package.json [skip ci]" || echo "No changes to commit"
-            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:${GITHUB_REF#refs/heads/}" || echo "Nothing to push"
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${GITHUB_REF#refs/heads/}" || echo "Nothing to push"
           else
             echo "package.json is already present"
           fi
