@@ -26,14 +26,20 @@ jobs:
         run:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          npm install -lts
-          npm --save-dev eslint 
-          git add package.json|
+
           if [ ! -f package-lock.json ]; then
+            npm install -lts
             git add package-lock.json
            else
               echo "package-lock.json already exists."
           fi
-          git commit -m "Add eslint and may have generated package-lock.json [skip ci]" || echo "No changes to commit"
+          
+          if [ ! -z $(grep "eslint" "package.json") ];
+            npm --save-dev eslint 
+            git add package.json
+          else
+            echo "eslint appears in package.json"
+          fi
+                    
+          git commit -m "Adding package.json and/or package-lock.json, if dependencies were missing [skip ci]" || echo "No changes to commit"
           git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:${GITHUB_REF#refs/heads/} || echo "Nothing to push"
-         
