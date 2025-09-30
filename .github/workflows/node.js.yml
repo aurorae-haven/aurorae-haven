@@ -41,7 +41,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -f package.json ]; then
+          if [ ! -f package.json ]; then
             npm run build || echo "No build script defined, skipping."
             git add package.json
             git commit -m "Add package.json [skip ci]" || echo "No changes to commit"
