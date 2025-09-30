@@ -3,6 +3,10 @@ name: Generate package-lock.json
 on:
   push:
     branches:
+      - main
+      - hotfix-*
+      - feature-*
+      - release-*
   workflow_dispatch:
 
 jobs:
