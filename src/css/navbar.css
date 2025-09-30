@@ -1,0 +1,12 @@
+.appbar{position:sticky; top:0; z-index:20; background: linear-gradient(180deg, var(--glass-hi), var(--glass-lo)); backdrop-filter: var(--blur); border-bottom:1px solid var(--line)}
+.appbar .inner{max-width:1240px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:16px}
+.logo{width:24px;height:24px;border-radius:7px;background:radial-gradient(12px 12px at 40% 40%, #74ffe1 0%, rgba(116,255,225,0) 60%), radial-gradient(18px 18px at 70% 70%, #7ea6ff 0%, rgba(126,166,255,0) 60%); box-shadow:0 0 20px rgba(126,166,255,.35), 0 0 14px rgba(134,245,224,.18) inset;}
+.brand{display:flex;flex-direction:column}
+.brand b{font-weight:700;letter-spacing:.2px}
+.brand small{color:var(--dim);opacity:.95}
+.appnav{margin-left:auto;display:flex;gap:10px;align-items:center}
+.appnav .item{display:inline-flex;gap:8px;align-items:center;padding:8px 8px;border-radius:12px;color:var(--ink);background: transparent; border: none;transition: transform var(--dur) var(--ease), filter var(--dur) var(--ease);}
+.appnav .item:hover{filter:brightness(1.08); transform: translateY(-1px)}
+.appnav .item.active{background: rgba(140,150,210,.12);padding:8px 12px;border:1px solid var(--line);box-shadow:0 6px 18px rgba(0,0,0,.20) inset}
+
+/* Shell & glass cards */

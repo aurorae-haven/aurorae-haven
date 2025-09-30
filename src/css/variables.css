@@ -1,0 +1,10 @@
+:root{
+  --ink:#eef0ff; --dim:#a9b1e0; --mint:#86f5e0; --line: rgba(200,210,255,.16);
+  --glass-hi: rgba(18,22,52,.38);
+  --glass-lo: rgba(18,22,52,.26);
+  --shadow: 0 12px 40px rgba(0,0,0,.45);
+  --blur: saturate(135%) blur(10px);
+  --ease: cubic-bezier(.25,.1,.25,1);
+  --dur: 240ms;
+}
+
