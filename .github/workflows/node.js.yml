@@ -19,11 +19,6 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 20
-          
-      - name: Create package.json
-        run: npm init -y
-      - name: Install dependencies
-        run: npm ci
 
       - name: Lint
         run: npm run lint
