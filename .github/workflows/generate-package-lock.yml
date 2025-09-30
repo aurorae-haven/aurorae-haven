@@ -27,7 +27,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           npm install -lts
-          npm install --save-dev eslint-plugin-jsx-a11y@latest @babel/core @babel/eslint-parser eslint-config-standard eslint-config-standard-jsx eslint-config-standard-react eslint-plugin-promise eslint-plugin-import eslint-plugin-node eslint-plugin-react
+          npm install --save-dev @babel/core @babel/eslint-parser eslint-config-standard eslint-config-standard-jsx eslint-config-standard-react eslint-plugin-promise eslint-plugin-import eslint-plugin-node eslint-plugin-react
           npm run lint
           git add package.json
           if [ ! -f package-lock.json ]; then
