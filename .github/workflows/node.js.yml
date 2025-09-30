@@ -60,7 +60,7 @@ jobs:
             npm run lint
             git add package-lock.json
             git commit -m "Add package-lock.json [skip ci]" || echo "No changes to commit"
-            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:${GITHUB_REF#refs/heads/}" || echo "Nothing to push"
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${GITHUB_REF#refs/heads/}" || echo "Nothing to push"
           else
             echo "package-lock.json already exists."
           fi
