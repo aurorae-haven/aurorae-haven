@@ -1,7 +1,0 @@
-.layout-dump{display:grid;grid-template-columns:360px 1fr;gap:14px}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.tag-palette{display:flex;gap:8px;flex-wrap:wrap}
-.tag{display:inline-flex;align-items:center;gap:6px;padding:6px 8px;border-radius:999px;background:rgba(200,220,255,.12);border:1px solid rgba(200,220,255,.22);cursor:grab}
-.entries{display:grid;gap:8px}
-.entry{padding:10px;border-radius:12px;border:1px solid var(--line);background:rgba(16,20,44,.32)}
-
