@@ -44,6 +44,8 @@ generate-and-build:
       run: |
         if [ -f package.json ]; then
           npm run build || echo "No build script defined, skipping."
+        else
+          echo "package.json is already present"
         fi
 
     - name: Generate package-lock.json (if needed)
