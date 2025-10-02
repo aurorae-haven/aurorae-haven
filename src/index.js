@@ -53,7 +53,7 @@ function App() {
     <BrowserRouter>
       <Layout onExport={handleExport} onImport={handleImport}>
         <Routes>
-          <Route path="/" element={<Navigate to="/schedule" replace />} />
+          <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/sequences" element={<Sequences />} />
