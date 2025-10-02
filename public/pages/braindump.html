@@ -176,6 +176,87 @@ document.addEventListener("DOMContentLoaded", () => {
     renderMarkdown();
   });
 
+  // Auto-list continuation on Enter key
+  editor.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+      const cursorPos = editor.selectionStart;
+      const textBeforeCursor = editor.value.substring(0, cursorPos);
+      const lines = textBeforeCursor.split("\n");
+      const currentLine = lines[lines.length - 1];
+
+      // Match different list patterns
+      const taskListMatch = currentLine.match(/^(\s*)([-*])\s+\[([ x])\]\s*(.*)$/);
+      const bulletListMatch = currentLine.match(/^(\s*)([-*])\s+(.*)$/);
+      const numberedListMatch = currentLine.match(/^(\s*)(\d+)\.\s+(.*)$/);
+
+      if (taskListMatch) {
+        const [, indent, marker, checked, content] = taskListMatch;
+        if (content.trim() === "") {
+          // Empty task list item - remove it
+          e.preventDefault();
+          const lineStart = textBeforeCursor.lastIndexOf("\n", cursorPos - 1) + 1;
+          const newValue = editor.value.substring(0, lineStart) + editor.value.substring(cursorPos);
+          editor.value = newValue;
+          editor.selectionStart = editor.selectionEnd = lineStart;
+          localStorage.setItem("brainDumpContent", editor.value);
+          renderMarkdown();
+        } else {
+          // Continue task list
+          e.preventDefault();
+          const newItem = `\n${indent}${marker} [ ] `;
+          const newValue = editor.value.substring(0, cursorPos) + newItem + editor.value.substring(cursorPos);
+          editor.value = newValue;
+          editor.selectionStart = editor.selectionEnd = cursorPos + newItem.length;
+          localStorage.setItem("brainDumpContent", editor.value);
+          renderMarkdown();
+        }
+      } else if (bulletListMatch) {
+        const [, indent, marker, content] = bulletListMatch;
+        if (content.trim() === "") {
+          // Empty bullet list item - remove it
+          e.preventDefault();
+          const lineStart = textBeforeCursor.lastIndexOf("\n", cursorPos - 1) + 1;
+          const newValue = editor.value.substring(0, lineStart) + editor.value.substring(cursorPos);
+          editor.value = newValue;
+          editor.selectionStart = editor.selectionEnd = lineStart;
+          localStorage.setItem("brainDumpContent", editor.value);
+          renderMarkdown();
+        } else {
+          // Continue bullet list
+          e.preventDefault();
+          const newItem = `\n${indent}${marker} `;
+          const newValue = editor.value.substring(0, cursorPos) + newItem + editor.value.substring(cursorPos);
+          editor.value = newValue;
+          editor.selectionStart = editor.selectionEnd = cursorPos + newItem.length;
+          localStorage.setItem("brainDumpContent", editor.value);
+          renderMarkdown();
+        }
+      } else if (numberedListMatch) {
+        const [, indent, number, content] = numberedListMatch;
+        if (content.trim() === "") {
+          // Empty numbered list item - remove it
+          e.preventDefault();
+          const lineStart = textBeforeCursor.lastIndexOf("\n", cursorPos - 1) + 1;
+          const newValue = editor.value.substring(0, lineStart) + editor.value.substring(cursorPos);
+          editor.value = newValue;
+          editor.selectionStart = editor.selectionEnd = lineStart;
+          localStorage.setItem("brainDumpContent", editor.value);
+          renderMarkdown();
+        } else {
+          // Continue numbered list
+          e.preventDefault();
+          const nextNumber = parseInt(number) + 1;
+          const newItem = `\n${indent}${nextNumber}. `;
+          const newValue = editor.value.substring(0, cursorPos) + newItem + editor.value.substring(cursorPos);
+          editor.value = newValue;
+          editor.selectionStart = editor.selectionEnd = cursorPos + newItem.length;
+          localStorage.setItem("brainDumpContent", editor.value);
+          renderMarkdown();
+        }
+      }
+    }
+  });
+
   // Observe tag changes
   const observer = new MutationObserver(() => {
     localStorage.setItem("brainDumpTags", tagPalette.innerHTML);
