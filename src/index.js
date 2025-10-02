@@ -1,17 +1,71 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 
-// Placeholder React component for future migration
+// Import styles
+import './assets/styles/styles.css';
+
+// Import components
+import Layout from './components/Layout';
+import Toast from './components/Toast';
+
+// Import pages
+import Home from './pages/Home';
+import Schedule from './pages/Schedule';
+import Sequences from './pages/Sequences';
+import BrainDump from './pages/BrainDump';
+import Tasks from './pages/Tasks';
+import Habits from './pages/Habits';
+import Stats from './pages/Stats';
+import Settings from './pages/Settings';
+
+// Import utilities
+import { exportJSON, importJSON } from './utils/dataManager';
+
 function App() {
+  const [toast, setToast] = useState({ visible: false, message: '' });
+
+  const showToast = useCallback((message) => {
+    setToast({ visible: true, message });
+  }, []);
+
+  const hideToast = useCallback(() => {
+    setToast({ visible: false, message: '' });
+  }, []);
+
+  const handleExport = useCallback(() => {
+    exportJSON();
+    showToast('Data exported (stellar_journey_data.json)');
+  }, [showToast]);
+
+  const handleImport = useCallback(async (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const result = await importJSON(file);
+      showToast(result.message);
+      // Reset the input so the same file can be selected again
+      e.target.value = '';
+    }
+  }, [showToast]);
+
   return (
-    <div>
-      <h1>Stellar Journey</h1>
-      <p>React app initialization - ready for future migration</p>
-      <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '20px' }}>
-        PWA enabled - Install this app on your device!
-      </p>
-    </div>
+    <BrowserRouter>
+      <Layout onExport={handleExport} onImport={handleImport}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/schedule" replace />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/sequences" element={<Sequences />} />
+          <Route path="/braindump" element={<BrainDump />} />
+          <Route path="/tasks" element={<Tasks />} />
+          <Route path="/habits" element={<Habits />} />
+          <Route path="/stats" element={<Stats />} />
+          <Route path="/settings" element={<Settings />} />
+        </Routes>
+      </Layout>
+      <Toast message={toast.message} visible={toast.visible} onClose={hideToast} />
+    </BrowserRouter>
   );
 }
 
