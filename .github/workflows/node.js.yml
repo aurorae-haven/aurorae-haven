@@ -39,29 +39,29 @@ jobs:
       - name: Build app (adjust script as needed)
         run: |
           if [ -f package.json ]; then
-            npm run ./dist
+            npm run build
           else
             echo "package.json is missing"
           fi
 
-      - name: Upload ./dist artifact
+      - name: Upload build artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: ./dist
+          name: build
           path: ./dist 
 
   deployment:
-    needs: generate-and-./dist
+    needs: generate-and-build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download ./dist artifact
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: ./dist
+          name: build
           path: ./dist 
 
       - name: Deploy to GitHub Pages
