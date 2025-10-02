@@ -9,6 +9,9 @@
     "test": "jest",
     "build": "cross-env BUILD_PATH=dist react-scripts build"
   },
+  "devDependencies": {
+    "cross-env": "*"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
