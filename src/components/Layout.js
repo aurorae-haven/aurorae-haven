@@ -19,6 +19,13 @@ function Layout({ children, onExport, onImport }) {
             <small>Explore your orbit. Follow your path.</small>
           </div>
           <nav className="appnav" aria-label="Main">
+            <Link className={`item ${isActive('/') || isActive('/home') ? 'active' : ''}`} to="/">
+              <svg className="icon" viewBox="0 0 24 24">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <span>Home</span>
+            </Link>
             <Link className={`item ${isActive('/schedule')}`} to="/schedule">
               <svg className="icon" viewBox="0 0 24 24">
                 <rect x="3" y="4" width="18" height="18" rx="2"/>
