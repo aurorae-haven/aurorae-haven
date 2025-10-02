@@ -1,17 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta http-equiv="refresh" content="0; url=public/pages/home.html">
-    <script>
-      window.location.href = "public/pages/home.html";
-    </script>
-    <title>Redirecting...</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1a1a2e" />
+    <meta
+      name="description"
+      content="Stellar Journey - A calm, astro-themed productivity app designed for neurodivergent users."
+    />
+    <link rel="manifest" href="public/manifest.json" />
+    <link rel="icon" href="public/icon-192x192.svg" />
+    <link rel="apple-touch-icon" href="public/icon-192x192.svg" />
+    <title>Stellar Journey</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      code {
+        font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+          monospace;
+      }
+    </style>
   </head>
   <body>
-    <p>If you are not redirected automatically, choose an option:</p>
-    <ul>
-      <li><a href="public/pages/home.html">Legacy HTML Version (Home)</a></li>
-      <li><a href="public/index.html">React App (Coming Soon)</a></li>
-    </ul>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This is the React application entry point.
+      The app is built with ReactJS as a Progressive Web App (PWA).
+      
+      Legacy HTML pages are still available at:
+      - /public/pages/home.html
+      - /public/pages/schedule.html
+      - /public/pages/sequences.html
+      - /public/pages/braindump.html
+    -->
+    <script type="module" src="/src/index.js"></script>
   </body>
 </html>

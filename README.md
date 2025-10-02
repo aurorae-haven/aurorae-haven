@@ -25,25 +25,29 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
 ---
 
 ## 🚀 Quick Start
-> ⚠️ This section is a **stub**. Instructions will be expanded as development progresses.
 
 1. Clone the repository:  
    ```bash
    git clone https://github.com/my-stellar-trail/my-stellar-trail.git
    cd my-stellar-trail
-   git checkout -b feature-my_feature
-   git branch -u origin feature-my_feature
    ```
 
-2. Open in your browser (static HTML/JS app):  
+2. Install dependencies:  
    ```bash
-   open index.html
+   npm install
    ```
 
-3. (Optional) Run via local server for development:  
+3. Start the React development server:  
    ```bash
+   npm start
+   ```
+   The app will open at `http://localhost:3000`
+
+4. Build for production:  
+   ```bash
+   npm run build
    npm install -g serve
-   serve .
+   serve -s build
    ```
 
 ---
