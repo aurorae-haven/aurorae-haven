@@ -1,8 +1,8 @@
-name: Build and Deploy
+name: Pages - feature-mockup
 
 on:
   push:
-    branches: [ main, "feature-*" ]
+    branches: [ "main", "feature-" ]
   workflow_dispatch:
 
 permissions:
@@ -19,25 +19,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - run: npm ci
-      - run: npm run build
-      # If your mock-up is pure static and build just copies files,
-      # ensure the output dir actually exists and has index.html.
+
+      # If this repo is a static mock-up, create a minimal dist/
+      - name: Build static site
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          # copy the files you want to publish (adjust as needed)
+          cp -a index.html dist/
+          [ -d public ] && cp -a public dist/ || true
+          [ -d src ] && cp -a src dist/ || true
+          # fail fast if index.html is missing
+          test -f dist/index.html
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # If you intend to deploy the built output:
-          # path: dist
-          # Or, for today’s mock-up if there is no dist:
-          path: public
+          path: dist
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
+      name: github-pages        # must be exactly this name for Pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
