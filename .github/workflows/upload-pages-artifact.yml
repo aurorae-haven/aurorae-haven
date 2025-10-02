@@ -1,0 +1,50 @@
+name: Pages - feature-mockup
+
+on:
+  push:
+    branches:
+      - main
+      - "feature-*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # If this repo is a static mock-up, create a minimal dist/
+      - name: Build static site
+        run: |
+          rm -rf dist
+          mkdir -p dist
+          # copy the files you want to publish (adjust as needed)
+          cp -a index.html dist/
+          [ -d public ] && cp -a public dist/ || true
+          [ -d src ] && cp -a src dist/ || true
+          # fail fast if index.html is missing
+          test -f dist/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages        # must be exactly this name for Pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
