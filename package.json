@@ -3,6 +3,6 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "test": "jest",
-    "build": "react-scripts build"
+    "build": "cross-env BUILD_PATH=dist react-scripts build"
   }
 }
