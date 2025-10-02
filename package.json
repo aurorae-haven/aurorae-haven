@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "> **A calm, astro-themed productivity app designed for neurodivergent users.**   > Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure local/mobile use.",
   "main": "src/index.js",
-  "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -11,12 +10,28 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "test": "jest",
-    "build": "mkdir -p dist/public && cp -r public/* dist/public/ && cp -r src dist/ && cp index.html dist/"
+    "build": "react-scripts build && npm run copy-assets",
+    "copy-assets": "cp -r src build/src"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1"
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

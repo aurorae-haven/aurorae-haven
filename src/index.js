@@ -1,5 +1,19 @@
-// Main entry point for the Stellar Journey application
-// This is a vanilla JavaScript multi-page application
-// The actual page-specific logic is loaded via HTML <script> tags
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
-console.log('Stellar Journey - Application initialized');
+// Placeholder React component for future migration
+function App() {
+  return (
+    <div>
+      <h1>Stellar Journey</h1>
+      <p>React app initialization - ready for future migration</p>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
