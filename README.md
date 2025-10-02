@@ -28,7 +28,7 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
 
 1. Clone the repository:  
    ```bash
-   git clone https://github.com/my-stellar-trail/my-stellar-trail.git
+   git clone https://github.com/ayanimea/my-stellar-trail.git
    cd my-stellar-trail
    ```
 
@@ -46,8 +46,13 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
 4. Build for production:  
    ```bash
    npm run build
+   ```
+   The production build will be in the `dist/` directory
+
+5. Test the production build locally:  
+   ```bash
    npm install -g serve
-   serve -s build
+   serve -s dist
    ```
 
 ---
@@ -74,7 +79,7 @@ My Stellar Trail is now a Progressive Web App! You can install it on your device
   npm install
   npm run build
   npm install -g serve
-  serve -s build
+  serve -s dist
   ```
 
 - **Install Methods**:  
@@ -90,6 +95,17 @@ My Stellar Trail is now a Progressive Web App! You can install it on your device
 - **HTML5 & CSS**: Modern web standards with responsive design  
 - **Service Worker**: Enables offline functionality and caching strategies  
 - **Web Manifest**: Provides app metadata for installation  
+- **Modular Components**: Organized codebase with clear separation of concerns  
+
+### Deployment
+The app is automatically deployed to GitHub Pages when changes are pushed to `main` or `feature-*` branches. The deployment workflow:
+
+1. Installs Node.js dependencies
+2. Builds the React application with `npm run build`
+3. Copies PWA assets (service worker, manifest, icons)
+4. Deploys to GitHub Pages
+
+**Live URL**: `https://ayanimea.github.io/my-stellar-trail/`
 
 ---
 

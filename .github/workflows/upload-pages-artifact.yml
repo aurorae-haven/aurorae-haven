@@ -22,17 +22,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # If this repo is a static mock-up, create a minimal dist/
-      - name: Build static site
-        run: |
-          rm -rf dist
-          mkdir -p dist
-          # copy the files you want to publish (adjust as needed)
-          cp -a index.html dist/
-          [ -d public ] && cp -a public dist/ || true
-          [ -d src ] && cp -a src dist/ || true
-          # fail fast if index.html is missing
-          test -f dist/index.html
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build React PWA
+        run: npm run build
+        env:
+          CI: true
+          PUBLIC_URL: ''
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

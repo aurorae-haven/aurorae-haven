@@ -76,10 +76,10 @@ npm run build
 
 # Serve with local server
 npm install -g serve
-serve -s build
+serve -s dist
 
 # Or use Python
-cd build && python3 -m http.server 8080
+cd dist && python3 -m http.server 8080
 ```
 
 ### Validating PWA Implementation
