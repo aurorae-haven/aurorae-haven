@@ -30,7 +30,6 @@ jobs:
       - name: Add dependencies
         run: |
           npm install
-          npm install react react-dom express
 
       - name: Set environment variables
         run: | 
@@ -40,7 +39,7 @@ jobs:
       - name: Build app (adjust script as needed)
         run: |
           if [ -f package.json ]; then
-            npm run build || echo "No build script defined, skipping."
+            npm run build
           else
             echo "package.json is missing"
           fi
@@ -50,7 +49,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build
-          path: ./dist 
+          path: ./build 
 
   deployment:
     needs: generate-and-build
@@ -63,9 +62,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build
-          path: ./dist 
+          path: ./build 
 
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         with:
-          build_dir: ./dist
+          build_dir: ./build
