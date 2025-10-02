@@ -1,6 +1,9 @@
 permissions:
   contents: write
-name: Generate package-lock.json
+  pages: write
+  id-token: write
+
+name: Build and Deploy
 
 on:
   push:
@@ -10,7 +13,7 @@ on:
   pull_request:
 
 jobs:
-  generate-and-build:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -21,50 +24,41 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Generate package.json if missing
+      - name: Display versions
         run: |
-          if [ ! -f package.json ]; then
-            npm init -y
-          fi
+          node --version
+          npm --version
+          echo "Package.json overrides:"
+          npm pkg get overrides
 
-      - name: Add dependencies
-        run: |
-          npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Set environment variables
-        run: | 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Audit dependencies
+        run: npm audit --audit-level=moderate || true
 
-      - name: Build app (adjust script as needed)
-        run: |
-          if [ -f package.json ]; then
-            npm run build
-          else
-            echo "package.json is missing"
-          fi
+      - name: Build app
+        run: npm run build
 
       - name: Upload build artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: build
-          path: ./dist 
+          name: github-pages
+          path: ./dist
+          retention-days: 1
 
-  deployment:
-    needs: generate-and-build
+  deploy:
+    needs: build
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: ./dist 
-
       - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          build_dir: ./dist

@@ -2,7 +2,7 @@
   "name": "my-stellar-trail",
   "version": "1.0.0",
   "description": "> **A calm, astro-themed productivity app designed for neurodivergent users.**   > Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure local/mobile use.",
-  "main": "index.js",
+  "main": "src/index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -10,7 +10,9 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "test": "jest",
-    "build": "cross-env BUILD_PATH=dist react-scripts build"
+    "build": "react-scripts build && npm run copy-assets && npm run prepare-dist",
+    "copy-assets": "cp -r src build/src",
+    "prepare-dist": "rm -rf dist && cp -r build dist"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -20,5 +22,22 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "overrides": {
+    "nth-check": "^2.1.1",
+    "postcss": "^8.4.31",
+    "webpack-dev-server": "^5.2.1"
   }
 }
