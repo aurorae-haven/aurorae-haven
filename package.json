@@ -11,7 +11,7 @@
     "format": "prettier --write .",
     "test": "jest",
     "build": "cross-env BUILD_PATH=dist react-scripts build"
-  } 
+  },
   "dependencies": {
     "express": "^4.18.2",
     "react": "^18.2.0",
