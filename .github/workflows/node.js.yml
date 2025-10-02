@@ -77,6 +77,6 @@ jobs:
 
   deployment:
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: deploy
+        uses: actions/deploy-pages@v4
