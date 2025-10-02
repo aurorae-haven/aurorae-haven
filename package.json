@@ -1,8 +1,20 @@
 {
+  "name": "my-stellar-trail",
+  "version": "1.0.0",
+  "description": "> **A calm, astro-themed productivity app designed for neurodivergent users.**   > Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure local/mobile use.",
+  "main": "index.js",
   "scripts": {
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "test": "jest",
     "build": "cross-env BUILD_PATH=dist react-scripts build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
   }
 }

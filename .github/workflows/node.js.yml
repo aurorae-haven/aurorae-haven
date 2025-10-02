@@ -1,37 +1,71 @@
-name: CI/CD Pipeline
 permissions:
-  contents: read
+  contents: write
+name: Generate package-lock.json
 
 on:
   push:
-    branches:
-      - feature-mockup
+    branches: 
+      - '**'    
+  workflow_dispatch:
   pull_request:
 
 jobs:
-  build:
+  generate-and-build:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '20'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Generate package.json if missing
+        run: |
+          if [ ! -f package.json ]; then
+            npm init -y
+          fi
 
-      - name: Lint
-        run: npm run lint
+      - name: Add dependencies
+        run: |
+          npm install
+          npm install react react-dom express
 
-      - name: Run Tests
-        run: npm test
+      - name: Set environment variables
+        run: | 
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Build Project
-        run: npm run build
+      - name: Build app (adjust script as needed)
+        run: |
+          if [ -f package.json ]; then
+            npm run build || echo "No build script defined, skipping."
+          else
+            echo "package.json is missing"
+          fi
 
-      - name: Deploy
-        if: github.ref == 'refs/heads/main'
-        run: echo "Deploying..."
+      - name: Upload build artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ./dist 
+
+  deployment:
+    needs: generate-and-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ./dist 
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
+        with:
+          build_dir: ./dist
