@@ -32,7 +32,7 @@ jobs:
           # If you intend to deploy the built output:
           # path: dist
           # Or, for today’s mock-up if there is no dist:
-          path: src
+          path: public
   deploy:
     needs: build
     runs-on: ubuntu-latest
