@@ -12,7 +12,8 @@
     "test": "jest",
     "build": "react-scripts build && npm run copy-assets && npm run prepare-dist",
     "copy-assets": "cp -r src build/src",
-    "prepare-dist": "rm -rf dist && cp -r build dist"
+    "prepare-dist": "rm -rf dist && cp -r build dist",
+    "validate-pwa": "node scripts/validate-pwa.js"
   },
   "dependencies": {
     "express": "^4.18.2",
