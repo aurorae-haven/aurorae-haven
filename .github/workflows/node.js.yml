@@ -3,11 +3,11 @@ permissions:
 name: Generate package-lock.json
 
 on:
-    push:
-      branches: 
-        - '**'    
-    workflow_dispatch:
-    pull_request:
+  push:
+    branches: 
+      - '**'    
+  workflow_dispatch:
+  pull_request:
 
 jobs:
   generate-and-build:
@@ -38,45 +38,34 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Build app (adjust script as needed)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ -f package.json ]; then
             npm run build || echo "No build script defined, skipping."
-            git add package.json
-            git commit -m "Add package.json [skip ci]" || echo "No changes to commit"
-            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${GITHUB_REF#refs/heads/}" || echo "Nothing to push"
-          else
-            echo "package.json is missing"
-          fi
-          
-      - name: Generate package.json if missing
-        run: |
-          if [ ! -f package.json ]; then
-            npm init -y
-          fi
-          
-      - name: Build app (adjust script as needed)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ -f package.json ]; then
-            npm run build || echo "No build script defined, skipping."
-            git add package.json
-            git commit -m "Add package.json [skip ci]" || echo "No changes to commit"
-            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${GITHUB_REF#refs/heads/}" || echo "Nothing to push"
           else
             echo "package.json is missing"
           fi
 
-      - name: Test app (optional)
-        run: |
-          if [ -f package.json ]; then
-            npm test || echo "No test script defined, skipping."
-          fi
+      - name: Upload build artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: ./dist 
 
   deployment:
+    needs: generate-and-build
     runs-on: ubuntu-latest
     steps:
-      - name: deploy
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: ./dist 
+
+      - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
+        with:
+          build_dir: ./dist
