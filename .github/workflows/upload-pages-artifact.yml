@@ -2,7 +2,9 @@ name: Pages - feature-mockup
 
 on:
   push:
-    branches: [ "main", "feature-" ]
+    branches:
+      - main
+      - "feature-*"
   workflow_dispatch:
 
 permissions:
