@@ -24,6 +24,13 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Display versions
+        run: |
+          node --version
+          npm --version
+          echo "Package.json overrides:"
+          npm pkg get overrides
+
       - name: Install dependencies
         run: npm ci
 
