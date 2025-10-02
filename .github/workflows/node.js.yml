@@ -74,3 +74,9 @@ jobs:
           if [ -f package.json ]; then
             npm test || echo "No test script defined, skipping."
           fi
+
+  deployment:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: deploy
