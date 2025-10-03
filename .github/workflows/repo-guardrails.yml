@@ -57,6 +57,7 @@ jobs:
         run: |
           test -f "CONTRIBUTING.md" || (echo "Missing CONTRIBUTING.md" && exit 1)
 
+          
   markdown-links:
     name: Docs validate links
     runs-on: ubuntu-latest
@@ -65,12 +66,10 @@ jobs:
         with:
           fetch-depth: 0
       - name: Install lychee link checker (no action)
-        run: |
-          set -euo pipefail
-          LYCHEE_VERSION="0.15.1"
-          curl -sSfL "https://raw.githubusercontent.com/lycheeverse/lychee/main/install.sh" | bash -s -- --version "v${LYCHEE_VERSION}"
-          sudo mv ./bin/lychee /usr/local/bin/lychee
-          lychee --version
+        id: lychee
+        uses: lycheeverse/lychee-action@v2
+        with:
+          fail: false
       - name: Run lychee
         run: |
           lychee --no-progress --verbose --timeout 20 --max-redirects 5 --retry 2 --exclude-mail ./
