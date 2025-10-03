@@ -78,7 +78,9 @@ export function configureSanitization() {
       // Block javascript: and data: URIs for links
       if (
         href &&
-        (href.startsWith('javascript:') || href.startsWith('data:'))
+        (href.trim().toLowerCase().startsWith('javascript:') ||
+         href.trim().toLowerCase().startsWith('data:') ||
+         href.trim().toLowerCase().startsWith('vbscript:'))
       ) {
         node.removeAttribute('href')
       }
