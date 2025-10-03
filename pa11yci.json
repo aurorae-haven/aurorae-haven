@@ -1,7 +1,7 @@
 {
   "defaults": {
     "concurrency": 2,
-    "standard": "WCAG2AA",
+    "standard": "WCAG2AAA",
     "timeout": 30000,
     "wait": 500,
     "chromeLaunchConfig": {
