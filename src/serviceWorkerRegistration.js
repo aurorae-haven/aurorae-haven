@@ -12,14 +12,14 @@ const isLocalhost = Boolean(
 export function register(config) {
   if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
-    const publicUrl = new URL(process.env.PUBLIC_URL || '', window.location.href);
-    if (publicUrl.origin !== window.location.origin) {
-      // Service worker won't work if PUBLIC_URL is on a different origin
-      return;
-    }
+    // Always use a relative path for the service worker
+
+
+
+
 
     window.addEventListener('load', () => {
-      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+      const swUrl = '/service-worker.js';
 
       if (isLocalhost) {
         // Check if service worker exists on localhost
