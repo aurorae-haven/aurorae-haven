@@ -7,7 +7,7 @@ import {
   Backlinks,
   FileAttachments,
   AccessibilityHelper
-} from './braindump-enhanced.js';
+} from '../braindump-enhanced.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const editor = document.querySelector("textarea");
