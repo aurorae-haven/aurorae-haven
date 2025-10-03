@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   meta-checks:
-    name: Required files exist
+    name: Meta required files exist
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
           test -f "CONTRIBUTING.md" || (echo "Missing CONTRIBUTING.md" && exit 1)
 
   markdown-links:
-    name: Validate links in docs
+    name: Docs validate links
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   super-linter:
-    name: Lint (auto-detect)
+    name: Lint auto-detect
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -62,9 +62,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   node-security:
-    name: Node security & tests
+    name: Node security and tests
     runs-on: ubuntu-latest
-    if: hashFiles('package.json') != ''
+    if: ${{ hashFiles('package.json') != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -73,13 +73,13 @@ jobs:
           cache: 'npm'
       - name: Install
         run: npm ci --ignore-scripts
-      - name: Audit (production)
+      - name: Audit production
         run: npm audit --audit-level=high --omit=dev || (echo "Review audit output above."; exit 1)
       - name: Test
         run: npm test --if-present --silent
-        
+
   codeql:
-    name: CodeQL (auto language detect)
+    name: CodeQL auto language detect
     uses: github/codeql-action/.github/workflows/codeql.yml@v3
     permissions:
       contents: read
@@ -89,9 +89,9 @@ jobs:
       languages: auto
 
   a11y:
-    name: Accessibility (pa11y-ci if configured)
+    name: Accessibility pa11y-ci
     runs-on: ubuntu-latest
-    if: hashFiles('pa11yci.json') != ''
+    if: ${{ hashFiles('pa11yci.json') != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -100,7 +100,7 @@ jobs:
           cache: 'npm'
       - name: Install pa11y-ci
         run: npm i -g pa11y-ci http-server
-      - name: Build (if present)
+      - name: Build if present
         run: |
           if npm run | grep -q ' build'; then npm run build; fi
       - name: Serve and test
@@ -116,12 +116,15 @@ jobs:
   summary:
     name: Summary status
     runs-on: ubuntu-latest
-    needs: [meta-checks, markdown-links, super-linter, gitleaks]
+    needs: [meta-checks, markdown-links, super-linter, gitleaks, node-security, codeql, a11y]
     if: always()
     steps:
       - name: Show job outcomes
         run: |
-          echo "Meta: ${{ needs.meta-checks.result }}"
-          echo "Links: ${{ needs.markdown-links.result }}"
-          echo "Linter: ${{ needs.super-linter.result }}"
-          echo "Gitleaks: ${{ needs.gitleaks.result }}"
+          echo "Meta ${{ needs.meta-checks.result }}"
+          echo "Links ${{ needs.markdown-links.result }}"
+          echo "Linter ${{ needs.super-linter.result }}"
+          echo "Gitleaks ${{ needs.gitleaks.result }}"
+          echo "Node ${{ needs.node-security.result }}"
+          echo "CodeQL ${{ needs.codeql.result }}"
+          echo "A11y ${{ needs.a11y.result }}"
