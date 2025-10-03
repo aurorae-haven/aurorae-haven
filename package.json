@@ -12,8 +12,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "test": "jest",
-    "build": "react-scripts build && npm run copy-assets && npm run prepare-dist",
-    "copy-assets": "cp -r src build/src",
+    "build": "react-scripts build && npm run prepare-dist",
     "prepare-dist": "rm -rf dist && cp -r build dist",
     "validate-pwa": "node scripts/validate-pwa.js"
   },
