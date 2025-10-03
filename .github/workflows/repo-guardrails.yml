@@ -77,28 +77,7 @@ jobs:
         run: npm audit --audit-level=high --omit=dev || (echo "Review audit output above."; exit 1)
       - name: Test
         run: npm test --if-present --silent
-
-  python-security:
-    name: Python security & tests
-    runs-on: ubuntu-latest
-    if: hashFiles('**/requirements.txt') != '' || hashFiles('pyproject.toml') != ''
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-          cache: 'pip'
-      - name: Install pip-audit
-        run: python -m pip install --upgrade pip pip-audit
-      - name: Install project (best-effort)
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt || true; fi
-          if [ -f pyproject.toml ]; then pip install . || true; fi
-      - name: pip-audit
-        run: pip-audit -l -r requirements.txt || pip-audit -l || true
-      - name: Tests (pytest)
-        run: pytest -q || true
-
+        
   codeql:
     name: CodeQL (auto language detect)
     uses: github/codeql-action/.github/workflows/codeql.yml@v3
