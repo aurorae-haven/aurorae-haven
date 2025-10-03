@@ -13,11 +13,6 @@ export function register(config) {
   if ('serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support SW.
     // Always use a relative path for the service worker
-
-
-
-
-
     window.addEventListener('load', () => {
       const swUrl = '/service-worker.js';
 
