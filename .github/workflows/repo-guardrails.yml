@@ -152,7 +152,7 @@ jobs:
           [ -d public ] && ROOT=public
           nohup npx http-server "$ROOT" -p 8080 >/dev/null 2>&1 &
           sleep 2
-          pa11y-ci
+          npx pa11y-ci
 
   summary:
     name: Summary status
