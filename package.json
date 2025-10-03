@@ -26,8 +26,14 @@
     "react-scripts": "^5.0.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "ajv": "^8.17.1",
-    "cross-env": "^7.0.3"
+    "babel-jest": "^30.2.0",
+    "cross-env": "^7.0.3",
+    "jest": "^27.5.1"
   },
   "browserslist": {
     "production": [
