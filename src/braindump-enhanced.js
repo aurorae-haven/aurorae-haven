@@ -50,7 +50,7 @@ export function configureSanitization() {
       'data-backlink' // for backlinks
     ],
     ALLOWED_URI_REGEXP:
-      /^(?:(?:(?:f|ht)tps?|mailto|tel|data|#):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$))/i,
+      /^(?:(?:(?:f|ht)tps?|mailto|tel|data|#):|[^a-z]|[a-z+.\-]+(?:[^a-z+.\-]|$))/i,
     FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'],
     FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
     KEEP_CONTENT: true,
