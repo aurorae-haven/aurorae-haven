@@ -1,0 +1,26 @@
+{
+  "defaults": {
+    "concurrency": 2,
+    "standard": "WCAG2AA",
+    "timeout": 30000,
+    "wait": 500,
+    "chromeLaunchConfig": {
+      "args": ["--no-sandbox"]
+    },
+    "headers": {
+      "Accept-Language": "en-GB"
+    }
+  },
+  "urls": [
+    "http://localhost:8080/"
+  ],
+  "threshold": {
+    "error": 0,
+    "warning": 10,
+    "notice": 50
+  },
+  "hideElements": [
+    "[aria-live='polite']",
+    "[aria-live='assertive']"
+  ]
+}
