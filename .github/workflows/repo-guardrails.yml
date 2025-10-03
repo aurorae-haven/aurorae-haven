@@ -137,7 +137,8 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ -f package.json ]; then npm ci; fi
       - name: Build if present
         run: |
           if npm run | grep -q ' build'; then npm run build; fi
