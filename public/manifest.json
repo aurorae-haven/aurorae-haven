@@ -1,0 +1,30 @@
+{
+  "short_name": "Stellar Trail",
+  "name": "My Stellar Trail - Productivity App",
+  "description": "A calm, astro-themed productivity app designed for neurodivergent users. Manage routines, tasks, habits, notes, and stats.",
+  "icons": [
+    {
+      "src": "icon-192x192.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512x512.svg",
+      "type": "image/svg+xml",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1a1a2e",
+  "background_color": "#0f0f1e",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "categories": [
+    "productivity",
+    "lifestyle"
+  ],
+  "lang": "en-US"
+}
