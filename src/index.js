@@ -26,6 +26,17 @@ import { exportJSON, importJSON } from './utils/dataManager';
 function App() {
   const [toast, setToast] = useState({ visible: false, message: '' });
 
+  // Handle GitHub Pages SPA redirect from 404.html
+  React.useEffect(() => {
+    const redirectPath = sessionStorage.getItem('redirectPath');
+    if (redirectPath) {
+      sessionStorage.removeItem('redirectPath');
+      const basename = process.env.PUBLIC_URL || '';
+      const path = redirectPath.replace(basename, '');
+      window.history.replaceState(null, '', basename + path);
+    }
+  }, []);
+
   const showToast = useCallback((message) => {
     setToast({ visible: true, message });
   }, []);
@@ -49,8 +60,11 @@ function App() {
     }
   }, [showToast]);
 
+  // Use basename for GitHub Pages deployment
+  const basename = process.env.PUBLIC_URL || '';
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <Layout onExport={handleExport} onImport={handleImport}>
         <Routes>
           <Route path="/" element={<Home />} />

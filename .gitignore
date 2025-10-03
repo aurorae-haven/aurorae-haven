@@ -24,5 +24,8 @@ node_modules/
 dist/
 build/
 
+# Test server
+test-server/
+
 # Jupyter Notebook
 .ipynb_checkpoints/
