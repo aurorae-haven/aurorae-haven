@@ -138,7 +138,13 @@ jobs:
         with:
           node-version: 'lts/*'
           cache: 'npm'
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1
+        with:
+          chrome-version: stable
       - name: Install dependencies
+        env:
+          PUPPETEER_SKIP_DOWNLOAD: 'true'
         run: |
           if [ -f package.json ]; then npm ci; fi
       - name: Build if present
