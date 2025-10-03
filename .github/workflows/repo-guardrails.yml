@@ -110,6 +110,10 @@ jobs:
     uses: github/codeql-action/.github/workflows/codeql.yml@v3
     with:
       languages: auto
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
   a11y:
     name: Accessibility pa11y-ci
