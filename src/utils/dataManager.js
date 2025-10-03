@@ -45,8 +45,8 @@ export async function importJSON(file) {
       throw new Error("Invalid schema");
     }
     
-    // Store in memory (mock); in real app, write to localStorage/db
-    window.__SJ_DATA__ = obj;
+    // Store in localStorage for persistence
+    localStorage.setItem("stellar_journey_data", JSON.stringify(obj));
     return { success: true, message: "Data imported successfully" };
   } catch (e) {
     console.error(e);
