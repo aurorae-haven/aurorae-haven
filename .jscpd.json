@@ -1,0 +1,13 @@
+{
+  "threshold": 15,
+  "reporters": ["console"],
+  "ignore": [
+    "node_modules/**",
+    "build/**",
+    "dist/**",
+    "**/*.min.js",
+    "**/*.min.css"
+  ],
+  "absolute": true,
+  "gitignore": true
+}
