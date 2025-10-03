@@ -29,6 +29,57 @@ When suggesting code or reviews, Copilot should align with the following institu
 
 ---
 
+## Behaviour
+
+When reviewing code or suggesting changes, Copilot should follow this process:
+
+1. **Context scan** – Identify purpose, tech stack, scope, and where the change fits.
+2. **Constraints** – Note security, privacy, accessibility, and performance implications.
+3. **Accessibility review** – Enforce WCAG 2.2 AA, semantic HTML, ARIA only if needed, keyboard navigation, focus order, screen reader support.
+4. **Security review** – Check for injection risks, XSS, CSRF, secrets in code, dependency risks.
+5. **Privacy review** – Minimise data collection, avoid trackers, ensure GDPR compliance.
+6. **Performance review** – Identify inefficiencies, bundle size issues, caching, rendering costs.
+7. **Testing review** – Verify that changes are covered with automated or manual tests following ISTQB/IEEE guidelines.
+8. **Build/Deploy review** – Confirm artefacts are clean, lightweight, and contain only deployable files.
+9. **Proposed fixes** – Provide a short actionable checklist and safe code diffs/snippets.
+
+---
+
+## Design Principles
+
+- **Minimalist and inclusive by default** – remove non-essential UI, prioritise clarity.
+- **Accessibility-first** – headings, labels, focus, contrast, ARIA where necessary.
+- **Security-first** – strict CSP, no inline/eval, sanitised inputs.
+- **Privacy by design** – minimal data, explicit consent where required.
+- **Maintainable** – small, well-named functions/components, minimal dependencies.
+- **Performance-conscious** – efficient rendering, small bundles, respect user preferences (`prefers-reduced-motion`, `prefers-color-scheme`).
+
+---
+
+## Output Format
+
+When Copilot suggests changes, it should structure responses as:
+
+1. **Step-by-step explanation** (numbered)
+2. **Findings** – Accessibility / Security / Privacy / Performance / Testing / Deploy
+3. **Action checklist** – priority-ordered tick-box list
+4. **Proposed changes** – minimal, safe diffs or snippets with file paths
+
+---
+
+## Quality Gates
+
+Before finishing, verify:
+
+- Accessibility meets WCAG 2.2 AA
+- Security hardened (no unsafe eval, no inline, secrets safe)
+- Privacy principles respected (GDPR, PbD)
+- Testing present and relevant (ISTQB/IEEE standards)
+- Artefacts clean and deployable
+- UI is as **simple and minimalist** as possible
+
+---
+
 ## Project Overview
 
 My Stellar Trail is a calm, astro-themed productivity app designed for neurodivergent users. It helps manage routines, tasks, habits, notes, and stats with a focus on accessibility, security, and a peaceful user experience.
@@ -289,57 +340,6 @@ window.StellarIO = {exportJSON, importJSON};
 - Review [README.md](../README.md) for project overview
 - All feature pages should follow the established patterns
 - When in doubt, prioritize security (CSP) and accessibility
-
-## Behaviour
-
-When reviewing code or suggesting changes, Copilot should follow this process:
-
-1. **Context scan** – Identify purpose, tech stack, scope, and where the change fits.
-2. **Constraints** – Note security, privacy, accessibility, and performance implications.
-3. **Accessibility review** – Enforce WCAG 2.2 AA, semantic HTML, ARIA only if needed, keyboard navigation, focus order, screen reader support.
-4. **Security review** – Check for injection risks, XSS, CSRF, secrets in code, dependency risks.
-5. **Privacy review** – Minimise data collection, avoid trackers, ensure GDPR compliance.
-6. **Performance review** – Identify inefficiencies, bundle size issues, caching, rendering costs.
-7. **Testing review** – Verify that changes are covered with automated or manual tests following ISTQB/IEEE guidelines.
-8. **Build/Deploy review** – Confirm artefacts are clean, lightweight, and contain only deployable files.
-9. **Proposed fixes** – Provide a short actionable checklist and safe code diffs/snippets.
-
----
-
-## Design Principles
-
-- **Minimalist and inclusive by default** – remove non-essential UI, prioritise clarity.
-- **Accessibility-first** – headings, labels, focus, contrast, ARIA where necessary.
-- **Security-first** – strict CSP, no inline/eval, sanitised inputs.
-- **Privacy by design** – minimal data, explicit consent where required.
-- **Maintainable** – small, well-named functions/components, minimal dependencies.
-- **Performance-conscious** – efficient rendering, small bundles, respect user preferences (`prefers-reduced-motion`, `prefers-color-scheme`).
-
----
-
-## Output Format
-
-When Copilot suggests changes, it should structure responses as:
-
-1. **Step-by-step explanation** (numbered)
-2. **Findings** – Accessibility / Security / Privacy / Performance / Testing / Deploy
-3. **Action checklist** – priority-ordered tick-box list
-4. **Proposed changes** – minimal, safe diffs or snippets with file paths
-
----
-
-## Quality Gates
-
-Before finishing, verify:
-
-- Accessibility meets WCAG 2.2 AA
-- Security hardened (no unsafe eval, no inline, secrets safe)
-- Privacy principles respected (GDPR, PbD)
-- Testing present and relevant (ISTQB/IEEE standards)
-- Artefacts clean and deployable
-- UI is as **simple and minimalist** as possible
-
----
 
 ## Summary
 
