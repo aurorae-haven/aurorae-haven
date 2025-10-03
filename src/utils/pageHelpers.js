@@ -45,6 +45,7 @@
     document.body.appendChild(a)
     a.click()
     a.remove()
+    URL.revokeObjectURL(a.href)
     exported = true
     toast('Data exported (stellar_journey_data.json)')
   }
