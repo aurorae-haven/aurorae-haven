@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   meta-checks:
-    name: Meta: required files exist
+    name: Required files exist
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
           test -f "CONTRIBUTING.md" || (echo "Missing CONTRIBUTING.md" && exit 1)
 
   markdown-links:
-    name: Docs: validate links
+    name: Validate links in docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
