@@ -25,17 +25,17 @@ jobs:
         name: Check Node project
         run: |
           if [ -f package.json ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
       - id: check_pa11y
         name: Check pa11yci.json present
         run: |
           if [ -f pa11yci.json ]; then
-            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           else
-            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
   meta-checks:
@@ -58,11 +58,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: lycheeverse/lychee-action@v1
-        with:
-          args: --no-progress --verbose --timeout 20 --max-redirects 5 --retry 2 --exclude-mail ./
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install lychee link checker (no action)
+        run: |
+          set -euo pipefail
+          LYCHEE_VERSION="0.15.1"
+          curl -sSfL "https://raw.githubusercontent.com/lycheeverse/lychee/main/install.sh" | bash -s -- --version "v${LYCHEE_VERSION}"
+          sudo mv ./bin/lychee /usr/local/bin/lychee
+          lychee --version
+      - name: Run lychee
+        run: |
+          lychee --no-progress --verbose --timeout 20 --max-redirects 5 --retry 2 --exclude-mail ./
 
   super-linter:
     name: Lint auto-detect
@@ -77,13 +82,21 @@ jobs:
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
 
   gitleaks:
-    name: Secrets scan
+    name: Secrets scan (CLI)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install gitleaks (no action)
+        run: |
+          set -euo pipefail
+          GITLEAKS_VERSION="8.18.4"
+          curl -sSL -o gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo mv gitleaks /usr/local/bin/gitleaks
+          gitleaks version
+      - name: Run gitleaks
+        run: |
+          gitleaks detect --source . --no-banner --redact
 
   node-security:
     name: Node security and tests
