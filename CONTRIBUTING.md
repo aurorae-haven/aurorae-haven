@@ -64,7 +64,7 @@ Thank you for your interest in contributing to My Stellar Trail! This document p
 - Validate and sanitize all user input
 - No `eval()` or `Function()` usage
 
-### Accessibility (WCAG 2.2 AA+)
+### Accessibility (WCAG 2.0 AA)
 
 - Use semantic HTML5 elements
 - Provide ARIA labels for interactive elements
