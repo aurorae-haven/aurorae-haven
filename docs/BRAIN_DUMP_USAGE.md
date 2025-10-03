@@ -37,7 +37,7 @@ The Brain Dump editor supports full GitHub Flavored Markdown (GFM):
 
 ```javascript
 // Code blocks
-console.log("Hello");
+console.log('Hello')
 ```
 ````
 

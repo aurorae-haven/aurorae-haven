@@ -1,20 +1,20 @@
-import React from "react";
+import React from 'react'
 
 function Settings() {
   return (
-    <div className="card">
-      <div className="card-h">
+    <div className='card'>
+      <div className='card-h'>
         <strong>Settings</strong>
-        <span className="small">Customize your experience</span>
+        <span className='small'>Customize your experience</span>
       </div>
-      <div className="card-b">
+      <div className='card-b'>
         <p>Settings module coming soon...</p>
-        <p className="small">
+        <p className='small'>
           This page will allow you to customize app preferences and settings.
         </p>
       </div>
     </div>
-  );
+  )
 }
 
-export default Settings;
+export default Settings

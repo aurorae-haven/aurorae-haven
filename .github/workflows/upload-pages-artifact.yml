@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - "feature-*"
+      - 'feature-*'
   workflow_dispatch:
 
 permissions:
@@ -13,7 +13,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: true
 
 jobs:
@@ -25,8 +25,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
-          cache: "npm"
+          node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -35,7 +35,7 @@ jobs:
         run: npm run build
         env:
           CI: true
-          PUBLIC_URL: ""
+          PUBLIC_URL: ''
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

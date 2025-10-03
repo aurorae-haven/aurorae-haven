@@ -256,31 +256,31 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ```javascript
 // Always provide export functionality
 function exportJSON() {
-  const data = JSON.stringify(dataTemplate(), null, 2);
-  const blob = new Blob([data], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "stellar_journey_data.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  exported = true;
+  const data = JSON.stringify(dataTemplate(), null, 2)
+  const blob = new Blob([data], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = 'stellar_journey_data.json'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  exported = true
 }
 
 // Always provide import functionality
 function importJSON(file) {
-  const reader = new FileReader();
+  const reader = new FileReader()
   reader.onload = (e) => {
     try {
-      const imported = JSON.parse(e.target.result);
+      const imported = JSON.parse(e.target.result)
       // Validate and merge data
-      localStorage.setItem("stellar_data", JSON.stringify(imported));
-      location.reload();
+      localStorage.setItem('stellar_data', JSON.stringify(imported))
+      location.reload()
     } catch (err) {
-      toast("Import failed: " + err.message);
+      toast('Import failed: ' + err.message)
     }
-  };
-  reader.readAsText(file);
+  }
+  reader.readAsText(file)
 }
 ```
 
@@ -342,29 +342,29 @@ function importJSON(file) {
 
 ```javascript
 function toast(message) {
-  const el = document.getElementById("toast");
-  el.textContent = message;
-  el.classList.add("show");
-  setTimeout(() => el.classList.remove("show"), 3000);
+  const el = document.getElementById('toast')
+  el.textContent = message
+  el.classList.add('show')
+  setTimeout(() => el.classList.remove('show'), 3000)
 }
 ```
 
 ### Suppress Navigation Warnings
 
 ```javascript
-let suppressPrompt = false;
+let suppressPrompt = false
 function markInternalNav() {
-  suppressPrompt = true;
+  suppressPrompt = true
   setTimeout(() => {
-    suppressPrompt = false;
-  }, 2000);
+    suppressPrompt = false
+  }, 2000)
 }
 ```
 
 ### Module Registration
 
 ```javascript
-window.StellarIO = { exportJSON, importJSON };
+window.StellarIO = { exportJSON, importJSON }
 ```
 
 ## Questions & Support
