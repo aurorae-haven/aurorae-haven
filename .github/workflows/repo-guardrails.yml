@@ -136,8 +136,8 @@ jobs:
         with:
           node-version: 'lts/*'
           cache: 'npm'
-      - name: Install pa11y-ci
-        run: npm i -g pa11y-ci http-server
+      - name: Install dependencies
+        run: npm ci
       - name: Build if present
         run: |
           if npm run | grep -q ' build'; then npm run build; fi
