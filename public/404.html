@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stellar Journey</title>
+    <script>
+      // GitHub Pages SPA redirect workaround
+      // Store the path and redirect to index.html
+      sessionStorage.setItem('redirectPath', location.pathname + location.search + location.hash);
+      location.replace(location.origin + location.pathname.split('/').slice(0, -1).join('/') + '/');
+    </script>
+  </head>
+  <body>
+    <!-- GitHub Pages 404 redirect handler -->
+  </body>
+</html>
