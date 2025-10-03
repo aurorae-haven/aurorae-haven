@@ -15,12 +15,14 @@ This guide explains how to use the enhanced Brain Dump features in My Stellar Tr
 
 The Brain Dump editor supports full GitHub Flavored Markdown (GFM):
 
-```markdown
+````markdown
 # Headings
+
 ## Second level
+
 ### Third level
 
-**Bold text** and *italic text*
+**Bold text** and _italic text_
 
 - Bullet lists
 - Another item
@@ -35,13 +37,15 @@ The Brain Dump editor supports full GitHub Flavored Markdown (GFM):
 
 ```javascript
 // Code blocks
-console.log('Hello');
+console.log('Hello')
 ```
+````
 
 > Blockquotes for important notes
 
 [Links](https://example.com)
-```
+
+````
 
 ### Auto-List Continuation
 
@@ -60,15 +64,17 @@ Create wiki-style links between notes using double brackets:
 This note relates to [[Project Alpha]] and [[Meeting Notes 2024-01]].
 
 I should also check [[Resources]] and [[Ideas for Q2]].
-```
+````
 
 **Features:**
+
 - Links appear as clickable elements in preview
 - Click a backlink to navigate (future: will jump to that note)
 - View all backlinks in current document with "🔗 Backlinks" button
 - Links styled with dashed underline for visual distinction
 
 **Usage:**
+
 1. Type `[[` to start a link
 2. Enter the link text
 3. Type `]]` to close
@@ -80,21 +86,25 @@ I should also check [[Resources]] and [[Ideas for Q2]].
 Automatic version control for your notes:
 
 **Auto-Save:**
+
 - Versions saved every 5 seconds of inactivity
 - Last 50 versions kept automatically
 - Each version includes timestamp and preview
 
 **View History:**
+
 1. Click "📜 History" button
 2. See list of all saved versions with dates
 3. Preview shows first 100 characters of each version
 
 **Restore Version:**
+
 1. In version history, find the version you want
 2. Click "Restore" to revert to that version
 3. Current content is replaced with selected version
 
 **View Diff:**
+
 1. Click "View Diff" on any version
 2. See line-by-line comparison
 3. Green lines = additions
@@ -108,23 +118,27 @@ Automatic version control for your notes:
 Attach files directly to your brain dump notes:
 
 **Supported:**
+
 - Any file type
 - Files stored securely in browser's Origin Private File System (OPFS)
 - Files never leave your device
 - Private, sandboxed storage
 
 **How to Attach:**
+
 1. Click "📎 Attach" button
 2. Select file from your device
 3. File is stored in OPFS
 4. Reference automatically inserted in editor
 
 **File Reference Format:**
+
 ```
 📎 Attachment: document.pdf (152.34 KB)
 ```
 
 **Browser Support:**
+
 - Chrome 86+ ✓
 - Edge 86+ ✓
 - Opera 72+ ✓
@@ -138,6 +152,7 @@ Attach files directly to your brain dump notes:
 All content is sanitized for safety:
 
 **Protections:**
+
 - XSS prevention (malicious scripts blocked)
 - Safe link handling (no javascript: or data: URIs)
 - External links open in new tab automatically
@@ -145,12 +160,14 @@ All content is sanitized for safety:
 - Event handlers stripped
 
 **What's Allowed:**
+
 - Standard markdown formatting
 - Images from safe sources
 - Links to HTTP/HTTPS URLs
 - Internal anchor links (#)
 
 **What's Blocked:**
+
 - Script tags
 - Inline JavaScript
 - Event handlers (onclick, etc.)
@@ -162,6 +179,7 @@ All content is sanitized for safety:
 Full keyboard and screen reader support:
 
 **Keyboard Shortcuts:**
+
 - `Ctrl/Cmd + S`: Export markdown
 - `Ctrl/Cmd + H`: Open version history
 - `Escape`: Close modals
@@ -169,12 +187,14 @@ Full keyboard and screen reader support:
 - `Tab`: Navigate between elements
 
 **Screen Reader Support:**
+
 - All buttons have descriptive labels
 - Live region announcements for state changes
 - Semantic HTML structure
 - ARIA roles for complex widgets
 
 **Announcements:**
+
 - "Preview updated" when content changes
 - "Task marked complete/incomplete" for checkboxes
 - "File [name] attached" when attaching files
@@ -182,6 +202,7 @@ Full keyboard and screen reader support:
 - "All content cleared" when clearing
 
 **Focus Management:**
+
 - Visible focus indicators
 - Proper focus order
 - Modal focus trap
@@ -192,6 +213,7 @@ Full keyboard and screen reader support:
 ### 🧹 Clear All
 
 Remove all content and tags:
+
 1. Click "🧹 Clear All"
 2. Confirm in dialog
 3. All content removed from localStorage
@@ -202,6 +224,7 @@ Remove all content and tags:
 ### 📤 Export
 
 Save your markdown as a file:
+
 1. Click "📤 Export"
 2. File downloads as `brain_dump.md`
 3. Import into other markdown editors
@@ -212,6 +235,7 @@ Save your markdown as a file:
 ### Tags
 
 Quick tag palette for categorization:
+
 - Click existing tag to add to note
 - Tags styled as pills
 - Auto-saved with content
@@ -224,6 +248,7 @@ Quick tag palette for categorization:
 # Project Planning
 
 Key areas:
+
 - [[Requirements]]
 - [[Architecture]]
 - [[Testing Strategy]]
@@ -267,7 +292,8 @@ Bug found in login #bug #critical
 ### Preview Not Updating
 
 **Cause:** External libraries (marked.js, DOMPurify) not loaded
-**Solution:** 
+**Solution:**
+
 - Check browser console for errors
 - Ensure CDN is accessible
 - Check Content Security Policy
@@ -276,14 +302,16 @@ Bug found in login #bug #critical
 
 **Cause:** Browser doesn't support OPFS
 **Solution:**
+
 - Use Chrome 86+, Edge 86+, or Opera 72+
 - Feature gracefully degrades
 - Can still use all other features
 
 ### Version History Too Large
 
-**Cause:** 50 versions * large documents = lots of storage
+**Cause:** 50 versions \* large documents = lots of storage
 **Solution:**
+
 - Export important versions
 - Clear version history (manual cleanup)
 - Automatic cleanup keeps only 50 versions
@@ -292,21 +320,22 @@ Bug found in login #bug #critical
 
 **Cause:** Very large documents (>10,000 lines)
 **Solution:**
+
 - Split into multiple notes
 - Use backlinks to connect them
 - Export and start fresh section
 
 ## Keyboard Reference Card
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl/Cmd + S` | Export markdown |
-| `Ctrl/Cmd + H` | View version history |
-| `Escape` | Close modal |
-| `Enter` | Continue list |
-| `Enter` (twice) | Exit list |
-| `Tab` | Next element |
-| `Shift + Tab` | Previous element |
+| Shortcut        | Action               |
+| --------------- | -------------------- |
+| `Ctrl/Cmd + S`  | Export markdown      |
+| `Ctrl/Cmd + H`  | View version history |
+| `Escape`        | Close modal          |
+| `Enter`         | Continue list        |
+| `Enter` (twice) | Exit list            |
+| `Tab`           | Next element         |
+| `Shift + Tab`   | Previous element     |
 
 ## Examples
 
@@ -384,6 +413,7 @@ See also: [[Tomorrow's Plan]]
 ## Support
 
 For issues or questions:
+
 1. Check this guide first
 2. Review [BRAIN_DUMP_SPECS.md](./BRAIN_DUMP_SPECS.md) for technical details
 3. Open issue on GitHub with `brain-dump` label

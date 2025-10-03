@@ -11,7 +11,6 @@
     "start": "react-scripts start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
-    "test": "jest",
     "build": "react-scripts build && npm run prepare-dist",
     "prepare-dist": "rm -rf dist && cp -r build dist",
     "validate-pwa": "node scripts/validate-pwa.js"
@@ -44,5 +43,27 @@
   "overrides": {
     "nth-check": "^2.1.1",
     "postcss": "^8.4.31"
+  },
+  "standard": {
+    "env": [
+      "browser",
+      "node",
+      "serviceworker"
+    ],
+    "globals": [
+      "React",
+      "ReactDOM",
+      "DOMPurify",
+      "marked",
+      "FullCalendar"
+    ],
+    "ignore": [
+      "node_modules/",
+      "build/",
+      "dist/"
+    ],
+    "rules": {
+      "space-before-function-paren": "off"
+    }
   }
 }

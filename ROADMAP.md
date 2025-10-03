@@ -7,6 +7,7 @@
 ---
 
 ## Alpha – Internal Prototype 🛠️
+
 - Minimal routine runner (steps + timer)
 - Notes with **Markdown import/export**
 - Basic task manager
@@ -17,6 +18,7 @@
 ---
 
 ## Beta – Public Preview ⚡
+
 - All MVP modules: routines, tasks (Eisenhower), habits, notes/brain dump
 - Safeguard before closing tab (unsaved data warning)
 - Responsive layout (desktop / tablet / mobile)
@@ -27,6 +29,7 @@
 ---
 
 ## v1.0 – Core MVP Release 🚀
+
 - Stable, polished codebase
 - Documentation (README, specs, security notes)
 - Stats foundation (track routine time, structured data)
@@ -36,6 +39,7 @@
 ---
 
 ## v2.0 – Analytics & Gamification 🌟
+
 - Advanced statistics dashboards (charts, streaks, trends)
 - XP, levelling, achievements, streaks, confetti/haptics
 - Notifications & reminders (tasks, routines, habits)
@@ -45,6 +49,7 @@
 ---
 
 ## Future (v3.0+) 🔭
+
 - User accounts + secure cloud sync
 - Collaboration/sharing (routines, notes)
 - Mobile-native wrappers (Android/iOS)

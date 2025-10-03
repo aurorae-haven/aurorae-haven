@@ -1,108 +1,105 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { marked } from 'marked';
-import DOMPurify from 'dompurify';
+import React, { useState, useEffect } from 'react'
+import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 function BrainDump() {
-  const [content, setContent] = useState('');
-  const [preview, setPreview] = useState('');
+  const [content, setContent] = useState('')
+  const [preview, setPreview] = useState('')
 
   // Load saved content on mount
   useEffect(() => {
-    const saved = localStorage.getItem('brainDumpContent');
+    const saved = localStorage.getItem('brainDumpContent')
     if (saved) {
-      setContent(saved);
+      setContent(saved)
     }
-  }, []);
+  }, [])
 
   // Render preview whenever content changes
   useEffect(() => {
     const renderPreview = () => {
-      const html = DOMPurify.sanitize(marked.parse(content));
-      setPreview(html);
-    };
-    renderPreview();
-  }, [content]);
+      const html = DOMPurify.sanitize(marked.parse(content))
+      setPreview(html)
+    }
+    renderPreview()
+  }, [content])
 
   // Autosave to localStorage
   useEffect(() => {
-    localStorage.setItem('brainDumpContent', content);
-  }, [content]);
+    localStorage.setItem('brainDumpContent', content)
+  }, [content])
 
   const handleClear = () => {
     if (window.confirm('Clear all notes and tags?')) {
-      setContent('');
-      localStorage.removeItem('brainDumpContent');
-      localStorage.removeItem('brainDumpTags');
+      setContent('')
+      localStorage.removeItem('brainDumpContent')
+      localStorage.removeItem('brainDumpTags')
     }
-  };
+  }
 
   const handleExport = () => {
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'brain_dump.md';
-    a.click();
-    URL.revokeObjectURL(a.href);
-  };
+    const blob = new Blob([content], { type: 'text/markdown' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'brain_dump.md'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
 
   return (
-    <div className="card">
-      <div className="card-h">
+    <div className='card'>
+      <div className='card-h'>
         <strong>Brain Dump</strong>
-        <div className="toolbar">
-          <button className="btn">
-            <svg className="icon" viewBox="0 0 24 24">
-              <path d="M6 4h8a4 4 0 0 1 0 8H6z"/>
-              <path d="M6 12h9a4 4 0 0 1 0 8H6z"/>
+        <div className='toolbar'>
+          <button className='btn'>
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M6 4h8a4 4 0 0 1 0 8H6z' />
+              <path d='M6 12h9a4 4 0 0 1 0 8H6z' />
             </svg>
           </button>
-          <button className="btn">
-            <svg className="icon" viewBox="0 0 24 24">
-              <path d="M7 17V7h10v10z"/>
-              <path d="M5 5v16h16V5z"/>
+          <button className='btn'>
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M7 17V7h10v10z' />
+              <path d='M5 5v16h16V5z' />
             </svg>
           </button>
-          <button className="btn">
-            <svg className="icon" viewBox="0 0 24 24">
-              <path d="M8 6h13M8 12h13M8 18h13"/>
-              <path d="M3 6h.01M3 12h.01M3 18h.01"/>
+          <button className='btn'>
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M8 6h13M8 12h13M8 18h13' />
+              <path d='M3 6h.01M3 12h.01M3 18h.01' />
             </svg>
           </button>
-          <button className="btn" onClick={handleClear}>
-            <svg className="icon" viewBox="0 0 24 24">
-              <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-              <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          <button className='btn' onClick={handleClear}>
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+              <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
             </svg>
           </button>
-          <button className="btn" onClick={handleExport}>
-            <svg className="icon" viewBox="0 0 24 24">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
+          <button className='btn' onClick={handleExport}>
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+              <polyline points='7 10 12 15 17 10' />
+              <line x1='12' y1='15' x2='12' y2='3' />
             </svg>
           </button>
         </div>
       </div>
-      <div className="card-b">
-        <div className="brain-dump-split">
-          <div className="editor-pane">
+      <div className='card-b'>
+        <div className='brain-dump-split'>
+          <div className='editor-pane'>
             <textarea
-              id="editor"
-              placeholder="Start typing your thoughts..."
+              id='editor'
+              placeholder='Start typing your thoughts...'
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />
           </div>
-          <div className="preview-pane">
-            <div 
-              id="preview" 
-              dangerouslySetInnerHTML={{ __html: preview }}
-            />
+          <div className='preview-pane'>
+            <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
           </div>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
-export default BrainDump;
+export default BrainDump

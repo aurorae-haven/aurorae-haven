@@ -3,6 +3,7 @@
 ## Copilot Role
 
 Copilot should act as ALL of the following:
+
 1. **Senior Web/Software Engineer** – specialised in secure, privacy-respecting, maintainable code.
 2. **Senior UX/UI Designer** – specialised in accessibility (WCAG 2.2 AA+), minimalist, inclusive design.
 3. **Senior PAQA Engineer** – specialised in performance optimization, automation, and quality assurance.
@@ -22,7 +23,7 @@ Copilot should act as ALL of the following:
 
 When suggesting code or reviews, Copilot should align with the following institutional best practices:
 
-- **Coding**: [Google Engineering Practices Guide](https://google.github.io/eng-practices/), *Clean Code* – Robert C. Martin
+- **Coding**: [Google Engineering Practices Guide](https://google.github.io/eng-practices/), _Clean Code_ – Robert C. Martin
 - **Security**: [OWASP Top Ten](https://owasp.org/Top10/), [NIST Secure Software Development Framework](https://csrc.nist.gov/publications/detail/sp/800-218/final)
 - **Accessibility**: [WCAG 2.2 Guidelines (W3C)](https://www.w3.org/TR/WCAG22/), [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
 - **Privacy**: [GDPR](https://gdpr-info.eu/), [Privacy by Design](https://www.ipc.on.ca/privacy/privacy-by-design/)
@@ -87,6 +88,7 @@ Before finishing, verify:
 My Stellar Trail is a calm, astro-themed productivity app designed for neurodivergent users. It helps manage routines, tasks, habits, notes, and stats with a focus on accessibility, security, and a peaceful user experience.
 
 **Tech Stack:**
+
 - Static HTML/CSS/JavaScript (no build step required for development)
 - Modular ES6 JavaScript
 - LocalStorage for data persistence
@@ -96,6 +98,7 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ## Architecture
 
 ### File Structure
+
 ```
 /
 ├── index.html              # Main entry point
@@ -113,6 +116,7 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ```
 
 ### Key Modules
+
 - **Schedule**: Daily schedule and time blocking
 - **Sequences**: Routine management with step-by-step timers
 - **Brain Dump**: Quick note capture with tags
@@ -124,6 +128,7 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ### Security Requirements (CRITICAL)
 
 **Content Security Policy (CSP):**
+
 - **NEVER** use inline scripts or inline styles
 - All JavaScript must be in external `.js` files
 - All CSS must be in external `.css` files or use `style-src 'unsafe-inline'` (already configured)
@@ -131,6 +136,7 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 - Current CSP: `default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests`
 
 **Always:**
+
 - Use external script files with `<script src="..."></script>` or `<script type="module" src="..."></script>`
 - Use external CSS files with `<link rel="stylesheet" href="...">`
 - Avoid `eval()`, `Function()`, or similar dynamic code execution
@@ -139,11 +145,13 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ### JavaScript Guidelines
 
 **Module System:**
+
 - Use ES6 modules (`import`/`export`)
 - Keep modules focused and single-purpose
 - Use `type="module"` for script tags
 
 **Code Style:**
+
 - Use `const` by default, `let` when reassignment is needed, avoid `var`
 - Use arrow functions for callbacks and short functions
 - Use template literals for string interpolation
@@ -151,12 +159,14 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 - Use meaningful variable and function names
 
 **Data Management:**
+
 - Store data in LocalStorage as JSON
 - Implement export/import for all user data
 - Version data structures for migration compatibility
 - Always provide beforeunload warnings when there's unsaved data
 
 **Example Data Template Structure:**
+
 ```javascript
 {
   version: 1,
@@ -171,12 +181,14 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ### HTML Guidelines
 
 **Structure:**
+
 - Use semantic HTML5 elements
 - Include proper `lang` attribute on `<html>`
 - Always include viewport meta tag: `<meta name="viewport" content="width=device-width,initial-scale=1">`
 - Include CSP meta tag on all pages
 
 **Accessibility:**
+
 - Use proper ARIA roles and labels
 - Ensure keyboard navigation works for all interactive elements
 - Maintain color contrast ratios (WCAG AA minimum)
@@ -184,18 +196,21 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 - Use `aria-label` for icon-only buttons
 
 **Internal Navigation:**
+
 - Mark internal navigation links with `data-nav="internal"` attribute
 - This prevents beforeunload prompts when navigating within the app
 
 ### CSS Guidelines
 
 **Design Tokens:**
+
 - Use CSS custom properties for colors, spacing, and typography
 - Follow the existing "Glass-UI" aesthetic with astro theme
 - Maintain calm, low-contrast visuals suitable for neurodivergent users
 - Ensure responsive design works on desktop, tablet, and mobile
 
 **Best Practices:**
+
 - Mobile-first responsive design
 - Use flexbox and grid for layouts
 - Avoid fixed pixel values; prefer relative units (rem, em, %)
@@ -204,12 +219,14 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ## Development Workflow
 
 ### Testing
+
 - Manually test in modern browsers (Chrome, Firefox, Edge, Safari)
 - Test keyboard navigation and screen reader compatibility
 - Verify CSP compliance (check browser console for violations)
 - Test data export/import round-trip
 
 ### Before Committing
+
 1. Test all interactive features manually
 2. Verify no console errors or CSP violations
 3. Check that beforeunload warning works correctly
@@ -217,6 +234,7 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 5. Validate HTML/CSS/JS if linters are available
 
 ### Deployment
+
 - Changes to `main` or `feature-*` branches trigger GitHub Pages deployment
 - The workflow copies `index.html`, `public/`, and `src/` to `dist/`
 - Test in production after deployment
@@ -224,6 +242,7 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 ## Feature Development
 
 ### Adding New Features
+
 1. Create HTML page in `public/pages/` if needed
 2. Create corresponding JS module in `src/`
 3. Include CSP meta tag in HTML
@@ -233,34 +252,35 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 7. Test data persistence and recovery
 
 ### Data Export/Import Pattern
+
 ```javascript
 // Always provide export functionality
 function exportJSON() {
-  const data = JSON.stringify(dataTemplate(), null, 2);
-  const blob = new Blob([data], {type: "application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "stellar_journey_data.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  exported = true;
+  const data = JSON.stringify(dataTemplate(), null, 2)
+  const blob = new Blob([data], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = 'stellar_journey_data.json'
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  exported = true
 }
 
 // Always provide import functionality
 function importJSON(file) {
-  const reader = new FileReader();
+  const reader = new FileReader()
   reader.onload = (e) => {
     try {
-      const imported = JSON.parse(e.target.result);
+      const imported = JSON.parse(e.target.result)
       // Validate and merge data
-      localStorage.setItem('stellar_data', JSON.stringify(imported));
-      location.reload();
+      localStorage.setItem('stellar_data', JSON.stringify(imported))
+      location.reload()
     } catch (err) {
-      toast("Import failed: " + err.message);
+      toast('Import failed: ' + err.message)
     }
-  };
-  reader.readAsText(file);
+  }
+  reader.readAsText(file)
 }
 ```
 
@@ -269,6 +289,7 @@ function importJSON(file) {
 **Current Phase:** Beta → v1.0 (Core MVP)
 
 **Completed:**
+
 - Minimal routine runner (sequences with timers)
 - Notes/brain dump with tags
 - JSON export/import
@@ -277,6 +298,7 @@ function importJSON(file) {
 - Strict CSP implementation
 
 **In Progress (v1.0):**
+
 - Tasks module (Eisenhower matrix)
 - Habits tracking
 - Stats foundation
@@ -284,6 +306,7 @@ function importJSON(file) {
 - Design polish
 
 **Future (v2.0+):**
+
 - Advanced analytics dashboards
 - Gamification (XP, levels, achievements)
 - Notifications and reminders
@@ -292,6 +315,7 @@ function importJSON(file) {
 ## Special Considerations
 
 ### For Neurodivergent Users
+
 - Minimize cognitive load: clear, simple interfaces
 - Provide calm, non-distracting visuals
 - Use consistent patterns and predictable behavior
@@ -299,12 +323,14 @@ function importJSON(file) {
 - Allow flexible workflows (routines can be paused, reordered)
 
 ### Performance
+
 - Keep JavaScript bundle small (currently no bundler)
 - Minimize DOM manipulation
 - Use event delegation for dynamic content
 - Lazy load features when possible
 
 ### Privacy & Security
+
 - All data stays local (LocalStorage)
 - No external API calls for core functionality
 - User data export in standard JSON format
@@ -313,27 +339,32 @@ function importJSON(file) {
 ## Common Patterns
 
 ### Toast Notifications
+
 ```javascript
 function toast(message) {
-  const el = document.getElementById('toast');
-  el.textContent = message;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
+  const el = document.getElementById('toast')
+  el.textContent = message
+  el.classList.add('show')
+  setTimeout(() => el.classList.remove('show'), 3000)
 }
 ```
 
 ### Suppress Navigation Warnings
+
 ```javascript
-let suppressPrompt = false;
+let suppressPrompt = false
 function markInternalNav() {
-  suppressPrompt = true;
-  setTimeout(() => { suppressPrompt = false; }, 2000);
+  suppressPrompt = true
+  setTimeout(() => {
+    suppressPrompt = false
+  }, 2000)
 }
 ```
 
 ### Module Registration
+
 ```javascript
-window.StellarIO = {exportJSON, importJSON};
+window.StellarIO = { exportJSON, importJSON }
 ```
 
 ## Questions & Support
@@ -346,6 +377,7 @@ window.StellarIO = {exportJSON, importJSON};
 ## Summary
 
 When working on this project:
+
 1. **Always** respect CSP - no inline scripts or styles
 2. **Always** provide export/import for user data
 3. **Always** implement beforeunload warnings appropriately

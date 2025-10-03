@@ -1,137 +1,300 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
-<head>
-\1<meta content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests" http-equiv="Content-Security-Policy"/>
-<meta content="width=device-width,initial-scale=1" name="viewport"/>
-<title>Brain Dump — Stellar Journey v11</title>
-<link href="../../src/assets/styles/styles.css" rel="stylesheet"/>
-<script>
-// Export/Import + beforeunload only on real exit (suppress for internal nav)
-(function(){
-  let exported = false;
-  let suppressPrompt = false;
+  <head>
+    \1
+    <meta
+      content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+      http-equiv="Content-Security-Policy"
+    />
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>Brain Dump — Stellar Journey v11</title>
+    <link href="../../src/assets/styles/styles.css" rel="stylesheet" />
+    <script>
+      // Export/Import + beforeunload only on real exit (suppress for internal nav)
+      ;(function () {
+        let exported = false
+        let suppressPrompt = false
 
-  function dataTemplate(){
-    return {
-      version: 1,
-      tasks:[{id:1,title:"Email report",done:false}],
-      sequences:[{id:"seq_1",name:"Morning Launch",steps:[{label:"Water",sec:30},{label:"Meds",sec:90},{label:"Stretch",sec:300}]}],
-      habits:[{id:"hab_1",name:"Read 10m",streak:4,paused:false}],
-      dumps:[{id:"dump_1",ts:Date.now(),text:"Idea: export reminder."}],
-      schedule:[{day:new Date().toISOString().slice(0,10), blocks:[{type:"sequence",ref:"seq_1",start:"07:00",dur_min:30}]}]
-    };
-  }
+        function dataTemplate() {
+          return {
+            version: 1,
+            tasks: [{ id: 1, title: 'Email report', done: false }],
+            sequences: [
+              {
+                id: 'seq_1',
+                name: 'Morning Launch',
+                steps: [
+                  { label: 'Water', sec: 30 },
+                  { label: 'Meds', sec: 90 },
+                  { label: 'Stretch', sec: 300 }
+                ]
+              }
+            ],
+            habits: [
+              { id: 'hab_1', name: 'Read 10m', streak: 4, paused: false }
+            ],
+            dumps: [
+              { id: 'dump_1', ts: Date.now(), text: 'Idea: export reminder.' }
+            ],
+            schedule: [
+              {
+                day: new Date().toISOString().slice(0, 10),
+                blocks: [
+                  {
+                    type: 'sequence',
+                    ref: 'seq_1',
+                    start: '07:00',
+                    dur_min: 30
+                  }
+                ]
+              }
+            ]
+          }
+        }
 
-  function exportJSON(){
-    const data = JSON.stringify(dataTemplate(), null, 2);
-    const blob = new Blob([data], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "stellar_journey_data.json";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    exported = true;
-    toast("Data exported (stellar_journey_data.json)");
-  }
+        function exportJSON() {
+          const data = JSON.stringify(dataTemplate(), null, 2)
+          const blob = new Blob([data], { type: 'application/json' })
+          const a = document.createElement('a')
+          a.href = URL.createObjectURL(blob)
+          a.download = 'stellar_journey_data.json'
+          document.body.appendChild(a)
+          a.click()
+          a.remove()
+          exported = true
+          toast('Data exported (stellar_journey_data.json)')
+        }
 
-  async function importJSON(file){
-    try{
-      const text = await file.text();
-      const obj = JSON.parse(text);
-      // minimal validation
-      if(!obj.version || !Array.isArray(obj.tasks) || !Array.isArray(obj.sequences)){
-        throw new Error("Invalid schema");
-      }
-      // store in memory (mock); in real app, write to localStorage/db
-      window.__SJ_DATA__ = obj;
-      exported = true; // importing counts as having current data saved
-      toast("Data imported successfully");
-    }catch(e){
-      console.error(e);
-      toast("Import failed: " + e.message);
-    }
-  }
+        async function importJSON(file) {
+          try {
+            const text = await file.text()
+            const obj = JSON.parse(text)
+            // minimal validation
+            if (
+              !obj.version ||
+              !Array.isArray(obj.tasks) ||
+              !Array.isArray(obj.sequences)
+            ) {
+              throw new Error('Invalid schema')
+            }
+            // store in memory (mock); in real app, write to localStorage/db
+            window.__SJ_DATA__ = obj
+            exported = true // importing counts as having current data saved
+            toast('Data imported successfully')
+          } catch (e) {
+            console.error(e)
+            toast('Import failed: ' + e.message)
+          }
+        }
 
-  function toast(msg){
-    const t = document.getElementById("toast"); if(!t) return;
-    t.textContent = msg; t.style.display="block"; setTimeout(()=>{t.style.display="none"}, 3800);
-  }
+        function toast(msg) {
+          const t = document.getElementById('toast')
+          if (!t) return
+          t.textContent = msg
+          t.style.display = 'block'
+          setTimeout(() => {
+            t.style.display = 'none'
+          }, 3800)
+        }
 
-  // Detect internal navigation and suppress the prompt for that event
-  function markInternalNav(e){
-    suppressPrompt = true;
-    setTimeout(()=>{ suppressPrompt = false; }, 2000); // safety window
-  }
+        // Detect internal navigation and suppress the prompt for that event
+        function markInternalNav(e) {
+          suppressPrompt = true
+          setTimeout(() => {
+            suppressPrompt = false
+          }, 2000) // safety window
+        }
 
-  window.StellarIO = {exportJSON, importJSON};
-  window.addEventListener("beforeunload", function (e){
-    // If navigating via internal links/buttons (we mark it), don't prompt
-    if(suppressPrompt) return;
-    if(!exported){
-      e.preventDefault();
-      e.returnValue = "";
-      toast("Heads-up: export your data before leaving.");
-      return "";
-    }
-  });
+        window.StellarIO = { exportJSON, importJSON }
+        window.addEventListener('beforeunload', function (e) {
+          // If navigating via internal links/buttons (we mark it), don't prompt
+          if (suppressPrompt) return
+          if (!exported) {
+            e.preventDefault()
+            e.returnValue = ''
+            toast('Heads-up: export your data before leaving.')
+            return ''
+          }
+        })
 
-  // Attach to all internal nav anchors
-  window.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll('a[data-nav="internal"]').forEach(a=>{
-      a.addEventListener("click", markInternalNav, {capture:true});
-    });
-  });
-})();
-</script>
-</head>
-<body>
-<div class="planet-wrap"><div class="planet"></div></div><header class="appbar"><div class="inner"><div aria-hidden="true" class="logo"></div><div class="brand"><b>Stellar Journey</b><small>Explore your orbit. Follow your path.</small></div><nav aria-label="Main" class="appnav"><a class="item" data-nav="internal" href="schedule.html"><svg class="icon" viewbox="0 0 24 24"><rect height="18" rx="2" width="18" x="3" y="4"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg><span>Schedule</span></a><a class="item" data-nav="internal" href="sequences.html"><svg class="icon" viewbox="0 0 24 24"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v5l3 2"></path><path d="M9 2h6"></path></svg><span>Sequences</span></a><a class="item active" data-nav="internal" href="braindump.html"><svg class="icon" viewbox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z"></path></svg><span>Brain Dump</span></a><a class="item" data-nav="internal" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"></path><path d="M3 6h.01M3 12h.01M3 18h.01"></path></svg><span>Tasks</span></a><a class="item" data-nav="internal" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M7 20s6-3 6-10V4"></path><path d="M14 4s5 0 6 5c-5 1-6-5-6-5z"></path><path d="M2 9c2-5 8-5 8-5s0 6-8 5z"></path></svg><span>Habits</span></a><a class="item" data-nav="internal" href="#"><svg class="icon" viewbox="0 0 24 24"><path d="M3 3v18h18"></path><rect height="6" width="3" x="7" y="12"></rect><rect height="9" width="3" x="12" y="9"></rect><rect height="13" width="3" x="17" y="5"></rect></svg><span>Stats</span></a><a class="item" data-nav="internal" href="#"><svg class="icon" viewbox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z"></path></svg><span>Settings</span></a></nav><div style="display:flex;gap:8px;margin-left:12px">
-<button class="btn" onclick="StellarIO.exportJSON()">Export</button>
-<label class="btn" style="cursor:pointer">Import
-        <input accept="application/json" id="importer" onchange="StellarIO.importJSON(this.files[0])" style="display:none" type="file"/>
-</label>
-</div></div></header>
-<div class="shell">
-<div class="card">
-<div class="card-h">
-<strong>Brain Dump</strong>
-<div class="toolbar">
-<button class="btn"><svg class="icon" viewbox="0 0 24 24"><path d="M6 4h8a4 4 0 0 1 0 8H6z"></path><path d="M6 12h9a4 4 0 0 1 0 8H6z"></path></svg></button>
-<button class="btn"><svg class="icon" viewbox="0 0 24 24"><line x1="19" x2="10" y1="4" y2="4"></line><line x1="14" x2="5" y1="20" y2="20"></line><line x1="15" x2="9" y1="4" y2="20"></line></svg></button>
-<button class="btn"><svg class="icon" viewbox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10 5"></path><path d="M14 11a5 5 0 0 0-7.07 0L4.81 13.12a5 5 0 0 0 7.07 7.07L14 19"></path></svg></button>
-<button class="btn"><svg class="icon" viewbox="0 0 24 24"><line x1="4" x2="20" y1="9" y2="9"></line><line x1="4" x2="20" y1="15" y2="15"></line><line x1="10" x2="8" y1="3" y2="21"></line><line x1="16" x2="14" y1="3" y2="21"></line></svg> Tags</button>
-</div>
-</div>
-<div class="card-b layout-dump">
-<aside>
-<div class="card"><div class="card-h"><strong>Notes</strong></div>
-<div class="card-b entries">
-<div class="entry"><div style="font-weight:600">2025-09-16 09:10</div><div>Idea: export reminder before close.</div><div class="small">#ui #io</div></div>
-<div class="entry"><div style="font-weight:600">2025-09-16 08:42</div><div>Refactor templates import/export.</div><div class="small">#io #templates</div></div>
-</div>
-</div>
-</aside>
-<main>
-<div class="small" style="margin-bottom:6px">Compose</div>
-<textarea placeholder="Unload your thoughts..."></textarea>
-<div class="tag-palette" style="margin-top:8px">
-<span class="tag">#idea</span><span class="tag">#task</span><span class="tag">#routine</span><span class="tag">#health</span><span class="tag">#low_energy</span>
-</div>
-<div style="margin-top:10px;display:flex;gap:8px">
-<button class="btn"><svg class="icon" viewbox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg> Save</button>
-<button class="btn"><svg class="icon" viewbox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"></path><path d="M3 6h.01M3 12h.01M3 18h.01"></path></svg> Convert to Task</button>
-<button class="btn"><svg class="icon" viewbox="0 0 24 24"><circle cx="12" cy="13" r="8"></circle><path d="M12 9v5l3 2"></path><path d="M9 2h6"></path></svg> Convert to Sequence</button>
-</div>
-</main>
-</div>
-</div>
-</div>
-<div class="toast" id="toast"></div>
-<div class="card" id="preview" style="margin-top:14px;padding:14px;">Markdown preview will appear here...</div>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
-<script src="../../src/braindump-ui.js" type="module"></script>
-</body>
+        // Attach to all internal nav anchors
+        window.addEventListener('DOMContentLoaded', () => {
+          document.querySelectorAll('a[data-nav="internal"]').forEach((a) => {
+            a.addEventListener('click', markInternalNav, { capture: true })
+          })
+        })
+      })()
+    </script>
+  </head>
+  <body>
+    <div class="planet-wrap"><div class="planet"></div></div>
+    <header class="appbar">
+      <div class="inner">
+        <div aria-hidden="true" class="logo"></div>
+        <div class="brand">
+          <b>Stellar Journey</b
+          ><small>Explore your orbit. Follow your path.</small>
+        </div>
+        <nav aria-label="Main" class="appnav">
+          <a class="item" data-nav="internal" href="schedule.html"
+            ><svg class="icon" viewbox="0 0 24 24">
+              <rect height="18" rx="2" width="18" x="3" y="4"></rect>
+              <path d="M16 2v4M8 2v4M3 10h18"></path></svg
+            ><span>Schedule</span></a
+          ><a class="item" data-nav="internal" href="sequences.html"
+            ><svg class="icon" viewbox="0 0 24 24">
+              <circle cx="12" cy="13" r="8"></circle>
+              <path d="M12 9v5l3 2"></path>
+              <path d="M9 2h6"></path></svg
+            ><span>Sequences</span></a
+          ><a class="item active" data-nav="internal" href="braindump.html"
+            ><svg class="icon" viewbox="0 0 24 24">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path
+                d="M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z"
+              ></path></svg
+            ><span>Brain Dump</span></a
+          ><a class="item" data-nav="internal" href="#"
+            ><svg class="icon" viewbox="0 0 24 24">
+              <path d="M8 6h13M8 12h13M8 18h13"></path>
+              <path d="M3 6h.01M3 12h.01M3 18h.01"></path></svg
+            ><span>Tasks</span></a
+          ><a class="item" data-nav="internal" href="#"
+            ><svg class="icon" viewbox="0 0 24 24">
+              <path d="M7 20s6-3 6-10V4"></path>
+              <path d="M14 4s5 0 6 5c-5 1-6-5-6-5z"></path>
+              <path d="M2 9c2-5 8-5 8-5s0 6-8 5z"></path></svg
+            ><span>Habits</span></a
+          ><a class="item" data-nav="internal" href="#"
+            ><svg class="icon" viewbox="0 0 24 24">
+              <path d="M3 3v18h18"></path>
+              <rect height="6" width="3" x="7" y="12"></rect>
+              <rect height="9" width="3" x="12" y="9"></rect>
+              <rect height="13" width="3" x="17" y="5"></rect></svg
+            ><span>Stats</span></a
+          ><a class="item" data-nav="internal" href="#"
+            ><svg class="icon" viewbox="0 0 24 24">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z"
+              ></path></svg
+            ><span>Settings</span></a
+          >
+        </nav>
+        <div style="display: flex; gap: 8px; margin-left: 12px">
+          <button class="btn" onclick="StellarIO.exportJSON()">Export</button>
+          <label class="btn" style="cursor: pointer"
+            >Import
+            <input
+              accept="application/json"
+              id="importer"
+              onchange="StellarIO.importJSON(this.files[0])"
+              style="display: none"
+              type="file"
+            />
+          </label>
+        </div>
+      </div>
+    </header>
+    <div class="shell">
+      <div class="card">
+        <div class="card-h">
+          <strong>Brain Dump</strong>
+          <div class="toolbar">
+            <button class="btn">
+              <svg class="icon" viewbox="0 0 24 24">
+                <path d="M6 4h8a4 4 0 0 1 0 8H6z"></path>
+                <path d="M6 12h9a4 4 0 0 1 0 8H6z"></path>
+              </svg>
+            </button>
+            <button class="btn">
+              <svg class="icon" viewbox="0 0 24 24">
+                <line x1="19" x2="10" y1="4" y2="4"></line>
+                <line x1="14" x2="5" y1="20" y2="20"></line>
+                <line x1="15" x2="9" y1="4" y2="20"></line>
+              </svg>
+            </button>
+            <button class="btn">
+              <svg class="icon" viewbox="0 0 24 24">
+                <path
+                  d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L10 5"
+                ></path>
+                <path
+                  d="M14 11a5 5 0 0 0-7.07 0L4.81 13.12a5 5 0 0 0 7.07 7.07L14 19"
+                ></path>
+              </svg>
+            </button>
+            <button class="btn">
+              <svg class="icon" viewbox="0 0 24 24">
+                <line x1="4" x2="20" y1="9" y2="9"></line>
+                <line x1="4" x2="20" y1="15" y2="15"></line>
+                <line x1="10" x2="8" y1="3" y2="21"></line>
+                <line x1="16" x2="14" y1="3" y2="21"></line>
+              </svg>
+              Tags
+            </button>
+          </div>
+        </div>
+        <div class="card-b layout-dump">
+          <aside>
+            <div class="card">
+              <div class="card-h"><strong>Notes</strong></div>
+              <div class="card-b entries">
+                <div class="entry">
+                  <div style="font-weight: 600">2025-09-16 09:10</div>
+                  <div>Idea: export reminder before close.</div>
+                  <div class="small">#ui #io</div>
+                </div>
+                <div class="entry">
+                  <div style="font-weight: 600">2025-09-16 08:42</div>
+                  <div>Refactor templates import/export.</div>
+                  <div class="small">#io #templates</div>
+                </div>
+              </div>
+            </div>
+          </aside>
+          <main>
+            <div class="small" style="margin-bottom: 6px">Compose</div>
+            <textarea placeholder="Unload your thoughts..."></textarea>
+            <div class="tag-palette" style="margin-top: 8px">
+              <span class="tag">#idea</span><span class="tag">#task</span
+              ><span class="tag">#routine</span><span class="tag">#health</span
+              ><span class="tag">#low_energy</span>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 8px">
+              <button class="btn">
+                <svg class="icon" viewbox="0 0 24 24">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                Save
+              </button>
+              <button class="btn">
+                <svg class="icon" viewbox="0 0 24 24">
+                  <path d="M8 6h13M8 12h13M8 18h13"></path>
+                  <path d="M3 6h.01M3 12h.01M3 18h.01"></path>
+                </svg>
+                Convert to Task
+              </button>
+              <button class="btn">
+                <svg class="icon" viewbox="0 0 24 24">
+                  <circle cx="12" cy="13" r="8"></circle>
+                  <path d="M12 9v5l3 2"></path>
+                  <path d="M9 2h6"></path>
+                </svg>
+                Convert to Sequence
+              </button>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="card" id="preview" style="margin-top: 14px; padding: 14px">
+      Markdown preview will appear here...
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
+    <script src="../../src/braindump-ui.js" type="module"></script>
+  </body>
 </html>
