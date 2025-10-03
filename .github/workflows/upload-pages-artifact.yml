@@ -25,8 +25,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -35,7 +35,7 @@ jobs:
         run: npm run build
         env:
           CI: true
-          PUBLIC_URL: ''
+          PUBLIC_URL: ""
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -46,7 +46,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages        # must be exactly this name for Pages
+      name: github-pages # must be exactly this name for Pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment

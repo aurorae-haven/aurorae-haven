@@ -88,7 +88,7 @@ jobs:
     name: Secrets scan (CLI)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4      
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Install gitleaks (no action)
@@ -114,8 +114,8 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
-          cache: 'npm'
+          node-version: "lts/*"
+          cache: "npm"
       - name: Install
         run: npm ci --ignore-scripts
       - name: Audit production
@@ -134,8 +134,8 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
-          cache: 'npm'
+          node-version: "lts/*"
+          cache: "npm"
       - name: Install dependencies
         run: |
           if [ -f package.json ]; then npm ci; fi
@@ -155,7 +155,16 @@ jobs:
   summary:
     name: Summary status
     runs-on: ubuntu-latest
-    needs: [detect, meta-checks, markdown-links, super-linter, gitleaks, node-security, a11y]
+    needs:
+      [
+        detect,
+        meta-checks,
+        markdown-links,
+        super-linter,
+        gitleaks,
+        node-security,
+        a11y,
+      ]
     if: always()
     steps:
       - name: Show job outcomes

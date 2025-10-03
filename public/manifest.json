@@ -22,9 +22,6 @@
   "background_color": "#0f0f1e",
   "orientation": "portrait-primary",
   "scope": "./",
-  "categories": [
-    "productivity",
-    "lifestyle"
-  ],
+  "categories": ["productivity", "lifestyle"],
   "lang": "en-US"
 }

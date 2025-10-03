@@ -1,18 +1,22 @@
-import React, { useEffect } from 'react';
+import React, { useEffect } from 'react'
 
-function Toast({ message, visible, onClose }) {
+function Toast ({ message, visible, onClose }) {
   useEffect(() => {
     if (visible && message) {
       const timer = setTimeout(() => {
-        onClose();
-      }, 3800);
-      return () => clearTimeout(timer);
+        onClose()
+      }, 3800)
+      return () => clearTimeout(timer)
     }
-  }, [visible, message, onClose]);
+  }, [visible, message, onClose])
 
-  if (!visible || !message) return null;
+  if (!visible || !message) return null
 
-  return <div id="toast" className="toast" style={{ display: 'block' }}>{message}</div>;
+  return (
+    <div id='toast' className='toast' style={{ display: 'block' }}>
+      {message}
+    </div>
+  )
 }
 
-export default Toast;
+export default Toast

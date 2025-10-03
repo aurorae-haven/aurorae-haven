@@ -21,12 +21,14 @@ Thank you for your interest in contributing to My Stellar Trail! This document p
 ### Pull Requests
 
 1. **Fork and Clone**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/my-stellar-trail.git
    cd my-stellar-trail
    ```
 
 2. **Create a Branch**
+
    ```bash
    git checkout -b feature/your-feature-name
    ```
@@ -37,9 +39,11 @@ Thank you for your interest in contributing to My Stellar Trail! This document p
    - Test thoroughly in multiple browsers
 
 4. **Commit**
+
    ```bash
    git commit -m "✨ Add feature description"
    ```
+
    Use conventional commit prefixes:
    - ✨ `feat:` - New feature
    - 🐛 `fix:` - Bug fix
@@ -75,6 +79,7 @@ Thank you for your interest in contributing to My Stellar Trail! This document p
 ### Code Style
 
 **JavaScript:**
+
 - Use ES6 modules (`import`/`export`)
 - Use `const` by default, `let` when needed, avoid `var`
 - Arrow functions for callbacks
@@ -82,12 +87,14 @@ Thank you for your interest in contributing to My Stellar Trail! This document p
 - Meaningful variable names
 
 **HTML:**
+
 - Semantic elements (`<main>`, `<nav>`, `<article>`, etc.)
 - Include `lang` attribute on `<html>`
 - Add viewport meta tag
 - Mark internal links with `data-nav="internal"`
 
 **CSS:**
+
 - Mobile-first responsive design
 - Use CSS custom properties for tokens
 - Relative units (rem, em, %) over pixels
