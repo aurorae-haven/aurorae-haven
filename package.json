@@ -26,8 +26,7 @@
   },
   "devDependencies": {
     "ajv": "^8.17.1",
-    "cross-env": "^7.0.3",
-    "pa11y-ci": "^3.1.0"
+    "cross-env": "^7.0.3"
   },
   "browserslist": {
     "production": [

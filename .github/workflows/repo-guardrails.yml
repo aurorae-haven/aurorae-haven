@@ -125,40 +125,13 @@ jobs:
       - name: Test
         run: npm test --if-present --silent
 
-  a11y:
-    name: Accessibility pa11y-ci
-    runs-on: ubuntu-latest
-    needs: [detect]
-    if: ${{ needs.detect.outputs.has_pa11y == 'true' }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-          cache: 'npm'
-      - name: Setup Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-      - name: Install dependencies
-        env:
-          PUPPETEER_SKIP_DOWNLOAD: 'true'
-        run: |
-          if [ -f package.json ]; then npm ci; fi
-      - name: Build if present
-        run: |
-          if npm run | grep -q ' build'; then npm run build; fi
-      - name: Serve and test
-        run: |
-          set -e
-          ROOT=dist
-          [ -d build ] && ROOT=build
-          [ -d public ] && ROOT=public
-          nohup npx http-server "$ROOT" -p 8080 >/dev/null 2>&1 &
-          sleep 2
-          npx pa11y-ci
+  # a11y:
+  #   name: Accessibility pa11y-ci
+  #   runs-on: ubuntu-latest
+  #   needs: [detect]
+  #   if: ${{ needs.detect.outputs.has_pa11y == 'true' }}
+  #   # Disabled: pa11y-ci requires Chrome/Chromium which conflicts with privacy policy
+  #   # Alternative: Manual accessibility testing or Chrome-free tools
 
   summary:
     name: Summary status
@@ -170,8 +143,7 @@ jobs:
         markdown-links,
         super-linter,
         gitleaks,
-        node-security,
-        a11y
+        node-security
       ]
     if: always()
     steps:
@@ -183,4 +155,3 @@ jobs:
           echo "Linter ${{ needs.super-linter.result }}"
           echo "Gitleaks ${{ needs.gitleaks.result }}"
           echo "Node ${{ needs.node-security.result }}"
-          echo "A11y ${{ needs.a11y.result }}"
