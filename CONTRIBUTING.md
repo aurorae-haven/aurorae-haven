@@ -198,7 +198,6 @@ Before submitting:
 └── .github/
     ├── copilot-instructions.md  # Full coding standards
     └── workflows/               # CI/CD
-````
 
 ## CI/CD Workflows
 
