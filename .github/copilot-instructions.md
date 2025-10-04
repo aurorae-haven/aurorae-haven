@@ -495,7 +495,7 @@ npm run lint -- --fix
 npx stylelint "**/*.css"           # CSS files
 npx markdownlint "**/*.md"         # Markdown files
 
-# Format with Prettier (if installed) - handles all file types
+# Format with Prettier (if installed) - handles all file types including YAML/JSON
 npm run format
 
 # Check formatting without changes (if Prettier installed)
@@ -521,8 +521,10 @@ Note: `npm run lint` only lints JavaScript/TypeScript files. For comprehensive l
 npm run lint                    # JavaScript/TypeScript
 npx stylelint "**/*.css"        # CSS (if installed)
 npx markdownlint "**/*.md"      # Markdown (if installed)
-npm run format                  # All files (if Prettier installed)
+npm run format                  # All files including YAML/JSON (if Prettier installed)
 ```
+
+**Note:** YAML/YML files are validated by Prettier (formatting) and Super-Linter in CI (yamllint). For local YAML validation, use `npm run format` or install yamllint separately.
 
 **Critical Requirements:**
 
@@ -549,7 +551,7 @@ npm run format                  # All files (if Prettier installed)
    npm run lint -- --max-warnings=0     # JavaScript/TypeScript only
    npx stylelint "**/*.css" 2>/dev/null # CSS (if installed)
    npx markdownlint "**/*.md" 2>/dev/null # Markdown (if installed)
-   npm run format                       # All file types (if Prettier installed)
+   npm run format                       # All file types including YAML/JSON (if Prettier installed)
    ```
 
 2. **Check for security vulnerabilities**:

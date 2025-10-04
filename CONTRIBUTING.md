@@ -83,7 +83,7 @@ Thank you for your interest in contributing to Aurorae Haven! This document prov
 Linting applies to **ALL files containing code**, not just JavaScript:
 
 - **ESLint**: JavaScript/JSX code quality and style
-- **Prettier**: Consistent code formatting (all file types)
+- **Prettier**: Consistent code formatting (all file types including YAML/JSON)
 - **StyleLint**: CSS/SCSS validation
 - **MarkdownLint**: Markdown documentation quality
 - **HTMLHint**: HTML validation (via Super-Linter in CI)
@@ -104,7 +104,7 @@ npm run lint -- --fix
 npx stylelint "**/*.css"           # CSS files
 npx markdownlint "**/*.md"         # Markdown files
 
-# Format all files (requires installing prettier)
+# Format all files including YAML/JSON (requires installing prettier)
 npm run format
 
 # Check formatting without changes (requires prettier)
