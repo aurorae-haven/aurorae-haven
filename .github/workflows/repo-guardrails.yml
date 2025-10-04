@@ -69,7 +69,7 @@ jobs:
       - name: Check Markdown links
         run: |
           find . -name "*.md" -print0 | xargs -0 -n 1 markdown-link-check -q
-          
+
   super-linter:
     name: Lint auto-detect
     runs-on: ubuntu-latest
@@ -160,17 +160,9 @@ jobs:
   #   # Alternative: Manual accessibility testing or Chrome-free tools
 
   summary:
-    name: Summary status
+    name: Node sec and test summary
     runs-on: ubuntu-latest
-    needs:
-      [
-        detect,
-        meta-checks,
-        markdown-links,
-        super-linter,
-        gitleaks,
-        node-security
-      ]
+    needs: [ detect, meta-checks, markdown-links, super-linter, gitleaks, node-security ]
     if: always()
     steps:
       - name: Show job outcomes
