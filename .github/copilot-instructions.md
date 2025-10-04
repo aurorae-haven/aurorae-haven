@@ -37,14 +37,17 @@ When suggesting code or reviews, Copilot should align with the following institu
 When reviewing code or suggesting changes, Copilot should follow this process:
 
 1. **Context scan** – Identify purpose, tech stack, scope, and where the change fits.
-2. **Constraints** – Note security, privacy, accessibility, and performance implications.
-3. **Accessibility review** – Enforce WCAG 2.2 AA, semantic HTML, ARIA only if needed, keyboard navigation, focus order, screen reader support.
-4. **Security review** – Check for injection risks, XSS, CSRF, secrets in code, dependency risks.
-5. **Privacy review** – Minimise data collection, avoid trackers, ensure GDPR compliance.
-6. **Performance review** – Identify inefficiencies, bundle size issues, caching, rendering costs.
-7. **Testing review** – Verify that changes are covered with automated or manual tests following ISTQB/IEEE guidelines.
-8. **Build/Deploy review** – Confirm artefacts are clean, lightweight, and contain only deployable files.
-9. **Proposed fixes** – Provide a short actionable checklist and safe code diffs/snippets.
+2. **Workflow analysis** – If available, read and parse recent workflow run logs to identify linting errors, test failures, security issues, or deployment problems.
+3. **Linting pre-check** – Before suggesting code, verify it passes all applicable linters (ESLint, Prettier, StyleLint, MarkdownLint).
+4. **Constraints** – Note security, privacy, accessibility, and performance implications.
+5. **Accessibility review** – Enforce WCAG 2.2 AA, semantic HTML, ARIA only if needed, keyboard navigation, focus order, screen reader support.
+6. **Security review** – Check for injection risks, XSS, CSRF, secrets in code, dependency risks.
+7. **Vulnerability scan** – Run `npm audit` to check for dependency vulnerabilities; enforce zero-tolerance for production dependencies.
+8. **Privacy review** – Minimise data collection, avoid trackers, ensure GDPR compliance.
+9. **Performance review** – Identify inefficiencies, bundle size issues, caching, rendering costs.
+10. **Testing review** – Verify that changes are covered with automated or manual tests following ISTQB/IEEE guidelines.
+11. **Build/Deploy review** – Confirm artefacts are clean, lightweight, and contain only deployable files.
+12. **Proposed fixes** – Provide a short actionable checklist and safe code diffs/snippets.
 
 ---
 
@@ -80,6 +83,218 @@ Before finishing, verify:
 - Testing present and relevant (ISTQB/IEEE standards)
 - Artefacts clean and deployable
 - UI is as **simple and minimalist** as possible
+
+---
+
+## Super-Linting & Workflow Integration
+
+### Linting Requirements (CRITICAL)
+
+Copilot **MUST** enforce linting standards equivalent to or stricter than those enforced by GitHub Super-Linter in CI/CD workflows.
+
+**Mandatory Linting Tools:**
+
+- **ESLint** for JavaScript/JSX: Follow `.eslintrc.json` configuration (✅ installed)
+- **Prettier** for code formatting: Follow `.prettierrc.json` configuration (⚠️ script exists, must install: `npm install --save-dev prettier`)
+- **StyleLint** for CSS: Follow `.stylelintrc.json` configuration (⚠️ config exists, must install: `npm install --save-dev stylelint`)
+- **MarkdownLint** for Markdown: Follow `.markdownlint.json` configuration (⚠️ config exists, must install: `npm install --save-dev markdownlint-cli`)
+
+**Current State:**
+- ESLint is installed and working
+- Configuration files exist for all linters (`.eslintrc.json`, `.prettierrc.json`, `.stylelintrc.json`, `.markdownlint.json`)
+- Scripts defined in `package.json` but some tools need installation
+- When tools are installed, enforce all rules; until then, prioritize ESLint
+
+**Before Suggesting ANY Code Changes:**
+
+1. **Analyze the target file type** and identify which linters apply
+2. **Review the linter configuration files** to understand active rules
+3. **Pre-check your proposed changes** against all applicable linter rules
+4. **Ensure zero linting errors** in your suggestions
+5. **Format code correctly** using Prettier standards
+
+**Linting Rules Priority:**
+
+- **Level 0 (BLOCKING)**: CSP violations (inline scripts/styles) - Code MUST NOT be committed
+- **Level 1 (ERROR)**: ESLint errors, StyleLint errors, security issues - MUST be fixed before PR merge
+- **Level 2 (WARNING)**: ESLint warnings - SHOULD be fixed; max 20 warnings allowed in legacy code
+- **Level 3 (INFO)**: Formatting inconsistencies - SHOULD be auto-fixed with Prettier
+
+### Workflow Log Analysis
+
+Copilot **MUST** actively monitor and parse workflow run logs when available:
+
+**Required Actions:**
+
+1. **Read workflow logs** from all CI/CD runs (especially `repo-guardrails.yml` and `upload-pages-artifact.yml`)
+2. **Parse linting output** to identify specific files, line numbers, and rule violations
+3. **Extract security scan results** from Gitleaks, npm audit, and Super-Linter
+4. **Prioritize failures** by severity (critical → high → moderate → low)
+5. **Propose targeted fixes** for each identified issue, one file at a time
+
+**Workflow Jobs to Monitor:**
+
+- `super-linter`: Parse JavaScript, CSS, Markdown, and other file lint results
+- `node-security`: Parse npm audit results for vulnerabilities
+- `gitleaks`: Parse secret detection results
+- `markdown-links`: Parse broken link reports
+- `test`: Parse Jest test failures and coverage reports
+
+**Log Parsing Pattern:**
+
+When workflow logs show errors:
+```
+Step: Run linter
+Error: /src/pages/Example.js:42:5 - 'variable' is assigned a value but never used (no-unused-vars)
+```
+
+Copilot response:
+1. Identify the file: `src/pages/Example.js`
+2. Identify the line: `42`
+3. Identify the rule: `no-unused-vars`
+4. Propose fix: Remove unused variable or mark as used
+5. Apply fix and verify with linter
+
+### Automated Lint Fixing
+
+When linting issues are detected, Copilot **MUST**:
+
+1. **Group issues by file** to minimize context switching
+2. **Fix issues systematically** - work through files one by one
+3. **Use auto-fix when available**:
+   - Run `npm run format` for Prettier issues
+   - Run `npm run lint -- --fix` for auto-fixable ESLint issues
+4. **Manually fix remaining issues** that cannot be auto-fixed
+5. **Verify fixes** by re-running linters after each change
+6. **Test functionality** after fixes to prevent regression
+
+**Example Workflow:**
+
+```bash
+# Step 1: Run linters to identify issues
+npm run lint
+
+# Step 2: Auto-fix where possible
+npm run lint -- --fix
+
+# Step 3: If Prettier is installed, format code
+npm run format 2>/dev/null || echo "Prettier not installed, skipping"
+
+# Step 4: Manually fix remaining issues
+# (Copilot edits files based on linter output)
+
+# Step 5: Verify all fixes
+npm run lint
+npm test
+
+# Step 6: Check for security vulnerabilities
+npm audit --audit-level=low --omit=dev
+```
+
+---
+
+## Zero Npm Vulnerabilities Policy (CRITICAL)
+
+### Strict Security Requirements
+
+**Copilot MUST enforce a zero-tolerance policy for npm vulnerabilities in production dependencies.**
+
+**Policy Rules:**
+
+1. **Production dependencies**: **ZERO** vulnerabilities of ANY severity (low, moderate, high, critical)
+2. **Development dependencies**: 
+   - **ZERO** high or critical vulnerabilities
+   - Moderate/low vulnerabilities **MAY** be acceptable if:
+     - The package is dev-only (not in production bundle)
+     - There is no viable alternative
+     - Risk is documented and accepted
+3. **Before ANY PR merge**: Run `npm audit --audit-level=low` and resolve ALL issues
+
+**Vulnerability Detection:**
+
+Run these checks before suggesting dependency changes:
+```bash
+# Check all vulnerabilities
+npm audit
+
+# Check production-only dependencies
+npm audit --audit-level=low --omit=dev
+
+# Generate detailed report
+npm audit --json > audit-report.json
+```
+
+**When Vulnerabilities Are Found:**
+
+1. **Identify the vulnerability**:
+   - Package name
+   - Current version
+   - Vulnerable versions
+   - Severity level
+   - CVE/GHSA identifier
+
+2. **Determine fix approach**:
+   - **Option A**: Update to patched version (`npm update <package>`)
+   - **Option B**: Update to latest version (`npm install <package>@latest`)
+   - **Option C**: Find alternative package
+   - **Option D**: Remove package if not essential
+   - **Option E**: Document as accepted risk (dev-only, last resort)
+
+3. **Apply fix**:
+   ```bash
+   # Try automatic fix first
+   npm audit fix
+   
+   # If that fails, try force fix (review changes carefully)
+   npm audit fix --force
+   
+   # If still unresolved, manually update
+   npm update <package>
+   # or
+   npm install <package>@latest
+   ```
+
+4. **Verify fix**:
+   ```bash
+   # Ensure vulnerability is resolved
+   npm audit
+   
+   # Ensure application still works
+   npm test
+   npm run build
+   ```
+
+5. **Document in PR**: If any vulnerability cannot be immediately resolved, document:
+   - Why it cannot be fixed
+   - Risk assessment
+   - Mitigation strategy
+   - Timeline for resolution
+
+**Known Acceptable Cases:**
+
+- `webpack-dev-server` vulnerabilities in `react-scripts` (dev dependency, not in production build)
+  - **Condition**: Must verify these are truly dev-only
+  - **Check**: Confirm not in `dist/` production bundle
+  - **Note**: Should still track and update when possible
+
+**Unacceptable Cases:**
+
+- ANY vulnerability in packages shipped to users (in `dist/` folder)
+- HIGH or CRITICAL vulnerabilities in any dependency
+- Vulnerabilities with known active exploits
+- Vulnerabilities with available patches that haven't been applied
+
+### Security Audit Checklist
+
+Before completing any PR, Copilot MUST verify:
+
+- [ ] `npm audit --audit-level=low --omit=dev` shows **ZERO** vulnerabilities
+- [ ] All HIGH/CRITICAL vulnerabilities in dev dependencies are resolved
+- [ ] Any remaining moderate/low dev vulnerabilities are documented
+- [ ] Production build (`dist/`) contains no vulnerable code
+- [ ] Dependencies are up-to-date within major version constraints
+- [ ] `package-lock.json` is updated and committed
+- [ ] All tests pass after dependency updates
 
 ---
 
@@ -218,20 +433,79 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 
 ## Development Workflow
 
+### Linting & Formatting (MANDATORY)
+
+**Before ANY code changes:**
+
+```bash
+# Check current linting status
+npm run lint
+
+# Auto-fix ESLint issues where possible
+npm run lint -- --fix
+
+# Format with Prettier (if installed)
+npm run format
+
+# Check formatting without changes (if Prettier installed)
+npm run format -- --check
+```
+
+**Linter Commands:**
+
+- `npm run lint` - Run ESLint on all JavaScript/JSX files (✅ works now)
+- `npm run lint -- --fix` - Auto-fix ESLint issues where possible (✅ works now)
+- `npm run format` - Run Prettier to format all files (requires: `npm install --save-dev prettier`)
+- `npm run format -- --check` - Check if files need formatting (requires Prettier)
+
+**Additional Linting** (once tools installed):
+- `npx stylelint "**/*.css"` - Lint CSS files
+- `npx markdownlint "**/*.md"` - Lint Markdown files
+
+**Critical Requirements:**
+
+- **ZERO** ESLint errors in new/modified code
+- **MAX 20** ESLint warnings in legacy code (acceptable for now)
+- **ZERO** CSP violations (inline scripts/styles)
+- **ZERO** npm vulnerabilities in production dependencies
+- **ZERO** HIGH/CRITICAL vulnerabilities in dev dependencies
+- All files must be formatted with Prettier before commit
+
 ### Testing
 
 - Manually test in modern browsers (Chrome, Firefox, Edge, Safari)
 - Test keyboard navigation and screen reader compatibility
 - Verify CSP compliance (check browser console for violations)
 - Test data export/import round-trip
+- Run `npm test` to execute all Jest tests
+- Ensure test coverage doesn't decrease
 
 ### Before Committing
 
-1. Test all interactive features manually
-2. Verify no console errors or CSP violations
-3. Check that beforeunload warning works correctly
-4. Ensure internal navigation doesn't trigger warnings
-5. Validate HTML/CSS/JS if linters are available
+1. **Run all linters and fix issues**:
+   ```bash
+   npm run lint -- --max-warnings=0  # For new code
+   npm run format
+   ```
+
+2. **Check for security vulnerabilities**:
+   ```bash
+   npm audit --audit-level=low --omit=dev
+   ```
+
+3. **Run tests**:
+   ```bash
+   npm test
+   ```
+
+4. Test all interactive features manually
+5. Verify no console errors or CSP violations
+6. Check that beforeunload warning works correctly
+7. Ensure internal navigation doesn't trigger warnings
+8. Build and verify production bundle:
+   ```bash
+   npm run build
+   ```
 
 ### Deployment
 
@@ -379,10 +653,16 @@ window.StellarIO = { exportJSON, importJSON }
 When working on this project:
 
 1. **Always** respect CSP - no inline scripts or styles
-2. **Always** provide export/import for user data
-3. **Always** implement beforeunload warnings appropriately
-4. **Always** use semantic HTML and ARIA labels
-5. **Always** test keyboard navigation
-6. **Always** maintain the calm, accessible aesthetic
-7. **Never** add external dependencies without careful consideration
-8. **Never** compromise on security or privacy
+2. **Always** run linters before suggesting code changes
+3. **Always** check workflow logs for errors and fix them systematically
+4. **Always** enforce zero npm vulnerabilities in production dependencies
+5. **Always** fix all HIGH/CRITICAL vulnerabilities in dev dependencies
+6. **Always** provide export/import for user data
+7. **Always** implement beforeunload warnings appropriately
+8. **Always** use semantic HTML and ARIA labels
+9. **Always** test keyboard navigation
+10. **Always** maintain the calm, accessible aesthetic
+11. **Never** add external dependencies without careful consideration
+12. **Never** compromise on security or privacy
+13. **Never** commit code with linting errors
+14. **Never** ignore workflow failures - fix them immediately
