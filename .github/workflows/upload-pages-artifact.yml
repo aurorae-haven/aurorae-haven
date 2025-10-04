@@ -133,7 +133,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
+      name: github-pages # must be exactly this name for Pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
