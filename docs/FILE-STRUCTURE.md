@@ -121,11 +121,11 @@ Both implementations share common security utilities:
 
 **Build Process** (`npm run build`):
 1. React app is built to `build/` directory
-2. Build artifacts copied to `dist/` for deployment
-3. Legacy pages included in `dist/pages/` automatically
-4. Service worker handles caching for both types
+2. Build artifacts are copied to `dist/build/` for deployment
+3. Legacy pages are **not** automatically included in `dist/pages/`; no legacy pages (`public/pages/*.html`) or `dist/pages/` directory are copied by the current build script
+4. Service worker handles caching for both types (if both are present in the deployment)
 
-**Result**: Single deployment contains both React SPA and legacy pages
+**Result**: By default, deployment contains only the React SPA under `dist/build/`. Legacy pages must be manually copied if needed.
 
 ## Future Plans
 
