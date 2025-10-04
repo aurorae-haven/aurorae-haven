@@ -2,7 +2,7 @@
 
 ## Issue: 2.1 Application Architecture (ARC-APP)
 
-**Date**: October 2, 2024  
+**Date**: October 2, 2024
 **Status**: ✅ COMPLIANT
 
 ---

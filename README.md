@@ -1,6 +1,6 @@
 # 🌌 Aurorae Haven
 
-> **A calm, astro-themed productivity app designed for neurodivergent users.**  
+> **A calm, astro-themed productivity app designed for neurodivergent users.**
 > Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure
 > local/mobile use.
 

@@ -1,7 +1,7 @@
 # 🌌 Aurorae Haven – Roadmap
 
-> **Aurorae Haven** is a productivity app designed for neurodivergent users.  
-> It helps manage routines, tasks, habits, notes, and stats with a calm, astro-themed interface.  
+> **Aurorae Haven** is a productivity app designed for neurodivergent users.
+> It helps manage routines, tasks, habits, notes, and stats with a calm, astro-themed interface.
 > Features include Markdown import/export, gamification, reminders, and secure local or mobile use.
 
 ---
