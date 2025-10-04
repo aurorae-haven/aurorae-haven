@@ -120,9 +120,11 @@ npm install --save-dev prettier stylelint markdownlint-cli
 
 **Clean Environment (recommended before testing):**
 
-````bash
+```bash
 # Clean up dependencies
 rm -rf node_modules package-lock.json
+```
+
 **Standards:**
 
 - **ZERO** ESLint errors in new/modified code
@@ -275,3 +277,4 @@ When adding new features:
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
+```
