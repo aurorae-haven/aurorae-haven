@@ -103,7 +103,7 @@ function Home() {
             </li>
           </ul>
           <p style={{ marginTop: '12px', opacity: 0.8 }}>
-            Once installed, you can use Stellar Journey offline and access it
+            Once installed, you can use Aurorae Haven offline and access it
             like any other app on your device.
           </p>
         </div>

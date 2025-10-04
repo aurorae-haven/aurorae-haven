@@ -59,7 +59,7 @@ import { getDataTemplate } from './dataManager'
     }, 2000) // safety window
   }
 
-  window.StellarIO = { exportJSON, importJSON }
+  window.AuroraeIO = { exportJSON, importJSON }
   window.addEventListener('beforeunload', function (e) {
     // If navigating via internal links/buttons (we mark it), don't prompt
     if (suppressPrompt) return
