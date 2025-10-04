@@ -104,6 +104,7 @@ Linting applies to **ALL files containing code**, not just JavaScript:
 - **Super-Linter** in CI/CD: Auto-detects and validates all file types (JavaScript, CSS, HTML, Markdown, JSON, YAML, etc.)
 
 **Current State:**
+
 - ESLint is installed and working
 - Configuration files exist for all linters (`.eslintrc.json`, `.prettierrc.json`, `.stylelintrc.json`, `.markdownlint.json`)
 - Scripts defined in `package.json` but some tools need installation
@@ -155,12 +156,14 @@ Copilot **MUST** actively monitor and parse workflow run logs when available:
 **Log Parsing Pattern:**
 
 When workflow logs show errors:
-```
+
+```text
 Step: Run linter
 Error: /src/pages/Example.js:42:5 - 'variable' is assigned a value but never used (no-unused-vars)
 ```
 
 Copilot response:
+
 1. Identify the file: `src/pages/Example.js`
 2. Identify the line: `42`
 3. Identify the rule: `no-unused-vars`
@@ -170,7 +173,8 @@ Copilot response:
 **Security and Test Failure Pattern:**
 
 When workflow logs show security or test failures:
-```
+
+```text
 Step: Run tests
 FAIL src/__tests__/Example.test.js
   ✕ should handle user input correctly (15 ms)
@@ -180,6 +184,7 @@ FAIL src/__tests__/Example.test.js
 ```
 
 Copilot response:
+
 1. **Parse the failure**: Identify test file, test name, and failure reason
 2. **Reproduce locally**: Run `npm test -- Example.test.js` to see the full error
 3. **Analyze the code**: Review the test and implementation to understand the issue
@@ -188,13 +193,15 @@ Copilot response:
 6. **Check coverage**: Ensure test coverage doesn't decrease
 
 For security scan failures (npm audit, Gitleaks):
-```
+
+```text
 Step: Node security
 found 1 high severity vulnerability
 Package: lodash@4.17.15
 ```
 
 Copilot response:
+
 1. **Identify the vulnerability**: Package name, version, severity, CVE
 2. **Check if production**: Run `npm audit --omit=dev` to verify
 3. **Reproduce locally**: Run `npm audit` to see full details
@@ -255,7 +262,7 @@ npm audit --audit-level=low --omit=dev
 **Policy Rules:**
 
 1. **Production dependencies**: **ZERO** vulnerabilities of ANY severity (low, moderate, high, critical)
-2. **Development dependencies**: 
+2. **Development dependencies**:
    - **ZERO** high or critical vulnerabilities
    - Moderate/low vulnerabilities **MAY** be acceptable if:
      - The package is dev-only (not in production bundle)
@@ -266,6 +273,7 @@ npm audit --audit-level=low --omit=dev
 **Vulnerability Detection:**
 
 Run these checks before suggesting dependency changes:
+
 ```bash
 # Check all vulnerabilities
 npm audit
@@ -294,6 +302,7 @@ npm audit --json > audit-report.json
    - **Option E**: Document as accepted risk (dev-only, last resort)
 
 3. **Apply fix**:
+
    ```bash
    # Try automatic fix first
    npm audit fix
@@ -308,6 +317,7 @@ npm audit --json > audit-report.json
    ```
 
 4. **Verify fix**:
+
    ```bash
    # Ensure vulnerability is resolved
    npm audit
@@ -367,7 +377,7 @@ Aurorae Haven is a calm, astro-themed productivity app designed for neurodiverge
 
 ### File Structure
 
-```
+```text
 /
 ├── index.html              # Main entry point
 ├── public/
@@ -523,11 +533,13 @@ Note: `npm run lint` only lints JavaScript/TypeScript files. For comprehensive l
 - `npm run format -- --check` - Check if files need formatting (requires Prettier)
 
 **Additional Linting** (once tools installed):
+
 - `npx stylelint "**/*.css"` - Lint CSS/SCSS files
 - `npx markdownlint "**/*.md"` - Lint Markdown files
 - HTML files validated by Super-Linter in CI (no separate local command needed)
 
 **To lint all file types locally:**
+
 ```bash
 npm run lint                    # JavaScript/TypeScript
 npx stylelint "**/*.css"        # CSS (if installed)
@@ -558,6 +570,7 @@ npm run format                  # All files including YAML/JSON (if Prettier ins
 ### Before Committing
 
 0. **Clean environment and install dependencies**:
+
    ```bash
    rm -rf node_modules package-lock.json
    npm install  # Regenerate lockfile
@@ -565,6 +578,7 @@ npm run format                  # All files including YAML/JSON (if Prettier ins
    ```
 
 1. **Run all linters and fix issues**:
+
    ```bash
    npm run lint -- --max-warnings=0     # JavaScript/TypeScript only
    npx stylelint "**/*.css" 2>/dev/null # CSS (if installed)
@@ -573,11 +587,13 @@ npm run format                  # All files including YAML/JSON (if Prettier ins
    ```
 
 2. **Check for security vulnerabilities**:
+
    ```bash
    npm audit --audit-level=low --omit=dev
    ```
 
 3. **Run tests**:
+
    ```bash
    npm test
    ```
@@ -587,6 +603,7 @@ npm run format                  # All files including YAML/JSON (if Prettier ins
 6. Check that beforeunload warning works correctly
 7. Ensure internal navigation doesn't trigger warnings
 8. Build and verify production bundle:
+
    ```bash
    npm run build
    ```

@@ -27,7 +27,7 @@ Runs comprehensive testing and security checks before allowing deployment.
 4. **Run linter**:
    - Checks all code for style issues
    - Allows warnings in legacy code
-   - **FAILS** if new code (src/pages/, src/utils/, src/__tests__/) has errors
+   - **FAILS** if new code (src/pages/, src/utils/, src/**tests**/) has errors
 5. **Run tests**:
    - Executes all Jest tests with coverage
    - **FAILS** if any test fails
@@ -145,7 +145,7 @@ ls -la dist/
 
 1. **Check workflow status**: Navigate to the "Actions" tab in GitHub
 2. **View job details**: Click on any workflow run to see detailed logs
-3. **Monitor site**: Visit https://aurorae-haven.github.io/aurorae-haven/
+3. **Monitor site**: Visit <https://aurorae-haven.github.io/aurorae-haven/>
 
 ## Troubleshooting
 
