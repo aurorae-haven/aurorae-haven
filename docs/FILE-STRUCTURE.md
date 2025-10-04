@@ -4,7 +4,8 @@ This document explains the file organization in the Aurorae Haven application.
 
 ## Overview
 
-The repository contains **two parallel implementations** to support both modern React-based usage and legacy standalone HTML pages. This is intentional and NOT duplication.
+The repository contains **two parallel implementations** to support both modern React-based usage and legacy standalone
+HTML pages. This is intentional and NOT duplication.
 
 ## Architecture Types
 
@@ -56,7 +57,7 @@ The repository contains **two parallel implementations** to support both modern 
 
 ## File Relationships
 
-```
+```text
 ┌─────────────────────────────────────┐
 │       React App (Primary)           │
 │                                     │
@@ -127,10 +128,12 @@ Both implementations share common security utilities:
 
 1. React app is built to `build/` directory
 2. Build artifacts are copied to `dist/build/` for deployment
-3. Legacy pages are **not** automatically included in `dist/pages/`; no legacy pages (`public/pages/*.html`) or `dist/pages/` directory are copied by the current build script
+3. Legacy pages are **not** automatically included in `dist/pages/`; no legacy pages (`public/pages/*.html`) or
+   `dist/pages/` directory are copied by the current build script
 4. Service worker handles caching for both types (if both are present in the deployment)
 
-**Result**: By default, deployment contains only the React SPA under `dist/build/`. Legacy pages must be manually copied if needed.
+**Result**: By default, deployment contains only the React SPA under `dist/build/`. Legacy pages must be manually
+copied if needed.
 
 ## Future Plans
 

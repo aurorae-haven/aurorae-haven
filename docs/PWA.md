@@ -2,7 +2,8 @@
 
 ## Overview
 
-Aurorae Haven is implemented as a Progressive Web App (PWA), providing an installable, offline-capable experience across all platforms.
+Aurorae Haven is implemented as a Progressive Web App (PWA), providing an installable, offline-capable experience
+across all platforms.
 
 ## Architecture Components
 
@@ -206,7 +207,7 @@ This implementation satisfies all ARC-APP requirements:
 
 - **Chrome DevTools**: Application tab → Manifest/Service Workers
 - **Lighthouse**: Automated PWA audit
-- **PWA Builder**: https://www.pwabuilder.com/
+- **PWA Builder**: <https://www.pwabuilder.com/>
 
 ### Documentation
 

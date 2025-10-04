@@ -1,7 +1,8 @@
 # 🌌 Aurorae Haven
 
 > **A calm, astro-themed productivity app designed for neurodivergent users.**  
-> Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure local/mobile use.
+> Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure
+> local/mobile use.
 
 ---
 
@@ -58,6 +59,7 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
    The production build will be in the `dist/` directory
 
 5. Test the production build locally:
+
    ```bash
    npm install -g serve
    serve -s dist
@@ -111,7 +113,8 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 
 ### Deployment
 
-The app is automatically deployed to GitHub Pages when changes are pushed to `main` or `feature-*` branches. The deployment workflow:
+The app is automatically deployed to GitHub Pages when changes are pushed to `main` or `feature-*` branches.
+The deployment workflow:
 
 1. Installs Node.js dependencies
 2. Builds the React application with `npm run build`

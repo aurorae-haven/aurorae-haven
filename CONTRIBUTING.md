@@ -53,9 +53,11 @@ Thank you for your interest in contributing to Aurorae Haven! This document prov
    - 🔒 `security:` - Security improvements
 
 5. **Push and Create PR**
+
    ```bash
    git push origin feature/your-feature-name
    ```
+
    Then create a pull request on GitHub
 
 ## Development Standards
@@ -114,7 +116,7 @@ Before submitting:
 
 ## Project Structure
 
-```
+```text
 /
 ├── index.html              # Main entry point
 ├── public/

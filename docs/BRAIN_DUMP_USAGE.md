@@ -45,7 +45,7 @@ console.log('Hello')
 
 [Links](https://example.com)
 
-````
+```markdown
 
 ### Auto-List Continuation
 
@@ -133,7 +133,7 @@ Attach files directly to your brain dump notes:
 
 **File Reference Format:**
 
-```
+```text
 📎 Attachment: document.pdf (152.34 KB)
 ```
 
