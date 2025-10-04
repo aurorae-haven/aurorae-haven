@@ -9,8 +9,9 @@ rm -rf dist
 
 # Copy build to dist
 if [ -d "build" ]; then
-  cp -r build dist
-  echo "✓ Copied build/ to dist/"
+  mkdir -p dist
+  cp -r build/* dist/
+  echo "✓ Copied contents of build/ to dist/"
 else
   echo "❌ Error: build/ directory not found"
   exit 1
