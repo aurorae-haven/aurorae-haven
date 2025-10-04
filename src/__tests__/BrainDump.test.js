@@ -291,8 +291,8 @@ describe('BrainDump Component', () => {
 
       fireEvent.change(textarea, { target: { value: 'Some content' } })
 
-      // Find and click clear button (trash icon button)
-      const clearButton = screen.getAllByRole('button')[3] // 4th button is clear
+      // Find and click clear button
+      const clearButton = screen.getByRole('button', { name: /clear/i })
       fireEvent.click(clearButton)
 
       expect(textarea.value).toBe('')
@@ -309,7 +309,7 @@ describe('BrainDump Component', () => {
 
       fireEvent.change(textarea, { target: { value: 'Some content' } })
 
-      const clearButton = screen.getAllByRole('button')[3]
+      const clearButton = screen.getByRole('button', { name: /clear/i })
       fireEvent.click(clearButton)
 
       expect(textarea.value).toBe('Some content')
