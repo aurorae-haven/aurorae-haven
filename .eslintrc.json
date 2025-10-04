@@ -11,5 +11,14 @@
     "marked": "readonly",
     "FullCalendar": "readonly"
   },
-  "rules": {}
-}
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "off"
+  },
+  "ignorePatterns": [
+    "build/",
+    "dist/",
+    "node_modules/",
+    "coverage/",
+    "*.config.js"
+  ]
