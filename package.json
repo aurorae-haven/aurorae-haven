@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "build": "react-scripts build && npm run prepare-dist",
-    "prepare-dist": "rm -rf dist && cp -r build dist && mkdir -p dist/src/utils dist/src/assets/styles dist/src && cp src/utils/pageHelpers.js dist/src/utils/ && cp src/assets/styles/styles.css dist/src/assets/styles/ && cp src/main.js dist/src/ && cp src/braindump-ui.js dist/src/ && [ -f src/braindump-enhanced.js ] && cp src/braindump-enhanced.js dist/src/ || true",
+    "prepare-dist": "sh scripts/prepare-dist.sh",
     "validate-pwa": "node scripts/validate-pwa.js"
   },
   "dependencies": {
