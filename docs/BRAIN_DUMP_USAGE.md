@@ -1,6 +1,6 @@
 # Brain Dump Usage Guide
 
-This guide explains how to use the enhanced Brain Dump features in My Stellar Trail.
+This guide explains how to use the enhanced Brain Dump features in Aurorae Haven.
 
 ## Quick Start
 

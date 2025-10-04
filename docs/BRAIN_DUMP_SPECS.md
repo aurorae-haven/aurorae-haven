@@ -1,6 +1,6 @@
 # Brain Dump Specifications (TAB-BDP)
 
-This document describes the implementation of Brain Dump specifications for My Stellar Trail.
+This document describes the implementation of Brain Dump specifications for Aurorae Haven.
 
 ## Overview
 

@@ -15,8 +15,8 @@ function Layout({ children, onExport, onImport }) {
         <div className='inner'>
           <div className='logo' aria-hidden='true' />
           <div className='brand'>
-            <b>Stellar Journey</b>
-            <small>Explore your orbit. Follow your path.</small>
+            <b>Aurorae Haven</b>
+            <small>Find your light. Navigate your path.</small>
           </div>
           <nav className='appnav' aria-label='Main'>
             <Link

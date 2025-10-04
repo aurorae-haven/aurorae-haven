@@ -2,7 +2,7 @@
 
 ## Overview
 
-My Stellar Trail is implemented as a Progressive Web App (PWA), providing an installable, offline-capable experience across all platforms.
+Aurorae Haven is implemented as a Progressive Web App (PWA), providing an installable, offline-capable experience across all platforms.
 
 ## Architecture Components
 
@@ -10,8 +10,8 @@ My Stellar Trail is implemented as a Progressive Web App (PWA), providing an ins
 
 The manifest defines the app's metadata and appearance:
 
-- **Name**: My Stellar Trail - Productivity App
-- **Short Name**: Stellar Trail
+- **Name**: Aurorae Haven - Productivity App
+- **Short Name**: Aurorae Haven
 - **Display Mode**: Standalone (full-screen, app-like)
 - **Theme Color**: #1a1a2e (dark stellar theme)
 - **Background Color**: #0f0f1e
@@ -59,7 +59,7 @@ Two SVG icons with stellar theme:
 #### Chrome/Edge (Desktop & Android)
 
 - Look for the install icon (⊕) in the address bar
-- Or use menu → "Install My Stellar Trail"
+- Or use menu → "Install Aurorae Haven"
 
 #### Safari (iOS)
 
@@ -127,7 +127,7 @@ The service worker uses a **cache-first** strategy:
 
 ### Cache Versioning
 
-- Cache name: `stellar-trail-v1`
+- Cache name: `aurorae-haven-v1`
 - Automatic cleanup of old caches on activation
 - Manual cache clearing on major updates
 

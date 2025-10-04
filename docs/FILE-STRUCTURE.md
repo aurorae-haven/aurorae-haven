@@ -1,6 +1,6 @@
 # File Structure Documentation
 
-This document explains the file organization in the My Stellar Trail application.
+This document explains the file organization in the Aurorae Haven application.
 
 ## Overview
 

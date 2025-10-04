@@ -1,8 +1,8 @@
 {
-  "name": "my-stellar-trail",
+  "name": "aurorae-haven",
   "version": "1.0.0",
   "description": "> **A calm, astro-themed productivity app designed for neurodivergent users.**   > Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure local/mobile use.",
-  "homepage": "/my-stellar-trail",
+  "homepage": "/aurorae-haven",
   "main": "src/index.js",
   "keywords": [],
   "author": "",

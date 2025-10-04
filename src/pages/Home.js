@@ -6,7 +6,7 @@ function Home() {
     <>
       <div className='card'>
         <div className='card-h'>
-          <strong>🌌 Welcome to Stellar Journey</strong>
+          <strong>🌌 Welcome to Aurorae Haven</strong>
         </div>
         <div className='card-b'>
           <p>
@@ -86,7 +86,7 @@ function Home() {
         </div>
         <div className='card-b'>
           <p>
-            Stellar Journey is a Progressive Web App (PWA) that can be installed
+            Aurorae Haven is a Progressive Web App (PWA) that can be installed
             on your device for offline access and a native-like experience.
           </p>
           <p>

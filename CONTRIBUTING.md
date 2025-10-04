@@ -1,6 +1,6 @@
-# Contributing to My Stellar Trail
+# Contributing to Aurorae Haven
 
-Thank you for your interest in contributing to My Stellar Trail! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to Aurorae Haven! This document provides guidelines for contributing to the project.
 
 ## Code of Conduct
 

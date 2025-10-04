@@ -1,8 +1,8 @@
 /* eslint-disable no-restricted-globals */
-// Service Worker for My Stellar Trail PWA
+// Service Worker for Aurorae Haven PWA
 // Implements caching strategy for offline functionality
 
-const CACHE_NAME = 'stellar-trail-v1'
+const CACHE_NAME = 'aurorae-haven-v1'
 const urlsToCache = [
   '/',
   '/index.html',
