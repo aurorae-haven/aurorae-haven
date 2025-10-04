@@ -98,10 +98,8 @@ jobs:
           FILTER_REGEX_EXCLUDE: '.*node_modules.*|.*\.git.*|.*build.*|.*dist.*|.*coverage.*'
 
           # Disable conflicting linters - use Prettier/ESLint/Stylelint instead
-          VALIDATE_BIOME_FORMAT: false
-          VALIDATE_BIOME_LINT: false
+          VALIDATE_BIOME: false
           VALIDATE_MARKDOWN_PRETTIER: false
-          VALIDATE_JAVASCRIPT_STANDARD: false
 
           # Disable Python linters (not a Python project)
           VALIDATE_PYTHON_BLACK: false
