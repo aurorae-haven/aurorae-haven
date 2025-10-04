@@ -27,7 +27,7 @@ Runs comprehensive testing and security checks before allowing deployment.
 4. **Run linter**:
    - Checks all code for style issues
    - Allows warnings in legacy code
-   - **FAILS** if new code (src/pages/, src/utils/, src/**tests**/) has errors
+   - **FAILS** if new code (src/pages/, src/utils/, src/__tests__/) has errors
 5. **Run tests**:
    - Executes all Jest tests with coverage
    - **FAILS** if any test fails
