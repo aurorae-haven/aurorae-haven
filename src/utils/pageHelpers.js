@@ -32,6 +32,7 @@ import { getDataTemplate } from './dataManager'
       }
       // store in memory (mock); in real app, write to localStorage/db
       window.__SJ_DATA__ = obj
+      localStorage.setItem('stellar_journey_data', JSON.stringify(obj))
       exported = true // importing counts as having current data saved
       toast('Data imported successfully')
     } catch (e) {
