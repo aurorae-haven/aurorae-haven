@@ -47,7 +47,7 @@ function App() {
 
   const handleExport = useCallback(() => {
     exportJSON()
-    showToast('Data exported (stellar_journey_data.json)')
+    showToast('Data exported (aurorae_haven_data.json)')
   }, [showToast])
 
   const handleImport = useCallback(

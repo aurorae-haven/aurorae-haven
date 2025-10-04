@@ -9,13 +9,13 @@ import { getDataTemplate } from './dataManager'
     const blob = new Blob([data], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = 'stellar_journey_data.json'
+    a.download = 'aurorae_haven_data.json'
     document.body.appendChild(a)
     a.click()
     a.remove()
     URL.revokeObjectURL(a.href)
     exported = true
-    toast('Data exported (stellar_journey_data.json)')
+    toast('Data exported (aurorae_haven_data.json)')
   }
 
   async function importJSON(file) {
@@ -32,7 +32,7 @@ import { getDataTemplate } from './dataManager'
       }
       // store in memory (mock); in real app, write to localStorage/db
       window.__SJ_DATA__ = obj
-      localStorage.setItem('stellar_journey_data', JSON.stringify(obj))
+      localStorage.setItem('aurorae_haven_data', JSON.stringify(obj))
       exported = true // importing counts as having current data saved
       toast('Data imported successfully')
     } catch (e) {
@@ -59,7 +59,7 @@ import { getDataTemplate } from './dataManager'
     }, 2000) // safety window
   }
 
-  window.StellarIO = { exportJSON, importJSON }
+  window.AuroraeIO = { exportJSON, importJSON }
   window.addEventListener('beforeunload', function (e) {
     // If navigating via internal links/buttons (we mark it), don't prompt
     if (suppressPrompt) return

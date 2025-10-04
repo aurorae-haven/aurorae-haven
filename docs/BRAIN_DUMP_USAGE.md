@@ -1,6 +1,6 @@
 # Brain Dump Usage Guide
 
-This guide explains how to use the enhanced Brain Dump features in My Stellar Trail.
+This guide explains how to use the enhanced Brain Dump features in Aurorae Haven.
 
 ## Quick Start
 
@@ -45,11 +45,11 @@ console.log('Hello')
 
 [Links](https://example.com)
 
-````
-
+````markdown
 ### Auto-List Continuation
 
 When you press Enter on a list item:
+
 - Bullet and numbered lists automatically continue
 - Task lists create a new unchecked item
 - Empty list items are removed (press Enter twice to exit list)
@@ -64,6 +64,7 @@ Create wiki-style links between notes using double brackets:
 This note relates to [[Project Alpha]] and [[Meeting Notes 2024-01]].
 
 I should also check [[Resources]] and [[Ideas for Q2]].
+```
 ````
 
 **Features:**
@@ -133,7 +134,7 @@ Attach files directly to your brain dump notes:
 
 **File Reference Format:**
 
-```
+```text
 📎 Attachment: document.pdf (152.34 KB)
 ```
 
