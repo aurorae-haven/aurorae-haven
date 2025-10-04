@@ -14,7 +14,6 @@ import { getDataTemplate } from './dataManager'
     a.click()
     a.remove()
     URL.revokeObjectURL(a.href)
-    URL.revokeObjectURL(a.href)
     exported = true
     toast('Data exported (stellar_journey_data.json)')
   }
