@@ -107,7 +107,7 @@ Linting applies to **ALL files containing code**, not just JavaScript:
 - ESLint is installed and working
 - Configuration files exist for all linters (`.eslintrc.json`, `.prettierrc.json`, `.stylelintrc.json`, `.markdownlint.json`)
 - Scripts defined in `package.json` but some tools need installation
-- **Always clean environment first**: Remove `node_modules` and `package-lock.json`, then run `npm install` to regenerate lockfile, followed by `npm ci` for clean install
+- **Clean the environment when necessary**: If you encounter dependency conflicts, after major dependency changes, or when troubleshooting install issues, remove `node_modules` and `package-lock.json`, then run `npm install` to regenerate the lockfile, followed by `npm ci` for a clean install.
 - When tools are installed, enforce all rules; until then, prioritize ESLint
 
 **Before Suggesting ANY Code Changes:**
