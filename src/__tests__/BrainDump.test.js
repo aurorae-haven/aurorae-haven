@@ -280,35 +280,42 @@ describe('BrainDump Component', () => {
 
   describe('Export functionality', () => {
     test('exports content as markdown file', () => {
-      // Mock URL.createObjectURL and revokeObjectURL
-      global.URL.createObjectURL = jest.fn(() => 'blob:mock');
-      global.URL.revokeObjectURL = jest.fn();
-      
-      // Mock createElement to spy on the download link
+      // Store originals before mocking
+      const { createObjectURL, revokeObjectURL } = global.URL;
       const originalCreateElement = document.createElement;
-      const mockClick = jest.fn();
-      document.createElement = jest.fn((tag) => {
-        if (tag === 'a') {
-          const element = originalCreateElement.call(document, tag);
-          element.click = mockClick;
-          return element;
-        }
-        return originalCreateElement.call(document, tag);
-      });
       
-      render(<BrainDump />);
-      const textarea = screen.getByPlaceholderText('Start typing your thoughts...');
-      fireEvent.change(textarea, { target: { value: 'Export this content' } });
-      
-      // Find and click export button
-      const exportButton = screen.getAllByRole('button')[4]; // 5th button is export
-      fireEvent.click(exportButton);
-      
-      expect(mockClick).toHaveBeenCalled();
-      expect(global.URL.createObjectURL).toHaveBeenCalled();
-      
-      // Restore mocks
-      document.createElement = originalCreateElement;
+      try {
+        // Mock URL.createObjectURL and revokeObjectURL
+        global.URL.createObjectURL = jest.fn(() => 'blob:mock');
+        global.URL.revokeObjectURL = jest.fn();
+        
+        // Mock createElement to spy on the download link
+        const mockClick = jest.fn();
+        document.createElement = jest.fn((tag) => {
+          if (tag === 'a') {
+            const element = originalCreateElement.call(document, tag);
+            element.click = mockClick;
+            return element;
+          }
+          return originalCreateElement.call(document, tag);
+        });
+        
+        render(<BrainDump />);
+        const textarea = screen.getByPlaceholderText('Start typing your thoughts...');
+        fireEvent.change(textarea, { target: { value: 'Export this content' } });
+        
+        // Find and click export button
+        const exportButton = screen.getAllByRole('button')[4]; // 5th button is export
+        fireEvent.click(exportButton);
+        
+        expect(mockClick).toHaveBeenCalled();
+        expect(global.URL.createObjectURL).toHaveBeenCalled();
+      } finally {
+        // Restore all mocks
+        global.URL.createObjectURL = createObjectURL;
+        global.URL.revokeObjectURL = revokeObjectURL;
+        document.createElement = originalCreateElement;
+      }
     });
   });
 });
