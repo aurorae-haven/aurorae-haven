@@ -162,7 +162,15 @@ jobs:
   summary:
     name: Node sec and test summary
     runs-on: ubuntu-latest
-    needs: [ detect, meta-checks, markdown-links, super-linter, gitleaks, node-security ]
+    needs:
+      [
+        detect,
+        meta-checks,
+        markdown-links,
+        super-linter,
+        gitleaks,
+        node-security
+      ]
     if: always()
     steps:
       - name: Show job outcomes

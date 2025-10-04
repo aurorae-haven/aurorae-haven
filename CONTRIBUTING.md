@@ -133,6 +133,20 @@ rm -rf node_modules package-lock.json
 - No CSP violations (enforced by linters and CI)
 - Fix linting issues file-by-file, systematically
 
+**Linter Configuration:**
+
+All linter configuration files are located in the **repository root directory**:
+
+- `.eslintrc.json` - ESLint rules for JavaScript/JSX
+- `.prettierrc.json` - Prettier formatting rules
+- `.stylelintrc.json` - StyleLint rules for CSS/SCSS
+- `.markdownlint.json` - MarkdownLint rules
+- `.htmlhintrc` - HTMLHint rules for HTML validation
+- `.jscpd.json` - Copy-paste detection configuration
+- `.textlintrc` - Text linting configuration
+
+**Important**: Do NOT create duplicate configs in `.github/linters/`. Super-Linter will automatically use the root configs.
+
 **Super-Linter Integration:**
 
 Our CI uses GitHub Super-Linter to enforce these standards automatically. Before pushing:
