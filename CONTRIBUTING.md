@@ -24,7 +24,7 @@ Thank you for your interest in contributing to Aurorae Haven! This document prov
 
    ```bash
    git clone https://github.com/YOUR_USERNAME/my-stellar-trail.git
-   cd my-stellar-trail
+   cd aurorae-haven
    ```
 
 2. **Create a Branch**

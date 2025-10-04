@@ -69,6 +69,7 @@ jobs:
       - name: Check Markdown links
         run: |
           find . -name "*.md" -print0 | xargs -0 -n 1 markdown-link-check -q
+
   super-linter:
     name: Lint auto-detect
     runs-on: ubuntu-latest

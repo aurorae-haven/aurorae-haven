@@ -11,7 +11,10 @@
     "start": "react-scripts start",
     "test": "jest --coverage",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:md": "markdownlint '**/*.md' -i node_modules",
+    "lint:css": "stylelint \"**/*.{css,scss}\"",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "build": "react-scripts build && npm run prepare-dist",
     "prepare-dist": "bash scripts/prepare-dist.sh",
     "validate-pwa": "node scripts/validate-pwa.js"
@@ -34,7 +37,10 @@
     "cross-env": "^7.0.3",
     "eslint-config-react-app": "^7.0.1",
     "jest": "^27.5.1",
-    "react-scripts": "^5.0.1"
+    "markdownlint-cli": "^0.43.0",
+    "prettier": "^3.6.2",
+    "react-scripts": "^5.0.1",
+    "stylelint": "^16.25.0"
   },
   "browserslist": {
     "production": [
