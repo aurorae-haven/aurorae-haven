@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import { handleEnterKey } from '../utils/listContinuation'
 
 function BrainDump() {
   const [content, setContent] = useState('')
   const [preview, setPreview] = useState('')
+  const editorRef = useRef(null)
 
   // Load saved content on mount
   useEffect(() => {

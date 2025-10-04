@@ -9,6 +9,7 @@
   "license": "ISC",
   "scripts": {
     "start": "react-scripts start",
+    "test": "jest --coverage",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "build": "react-scripts build && npm run prepare-dist",
