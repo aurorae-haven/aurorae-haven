@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 
@@ -45,6 +45,26 @@ function BrainDump() {
     URL.revokeObjectURL(a.href)
   }
 
+  // Handle auto-list continuation on Enter key
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+      const editor = editorRef.current;
+      if (!editor) return;
+
+      const cursorPos = editor.selectionStart;
+      const result = handleEnterKey(editor.value, cursorPos);
+
+      if (result) {
+        e.preventDefault();
+        setContent(result.newValue);
+        // Set cursor position after state update
+        setTimeout(() => {
+          editor.selectionStart = editor.selectionEnd = result.newCursorPos;
+        }, 0);
+      }
+    }
+  }, []);
+
   return (
     <div className='card'>
       <div className='card-h'>
@@ -87,10 +107,12 @@ function BrainDump() {
         <div className='brain-dump-split'>
           <div className='editor-pane'>
             <textarea
-              id='editor'
-              placeholder='Start typing your thoughts...'
+              id="editor"
+              ref={editorRef}
+              placeholder="Start typing your thoughts..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
+              onKeyDown={handleKeyDown}
             />
           </div>
           <div className='preview-pane'>

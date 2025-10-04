@@ -27,5 +27,9 @@ build/
 # Test server
 test-server/
 
+# Testing and analysis
+coverage/
+audit-report.txt
+
 # Jupyter Notebook
 .ipynb_checkpoints/

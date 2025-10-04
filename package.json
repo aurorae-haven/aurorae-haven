@@ -12,7 +12,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "build": "react-scripts build && npm run prepare-dist",
-    "prepare-dist": "rm -rf dist && cp -r build dist && mkdir -p dist/src/utils dist/src/assets/styles && cp src/utils/pageHelpers.js dist/src/utils/ && cp src/assets/styles/styles.css dist/src/assets/styles/",
+    "prepare-dist": "rm -rf dist && cp -r build dist && mkdir -p dist/src/utils dist/src/assets/styles dist/src && cp src/utils/pageHelpers.js dist/src/utils/ && cp src/assets/styles/styles.css dist/src/assets/styles/ && cp src/main.js dist/src/ && cp src/braindump-ui.js dist/src/ && [ -f src/braindump-enhanced.js ] && cp src/braindump-enhanced.js dist/src/ || true",
     "validate-pwa": "node scripts/validate-pwa.js"
   },
   "dependencies": {
@@ -25,8 +25,15 @@
     "react-scripts": "^5.0.1"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "ajv": "^8.17.1",
-    "cross-env": "^7.0.3"
+    "babel-jest": "^30.2.0",
+    "cross-env": "^7.0.3",
+    "eslint-config-react-app": "^7.0.1",
+    "jest": "^27.5.1"
   },
   "browserslist": {
     "production": [
