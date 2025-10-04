@@ -107,7 +107,7 @@ Linting applies to **ALL files containing code**, not just JavaScript:
 - ESLint is installed and working
 - Configuration files exist for all linters (`.eslintrc.json`, `.prettierrc.json`, `.stylelintrc.json`, `.markdownlint.json`)
 - Scripts defined in `package.json` but some tools need installation
-- **Always run `npm ci` or `npm install` before testing/linting to ensure all dependencies are available**
+- **Always clean environment first**: Remove `node_modules` and `package-lock.json`, then run `npm install` to regenerate lockfile, followed by `npm ci` for clean install
 - When tools are installed, enforce all rules; until then, prioritize ESLint
 
 **Before Suggesting ANY Code Changes:**
@@ -219,8 +219,10 @@ When linting issues are detected, Copilot **MUST**:
 **Example Workflow:**
 
 ```bash
-# Step 0: Ensure dependencies are installed
-npm ci || npm install
+# Step 0: Clean environment and ensure dependencies are installed
+rm -rf node_modules package-lock.json
+npm install  # Regenerate lockfile
+npm ci       # Clean install
 
 # Step 1: Run linters to identify issues
 npm run lint
@@ -489,8 +491,10 @@ Aurorae Haven is a calm, astro-themed productivity app designed for neurodiverge
 **Before ANY code changes:**
 
 ```bash
-# Install dependencies first (if not already installed)
-npm ci || npm install
+# Clean environment and install dependencies
+rm -rf node_modules package-lock.json  # Clean up old state
+npm install                             # Regenerate package-lock.json
+npm ci                                  # Clean install from lockfile
 
 # Check current linting status (JavaScript/TypeScript only)
 npm run lint
@@ -552,6 +556,13 @@ npm run format                  # All files including YAML/JSON (if Prettier ins
 - Ensure test coverage doesn't decrease
 
 ### Before Committing
+
+0. **Clean environment and install dependencies**:
+   ```bash
+   rm -rf node_modules package-lock.json
+   npm install  # Regenerate lockfile
+   npm ci       # Clean install from lockfile
+   ```
 
 1. **Run all linters and fix issues**:
    ```bash

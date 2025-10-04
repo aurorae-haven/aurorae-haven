@@ -118,6 +118,15 @@ npm run format -- --check
 npm install --save-dev prettier stylelint markdownlint-cli
 ```
 
+**Clean Environment (recommended before testing):**
+
+```bash
+# Clean and regenerate dependencies
+rm -rf node_modules package-lock.json
+npm install  # Regenerate package-lock.json
+npm ci       # Clean install from lockfile
+```
+
 **Standards:**
 
 - **ZERO** ESLint errors in new/modified code
