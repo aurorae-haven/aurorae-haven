@@ -73,10 +73,18 @@ jobs:
   super-linter:
     name: Lint auto-detect
     runs-on: ubuntu-latest
+    needs: [detect]
+    if: ${{ needs.detect.outputs.has_node == 'true' }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci || npm install
       - uses: github/super-linter@v7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
