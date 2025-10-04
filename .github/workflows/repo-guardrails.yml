@@ -99,14 +99,12 @@ jobs:
           IGNORE_GENERATED_FILES: true
           FILTER_REGEX_EXCLUDE: '.*node_modules.*|.*\.git.*|.*build.*|.*dist.*|.*coverage.*'
 
-          # 🔑 Avoid MD "double validation": keep markdownlint, disable Prettier on MD
-          VALIDATE_MARKDOWN: true
+          # 🔑 Avoid MD "double validation": disable Prettier on Markdown
+          # (markdownlint will handle Markdown validation)
           VALIDATE_MARKDOWN_PRETTIER: false
 
-          # Keep Prettier for other languages if you want:
-          VALIDATE_CSS_PRETTIER: true
-          VALIDATE_JSON_PRETTIER: true
-          VALIDATE_JAVASCRIPT_PRETTIER: true
+          # Disable JavaScript Standard linter (using ESLint instead)
+          VALIDATE_JAVASCRIPT_STANDARD: false
 
           # Better output
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
