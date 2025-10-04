@@ -36,6 +36,8 @@ Thank you for your interest in contributing to Aurorae Haven! This document prov
 3. **Make Changes**
    - Follow the coding standards in `.github/copilot-instructions.md`
    - Keep changes focused and minimal
+   - Run linters before committing: `npm run lint && npm run format`
+   - Fix ALL linting errors and format issues
    - Test thoroughly in multiple browsers
 
 4. **Commit**
@@ -69,8 +71,76 @@ Thank you for your interest in contributing to Aurorae Haven! This document prov
 - All CSS in external `.css` files
 - Validate and sanitize all user input
 - No `eval()` or `Function()` usage
+- **ZERO** npm vulnerabilities in production dependencies
+- **ZERO** HIGH/CRITICAL vulnerabilities in dev dependencies
+- Run `npm audit` before every commit
+- All security vulnerabilities MUST be resolved before PR merge
 
-### Accessibility (WCAG 2.0 AA)
+### Code Quality & Linting (CRITICAL)
+
+**All code MUST pass linting before merge:**
+
+Linting applies to **ALL files containing code**, not just JavaScript:
+
+- **ESLint**: JavaScript/JSX code quality and style
+- **Prettier**: Consistent code formatting (all file types including YAML/JSON)
+- **StyleLint**: CSS/SCSS validation
+- **MarkdownLint**: Markdown documentation quality
+- **HTMLHint**: HTML validation (via Super-Linter in CI)
+- **Super-Linter**: Auto-validates all file types in CI/CD
+
+**Required Commands:**
+
+Note: `npm run lint` only lints JavaScript/TypeScript files. For other file types, use the commands below:
+
+```bash
+# Check JavaScript/TypeScript linting (works now)
+npm run lint
+
+# Auto-fix JavaScript/TypeScript linting issues (works now)
+npm run lint -- --fix
+
+# Lint other file types (once tools installed)
+npx stylelint "**/*.css"           # CSS files
+npx markdownlint "**/*.md"         # Markdown files
+
+# Format all files including YAML/JSON (requires installing prettier)
+npm run format
+
+# Check formatting without changes (requires prettier)
+npm run format -- --check
+```
+
+**Installation (if tools missing):**
+
+```bash
+# Install all linting tools
+npm install --save-dev prettier stylelint markdownlint-cli
+```
+
+**Clean Environment (recommended before testing):**
+
+````bash
+# Clean up dependencies
+rm -rf node_modules package-lock.json
+**Standards:**
+
+- **ZERO** ESLint errors in new/modified code
+- Maximum 20 ESLint warnings allowed in legacy code only
+- All files must be formatted with Prettier
+- No CSP violations (enforced by linters and CI)
+- Fix linting issues file-by-file, systematically
+
+**Super-Linter Integration:**
+
+Our CI uses GitHub Super-Linter to enforce these standards automatically. Before pushing:
+
+1. Run linters locally to catch issues early
+2. Fix all errors and warnings in your changed files
+3. Verify CI workflows pass (check GitHub Actions tab)
+4. If CI fails, read the logs and fix reported issues
+
+### Accessibility (WCAG 2.2 AA)
 
 - Use semantic HTML5 elements
 - Provide ARIA labels for interactive elements
@@ -128,7 +198,50 @@ Before submitting:
 └── .github/
     ├── copilot-instructions.md  # Full coding standards
     └── workflows/               # CI/CD
-```
+
+## CI/CD Workflows
+
+The repository uses automated workflows to ensure code quality:
+
+### Repository Guardrails (`.github/workflows/repo-guardrails.yml`)
+
+Runs on every pull request and checks:
+
+- **Meta checks**: Required files exist (README, CONTRIBUTING, Copilot instructions)
+- **Markdown links**: All documentation links are valid
+- **Super-Linter**: Comprehensive linting of all code
+- **Gitleaks**: Secret scanning to prevent credential leaks
+- **Node security**: npm audit and test execution
+
+**All checks MUST pass before merge.**
+
+### Build & Deploy (`.github/workflows/upload-pages-artifact.yml`)
+
+Runs on push to `main` or `feature-*` branches:
+
+1. **Test**: Run linters, tests, and security audits
+2. **Build**: Create production bundle in `dist/`
+3. **Deploy**: Publish to GitHub Pages
+
+**If any step fails, deployment is blocked.**
+
+### Monitoring Workflow Logs
+
+When CI fails:
+
+1. Go to GitHub Actions tab
+2. Click on the failed workflow run
+3. Read the logs to identify specific issues
+4. Fix issues file-by-file
+5. Push fixes and verify CI passes
+
+**Common Issues:**
+
+- Linting errors: Run `npm run lint -- --fix`
+- Formatting issues: Run `npm run format`
+- Security vulnerabilities: Run `npm audit` and update packages
+- Test failures: Run `npm test` locally and debug
+- Build failures: Run `npm run build` locally to reproduce
 
 ## Feature Development
 
@@ -141,6 +254,9 @@ When adding new features:
 5. Add to navigation with `data-nav="internal"`
 6. Update data version if schema changes
 7. Test data persistence
+8. **Run all linters and tests**
+9. **Verify npm audit shows zero vulnerabilities**
+10. **Ensure CI workflows pass**
 
 ## Documentation
 
