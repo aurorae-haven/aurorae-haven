@@ -485,13 +485,17 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 **Before ANY code changes:**
 
 ```bash
-# Check current linting status
+# Check current linting status (JavaScript/TypeScript only)
 npm run lint
 
 # Auto-fix ESLint issues where possible
 npm run lint -- --fix
 
-# Format with Prettier (if installed)
+# Lint other file types (if tools installed)
+npx stylelint "**/*.css"           # CSS files
+npx markdownlint "**/*.md"         # Markdown files
+
+# Format with Prettier (if installed) - handles all file types
 npm run format
 
 # Check formatting without changes (if Prettier installed)
@@ -500,7 +504,9 @@ npm run format -- --check
 
 **Linter Commands:**
 
-- `npm run lint` - Run ESLint on all JavaScript/JSX files (✅ works now)
+Note: `npm run lint` only lints JavaScript/TypeScript files. For comprehensive linting of all file types, use the commands below:
+
+- `npm run lint` - Run ESLint on JavaScript/JSX/TS/TSX files only (✅ works now)
 - `npm run lint -- --fix` - Auto-fix ESLint issues where possible (✅ works now)
 - `npm run format` - Run Prettier to format all files (requires: `npm install --save-dev prettier`)
 - `npm run format -- --check` - Check if files need formatting (requires Prettier)
@@ -509,6 +515,14 @@ npm run format -- --check
 - `npx stylelint "**/*.css"` - Lint CSS/SCSS files
 - `npx markdownlint "**/*.md"` - Lint Markdown files
 - HTML files validated by Super-Linter in CI (no separate local command needed)
+
+**To lint all file types locally:**
+```bash
+npm run lint                    # JavaScript/TypeScript
+npx stylelint "**/*.css"        # CSS (if installed)
+npx markdownlint "**/*.md"      # Markdown (if installed)
+npm run format                  # All files (if Prettier installed)
+```
 
 **Critical Requirements:**
 
@@ -532,8 +546,10 @@ npm run format -- --check
 
 1. **Run all linters and fix issues**:
    ```bash
-   npm run lint -- --max-warnings=0  # For new code
-   npm run format
+   npm run lint -- --max-warnings=0     # JavaScript/TypeScript only
+   npx stylelint "**/*.css" 2>/dev/null # CSS (if installed)
+   npx markdownlint "**/*.md" 2>/dev/null # Markdown (if installed)
+   npm run format                       # All file types (if Prettier installed)
    ```
 
 2. **Check for security vulnerabilities**:

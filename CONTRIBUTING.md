@@ -91,12 +91,18 @@ Linting applies to **ALL files containing code**, not just JavaScript:
 
 **Required Commands:**
 
+Note: `npm run lint` only lints JavaScript/TypeScript files. For other file types, use the commands below:
+
 ```bash
-# Check linting (works now)
+# Check JavaScript/TypeScript linting (works now)
 npm run lint
 
-# Auto-fix linting issues (works now)
+# Auto-fix JavaScript/TypeScript linting issues (works now)
 npm run lint -- --fix
+
+# Lint other file types (once tools installed)
+npx stylelint "**/*.css"           # CSS files
+npx markdownlint "**/*.md"         # Markdown files
 
 # Format all files (requires installing prettier)
 npm run format
