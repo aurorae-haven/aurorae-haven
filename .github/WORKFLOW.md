@@ -2,7 +2,7 @@
 
 ## Overview
 
-This repository uses GitHub Actions to automatically test, build, and deploy the Stellar Journey application to GitHub Pages.
+This repository uses GitHub Actions to automatically test, build, and deploy the Aurorae Haven application to GitHub Pages.
 
 ## Workflow: Build, Test & Deploy to GitHub Pages
 
@@ -55,7 +55,7 @@ Builds the production-ready application.
 3. **Install dependencies**
 4. **Build React PWA**:
    - Runs `npm run build`
-   - Sets PUBLIC_URL to '/my-stellar-trail'
+   - Sets PUBLIC_URL to '/aurorae-haven'
 5. **Verify build output**:
    - Checks that `dist/` directory exists
    - Verifies `index.html` is present
@@ -145,7 +145,7 @@ ls -la dist/
 
 1. **Check workflow status**: Navigate to the "Actions" tab in GitHub
 2. **View job details**: Click on any workflow run to see detailed logs
-3. **Monitor site**: Visit https://ayanimea.github.io/my-stellar-trail/
+3. **Monitor site**: Visit https://aurorae-haven.github.io/aurorae-haven/
 
 ## Troubleshooting
 

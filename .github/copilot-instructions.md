@@ -1,4 +1,4 @@
-# Copilot Instructions for My Stellar Trail
+# Copilot Instructions for Aurorae Haven
 
 ## Copilot Role
 
@@ -107,6 +107,7 @@ Linting applies to **ALL files containing code**, not just JavaScript:
 - ESLint is installed and working
 - Configuration files exist for all linters (`.eslintrc.json`, `.prettierrc.json`, `.stylelintrc.json`, `.markdownlint.json`)
 - Scripts defined in `package.json` but some tools need installation
+- **Always run `npm ci` or `npm install` before testing/linting to ensure all dependencies are available**
 - When tools are installed, enforce all rules; until then, prioritize ESLint
 
 **Before Suggesting ANY Code Changes:**
@@ -218,6 +219,9 @@ When linting issues are detected, Copilot **MUST**:
 **Example Workflow:**
 
 ```bash
+# Step 0: Ensure dependencies are installed
+npm ci || npm install
+
 # Step 1: Run linters to identify issues
 npm run lint
 
@@ -347,7 +351,7 @@ Before completing any PR, Copilot MUST verify:
 
 ## Project Overview
 
-My Stellar Trail is a calm, astro-themed productivity app designed for neurodivergent users. It helps manage routines, tasks, habits, notes, and stats with a focus on accessibility, security, and a peaceful user experience.
+Aurorae Haven is a calm, astro-themed productivity app designed for neurodivergent users. It helps manage routines, tasks, habits, notes, and stats with a focus on accessibility, security, and a peaceful user experience.
 
 **Tech Stack:**
 
@@ -485,6 +489,9 @@ My Stellar Trail is a calm, astro-themed productivity app designed for neurodive
 **Before ANY code changes:**
 
 ```bash
+# Install dependencies first (if not already installed)
+npm ci || npm install
+
 # Check current linting status (JavaScript/TypeScript only)
 npm run lint
 
@@ -600,7 +607,7 @@ function exportJSON() {
   const blob = new Blob([data], { type: 'application/json' })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = 'stellar_journey_data.json'
+  a.download = 'aurorae_haven_data.json'
   document.body.appendChild(a)
   a.click()
   a.remove()
@@ -614,7 +621,7 @@ function importJSON(file) {
     try {
       const imported = JSON.parse(e.target.result)
       // Validate and merge data
-      localStorage.setItem('stellar_data', JSON.stringify(imported))
+      localStorage.setItem('aurorae_data', JSON.stringify(imported))
       location.reload()
     } catch (err) {
       toast('Import failed: ' + err.message)
@@ -704,7 +711,7 @@ function markInternalNav() {
 ### Module Registration
 
 ```javascript
-window.StellarIO = { exportJSON, importJSON }
+window.AuroraeIO = { exportJSON, importJSON }
 ```
 
 ## Questions & Support
