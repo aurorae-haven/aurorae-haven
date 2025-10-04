@@ -99,10 +99,10 @@ root.render(
 
 // Register service worker for PWA functionality
 serviceWorkerRegistration.register({
-  onSuccess: (registration) => {
+  onSuccess: () => {
     console.log('[PWA] App is ready for offline use!')
   },
-  onUpdate: (registration) => {
+  onUpdate: () => {
     console.log('[PWA] New version available! Please refresh to update.')
   }
 })

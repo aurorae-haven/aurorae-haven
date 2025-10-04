@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (window.sjEvents && Array.isArray(window.sjEvents)) {
       events = window.sjEvents
     }
-  } catch {}
+  } catch (error) {
+    // Ignore errors when accessing window.sjEvents
+  }
   if (!events.length) {
     const stored = localStorage.getItem('sj.schedule.events')
     events = stored ? JSON.parse(stored) : []
