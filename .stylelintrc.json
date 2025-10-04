@@ -1,4 +1,5 @@
 {
+  "ignoreFiles": ["node_modules/**", "build/**", "dist/**", "coverage/**"],
   "rules": {
     "block-no-empty": true,
     "color-no-invalid-hex": true,
