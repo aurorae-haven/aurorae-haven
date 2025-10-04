@@ -75,7 +75,8 @@ Result: All PWA requirements met ✅
   - Modern JavaScript features (async/await, arrow functions)
   - No legacy var declarations
 
-**Note**: While the spec mentions Bootstrap, the current implementation uses custom CSS for the Glass-UI aesthetic. This provides better performance and maintains the calm, neurodivergent-friendly design goals.
+**Note**: While the spec mentions Bootstrap, the current implementation uses custom CSS for the Glass-UI aesthetic.
+This provides better performance and maintains the calm, neurodivergent-friendly design goals.
 
 ---
 
@@ -89,7 +90,7 @@ Result: All PWA requirements met ✅
 
 **File Structure**:
 
-```
+```text
 src/
 ├── index.js                    # Main React entry point
 ├── main.js                     # Global utilities (export/import)
@@ -306,6 +307,7 @@ All ARC-APP specifications are **fully compliant**:
 - ✅ **ARC-APP-03**: Modular component architecture throughout
 - ✅ **ARC-APP-04**: Installable as PWA on all supported browsers
 
-The deployment workflow has been fixed to properly build the React application, resolving the blank page issue. The app is now production-ready and will deploy correctly to GitHub Pages.
+The deployment workflow has been fixed to properly build the React application, resolving the blank page issue.
+The app is now production-ready and will deploy correctly to GitHub Pages.
 
 **Status**: Ready for deployment ✅

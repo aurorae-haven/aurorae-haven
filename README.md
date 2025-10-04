@@ -1,7 +1,8 @@
-# 🌌 My Stellar Trail
+# 🌌 Aurorae Haven
 
 > **A calm, astro-themed productivity app designed for neurodivergent users.**  
-> Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure local/mobile use.
+> Manage routines, tasks, habits, notes, and stats with Markdown import/export, reminders, gamification, and secure
+> local/mobile use.
 
 ---
 
@@ -31,8 +32,8 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/ayanimea/my-stellar-trail.git
-   cd my-stellar-trail
+   git clone https://github.com/aurorae-haven/aurorae-haven.git
+   cd aurorae-haven
    ```
 
 2. Install dependencies:
@@ -58,6 +59,7 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
    The production build will be in the `dist/` directory
 
 5. Test the production build locally:
+
    ```bash
    npm install -g serve
    serve -s dist
@@ -69,7 +71,7 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
 
 ### PWA Installation (Recommended)
 
-My Stellar Trail is now a Progressive Web App! You can install it on your device:
+Aurorae Haven is now a Progressive Web App! You can install it on your device:
 
 1. Visit the app in a modern browser (Chrome, Firefox, Edge, Safari)
 2. Look for the "Install" or "Add to Home Screen" prompt
@@ -111,14 +113,15 @@ My Stellar Trail is now a Progressive Web App! You can install it on your device
 
 ### Deployment
 
-The app is automatically deployed to GitHub Pages when changes are pushed to `main` or `feature-*` branches. The deployment workflow:
+The app is automatically deployed to GitHub Pages when changes are pushed to `main` or `feature-*` branches.
+The deployment workflow:
 
 1. Installs Node.js dependencies
 2. Builds the React application with `npm run build`
 3. Copies PWA assets (service worker, manifest, icons)
 4. Deploys to GitHub Pages
 
-**Live URL**: `https://ayanimea.github.io/my-stellar-trail/`
+**Live URL**: `https://aurorae-haven.github.io/aurorae-haven/`
 
 ---
 

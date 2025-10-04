@@ -1,19 +1,17 @@
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.(js|jsx)$': 'babel-jest',
+    '^.+\\.(js|jsx)$': 'babel-jest'
   },
-  transformIgnorePatterns: [
-    'node_modules/(?!(marked|dompurify)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(marked|dompurify)/)'],
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
   },
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.js'],
   testMatch: ['**/__tests__/**/*.js', '**/*.test.js'],
   collectCoverageFrom: [
     'src/**/*.{js,jsx}',
     '!src/index.js',
-    '!src/serviceWorkerRegistration.js',
-  ],
-};
+    '!src/serviceWorkerRegistration.js'
+  ]
+}

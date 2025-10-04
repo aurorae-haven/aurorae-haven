@@ -102,7 +102,10 @@ describe('Security: Link sanitization hook', () => {
     hookCallback(mockNode)
 
     expect(mockNode.setAttribute).toHaveBeenCalledWith('target', '_blank')
-    expect(mockNode.setAttribute).toHaveBeenCalledWith('rel', 'noopener noreferrer')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'rel',
+      'noopener noreferrer'
+    )
   })
 
   test('does not modify internal anchor links', () => {

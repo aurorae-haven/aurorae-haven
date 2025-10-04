@@ -33,7 +33,7 @@ export function exportJSON() {
   const blob = new Blob([data], { type: 'application/json' })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = 'stellar_journey_data.json'
+  a.download = 'aurorae_haven_data.json'
   document.body.appendChild(a)
   a.click()
   a.remove()
@@ -56,7 +56,7 @@ export async function importJSON(file) {
     }
 
     // Store in localStorage for persistence
-    localStorage.setItem('stellar_journey_data', JSON.stringify(obj))
+    localStorage.setItem('aurorae_haven_data', JSON.stringify(obj))
     return { success: true, message: 'Data imported successfully' }
   } catch (e) {
     console.error(e)

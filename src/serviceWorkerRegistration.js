@@ -1,4 +1,4 @@
-// Service Worker registration for My Stellar Trail PWA
+// Service Worker registration for Aurorae Haven PWA
 // Based on Create React App's PWA template
 
 const isLocalhost = Boolean(

@@ -1,10 +1,12 @@
 # Brain Dump Specifications (TAB-BDP)
 
-This document describes the implementation of Brain Dump specifications for My Stellar Trail.
+This document describes the implementation of Brain Dump specifications for Aurorae Haven.
 
 ## Overview
 
-The Brain Dump feature provides a Markdown-based note-taking interface with advanced features for managing thoughts, ideas, and notes. All features are designed with neurodivergent users in mind, maintaining a calm interface while providing powerful functionality.
+The Brain Dump feature provides a Markdown-based note-taking interface with advanced features for managing thoughts,
+ideas, and notes. All features are designed with neurodivergent users in mind, maintaining a calm interface while
+providing powerful functionality.
 
 ## Implemented Specifications
 
@@ -174,7 +176,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 
 ### File Structure
 
-```
+```text
 src/
 ├── braindump-enhanced.js     # Core functionality modules
 │   ├── configureSanitization()
@@ -265,4 +267,5 @@ Potential improvements for future versions:
 
 ## Support and Feedback
 
-For issues or feature requests related to Brain Dump specifications, please open an issue on the GitHub repository with the `brain-dump` label.
+For issues or feature requests related to Brain Dump specifications, please open an issue on the GitHub repository
+with the `brain-dump` label.
