@@ -274,7 +274,7 @@ describe('GDPR: Data export and privacy', () => {
 
   test('FileAttachments stores data locally (no external transmission)', async () => {
     const fileAttachments = new FileAttachments()
-
+    
     // FileAttachments should use OPFS (Origin Private File System)
     // which keeps data local to the browser
     expect(fileAttachments).toBeDefined()
@@ -293,7 +293,7 @@ describe('Security: Backlinks safe rendering', () => {
   test('renders backlinks safely without executing scripts', () => {
     const content = '[[Link]] content'
     const result = backlinks.renderLinks(content)
-
+    
     // Should convert to safe markdown link format
     expect(result).not.toContain('<script>')
     // eslint-disable-next-line no-script-url
@@ -311,14 +311,13 @@ describe('Security: Backlinks safe rendering', () => {
 
   test('allows clearing backlink data (GDPR compliance)', () => {
     // Store some entry data
-    localStorage.setItem(
-      'brainDumpEntries',
-      JSON.stringify([{ id: 1, content: '[[Note 2]]', timestamp: Date.now() }])
-    )
-
+    localStorage.setItem('brainDumpEntries', JSON.stringify([
+      { id: 1, content: '[[Note 2]]', timestamp: Date.now() }
+    ]))
+    
     // User can delete all data
     localStorage.removeItem('brainDumpEntries')
-
+    
     const stored = localStorage.getItem('brainDumpEntries')
     expect(stored).toBeNull()
   })
@@ -335,7 +334,7 @@ describe('Security: Input validation', () => {
 
   test('configureSanitization validates URI protocols', () => {
     const config = configureSanitization()
-
+    
     // Should allow safe protocols
     expect('https://example.com').toMatch(config.ALLOWED_URI_REGEXP)
     expect('http://example.com').toMatch(config.ALLOWED_URI_REGEXP)
@@ -346,7 +345,7 @@ describe('Security: Input validation', () => {
 
   test('configureSanitization prevents DOM-based XSS', () => {
     const config = configureSanitization()
-
+    
     // Should enable DOM sanitization
     expect(config.SANITIZE_DOM).toBe(true)
     expect(config.KEEP_CONTENT).toBe(true)
