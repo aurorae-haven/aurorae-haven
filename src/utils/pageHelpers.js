@@ -1,15 +1,8 @@
 // Export/Import + beforeunload only on real exit (suppress for internal nav)
-import { getDataTemplate, migrateStorageKey } from './dataManager'
-
-// Storage keys
-const NEW_STORAGE_KEY = 'aurorae_haven_data'
-
+import { getDataTemplate } from './dataManager'
 ;(function () {
   let exported = false
   let suppressPrompt = false
-
-  // Run migration on load
-  migrateStorageKey()
 
   function exportJSON() {
     const data = JSON.stringify(getDataTemplate(), null, 2)
@@ -39,7 +32,7 @@ const NEW_STORAGE_KEY = 'aurorae_haven_data'
       }
       // store in memory (mock); in real app, write to localStorage/db
       window.__SJ_DATA__ = obj
-      localStorage.setItem(NEW_STORAGE_KEY, JSON.stringify(obj))
+      localStorage.setItem('aurorae_haven_data', JSON.stringify(obj))
       exported = true // importing counts as having current data saved
       toast('Data imported successfully')
     } catch (e) {

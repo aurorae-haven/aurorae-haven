@@ -21,7 +21,7 @@ import Stats from './pages/Stats'
 import Settings from './pages/Settings'
 
 // Import utilities
-import { exportJSON, importJSON, migrateStorageKey } from './utils/dataManager'
+import { exportJSON, importJSON } from './utils/dataManager'
 
 function App() {
   const [toast, setToast] = useState({ visible: false, message: '' })
@@ -35,11 +35,6 @@ function App() {
       const path = redirectPath.replace(basename, '')
       window.history.replaceState(null, '', basename + path)
     }
-  }, [])
-
-  // Run migration on app load
-  React.useEffect(() => {
-    migrateStorageKey()
   }, [])
 
   const showToast = useCallback((message) => {
