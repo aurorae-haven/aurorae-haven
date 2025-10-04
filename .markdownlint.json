@@ -1,9 +1,9 @@
 {
   "default": true,
   "MD009": {
-    "br_spaces": 0,
+    "br_spaces": 2,
     "list_item_empty_lines": false,
-    "strict": true
+    "strict": false
   },
   "MD013": {
     "line_length": 200,
