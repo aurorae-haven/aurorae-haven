@@ -205,7 +205,7 @@ This command:
 - Push to any `feature-*` branch
 - Manual workflow dispatch
 
-**Deployment URL**: `https://ayanimea.github.io/my-stellar-trail/`
+**Deployment URL**: `https://aurorae-haven.github.io/aurorae-haven/`
 
 ---
 
