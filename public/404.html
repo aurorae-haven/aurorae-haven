@@ -5,16 +5,18 @@
     <title>Aurorae Haven</title>
     <script>
       // GitHub Pages SPA redirect workaround
-      // Store the path and redirect to index.html
+      // Store the current path (including query and hash) so the SPA can restore it after redirect
       sessionStorage.setItem(
         'redirectPath',
         location.pathname + location.search + location.hash
       )
-      location.replace(
+      // Compute the base path (directory containing this 404.html) to redirect to index.html
+      var basePath =
         location.origin +
-          location.pathname.split('/').slice(0, -1).join('/') +
-          '/'
-      )
+        location.pathname.split('/').slice(0, -1).join('/') +
+        '/'
+      // Redirect to the base path (index.html will handle the SPA routing)
+      location.replace(basePath)
     </script>
   </head>
   <body>
