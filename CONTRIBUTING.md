@@ -120,7 +120,7 @@ npm install --save-dev prettier stylelint markdownlint-cli
 
 **Clean Environment (recommended before testing):**
 
-```bash
+````bash
 # Clean up dependencies
 rm -rf node_modules package-lock.json
 **Standards:**
@@ -198,7 +198,7 @@ Before submitting:
 └── .github/
     ├── copilot-instructions.md  # Full coding standards
     └── workflows/               # CI/CD
-```
+````
 
 ## CI/CD Workflows
 

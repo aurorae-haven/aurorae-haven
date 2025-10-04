@@ -178,7 +178,7 @@ When workflow logs show security or test failures:
 Step: Run tests
 FAIL src/__tests__/Example.test.js
   ✕ should handle user input correctly (15 ms)
-  
+
   Expected: "Hello World"
   Received: undefined
 ```
@@ -306,10 +306,10 @@ npm audit --json > audit-report.json
    ```bash
    # Try automatic fix first
    npm audit fix
-   
+
    # If that fails, try force fix (review changes carefully)
    npm audit fix --force
-   
+
    # If still unresolved, manually update
    npm update <package>
    # or
@@ -321,7 +321,7 @@ npm audit --json > audit-report.json
    ```bash
    # Ensure vulnerability is resolved
    npm audit
-   
+
    # Ensure application still works
    npm test
    npm run build
