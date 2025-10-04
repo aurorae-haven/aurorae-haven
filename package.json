@@ -13,7 +13,7 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "format": "prettier --write .",
     "build": "react-scripts build && npm run prepare-dist",
-    "prepare-dist": "sh scripts/prepare-dist.sh",
+    "prepare-dist": "bash scripts/prepare-dist.sh",
     "validate-pwa": "node scripts/validate-pwa.js"
   },
   "dependencies": {
