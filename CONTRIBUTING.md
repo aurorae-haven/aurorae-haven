@@ -80,10 +80,14 @@ Thank you for your interest in contributing to Aurorae Haven! This document prov
 
 **All code MUST pass linting before merge:**
 
+Linting applies to **ALL files containing code**, not just JavaScript:
+
 - **ESLint**: JavaScript/JSX code quality and style
-- **Prettier**: Consistent code formatting
+- **Prettier**: Consistent code formatting (all file types)
 - **StyleLint**: CSS/SCSS validation
-- **MarkdownLint**: Documentation quality
+- **MarkdownLint**: Markdown documentation quality
+- **HTMLHint**: HTML validation (via Super-Linter in CI)
+- **Super-Linter**: Auto-validates all file types in CI/CD
 
 **Required Commands:**
 

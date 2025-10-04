@@ -94,10 +94,14 @@ Copilot **MUST** enforce linting standards equivalent to or stricter than those 
 
 **Mandatory Linting Tools:**
 
+Linting applies to **ALL files containing code**, not just JavaScript:
+
 - **ESLint** for JavaScript/JSX: Follow `.eslintrc.json` configuration (✅ installed)
-- **Prettier** for code formatting: Follow `.prettierrc.json` configuration (⚠️ script exists, must install: `npm install --save-dev prettier`)
-- **StyleLint** for CSS: Follow `.stylelintrc.json` configuration (⚠️ config exists, must install: `npm install --save-dev stylelint`)
-- **MarkdownLint** for Markdown: Follow `.markdownlint.json` configuration (⚠️ config exists, must install: `npm install --save-dev markdownlint-cli`)
+- **Prettier** for code formatting (all file types): Follow `.prettierrc.json` configuration (⚠️ script exists, must install: `npm install --save-dev prettier`)
+- **StyleLint** for CSS/SCSS: Follow `.stylelintrc.json` configuration (⚠️ config exists, must install: `npm install --save-dev stylelint`)
+- **MarkdownLint** for Markdown (.md files): Follow `.markdownlint.json` configuration (⚠️ config exists, must install: `npm install --save-dev markdownlint-cli`)
+- **HTMLHint** for HTML validation: Semantic HTML, accessibility, CSP compliance (validated by Super-Linter in CI)
+- **Super-Linter** in CI/CD: Auto-detects and validates all file types (JavaScript, CSS, HTML, Markdown, JSON, YAML, etc.)
 
 **Current State:**
 - ESLint is installed and working
@@ -107,11 +111,16 @@ Copilot **MUST** enforce linting standards equivalent to or stricter than those 
 
 **Before Suggesting ANY Code Changes:**
 
-1. **Analyze the target file type** and identify which linters apply
+1. **Analyze the target file type** and identify which linters apply:
+   - `.js`, `.jsx`, `.ts`, `.tsx` → ESLint + Prettier
+   - `.css`, `.scss` → StyleLint + Prettier
+   - `.md` → MarkdownLint + Prettier
+   - `.html` → HTMLHint (CI) + manual validation for semantic HTML, accessibility, CSP
+   - `.json`, `.yaml`, `.yml` → Prettier + Super-Linter (CI)
 2. **Review the linter configuration files** to understand active rules
 3. **Pre-check your proposed changes** against all applicable linter rules
 4. **Ensure zero linting errors** in your suggestions
-5. **Format code correctly** using Prettier standards
+5. **Format code correctly** using Prettier standards for all file types
 
 **Linting Rules Priority:**
 
@@ -136,7 +145,7 @@ Copilot **MUST** actively monitor and parse workflow run logs when available:
 
 **Workflow Jobs to Monitor:**
 
-- `super-linter`: Parse JavaScript, CSS, Markdown, and other file lint results
+- `super-linter`: Parse **ALL file type** lint results (JavaScript, CSS, HTML, Markdown, JSON, YAML, etc.)
 - `node-security`: Parse npm audit results for vulnerabilities
 - `gitleaks`: Parse secret detection results
 - `markdown-links`: Parse broken link reports
@@ -497,8 +506,9 @@ npm run format -- --check
 - `npm run format -- --check` - Check if files need formatting (requires Prettier)
 
 **Additional Linting** (once tools installed):
-- `npx stylelint "**/*.css"` - Lint CSS files
+- `npx stylelint "**/*.css"` - Lint CSS/SCSS files
 - `npx markdownlint "**/*.md"` - Lint Markdown files
+- HTML files validated by Super-Linter in CI (no separate local command needed)
 
 **Critical Requirements:**
 
