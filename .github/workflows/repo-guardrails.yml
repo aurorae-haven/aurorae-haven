@@ -96,9 +96,19 @@ jobs:
           VALIDATE_ALL_CODEBASE: true
           IGNORE_GENERATED_FILES: true
           FILTER_REGEX_EXCLUDE: '.*node_modules.*|.*\.git.*|.*build.*|.*dist.*|.*coverage.*'
+
+          # Disable conflicting linters - use Prettier/ESLint/Stylelint instead
+          VALIDATE_BIOME_FORMAT: false
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_MARKDOWN_PRETTIER: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
+
+          # Disable Python linters (not a Python project)
+          VALIDATE_PYTHON_BLACK: false
+          VALIDATE_PYTHON_RUFF: false
+
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
           SAVE_SUPER_LINTER_SUMMARY: true
-
 
   gitleaks:
     name: Secrets scan (CLI)
