@@ -72,31 +72,31 @@ function BrainDump() {
       <div className='card-h'>
         <strong>Brain Dump</strong>
         <div className='toolbar'>
-          <button className='btn'>
+          <button className='btn' aria-label='Bold'>
             <svg className='icon' viewBox='0 0 24 24'>
               <path d='M6 4h8a4 4 0 0 1 0 8H6z' />
               <path d='M6 12h9a4 4 0 0 1 0 8H6z' />
             </svg>
           </button>
-          <button className='btn'>
+          <button className='btn' aria-label='Code'>
             <svg className='icon' viewBox='0 0 24 24'>
               <path d='M7 17V7h10v10z' />
               <path d='M5 5v16h16V5z' />
             </svg>
           </button>
-          <button className='btn'>
+          <button className='btn' aria-label='List'>
             <svg className='icon' viewBox='0 0 24 24'>
               <path d='M8 6h13M8 12h13M8 18h13' />
               <path d='M3 6h.01M3 12h.01M3 18h.01' />
             </svg>
           </button>
-          <button className='btn' onClick={handleClear}>
+          <button className='btn' onClick={handleClear} aria-label='Clear'>
             <svg className='icon' viewBox='0 0 24 24'>
               <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
               <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
             </svg>
           </button>
-          <button className='btn' onClick={handleExport}>
+          <button className='btn' onClick={handleExport} aria-label='Export'>
             <svg className='icon' viewBox='0 0 24 24'>
               <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
               <polyline points='7 10 12 15 17 10' />
