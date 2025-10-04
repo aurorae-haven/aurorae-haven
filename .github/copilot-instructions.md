@@ -37,7 +37,7 @@ When suggesting code or reviews, Copilot should align with the following institu
 When reviewing code or suggesting changes, Copilot should follow this process:
 
 1. **Context scan** – Identify purpose, tech stack, scope, and where the change fits.
-2. **Workflow analysis** – If available, read and parse recent workflow run logs to identify linting errors, test failures, security issues, or deployment problems.
+2. **Workflow analysis** – If available, read and parse recent workflow run logs to identify linting errors, test failures, security issues, or deployment problems. **Reproduce test failures and security issues locally** before proposing fixes.
 3. **Linting pre-check** – Before suggesting code, verify it passes all applicable linters (ESLint, Prettier, StyleLint, MarkdownLint).
 4. **Constraints** – Note security, privacy, accessibility, and performance implications.
 5. **Accessibility review** – Enforce WCAG 2.2 AA, semantic HTML, ARIA only if needed, keyboard navigation, focus order, screen reader support.
@@ -129,8 +129,10 @@ Copilot **MUST** actively monitor and parse workflow run logs when available:
 1. **Read workflow logs** from all CI/CD runs (especially `repo-guardrails.yml` and `upload-pages-artifact.yml`)
 2. **Parse linting output** to identify specific files, line numbers, and rule violations
 3. **Extract security scan results** from Gitleaks, npm audit, and Super-Linter
-4. **Prioritize failures** by severity (critical → high → moderate → low)
-5. **Propose targeted fixes** for each identified issue, one file at a time
+4. **Parse test failures** from Jest and other test runners - identify failing tests and error messages
+5. **Reproduce failures locally** - run `npm test`, `npm audit`, and `npm run lint` to reproduce issues
+6. **Prioritize failures** by severity (critical → high → moderate → low)
+7. **Propose targeted fixes** for each identified issue, one file at a time
 
 **Workflow Jobs to Monitor:**
 
@@ -138,7 +140,7 @@ Copilot **MUST** actively monitor and parse workflow run logs when available:
 - `node-security`: Parse npm audit results for vulnerabilities
 - `gitleaks`: Parse secret detection results
 - `markdown-links`: Parse broken link reports
-- `test`: Parse Jest test failures and coverage reports
+- `test`: Parse Jest test failures and coverage reports - **CRITICAL: Reproduce failing tests locally**
 
 **Log Parsing Pattern:**
 
@@ -154,6 +156,42 @@ Copilot response:
 3. Identify the rule: `no-unused-vars`
 4. Propose fix: Remove unused variable or mark as used
 5. Apply fix and verify with linter
+
+**Security and Test Failure Pattern:**
+
+When workflow logs show security or test failures:
+```
+Step: Run tests
+FAIL src/__tests__/Example.test.js
+  ✕ should handle user input correctly (15 ms)
+  
+  Expected: "Hello World"
+  Received: undefined
+```
+
+Copilot response:
+1. **Parse the failure**: Identify test file, test name, and failure reason
+2. **Reproduce locally**: Run `npm test -- Example.test.js` to see the full error
+3. **Analyze the code**: Review the test and implementation to understand the issue
+4. **Fix the root cause**: Make minimal changes to fix the failing test
+5. **Verify the fix**: Re-run tests to ensure fix works and doesn't break other tests
+6. **Check coverage**: Ensure test coverage doesn't decrease
+
+For security scan failures (npm audit, Gitleaks):
+```
+Step: Node security
+found 1 high severity vulnerability
+Package: lodash@4.17.15
+```
+
+Copilot response:
+1. **Identify the vulnerability**: Package name, version, severity, CVE
+2. **Check if production**: Run `npm audit --omit=dev` to verify
+3. **Reproduce locally**: Run `npm audit` to see full details
+4. **Determine fix approach**: Update package or find alternative
+5. **Apply fix**: Run `npm update lodash` or `npm install lodash@latest`
+6. **Verify fix**: Re-run `npm audit` to confirm vulnerability is resolved
+7. **Test functionality**: Run `npm test` and `npm run build` to ensure no breakage
 
 ### Automated Lint Fixing
 
