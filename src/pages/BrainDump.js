@@ -50,22 +50,22 @@ function BrainDump() {
   // Handle auto-list continuation on Enter key
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
-      const editor = editorRef.current;
-      if (!editor) return;
+      const editor = editorRef.current
+      if (!editor) return
 
-      const cursorPos = editor.selectionStart;
-      const result = handleEnterKey(editor.value, cursorPos);
+      const cursorPos = editor.selectionStart
+      const result = handleEnterKey(editor.value, cursorPos)
 
       if (result) {
-        e.preventDefault();
-        setContent(result.newValue);
+        e.preventDefault()
+        setContent(result.newValue)
         // Set cursor position after state update
         setTimeout(() => {
-          editor.selectionStart = editor.selectionEnd = result.newCursorPos;
-        }, 0);
+          editor.selectionStart = editor.selectionEnd = result.newCursorPos
+        }, 0)
       }
     }
-  }, []);
+  }, [])
 
   return (
     <div className='card'>
@@ -109,9 +109,9 @@ function BrainDump() {
         <div className='brain-dump-split'>
           <div className='editor-pane'>
             <textarea
-              id="editor"
+              id='editor'
               ref={editorRef}
-              placeholder="Start typing your thoughts..."
+              placeholder='Start typing your thoughts...'
               value={content}
               onChange={(e) => setContent(e.target.value)}
               onKeyDown={handleKeyDown}

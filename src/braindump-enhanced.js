@@ -80,8 +80,8 @@ export function configureSanitization() {
         href &&
         // eslint-disable-next-line no-script-url
         (href.trim().toLowerCase().startsWith('javascript:') ||
-         href.trim().toLowerCase().startsWith('data:') ||
-         href.trim().toLowerCase().startsWith('vbscript:'))
+          href.trim().toLowerCase().startsWith('data:') ||
+          href.trim().toLowerCase().startsWith('vbscript:'))
       ) {
         node.removeAttribute('href')
       }
