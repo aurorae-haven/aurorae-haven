@@ -341,7 +341,7 @@ describe('BrainDump Component', () => {
       fireEvent.change(textarea, { target: { value: 'Export this content' } })
 
       // Find and click export button
-      const exportButton = screen.getAllByRole('button')[4] // 5th button is export
+      const exportButton = screen.getByRole('button', { name: /export/i })
       fireEvent.click(exportButton)
 
       expect(mockClick).toHaveBeenCalled()
