@@ -81,6 +81,7 @@ export function configureSanitization() {
         (href.trim().toLowerCase().startsWith('javascript:') ||
          href.trim().toLowerCase().startsWith('data:') ||
          href.trim().toLowerCase().startsWith('vbscript:'))
+        
       ) {
         node.removeAttribute('href')
       }
