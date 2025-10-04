@@ -1,174 +1,231 @@
 <!doctype html>
 <html lang="en">
-<head>
-\1<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Schedule — Stellar Journey v11</title>
-<link rel="stylesheet" href="../../src/assets/styles/styles.css">
-<script>
-// Export/Import + beforeunload only on real exit (suppress for internal nav)
-(function(){
-  let exported = false;
-  let suppressPrompt = false;
-
-  function dataTemplate(){
-    return {
-      version: 1,
-      tasks:[{id:1,title:"Email report",done:false}],
-      sequences:[{id:"seq_1",name:"Morning Launch",steps:[{label:"Water",sec:30},{label:"Meds",sec:90},{label:"Stretch",sec:300}]}],
-      habits:[{id:"hab_1",name:"Read 10m",streak:4,paused:false}],
-      dumps:[{id:"dump_1",ts:Date.now(),text:"Idea: export reminder."}],
-      schedule:[{day:new Date().toISOString().slice(0,10), blocks:[{type:"sequence",ref:"seq_1",start:"07:00",dur_min:30}]}]
-    };
-  }
-
-  function exportJSON(){
-    const data = JSON.stringify(dataTemplate(), null, 2);
-    const blob = new Blob([data], {type:"application/json"});
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "stellar_journey_data.json";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    exported = true;
-    toast("Data exported (stellar_journey_data.json)");
-  }
-
-  async function importJSON(file){
-    try{
-      const text = await file.text();
-      const obj = JSON.parse(text);
-      // minimal validation
-      if(!obj.version || !Array.isArray(obj.tasks) || !Array.isArray(obj.sequences)){
-        throw new Error("Invalid schema");
+  <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests"
+    />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Schedule — Stellar Journey v11</title>
+    <link rel="stylesheet" href="../../src/assets/styles/styles.css" />
+    <script src="../../src/utils/pageHelpers.js"></script>
+    <script>
+      function toggleRunner(show = true) {
+        document.getElementById('runner').style.display = show ? 'flex' : 'none'
       }
-      // store in memory (mock); in real app, write to localStorage/db
-      window.__SJ_DATA__ = obj;
-      exported = true; // importing counts as having current data saved
-      toast("Data imported successfully");
-    }catch(e){
-      console.error(e);
-      toast("Import failed: " + e.message);
-    }
-  }
-
-  function toast(msg){
-    const t = document.getElementById("toast"); if(!t) return;
-    t.textContent = msg; t.style.display="block"; setTimeout(()=>{t.style.display="none"}, 3800);
-  }
-
-  // Detect internal navigation and suppress the prompt for that event
-  function markInternalNav(e){
-    suppressPrompt = true;
-    setTimeout(()=>{ suppressPrompt = false; }, 2000); // safety window
-  }
-
-  window.StellarIO = {exportJSON, importJSON};
-  window.addEventListener("beforeunload", function (e){
-    // If navigating via internal links/buttons (we mark it), don't prompt
-    if(suppressPrompt) return;
-    if(!exported){
-      e.preventDefault();
-      e.returnValue = "";
-      toast("Heads-up: export your data before leaving.");
-      return "";
-    }
-  });
-
-  // Attach to all internal nav anchors
-  window.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll('a[data-nav="internal"]').forEach(a=>{
-      a.addEventListener("click", markInternalNav, {capture:true});
-    });
-  });
-})();
-
-function toggleRunner(show=true){
-  document.getElementById('runner').style.display = show ? 'flex' : 'none';
-}
-</script>
-</head>
-<body>
-<div class="planet-wrap"><div class="planet"></div></div><header class="appbar"><div class="inner"><div class="logo" aria-hidden="true"></div><div class="brand"><b>Stellar Journey</b><small>Explore your orbit. Follow your path.</small></div><nav class="appnav" aria-label="Main"><a class="item active" href="schedule.html" data-nav="internal"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Schedule</span></a><a class="item" href="sequences.html" data-nav="internal"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v5l3 2"/><path d="M9 2h6"/></svg><span>Sequences</span></a><a class="item" href="braindump.html" data-nav="internal"><svg class="icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z"/></svg><span>Brain Dump</span></a><a class="item" href="#" data-nav="internal"><svg class="icon" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Tasks</span></a><a class="item" href="#" data-nav="internal"><svg class="icon" viewBox="0 0 24 24"><path d="M7 20s6-3 6-10V4"/><path d="M14 4s5 0 6 5c-5 1-6-5-6-5z"/><path d="M2 9c2-5 8-5 8-5s0 6-8 5z"/></svg><span>Habits</span></a><a class="item" href="#" data-nav="internal"><svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="9" width="3" height="9"/><rect x="17" y="5" width="3" height="13"/></svg><span>Stats</span></a><a class="item" href="#" data-nav="internal"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z"/></svg><span>Settings</span></a></nav><div style="display:flex;gap:8px;margin-left:12px">
-      <button class="btn" onclick="StellarIO.exportJSON()">Export</button>
-      <label class="btn" style="cursor:pointer">Import
-        <input id="importer" type="file" accept="application/json" style="display:none" onchange="StellarIO.importJSON(this.files[0])">
-      </label>
-    </div></div></header>
-<div class="shell">
-  <div class="card">
-    <div class="card-h">
-      <div style="display:flex;align-items:center;gap:10px">
-        <strong>Schedule</strong>
-        <span class="small">Today · Tue Sep 16, 2025</span>
+    </script>
+  </head>
+  <body>
+    <div class="planet-wrap"><div class="planet"></div></div>
+    <header class="appbar">
+      <div class="inner">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="brand">
+          <b>Stellar Journey</b
+          ><small>Explore your orbit. Follow your path.</small>
+        </div>
+        <nav class="appnav" aria-label="Main">
+          <a class="item active" href="schedule.html" data-nav="internal"
+            ><svg class="icon" viewBox="0 0 24 24">
+              <rect x="3" y="4" width="18" height="18" rx="2" />
+              <path d="M16 2v4M8 2v4M3 10h18" /></svg
+            ><span>Schedule</span></a
+          ><a class="item" href="sequences.html" data-nav="internal"
+            ><svg class="icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="13" r="8" />
+              <path d="M12 9v5l3 2" />
+              <path d="M9 2h6" /></svg
+            ><span>Sequences</span></a
+          ><a class="item" href="braindump.html" data-nav="internal"
+            ><svg class="icon" viewBox="0 0 24 24">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path
+                d="M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z"
+              /></svg
+            ><span>Brain Dump</span></a
+          ><a class="item" href="#" data-nav="internal"
+            ><svg class="icon" viewBox="0 0 24 24">
+              <path d="M8 6h13M8 12h13M8 18h13" />
+              <path d="M3 6h.01M3 12h.01M3 18h.01" /></svg
+            ><span>Tasks</span></a
+          ><a class="item" href="#" data-nav="internal"
+            ><svg class="icon" viewBox="0 0 24 24">
+              <path d="M7 20s6-3 6-10V4" />
+              <path d="M14 4s5 0 6 5c-5 1-6-5-6-5z" />
+              <path d="M2 9c2-5 8-5 8-5s0 6-8 5z" /></svg
+            ><span>Habits</span></a
+          ><a class="item" href="#" data-nav="internal"
+            ><svg class="icon" viewBox="0 0 24 24">
+              <path d="M3 3v18h18" />
+              <rect x="7" y="12" width="3" height="6" />
+              <rect x="12" y="9" width="3" height="9" />
+              <rect x="17" y="5" width="3" height="13" /></svg
+            ><span>Stats</span></a
+          ><a class="item" href="#" data-nav="internal"
+            ><svg class="icon" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z"
+              /></svg
+            ><span>Settings</span></a
+          >
+        </nav>
+        <div style="display: flex; gap: 8px; margin-left: 12px">
+          <button class="btn" onclick="StellarIO.exportJSON()">Export</button>
+          <label class="btn" style="cursor: pointer"
+            >Import
+            <input
+              id="importer"
+              type="file"
+              accept="application/json"
+              style="display: none"
+              onchange="StellarIO.importJSON(this.files[0])"
+            />
+          </label>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn">Day</button>
-        <button class="btn">Week</button>
-        <button class="btn"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Sequence</button>
-        <button class="btn"><svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Task</button>
+    </header>
+    <div class="shell">
+      <div class="card">
+        <div class="card-h">
+          <div style="display: flex; align-items: center; gap: 10px">
+            <strong>Schedule</strong>
+            <span class="small">Today · Tue Sep 16, 2025</span>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center">
+            <button class="btn">Day</button>
+            <button class="btn">Week</button>
+            <button class="btn">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Sequence
+            </button>
+            <button class="btn">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+              Task
+            </button>
+          </div>
+        </div>
+        <div class="card-b layout-schedule">
+          <aside class="sidebar">
+            <div class="card">
+              <div class="card-h"><strong>Today's queue</strong></div>
+              <div class="card-b">
+                <div class="list">
+                  <div class="list-row">
+                    <span>Deep Work Warmup</span
+                    ><button class="btn" onclick="toggleRunner(true)">
+                      <svg class="icon" viewBox="0 0 24 24">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card" style="margin-top: 12px">
+              <div class="card-h"><strong>Tasks</strong></div>
+              <div class="card-b">
+                <div class="list">
+                  <div class="list-row"><span>Buy groceries</span></div>
+                </div>
+              </div>
+            </div>
+          </aside>
+          <section>
+            <div class="calendar">
+              <div class="hours">
+                <div class="hour-col">
+                  <div class="h">06:00</div>
+                  <div class="h">07:00</div>
+                  <div class="h">08:00</div>
+                  <div class="h">09:00</div>
+                  <div class="h">10:00</div>
+                  <div class="h">11:00</div>
+                  <div class="h">12:00</div>
+                  <div class="h">13:00</div>
+                  <div class="h">14:00</div>
+                  <div class="h">15:00</div>
+                  <div class="h">16:00</div>
+                  <div class="h">17:00</div>
+                  <div class="h">18:00</div>
+                  <div class="h">19:00</div>
+                  <div class="h">20:00</div>
+                  <div class="h">21:00</div>
+                </div>
+                <div class="slots" style="height: 736px">
+                  <div
+                    class="block"
+                    style="top: 46px; height: 23px"
+                    onclick="toggleRunner(true)"
+                  >
+                    <div class="title">Morning Launch</div>
+                    <div class="meta">07:00–07:30</div>
+                    <div class="progress"><i style="width: 30%"></i></div>
+                  </div>
+                  <div class="block task" style="top: 460px; height: 23px">
+                    <div class="title">Buy groceries</div>
+                    <div class="meta">16:00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
-    <div class="card-b layout-schedule">
-      <aside class="sidebar">
-        <div class="card"><div class="card-h"><strong>Today's queue</strong></div>
-          <div class="card-b">
-            <div class="list">
-              <div class="list-row"><span>Deep Work Warmup</span><button class="btn" onclick="toggleRunner(true)"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></button></div>
-            </div>
-          </div>
-        </div>
-        <div class="card" style="margin-top:12px"><div class="card-h"><strong>Tasks</strong></div>
-          <div class="card-b">
-            <div class="list">
-              <div class="list-row"><span>Buy groceries</span></div>
-            </div>
-          </div>
-        </div>
-      </aside>
-      <section>
-        <div class="calendar">
-          <div class="hours">
-            <div class="hour-col">
-              <div class="h">06:00</div><div class="h">07:00</div><div class="h">08:00</div><div class="h">09:00</div><div class="h">10:00</div><div class="h">11:00</div><div class="h">12:00</div><div class="h">13:00</div><div class="h">14:00</div><div class="h">15:00</div><div class="h">16:00</div><div class="h">17:00</div><div class="h">18:00</div><div class="h">19:00</div><div class="h">20:00</div><div class="h">21:00</div>
-            </div>
-            <div class="slots" style="height:736px">
-              <div class="block" style="top:46px; height:23.0px" onclick="toggleRunner(true)">
-                <div class="title">Morning Launch</div>
-                <div class="meta">07:00–07:30</div>
-                <div class="progress"><i style="width:30%"></i></div>
-              </div>
-              <div class="block task" style="top:460px; height:23.0px">
-                <div class="title">Buy groceries</div>
-                <div class="meta">16:00</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div>
-</div>
 
-<!-- Runner overlay -->
-<div id="runner">
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div class="small">Sequence timer</div>
-      <div style="font-weight:700">00:12:34</div>
+    <!-- Runner overlay -->
+    <div id="runner">
+      <div class="panel">
+        <div
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          "
+        >
+          <div class="small">Sequence timer</div>
+          <div style="font-weight: 700">00:12:34</div>
+        </div>
+        <div style="margin-top: 8px" class="progress">
+          <i style="width: 45%"></i>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 8px">
+          <button class="btn">
+            <svg class="icon" viewBox="0 0 24 24">
+              <polygon points="5 3 19 12 5 21 5 3" />
+            </svg>
+            Start
+          </button>
+          <button class="btn">
+            <svg class="icon" viewBox="0 0 24 24">
+              <rect x="6" y="4" width="4" height="16" />
+              <rect x="14" y="4" width="4" height="16" />
+            </svg>
+            Pause
+          </button>
+          <button class="btn">
+            <svg class="icon" viewBox="0 0 24 24">
+              <rect x="6" y="6" width="12" height="12" rx="2" />
+            </svg>
+            Stop
+          </button>
+          <button class="btn">
+            <svg class="icon" viewBox="0 0 24 24">
+              <polygon points="5 4 15 12 5 20 5 4" />
+              <rect x="17" y="4" width="2" height="16" />
+            </svg>
+            Skip
+          </button>
+          <button class="btn" onclick="toggleRunner(false)">Close</button>
+        </div>
+      </div>
     </div>
-    <div style="margin-top:8px" class="progress"><i style="width:45%"></i></div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Start</button>
-      <button class="btn"><svg class="icon" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Pause</button>
-      <button class="btn"><svg class="icon" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg> Stop</button>
-      <button class="btn"><svg class="icon" viewBox="0 0 24 24"><polygon points="5 4 15 12 5 20 5 4"/><rect x="17" y="4" width="2" height="16"/></svg> Skip</button>
-      <button class="btn" onclick="toggleRunner(false)">Close</button>
-    </div>
-  </div>
-</div>
-<div id="toast" class="toast"></div>
-<script type="module" src="../../src/schedule.js"></script>
-</body>
+    <div id="toast" class="toast"></div>
+    <script type="module" src="../../src/schedule.js"></script>
+  </body>
 </html>

@@ -1,0 +1,8 @@
+{
+  "filters": {},
+  "rules": {
+    "terminology": {
+      "defaultTerms": false
+    }
+  }
+}

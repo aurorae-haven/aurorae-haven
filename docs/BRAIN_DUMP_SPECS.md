@@ -13,6 +13,7 @@ The Brain Dump feature provides a Markdown-based note-taking interface with adva
 **Requirement**: Brain Dump entries shall support local attachments stored in OPFS.
 
 **Implementation**:
+
 - Uses Origin Private File System (OPFS) for secure, private file storage
 - Files are stored directly in the browser's private file system
 - Supports attachment via file picker
@@ -20,6 +21,7 @@ The Brain Dump feature provides a Markdown-based note-taking interface with adva
 - Graceful fallback for browsers without OPFS support
 
 **Usage**:
+
 1. Click the "📎 Attach" button in the toolbar
 2. Select a file from your device
 3. File is stored in OPFS and reference is inserted into the editor
@@ -32,6 +34,7 @@ The Brain Dump feature provides a Markdown-based note-taking interface with adva
 **Requirement**: The Brain Dump tab shall provide backlinks and a backlinks panel.
 
 **Implementation**:
+
 - Wiki-style link syntax: `[[link text]]`
 - Links are automatically converted to clickable elements in preview
 - Backlinks panel shows all links in current document
@@ -39,12 +42,14 @@ The Brain Dump feature provides a Markdown-based note-taking interface with adva
 - Keyboard accessible with proper ARIA labels
 
 **Usage**:
+
 1. Use `[[link text]]` syntax in your markdown
 2. Links appear as clickable elements in preview
 3. Click "🔗 Backlinks" button to view all links in current document
 4. Links are styled with dashed underline and hover effects
 
 **Example**:
+
 ```markdown
 This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 ```
@@ -54,6 +59,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 **Requirement**: Brain Dump entries shall support version history with diffs and restore.
 
 **Implementation**:
+
 - Automatic version snapshots saved every 5 seconds of inactivity
 - Stores last 50 versions in localStorage
 - Version history panel shows all saved versions with timestamps
@@ -62,6 +68,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 - Visual diff with color coding (green for additions, red for removals)
 
 **Usage**:
+
 1. Click "📜 History" button to open version history
 2. View list of all saved versions with timestamps and previews
 3. Click "View Diff" to see changes between selected version and current
@@ -69,6 +76,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 5. Press Escape to close modals
 
 **Keyboard Shortcuts**:
+
 - `Ctrl/Cmd + H`: Open version history
 
 **Storage**: Versions stored in `localStorage` key: `brainDumpVersions`
@@ -78,6 +86,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 **Requirement**: The Markdown renderer shall enforce sanitisation rules and safe links.
 
 **Implementation**:
+
 - Enhanced DOMPurify configuration with strict allow-lists
 - Only safe HTML tags and attributes permitted
 - External links automatically open in new tab with `rel="noopener noreferrer"`
@@ -86,6 +95,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 - Safe handling of user-generated content
 
 **Allowed Tags**:
+
 - Headings: h1, h2, h3, h4, h5, h6
 - Text: p, br, hr, strong, em, code, pre, blockquote
 - Lists: ul, ol, li
@@ -94,11 +104,13 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 - Interactive: input (for checkboxes only)
 
 **Forbidden**:
+
 - Scripts: script, style, iframe, object, embed
 - Event handlers: onerror, onload, onclick, onmouseover, etc.
 - Unsafe URIs: javascript:, data: (in links)
 
 **Link Safety**:
+
 - External HTTP/HTTPS links: Open in new tab with security attributes
 - Internal anchors (#): Safe, allowed
 - Other protocols: Blocked
@@ -110,34 +122,40 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 **Implementation**:
 
 #### Screen Reader Support
+
 - Live region announcements for important state changes
 - Descriptive ARIA labels on all interactive elements
 - Screen reader-only text for context where needed
 - Semantic HTML structure
 
 #### Keyboard Navigation
+
 - Full keyboard support for all features
 - Focus management in modals
 - Escape key closes modals
 - Keyboard shortcuts for common actions
 
 #### Focus Indicators
+
 - Visible focus outlines on all focusable elements
 - High contrast focus indicators
 - Consistent focus styling across components
 
 #### Semantic Structure
+
 - Proper ARIA roles (dialog, status, article, textbox)
 - Multi-line textbox for editor
 - Article role for preview with live updates
 - Status announcements for operations
 
 #### Keyboard Shortcuts
+
 - `Ctrl/Cmd + S`: Export markdown
 - `Ctrl/Cmd + H`: Open version history
 - `Escape`: Close modals
 
 #### Screen Reader Announcements
+
 - "Preview updated" when content changes
 - "Task marked complete/incomplete" for checkbox changes
 - "File [name] attached" when file is attached
@@ -146,6 +164,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 - "Markdown exported" when exporting
 
 #### Accessibility Labels
+
 - Editor: "Markdown editor for brain dump notes"
 - Preview: "Markdown preview"
 - Each checkbox: "Task checkbox [number]"
@@ -154,6 +173,7 @@ This relates to [[Project Alpha]] and [[Meeting Notes 2024-01]]
 ## Technical Details
 
 ### File Structure
+
 ```
 src/
 ├── braindump-enhanced.js     # Core functionality modules
@@ -168,17 +188,20 @@ src/
 ```
 
 ### Storage Keys
+
 - `brainDumpContent`: Current editor content
 - `brainDumpTags`: Tag palette HTML
 - `brainDumpVersions`: Version history array
 - `brainDumpEntries`: Structured entries (future use)
 
 ### Browser Compatibility
+
 - **Core Features**: All modern browsers (Chrome, Firefox, Safari, Edge)
 - **OPFS File Attachments**: Chrome 86+, Edge 86+, Opera 72+
 - **Graceful Degradation**: Features degrade gracefully when not supported
 
 ### Security Considerations
+
 - Content Security Policy (CSP) compliant
 - No inline scripts or styles
 - DOMPurify sanitization for all user content
@@ -189,6 +212,7 @@ src/
 ## Testing Recommendations
 
 ### Manual Testing Checklist
+
 - [ ] Create notes with various markdown syntax
 - [ ] Test backlinks with `[[link]]` syntax
 - [ ] Save and restore versions
@@ -204,12 +228,14 @@ src/
 - [ ] Verify content sanitization
 
 ### Browser Testing
+
 - Chrome/Edge (latest)
 - Firefox (latest)
 - Safari (latest)
 - Test with OPFS disabled (Firefox)
 
 ### Accessibility Testing
+
 - Use screen reader (NVDA, JAWS, VoiceOver)
 - Keyboard-only navigation
 - Check color contrast ratios
@@ -219,6 +245,7 @@ src/
 ## Future Enhancements
 
 Potential improvements for future versions:
+
 1. Search across all brain dump entries
 2. Tag-based filtering and organization
 3. Export entire history as archive
