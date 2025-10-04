@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Prepare distribution folder from build
 
 echo "📦 Preparing dist folder..."
