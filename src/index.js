@@ -21,7 +21,7 @@ import Stats from './pages/Stats'
 import Settings from './pages/Settings'
 
 // Import utilities
-import { exportJSON, importJSON } from './utils/dataManager'
+import { exportJSON, importJSON, migrateStorageKey } from './utils/dataManager'
 
 function App() {
   const [toast, setToast] = useState({ visible: false, message: '' })
@@ -37,6 +37,11 @@ function App() {
     }
   }, [])
 
+  // Run migration on app load
+  React.useEffect(() => {
+    migrateStorageKey()
+  }, [])
+
   const showToast = useCallback((message) => {
     setToast({ visible: true, message })
   }, [])
@@ -47,7 +52,7 @@ function App() {
 
   const handleExport = useCallback(() => {
     exportJSON()
-    showToast('Data exported (stellar_journey_data.json)')
+    showToast('Data exported (aurorae_haven_data.json)')
   }, [showToast])
 
   const handleImport = useCallback(

@@ -1,21 +1,28 @@
 // Export/Import + beforeunload only on real exit (suppress for internal nav)
-import { getDataTemplate } from './dataManager'
+import { getDataTemplate, migrateStorageKey } from './dataManager'
+
+// Storage keys
+const NEW_STORAGE_KEY = 'aurorae_haven_data'
+
 ;(function () {
   let exported = false
   let suppressPrompt = false
+
+  // Run migration on load
+  migrateStorageKey()
 
   function exportJSON() {
     const data = JSON.stringify(getDataTemplate(), null, 2)
     const blob = new Blob([data], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = 'stellar_journey_data.json'
+    a.download = 'aurorae_haven_data.json'
     document.body.appendChild(a)
     a.click()
     a.remove()
     URL.revokeObjectURL(a.href)
     exported = true
-    toast('Data exported (stellar_journey_data.json)')
+    toast('Data exported (aurorae_haven_data.json)')
   }
 
   async function importJSON(file) {
@@ -32,7 +39,7 @@ import { getDataTemplate } from './dataManager'
       }
       // store in memory (mock); in real app, write to localStorage/db
       window.__SJ_DATA__ = obj
-      localStorage.setItem('stellar_journey_data', JSON.stringify(obj))
+      localStorage.setItem(NEW_STORAGE_KEY, JSON.stringify(obj))
       exported = true // importing counts as having current data saved
       toast('Data imported successfully')
     } catch (e) {

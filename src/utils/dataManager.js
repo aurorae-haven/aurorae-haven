@@ -1,5 +1,40 @@
 // Data management utilities for export/import functionality
 
+// Storage keys
+const OLD_STORAGE_KEY = 'stellar_journey_data'
+const NEW_STORAGE_KEY = 'aurorae_haven_data'
+
+/**
+ * Migrate data from old storage key to new storage key
+ * This ensures existing users don't lose their data when we change the key
+ */
+export function migrateStorageKey() {
+  try {
+    // Check if new key already has data
+    const newData = localStorage.getItem(NEW_STORAGE_KEY)
+    if (newData) {
+      // New key already exists, no migration needed
+      return { migrated: false, reason: 'new_key_exists' }
+    }
+
+    // Check if old key has data
+    const oldData = localStorage.getItem(OLD_STORAGE_KEY)
+    if (oldData) {
+      // Migrate: copy old data to new key
+      localStorage.setItem(NEW_STORAGE_KEY, oldData)
+      // Remove old key after successful migration
+      localStorage.removeItem(OLD_STORAGE_KEY)
+      return { migrated: true, reason: 'migration_complete' }
+    }
+
+    // Neither key exists, no migration needed
+    return { migrated: false, reason: 'no_data_found' }
+  } catch (e) {
+    console.error('Migration error:', e)
+    return { migrated: false, reason: 'error', error: e.message }
+  }
+}
+
 export function getDataTemplate() {
   return {
     version: 1,
@@ -33,7 +68,7 @@ export function exportJSON() {
   const blob = new Blob([data], { type: 'application/json' })
   const a = document.createElement('a')
   a.href = URL.createObjectURL(blob)
-  a.download = 'stellar_journey_data.json'
+  a.download = 'aurorae_haven_data.json'
   document.body.appendChild(a)
   a.click()
   a.remove()
@@ -55,8 +90,8 @@ export async function importJSON(file) {
       throw new Error('Invalid schema')
     }
 
-    // Store in localStorage for persistence
-    localStorage.setItem('stellar_journey_data', JSON.stringify(obj))
+    // Store in localStorage for persistence using new key
+    localStorage.setItem(NEW_STORAGE_KEY, JSON.stringify(obj))
     return { success: true, message: 'Data imported successfully' }
   } catch (e) {
     console.error(e)
