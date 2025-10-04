@@ -17,6 +17,7 @@ The repository contains **two parallel implementations** to support both modern 
 **Purpose**: Main Progressive Web App (PWA) with React
 
 **Features**:
+
 - Single Page Application (SPA) routing
 - Component-based architecture
 - Modern React hooks and state management
@@ -24,6 +25,7 @@ The repository contains **two parallel implementations** to support both modern 
 - Optimized build process
 
 **Files**:
+
 - `src/pages/BrainDump.js` - React component for brain dump feature
 - `src/pages/Schedule.js` - React component for schedule feature
 - `src/pages/Tasks.js` - React component for tasks
@@ -39,12 +41,14 @@ The repository contains **two parallel implementations** to support both modern 
 **Purpose**: Fallback standalone HTML pages for direct access
 
 **Features**:
+
 - No build step required
 - Direct access via URLs like `/pages/braindump.html`
 - Compatible with older browsers
 - Can function independently of React app
 
 **Files**:
+
 - `public/pages/braindump.html` + `src/braindump-ui.js` - Standalone brain dump page
 - `public/pages/schedule.html` + `src/schedule.js` - Standalone schedule page
 - `src/braindump.js` - Core brain dump logic (legacy)
@@ -105,7 +109,7 @@ The repository contains **two parallel implementations** to support both modern 
 
 Both implementations share common security utilities:
 
-- **`src/braindump-enhanced.js`**: 
+- **`src/braindump-enhanced.js`**:
   - XSS prevention via DOMPurify configuration
   - GDPR-compliant data management
   - Comprehensive test coverage in `src/__tests__/braindump-enhanced.test.js`
@@ -120,6 +124,7 @@ Both implementations share common security utilities:
 ## Deployment
 
 **Build Process** (`npm run build`):
+
 1. React app is built to `build/` directory
 2. Build artifacts are copied to `dist/build/` for deployment
 3. Legacy pages are **not** automatically included in `dist/pages/`; no legacy pages (`public/pages/*.html`) or `dist/pages/` directory are copied by the current build script
@@ -130,6 +135,7 @@ Both implementations share common security utilities:
 ## Future Plans
 
 As the React app matures, legacy standalone pages may be:
+
 - Redirected to React equivalents
 - Deprecated with migration notices
 - Maintained for specific use cases

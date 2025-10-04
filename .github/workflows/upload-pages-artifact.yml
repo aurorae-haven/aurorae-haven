@@ -37,7 +37,7 @@ jobs:
           echo "Running linter on source files..."
           # Run lint but don't fail on legacy files
           npm run lint -- --max-warnings=20 || echo "⚠️ Linting issues found in legacy code (acceptable)"
-          
+
           # Check new/modified files for errors
           echo "Checking critical files for errors..."
           npx eslint src/pages/ src/utils/ src/__tests__/ --max-warnings=0 || {
@@ -56,10 +56,10 @@ jobs:
           echo "Checking for vulnerabilities..."
           # Run npm audit and capture output
           npm audit --audit-level=moderate > audit-report.txt 2>&1 || true
-          
+
           # Display the audit report
           cat audit-report.txt
-          
+
           # Check if there are vulnerabilities
           if grep -q "vulnerabilities" audit-report.txt; then
             echo "⚠️ Security vulnerabilities detected!"
@@ -109,15 +109,15 @@ jobs:
             echo "❌ Build failed - dist directory not found!"
             exit 1
           fi
-          
+
           if [ ! -f "dist/index.html" ]; then
             echo "❌ Build failed - index.html not found!"
             exit 1
           fi
-          
+
           echo "✓ Build successful - dist directory contains:"
           ls -la dist/
-          
+
           echo "✓ Verifying critical files exist:"
           test -f dist/index.html && echo "  ✓ index.html"
           test -f dist/manifest.json && echo "  ✓ manifest.json"
@@ -138,7 +138,7 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
-        
+
       - name: Verify deployment
         run: |
           echo "✓ Deployment successful!"

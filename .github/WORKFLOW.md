@@ -20,14 +20,15 @@ This repository uses GitHub Actions to automatically test, build, and deploy the
 Runs comprehensive testing and security checks before allowing deployment.
 
 **Steps**:
+
 1. **Checkout code**: Gets the latest code from the repository
 2. **Setup Node.js**: Installs Node.js 18 with npm cache
 3. **Install dependencies**: Runs `npm ci` for clean install
-4. **Run linter**: 
+4. **Run linter**:
    - Checks all code for style issues
    - Allows warnings in legacy code
-   - **FAILS** if new code (src/pages/, src/utils/, src/__tests__/) has errors
-5. **Run tests**: 
+   - **FAILS** if new code (src/pages/, src/utils/, src/**tests**/) has errors
+5. **Run tests**:
    - Executes all Jest tests with coverage
    - **FAILS** if any test fails
 6. **Security vulnerability scan**:
@@ -37,6 +38,7 @@ Runs comprehensive testing and security checks before allowing deployment.
    - Specifically checks for webpack-dev-server (known acceptable dev-only vulnerability)
 
 **Exit Conditions**:
+
 - ❌ Fails if: Tests fail, new code has linting errors, or HIGH/CRITICAL vulnerabilities found
 - ✅ Passes if: All tests pass, new code is clean, only acceptable vulnerabilities present
 
@@ -47,6 +49,7 @@ Builds the production-ready application.
 **Dependencies**: Requires `test` job to pass first
 
 **Steps**:
+
 1. **Checkout code**
 2. **Setup Node.js**
 3. **Install dependencies**
@@ -62,6 +65,7 @@ Builds the production-ready application.
 6. **Upload artifact**: Prepares the build for deployment
 
 **Exit Conditions**:
+
 - ❌ Fails if: Build fails or required files are missing
 - ✅ Passes if: Build completes and all critical files exist
 
@@ -72,10 +76,12 @@ Deploys the built application to GitHub Pages.
 **Dependencies**: Requires `build` job to pass first
 
 **Steps**:
+
 1. **Deploy to Pages**: Uses GitHub's deploy-pages action
 2. **Verify deployment**: Confirms deployment and outputs the site URL
 
-**Environment**: 
+**Environment**:
+
 - Name: `github-pages`
 - URL: Automatically set by GitHub Pages
 
@@ -86,6 +92,7 @@ Deploys the built application to GitHub Pages.
 See `.github/SECURITY.md` for details on accepted vulnerabilities.
 
 **webpack-dev-server** (Moderate):
+
 - ✅ **ACCEPTED** - Development dependency only
 - Not included in production builds
 - End users are never exposed to this vulnerability
@@ -94,6 +101,7 @@ See `.github/SECURITY.md` for details on accepted vulnerabilities.
 ### Blocking Conditions
 
 Deployment will be **BLOCKED** if:
+
 - HIGH or CRITICAL severity vulnerabilities are found
 - Tests fail
 - Build fails
@@ -103,6 +111,7 @@ Deployment will be **BLOCKED** if:
 ### Allowed Conditions
 
 Deployment will **PROCEED** if:
+
 - Only moderate/low severity vulnerabilities in dev dependencies
 - All tests pass
 - Build completes successfully
@@ -141,16 +150,19 @@ ls -la dist/
 ## Troubleshooting
 
 ### Tests Failing
+
 - Check the test job logs in GitHub Actions
 - Run tests locally: `npm test`
 - Ensure all dependencies are installed: `npm ci`
 
 ### Build Failing
+
 - Check the build job logs
 - Verify PUBLIC_URL is set correctly in package.json
 - Run build locally: `npm run build`
 
 ### Security Vulnerabilities Blocking Deployment
+
 - Review the vulnerability report in the test job logs
 - Check SECURITY.md to see if it's a known acceptable vulnerability
 - If it's HIGH or CRITICAL:
@@ -159,6 +171,7 @@ ls -la dist/
   - Update SECURITY.md with the justification
 
 ### Deployment Not Updating
+
 - Check that all jobs passed (test → build → deploy)
 - Verify GitHub Pages is enabled in repository settings
 - Check that the workflow has necessary permissions
@@ -167,17 +180,20 @@ ls -la dist/
 ## Maintenance
 
 ### Adding New Tests
+
 1. Add test files to `src/__tests__/`
 2. Follow existing test patterns
 3. Ensure tests pass locally before pushing
 
 ### Updating Dependencies
+
 1. Run `npm audit` to check for vulnerabilities
 2. Update package.json
 3. Test locally
 4. Update SECURITY.md if new vulnerabilities are introduced
 
 ### Modifying Workflow
+
 1. Edit `.github/workflows/upload-pages-artifact.yml`
 2. Test changes on a feature branch first
 3. Document any new security checks or requirements
