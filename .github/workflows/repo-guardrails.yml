@@ -99,6 +99,8 @@ jobs:
 
           # Disable conflicting linters - use Prettier/ESLint/Stylelint instead
           VALIDATE_JAVASCRIPT_BIOME: false
+          VALIDATE_JSON_BIOME: false
+          VALIDATE_CSS_BIOME: false
           VALIDATE_CSS_PRETTIER: false
           VALIDATE_MARKDOWN_PRETTIER: false
 
