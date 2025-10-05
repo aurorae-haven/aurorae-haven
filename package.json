@@ -61,11 +61,7 @@
     "postcss": "^8.4.31"
   },
   "standard": {
-    "env": [
-      "browser",
-      "node",
-      "serviceworker"
-    ],
+    "env": [],
     "globals": [],
     "ignore": [
       "node_modules/",
