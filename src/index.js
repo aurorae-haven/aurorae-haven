@@ -1,16 +1,17 @@
-import React, { useState, useCallback } from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+// src/index.js
+import React, { useState, useCallback, useEffect } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 
-// Import styles
+// Styles
 import './assets/styles/styles.css'
 
-// Import components
+// Shell components
 import Layout from './components/Layout'
 import Toast from './components/Toast'
 
-// Import pages
+// Pages
 import Home from './pages/Home'
 import Schedule from './pages/Schedule'
 import Sequences from './pages/Sequences'
@@ -20,14 +21,14 @@ import Habits from './pages/Habits'
 import Stats from './pages/Stats'
 import Settings from './pages/Settings'
 
-// Import utilities
+// Utils
 import { exportJSON, importJSON } from './utils/dataManager'
 
-function App() {
+function RouterApp() {
   const [toast, setToast] = useState({ visible: false, message: '' })
 
-  // Handle GitHub Pages SPA redirect from 404.html
-  React.useEffect(() => {
+  // Handle GitHub Pages SPA redirect from 404.html (if you store a redirectPath there)
+  useEffect(() => {
     const redirectPath = sessionStorage.getItem('redirectPath')
     if (redirectPath) {
       sessionStorage.removeItem('redirectPath')
@@ -56,21 +57,24 @@ function App() {
       if (file) {
         const result = await importJSON(file)
         showToast(result.message)
-        // Reset the input so the same file can be selected again
+        // allow re-selecting the same file next time
         e.target.value = ''
       }
     },
     [showToast]
   )
 
-  // Use basename for GitHub Pages deployment
+  // Use PUBLIC_URL as basename for GitHub Pages project site (/aurorae-haven)
   const basename = process.env.PUBLIC_URL || ''
 
   return (
     <BrowserRouter basename={basename}>
       <Layout onExport={handleExport} onImport={handleImport}>
         <Routes>
-          <Route path='/' element={<Home />} />
+          {/* Redirect root to /schedule */}
+          <Route path='/' element={<Navigate to='/schedule' replace />} />
+
+          {/* Explicit routes */}
           <Route path='/home' element={<Home />} />
           <Route path='/schedule' element={<Schedule />} />
           <Route path='/sequences' element={<Sequences />} />
@@ -79,21 +83,21 @@ function App() {
           <Route path='/habits' element={<Habits />} />
           <Route path='/stats' element={<Stats />} />
           <Route path='/settings' element={<Settings />} />
+
+          {/* Fallback: unknown routes → /schedule */}
+          <Route path='*' element={<Navigate to='/schedule' replace />} />
         </Routes>
       </Layout>
-      <Toast
-        message={toast.message}
-        visible={toast.visible}
-        onClose={hideToast}
-      />
+
+      <Toast message={toast.message} visible={toast.visible} onClose={hideToast} />
     </BrowserRouter>
   )
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'))
+const root = createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterApp />
   </React.StrictMode>
 )
 
