@@ -1,3 +1,17 @@
+import { Calendar } from '@fullcalendar/core'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import '@fullcalendar/daygrid/index.css'  // include styles once
+
+export function mountCalendar(el, options = {}) {
+  const calendar = new Calendar(el, {
+    plugins: [dayGridPlugin],
+    initialView: 'dayGridMonth',
+    ...options,
+  })
+  calendar.render()
+  return calendar
+}
+
 // v12.3 schedule renderer: label on top + multi-line desc
 document.addEventListener('DOMContentLoaded', function () {
   const calEl = document.getElementById('calendar')
@@ -9,7 +23,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (window.sjEvents && Array.isArray(window.sjEvents)) {
       events = window.sjEvents
     }
-  } catch {}
+  } catch (error) {
+    // Ignore errors when accessing window.sjEvents
+  }
   if (!events.length) {
     const stored = localStorage.getItem('sj.schedule.events')
     events = stored ? JSON.parse(stored) : []

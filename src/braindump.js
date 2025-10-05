@@ -1,3 +1,11 @@
+import DOMPurify from 'dompurify'
+import { marked } from 'marked'
+
+export function renderMarkdownTo(element, markdownText) {
+  const html = marked(markdownText ?? '')
+  element.innerHTML = DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const editor = document.getElementById('editor')
   const preview = document.getElementById('preview')

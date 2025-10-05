@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link, useLocation } from 'react-router-dom'
 
 function Layout({ children, onExport, onImport }) {
@@ -102,6 +103,12 @@ function Layout({ children, onExport, onImport }) {
       <div className='shell'>{children}</div>
     </>
   )
+}
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired,
+  onExport: PropTypes.func.isRequired,
+  onImport: PropTypes.func.isRequired
 }
 
 export default Layout

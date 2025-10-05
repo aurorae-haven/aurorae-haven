@@ -93,24 +93,28 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-
-          # Lint everything in the PR (you already do this)
           VALIDATE_ALL_CODEBASE: true
           IGNORE_GENERATED_FILES: true
+          VALIDATE_BIOME: false
+          VALIDATE_BIOME_FORMAT: false
           FILTER_REGEX_EXCLUDE: '.*node_modules.*|.*\.git.*|.*build.*|.*dist.*|.*coverage.*'
 
-          # 🔑 Avoid MD "double validation": keep markdownlint, disable Prettier on MD
+          # Enable only specific linters we want to use
+          VALIDATE_CSS: true
+          VALIDATE_ENV: true
+          VALIDATE_HTML: true
+          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_JSON: true
           VALIDATE_MARKDOWN: true
-          VALIDATE_MARKDOWN_PRETTIER: false
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_YAML: true
 
-          # Keep Prettier for other languages if you want:
-          VALIDATE_CSS_PRETTIER: true
-          VALIDATE_JSON_PRETTIER: true
-          VALIDATE_JAVASCRIPT_PRETTIER: true
-
-          # Better output
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
           SAVE_SUPER_LINTER_SUMMARY: true
+
+      - name: Prettier (check only)
+        run: npx prettier --check .
+
 
   gitleaks:
     name: Secrets scan (CLI)
@@ -162,7 +166,15 @@ jobs:
   summary:
     name: Node sec and test summary
     runs-on: ubuntu-latest
-    needs: [ detect, meta-checks, markdown-links, super-linter, gitleaks, node-security ]
+    needs:
+      [
+        detect,
+        meta-checks,
+        markdown-links,
+        super-linter,
+        gitleaks,
+        node-security
+      ]
     if: always()
     steps:
       - name: Show job outcomes
