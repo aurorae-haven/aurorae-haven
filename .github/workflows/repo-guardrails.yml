@@ -100,6 +100,7 @@ jobs:
           # Disable conflicting linters - use Prettier/ESLint/Stylelint instead
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_BIOME_LINT: false
+          VALIDATE_CSS_PRETTIER: false
           VALIDATE_MARKDOWN_PRETTIER: false
 
           # Disable Python linters (not a Python project)
