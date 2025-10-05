@@ -93,20 +93,35 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
           IGNORE_GENERATED_FILES: true
           FILTER_REGEX_EXCLUDE: '.*node_modules.*|.*\.git.*|.*build.*|.*dist.*|.*coverage.*'
 
-          # Disable conflicting linters - use Prettier/ESLint/Stylelint instead
-          VALIDATE_JAVASCRIPT_BIOME: false
-          VALIDATE_JSON_BIOME: false
-          VALIDATE_CSS_BIOME: false
+          # Enable only specific linters we want to use
+          VALIDATE_CSS: true
+          VALIDATE_ENV: true
+          VALIDATE_HTML: true
+          VALIDATE_JAVASCRIPT_ES: true
+          VALIDATE_JSON: true
+          VALIDATE_JSX: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_YAML: true
+
+          # Explicitly disable linters we don't want
+          VALIDATE_JSCPD: false
+          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_TRIVY: false
           VALIDATE_CSS_PRETTIER: false
           VALIDATE_MARKDOWN_PRETTIER: false
 
           # Disable Python linters (not a Python project)
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_PYLINT: false
+          VALIDATE_PYTHON_FLAKE8: false
+          VALIDATE_PYTHON_ISORT: false
+          VALIDATE_PYTHON_MYPY: false
 
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
           SAVE_SUPER_LINTER_SUMMARY: true
