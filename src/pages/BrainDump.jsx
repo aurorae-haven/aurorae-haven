@@ -4,6 +4,34 @@ import DOMPurify from 'dompurify'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
 
+// Secure UUID generator: Tries crypto.randomUUID, else creates v4-compatible with getRandomValues
+function generateSecureUUID() {
+  if (typeof window.crypto !== 'undefined') {
+    if (window.crypto.randomUUID) {
+      return window.crypto.randomUUID();
+    } else if (window.crypto.getRandomValues) {
+      // Generate 16 random bytes and format as UUID v4
+      const bytes = new Uint8Array(16);
+      window.crypto.getRandomValues(bytes);
+      // Set version (4) and variant bits according to RFC 4122
+      bytes[6] = (bytes[6] & 0x0f) | 0x40;
+      bytes[8] = (bytes[8] & 0x3f) | 0x80;
+      const toHex = (n) => n.toString(16).padStart(2, '0');
+      const hex = Array.from(bytes, toHex).join('');
+      // UUID format: 8-4-4-4-12
+      return (
+        hex.slice(0, 8) + '-' +
+        hex.slice(8, 12) + '-' +
+        hex.slice(12, 16) + '-' +
+        hex.slice(16, 20) + '-' +
+        hex.slice(20)
+      );
+    }
+  }
+  // Weak fallback (should almost never hit)
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}
+
 function BrainDump() {
   const [content, setContent] = useState('')
   const [preview, setPreview] = useState('')
@@ -52,10 +80,7 @@ function BrainDump() {
     
     // Generate filename: YYYY-MM-DD_UUID.md
     const date = new Date().toISOString().split('T')[0]
-    const uuid =
-      typeof window.crypto !== 'undefined' && window.crypto.randomUUID
-        ? window.crypto.randomUUID()
-        : Date.now().toString(36) + Math.random().toString(36).substring(2)
+    const uuid = generateSecureUUID();
     const filename = `${date}_${uuid}.md`
     
     const a = document.createElement('a')
