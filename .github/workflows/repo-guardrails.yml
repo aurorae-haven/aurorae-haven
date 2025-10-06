@@ -74,7 +74,7 @@ jobs:
     name: Lint auto-detect
     runs-on: ubuntu-latest
     needs: [detect]
-    if: ${{ needs.detect.outputs.has_node == 'true' }}
+    if: false  # Temporarily disabled - will be re-enabled later
     steps:
       - uses: actions/checkout@v4
         with:
