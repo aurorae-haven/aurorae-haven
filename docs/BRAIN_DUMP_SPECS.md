@@ -244,18 +244,75 @@ src/
 - Verify focus order
 - Test with high contrast mode
 
+## TAB-BDP-IO-01: Import/Export Functionality
+
+**Requirement**: Brain Dump shall support importing and exporting data for backup, transfer, and restore purposes.
+
+**Implementation**:
+
+- Export functionality via "Export" button in application header
+- Import functionality via "Import" button with file picker
+- Data format: JSON with comprehensive Brain Dump data structure
+- Exports include:
+  - Current brain dump content (Markdown)
+  - Tag palette HTML
+  - Version history (all saved versions)
+  - Brain dump entries
+- Import validates data structure and restores all components
+- Page automatically reloads after successful import to reflect changes
+- Error handling with user-friendly messages
+
+**Usage**:
+
+1. **Export**: Click "Export" button in header → JSON file downloads automatically
+2. **Import**: Click "Import" button → Select previously exported JSON file → Data restores and page reloads
+
+**Data Structure**:
+
+```json
+{
+  "version": 1,
+  "exportedAt": "2025-01-15T12:00:00Z",
+  "brainDump": {
+    "content": "# Brain Dump Markdown content",
+    "tags": "<span class=\"tag\">#idea</span>",
+    "versions": [...],
+    "entries": [...]
+  },
+  "tasks": [...],
+  "sequences": [...],
+  "habits": [...],
+  "schedule": [...]
+}
+```
+
+**Error Handling**:
+
+- Invalid JSON format: "Import failed: Unexpected token..."
+- Missing version field: "Import failed: Invalid schema: missing version"
+- Corrupt data: Uses defaults for missing/invalid fields
+
+**Security Considerations**:
+
+- No external API calls - all data stays local
+- LocalStorage for persistence (respects browser storage limits)
+- User explicitly triggers import/export
+- No automatic cloud sync
+
 ## Future Enhancements
 
 Potential improvements for future versions:
 
 1. Search across all brain dump entries
 2. Tag-based filtering and organization
-3. Export entire history as archive
-4. Import/merge from multiple sources
+3. ~~Export entire history as archive~~ (✓ Implemented in TAB-BDP-IO-01)
+4. ~~Import/merge from multiple sources~~ (✓ Implemented in TAB-BDP-IO-01)
 5. Collaborative editing (if cloud sync added)
 6. Rich media preview for attachments
 7. Bi-directional backlinks (show where current note is referenced)
 8. Auto-save to cloud backup (optional)
+9. Export to multiple formats (Markdown, PDF, HTML)
+10. Selective import/export (choose specific data components)
 
 ## Performance Notes
 
