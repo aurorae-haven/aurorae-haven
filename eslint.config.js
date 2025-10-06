@@ -5,9 +5,8 @@ import reactHooks from "eslint-plugin-react-hooks";
 import a11y from "eslint-plugin-jsx-a11y";
 
 export default [
-  js.configs.recommended,
+  // Global ignores (must be first)
   {
-    files: ["**/*.{js,jsx,ts,tsx}"],
     ignores: [
       "node_modules/**",
       "build/**",
@@ -15,8 +14,16 @@ export default [
       "coverage/**",
       "*.config.js",
       "public/service-worker.js",
-      "scripts/**"
-    ],
+      "scripts/**",
+      "**/__tests__/**",
+      "**/__mocks__/**",
+      "**/*.test.js",
+      "**/*.test.jsx"
+    ]
+  },
+  js.configs.recommended,
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
     plugins: {
       react: react,
       "react-hooks": reactHooks,

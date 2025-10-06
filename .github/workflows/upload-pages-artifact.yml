@@ -98,15 +98,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build React PWA
+      - name: Build React PWA with Vite
         run: npm run build
         env:
           CI: true
-          PUBLIC_URL: '/aurorae-haven'
+          VITE_BASE_URL: '/aurorae-haven/'
 
       - name: Verify build output
         run: |
-          echo "Checking build output..."
+          echo "Checking Vite build output..."
           if [ ! -d "dist" ]; then
             echo "❌ Build failed - dist directory not found!"
             exit 1
@@ -122,8 +122,9 @@ jobs:
 
           echo "✓ Verifying critical files exist:"
           test -f dist/index.html && echo "  ✓ index.html"
-          test -f dist/manifest.json && echo "  ✓ manifest.json"
-          test -d dist/static && echo "  ✓ static/ directory"
+          test -f dist/manifest.webmanifest && echo "  ✓ manifest.webmanifest"
+          test -f dist/sw.js && echo "  ✓ sw.js (service worker)"
+          test -d dist/assets && echo "  ✓ assets/ directory"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

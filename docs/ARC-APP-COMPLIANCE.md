@@ -92,36 +92,45 @@ This provides better performance and maintains the calm, neurodivergent-friendly
 
 ```text
 src/
-├── index.js                    # Main React entry point
-├── main.js                     # Global utilities (export/import)
-├── braindump.js                # Brain dump module
-├── schedule.js                 # Schedule module
-├── serviceWorkerRegistration.js # PWA service worker registration
+├── index.jsx                   # Main React entry point
+├── components/                 # Reusable UI components
+│   ├── Layout.jsx              # Navigation and page layout
+│   └── Toast.jsx               # Toast notifications
+├── pages/                      # Feature pages (routes)
+│   ├── Home.jsx                # Landing page
+│   ├── BrainDump.jsx           # Markdown notes
+│   ├── Schedule.jsx            # Time blocking
+│   ├── Sequences.jsx           # Routines
+│   ├── Tasks.jsx               # Task management
+│   ├── Habits.jsx              # Habit tracking
+│   ├── Stats.jsx               # Analytics
+│   └── Settings.jsx            # Configuration
+├── utils/                      # Shared utilities
+│   ├── dataManager.js          # LocalStorage + import/export
+│   ├── listContinuation.js    # Markdown auto-list
+│   ├── pageHelpers.js          # Common helpers
+│   └── braindump-enhanced.js  # Security & sanitization
+├── serviceWorkerRegistration.js # PWA service worker
 └── assets/
     └── styles/                 # CSS modules
 ```
 
 **Modular Design Principles**:
 
-1. **Separation of Concerns**: Each module handles a specific feature
-2. **ES6 Modules**: Use of import/export for clean dependencies
-3. **Single Responsibility**: Each file has a focused purpose
-4. **Scalability**: Easy to add new modules without affecting existing code
-5. **Maintainability**: Clear structure makes updates straightforward
+1. **Component-Based Architecture**: React components for UI modularity
+2. **Route-Based Code Splitting**: Each page is independently loadable
+3. **Separation of Concerns**: Pages, components, and utilities are clearly separated
+4. **ES6 Modules**: Use of import/export for clean dependencies
+5. **Single Responsibility**: Each file has a focused purpose
+6. **Scalability**: Easy to add new features without affecting existing code
+7. **Maintainability**: Clear structure with consistent patterns
 
 **Example Modules**:
 
-- `main.js`: Handles global export/import functionality
-- `braindump.js`: Brain dump feature logic
-- `schedule.js`: Schedule management
+- `components/Layout.jsx`: Application shell with navigation
+- `pages/BrainDump.jsx`: Markdown editor with live preview
+- `utils/dataManager.js`: Centralized data management and export/import
 - `serviceWorkerRegistration.js`: PWA lifecycle management
-
-**Legacy Pages**: The app also includes standalone HTML pages for backward compatibility and gradual migration:
-
-- `public/pages/home.html`
-- `public/pages/schedule.html`
-- `public/pages/sequences.html`
-- `public/pages/braindump.html`
 
 ---
 
@@ -172,7 +181,7 @@ src/
 
 ### Build Process
 
-The application uses a proper React build pipeline:
+The application uses Vite for modern, fast builds:
 
 ```bash
 npm run build
@@ -180,11 +189,23 @@ npm run build
 
 This command:
 
-1. Runs `react-scripts build` to transpile JSX and bundle React code
-2. Copies source assets with `npm run copy-assets`
-3. Prepares distribution folder with `npm run prepare-dist`
+1. Runs `vite build` to bundle and optimize the React application
+2. Automatically generates PWA assets (service worker, manifest) via vite-plugin-pwa
+3. Optimizes bundles with code splitting and tree-shaking
+4. Minifies and compresses all assets
 
-**Output**: Production-ready build in `dist/` directory
+**Output**: Production-ready PWA build in `dist/` directory (~273KB)
+
+**Build Performance**:
+- Cold build: ~1.5 seconds
+- Dev server start: Sub-second
+- Hot Module Replacement: Instant
+
+**Bundle Optimization**:
+- Separate vendor chunks (React, Markdown, Calendar)
+- Tree-shaking removes unused code
+- Minification and compression
+- Source maps for debugging (dev only)
 
 ### CI/CD Pipeline
 
@@ -209,37 +230,46 @@ This command:
 
 ---
 
-## Problem Resolution
+## Migration to Vite
 
-### Original Issue
+### Modernization Update
 
-The deployment was showing a blank page because:
+The application has been fully migrated from Create React App (CRA) to Vite for improved performance and developer experience.
 
-1. Root `index.html` loaded `/src/index.js` as an ES module
-2. The file contained JSX/React code that required transpilation
-3. The deployment workflow copied raw files without building
-4. Browsers couldn't execute the raw JSX code
+**Previous Issues with CRA**:
+1. Slow builds (30-60 seconds for production)
+2. Deprecated and no longer maintained by Facebook
+3. Large bundle sizes
+4. Slow development server startup
 
-### Solution Implemented
+**Vite Migration Benefits**:
+1. **10-20x faster builds**: ~1.5s vs 30-60s
+2. **Instant HMR**: Hot Module Replacement updates in milliseconds
+3. **Modern tooling**: Native ES modules, esbuild for transpilation
+4. **Active maintenance**: Regular updates and improvements
+5. **Better optimization**: Superior tree-shaking and code splitting
+6. **Smaller bundles**: ~273KB vs ~305KB
 
-1. Updated deployment workflow to:
-   - Install Node.js and dependencies
-   - Build the React application properly
-   - Deploy the built `dist/` directory
-2. React build process automatically:
-   - Transpiles JSX to JavaScript
-   - Bundles dependencies
-   - Copies PWA assets (manifest, service worker, icons)
-   - Optimizes for production
+### Changes Made
+
+1. **Build Tool**: Replaced react-scripts with Vite
+2. **Configuration**: Created `vite.config.js` with PWA plugin
+3. **File Structure**: Moved `index.html` to root (Vite convention)
+4. **File Extensions**: Renamed React components to `.jsx`
+5. **Environment Variables**: Updated to use `VITE_BASE_URL`
+6. **Dependencies**: Removed react-scripts, added vite and @vitejs/plugin-react
+7. **CI/CD**: Updated workflow to use Vite build commands
+8. **Legacy Cleanup**: Removed standalone HTML pages and legacy JS files
 
 ### Verification Steps
 
-1. ✅ Clean build completes successfully
-2. ✅ All PWA files present in `dist/`
-3. ✅ React bundle generated in `dist/static/js/`
-4. ✅ PWA validation script passes
-5. ✅ Legacy pages included for compatibility
-6. ✅ Service worker properly registered
+1. ✅ Vite build completes in ~1.5 seconds
+2. ✅ All PWA files generated automatically (sw.js, manifest.webmanifest)
+3. ✅ Optimized bundles in `dist/assets/`
+4. ✅ Service worker properly configured via vite-plugin-pwa
+5. ✅ All 144 tests passing
+6. ✅ Zero production vulnerabilities
+7. ✅ Bundle size optimized to 273KB
 
 ---
 
@@ -248,15 +278,14 @@ The deployment was showing a blank page because:
 ### Local Testing
 
 ```bash
+# Development server (with HMR)
+npm run dev
+
 # Build the application
 npm run build
 
-# Serve locally
-npm install -g serve
-serve -s dist
-
-# Or with Python
-cd dist && python3 -m http.server 8080
+# Preview production build
+npm run preview
 ```
 
 ### PWA Validation

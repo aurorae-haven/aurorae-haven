@@ -4,114 +4,116 @@ This document explains the file organization in the Aurorea Haven application.
 
 ## Overview
 
-The repository contains **two parallel implementations** to support both modern React-based usage and legacy standalone HTML pages. This is intentional and NOT duplication.
+The repository contains a **fully React-based Progressive Web App** built with Vite. All legacy standalone HTML pages have been removed as part of the migration to a modern, component-based architecture.
 
-## Architecture Types
+## Architecture
 
-### 1. React Application (Primary/Modern)
+### React Application with Vite
 
-**Location**: `src/pages/*.js`, `src/components/*.js`
+**Location**: `src/pages/*.jsx`, `src/components/*.jsx`, `src/utils/*.js`
 
-**Entry Point**: `src/index.js`
+**Entry Point**: `src/index.jsx`
 
-**Purpose**: Main Progressive Web App (PWA) with React
+**Build Tool**: Vite (fast, modern bundler)
+
+**Purpose**: Progressive Web App (PWA) with React
 
 **Features**:
 
-- Single Page Application (SPA) routing
-- Component-based architecture
+- Single Page Application (SPA) routing with React Router
+- Component-based architecture with React 18
 - Modern React hooks and state management
-- Full PWA capabilities (offline, installable)
-- Optimized build process
+- Full PWA capabilities (offline, installable) via vite-plugin-pwa
+- Fast builds and instant HMR (Hot Module Replacement)
+- Optimized bundle splitting and tree-shaking
 
 **Files**:
 
-- `src/pages/BrainDump.js` - React component for brain dump feature
-- `src/pages/Schedule.js` - React component for schedule feature
-- `src/pages/Tasks.js` - React component for tasks
-- `src/pages/Habits.js` - React component for habits
-- `src/pages/Sequences.js` - React component for sequences
-- `src/components/Layout.js` - Main layout wrapper
-- `src/components/Toast.js` - Toast notification component
+**Pages** (`src/pages/*.jsx`):
+- `BrainDump.jsx` - Markdown editor with live preview
+- `Schedule.jsx` - Daily schedule and time blocking
+- `Tasks.jsx` - Task management with Eisenhower matrix
+- `Habits.jsx` - Habit tracking with streaks
+- `Sequences.jsx` - Routine management with timers
+- `Stats.jsx` - Progress tracking and analytics
+- `Settings.jsx` - App configuration
+- `Home.jsx` - Landing page
 
-### 2. Legacy Standalone Pages
+**Components** (`src/components/*.jsx`):
+- `Layout.jsx` - Main layout wrapper with navigation
+- `Toast.jsx` - Toast notification component
 
-**Location**: `public/pages/*.html`, `src/braindump*.js`, `src/schedule.js`
-
-**Purpose**: Fallback standalone HTML pages for direct access
-
-**Features**:
-
-- No build step required
-- Direct access via URLs like `/pages/braindump.html`
-- Compatible with older browsers
-- Can function independently of React app
-
-**Files**:
-
-- `public/pages/braindump.html` + `src/braindump-ui.js` - Standalone brain dump page
-- `public/pages/schedule.html` + `src/schedule.js` - Standalone schedule page
-- `src/braindump.js` - Core brain dump logic (legacy)
-- `src/braindump-enhanced.js` - Shared security/sanitization utilities
+**Utilities** (`src/utils/*.js`):
+- `dataManager.js` - LocalStorage data management and import/export
+- `listContinuation.js` - Auto-list continuation for markdown editing
+- `pageHelpers.js` - Common page utilities
+- `braindump-enhanced.js` - Advanced sanitization and security utilities
 
 ## File Relationships
 
 ```text
 ┌─────────────────────────────────────┐
-│       React App (Primary)           │
+│      Vite + React Application       │
 │                                     │
-│  src/index.js                       │
-│    └─→ src/pages/BrainDump.js      │
-│    └─→ src/pages/Schedule.js       │
-│    └─→ src/components/Layout.js    │
+│  index.html (root)                  │
+│    └─→ src/index.jsx                │
+│        ├─→ src/components/          │
+│        │   ├─→ Layout.jsx            │
+│        │   └─→ Toast.jsx             │
+│        │                             │
+│        ├─→ src/pages/                │
+│        │   ├─→ Home.jsx               │
+│        │   ├─→ BrainDump.jsx         │
+│        │   ├─→ Schedule.jsx          │
+│        │   ├─→ Sequences.jsx         │
+│        │   ├─→ Tasks.jsx             │
+│        │   ├─→ Habits.jsx            │
+│        │   ├─→ Stats.jsx             │
+│        │   └─→ Settings.jsx          │
+│        │                             │
+│        └─→ src/utils/                │
+│            ├─→ dataManager.js        │
+│            ├─→ listContinuation.js  │
+│            ├─→ pageHelpers.js       │
+│            └─→ braindump-enhanced.js│
 │                                     │
-│  Uses: Modern React patterns        │
+│  Build Tool: Vite                   │
+│  Output: dist/                      │
 └─────────────────────────────────────┘
 
 ┌─────────────────────────────────────┐
-│    Legacy Standalone Pages          │
+│       Configuration Files           │
 │                                     │
-│  public/pages/braindump.html        │
-│    └─→ src/braindump-ui.js         │
-│    └─→ src/braindump.js            │
+│  vite.config.js                     │
+│    • Base URL configuration         │
+│    • PWA plugin (manifest, SW)      │
+│    • Bundle optimization            │
+│    • Build settings                 │
 │                                     │
-│  public/pages/schedule.html         │
-│    └─→ src/schedule.js             │
+│  .env / .env.production             │
+│    • Environment variables          │
+│    • VITE_BASE_URL                  │
 │                                     │
-│  Uses: Vanilla JavaScript + DOM     │
-└─────────────────────────────────────┘
-
-┌─────────────────────────────────────┐
-│       Shared Utilities              │
-│                                     │
-│  src/braindump-enhanced.js          │
-│    • Sanitization (XSS prevention)  │
-│    • GDPR-compliant data management │
-│    • Version history                │
-│    • Backlinks                      │
-│    • File attachments (OPFS)        │
-│                                     │
-│  src/utils/                         │
-│    • dataManager.js                 │
-│    • pageHelpers.js                 │
-│    • listContinuation.js            │
+│  package.json                       │
+│    • Scripts: dev, build, preview   │
+│    • Dependencies                   │
 └─────────────────────────────────────┘
 ```
 
-## Why Both Approaches?
+## Why Vite?
 
-1. **Gradual Migration**: The app is transitioning from vanilla JS to React
-2. **Backwards Compatibility**: Legacy pages ensure existing links/bookmarks work
-3. **Progressive Enhancement**: Users can access features without waiting for React bundle
-4. **Deployment Flexibility**: Static HTML pages can be served without build process
+1. **Modern Build Tool**: Fast builds with native ES modules and instant HMR
+2. **Better Performance**: Optimized bundle splitting and tree-shaking
+3. **Active Maintenance**: Vite is actively developed, unlike Create React App (deprecated)
+4. **PWA Support**: Built-in PWA generation via vite-plugin-pwa
+5. **Developer Experience**: Sub-second cold start, instant hot reload
 
 ## Security & Testing
 
-Both implementations share common security utilities:
-
-- **`src/braindump-enhanced.js`**:
+- **Security Utilities** (`src/utils/braindump-enhanced.js`):
   - XSS prevention via DOMPurify configuration
   - GDPR-compliant data management
+  - Version history and backlinks support
   - Comprehensive test coverage in `src/__tests__/braindump-enhanced.test.js`
 
 - **Test Coverage**: Security tests verify:
@@ -121,23 +123,36 @@ Both implementations share common security utilities:
   - GDPR rights (data export, right to erasure)
   - Version history limits and recovery
 
+- **Testing Framework**: Jest with React Testing Library
+  - 144+ tests covering core functionality
+  - Component rendering and interaction tests
+  - Data management and security tests
+
 ## Deployment
 
 **Build Process** (`npm run build`):
 
-1. React app is built to `build/` directory
-2. Build artifacts are copied to `dist/build/` for deployment
-3. Legacy pages are **not** automatically included in `dist/pages/`; no legacy pages (`public/pages/*.html`) or `dist/pages/` directory are copied by the current build script
-4. Service worker handles caching for both types (if both are present in the deployment)
+1. Vite builds the React application to `dist/` directory
+2. Automatically generates PWA assets:
+   - Service worker (`sw.js`)
+   - Web manifest (`manifest.webmanifest`)
+   - Optimized bundles in `assets/`
+3. Bundle splitting creates separate chunks for vendors:
+   - `react-vendor` (React, React DOM, React Router)
+   - `markdown-vendor` (Marked, DOMPurify)
+   - `calendar-vendor` (FullCalendar)
+4. All assets are optimized and minified
 
-**Result**: By default, deployment contains only the React SPA under `dist/build/`. Legacy pages must be manually copied if needed.
+**Result**: Production-ready SPA with PWA capabilities in `dist/` (~273KB total)
 
-## Future Plans
+**CI/CD**: GitHub Actions workflow automatically deploys to GitHub Pages on push to `main` or `feature-*` branches
 
-As the React app matures, legacy standalone pages may be:
+## Future Improvements
 
-- Redirected to React equivalents
-- Deprecated with migration notices
-- Maintained for specific use cases
+Planned enhancements for the architecture:
 
-For now, both coexist to ensure maximum compatibility and user choice.
+- **E2E Testing**: Add Playwright or Cypress for end-to-end tests
+- **Component Library**: Extract reusable components into a shared library
+- **State Management**: Consider Zustand or Jotai for complex state
+- **Code Splitting**: Lazy load routes for better initial load performance
+- **TypeScript**: Gradual migration to TypeScript for type safety
