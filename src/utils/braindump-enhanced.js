@@ -73,14 +73,17 @@ export function configureSanitization(DOMPurifyInstance) {
         if (href) {
           const normalizedHref = href.trim().toLowerCase()
 
-          // Open external links in new tab
-          if (href.startsWith('http://') || href.startsWith('https://')) {
+          // Open external links in new tab (use normalized for consistent check)
+          if (
+            normalizedHref.startsWith('http://') ||
+            normalizedHref.startsWith('https://')
+          ) {
             node.setAttribute('target', '_blank')
             node.setAttribute('rel', 'noopener noreferrer')
           }
 
-          // Validate internal links
-          if (href.startsWith('#')) {
+          // Validate internal links (use normalized for consistent check)
+          if (normalizedHref.startsWith('#')) {
             // Internal anchor link - safe
           }
 
