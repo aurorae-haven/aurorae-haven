@@ -259,7 +259,7 @@ function Tasks() {
                 type='file'
                 accept='.json'
                 onChange={importTasks}
-                style={{ display: 'none' }}
+                className='hidden-file-input'
               />
             </label>
           </div>
