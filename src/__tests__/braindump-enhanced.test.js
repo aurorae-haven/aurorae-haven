@@ -200,6 +200,76 @@ describe('Security: Link sanitization hook', () => {
 
     expect(mockNode.getAttribute).not.toHaveBeenCalled()
   })
+
+  // IMG tag security tests
+  test('blocks javascript: URIs in image sources (XSS prevention)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'javascript:alert(1)'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+  })
+
+  test('blocks data: URIs in image sources (XSS prevention)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'data:text/html,<script>alert(1)</script>'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+  })
+
+  test('blocks vbscript: URIs in image sources (XSS prevention)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'vbscript:msgbox'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+  })
+
+  test('allows safe image sources (http/https)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'https://example.com/image.png'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).not.toHaveBeenCalled()
+  })
+
+  test('handles IMG tags with whitespace in src', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => '  data:text/html,<script>  '),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+  })
 })
 
 describe('GDPR: VersionHistory data management', () => {

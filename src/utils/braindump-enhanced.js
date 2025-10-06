@@ -52,7 +52,7 @@ export function configureSanitization(DOMPurifyInstance) {
       'data-backlink' // for backlinks
     ],
     ALLOWED_URI_REGEXP:
-      /^(?:(?:(?:f|ht)tps?|mailto|tel|data|#):|[^a-z]|[a-z+.-]+(?:[^a-z+.-]|$))/i,
+      /^(?:(?:(?:f|ht)tps?|mailto|tel|#):|[^a-z]|[a-z+.-]+(?:[^a-z+.-]|$))/i,
     FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'],
     FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
     KEEP_CONTENT: true,
@@ -64,9 +64,10 @@ export function configureSanitization(DOMPurifyInstance) {
     ADD_URI_SAFE_ATTR: []
   }
 
-  // Add hook to sanitize links (only if addHook method exists)
+  // Add hook to sanitize links and images (only if addHook method exists)
   if (typeof DOMPurify.addHook === 'function') {
     DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+      // Sanitize anchor tags
       if (node.tagName === 'A') {
         const href = node.getAttribute('href')
         // Open external links in new tab
@@ -78,7 +79,7 @@ export function configureSanitization(DOMPurifyInstance) {
         if (href && href.startsWith('#')) {
           // Internal anchor link - safe
         }
-        // Block javascript: and data: URIs for links
+        // Block javascript:, data:, and vbscript: URIs for links (XSS prevention)
         if (
           href &&
           (href.trim().toLowerCase().startsWith('javascript:') ||
@@ -86,6 +87,22 @@ export function configureSanitization(DOMPurifyInstance) {
             href.trim().toLowerCase().startsWith('vbscript:'))
         ) {
           node.removeAttribute('href')
+        }
+      }
+      
+      // Sanitize image tags to prevent data: URI XSS attacks
+      if (node.tagName === 'IMG') {
+        const src = node.getAttribute('src')
+        // Block javascript:, data:, and vbscript: URIs in image sources (XSS prevention)
+        if (
+          src &&
+          (src.trim().toLowerCase().startsWith('javascript:') ||
+            src.trim().toLowerCase().startsWith('data:') ||
+            src.trim().toLowerCase().startsWith('vbscript:'))
+        ) {
+          node.removeAttribute('src')
+          // Optionally set a placeholder or remove the element entirely
+          node.setAttribute('alt', 'Blocked: Unsafe image source')
         }
       }
     })
