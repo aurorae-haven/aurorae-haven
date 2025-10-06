@@ -27,15 +27,28 @@ function Tasks() {
 
   // Save tasks to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
+    try {
+      localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
+    } catch (e) {
+      if (e.name === 'QuotaExceededError') {
+        alert('Storage quota exceeded. Please export your tasks and clear some data.')
+      } else {
+        console.error('Failed to save tasks:', e)
+      }
+    }
   }, [tasks])
+
+  const generateUniqueId = () => {
+    // Generate unique ID using timestamp + random component to prevent duplicates
+    return Date.now() + Math.random()
+  }
 
   const addTask = (e) => {
     e.preventDefault()
     if (!newTask.trim()) return
 
     const task = {
-      id: Date.now(),
+      id: generateUniqueId(),
       text: newTask.trim(),
       completed: false,
       createdAt: Date.now(),
@@ -182,7 +195,8 @@ function Tasks() {
           return
         }
         
-        // Validate task structure in each quadrant
+        // Validate task structure in each quadrant and check for duplicates
+        const seenIds = new Set()
         for (const key of requiredKeys) {
           for (const task of imported[key]) {
             if (
@@ -192,6 +206,19 @@ function Tasks() {
               typeof task.createdAt !== 'number'
             ) {
               alert('Invalid tasks file: Tasks have incorrect structure.')
+              return
+            }
+            
+            // Check for duplicate IDs
+            if (seenIds.has(task.id)) {
+              alert('Invalid tasks file: Duplicate task IDs found.')
+              return
+            }
+            seenIds.add(task.id)
+            
+            // Sanitize text to prevent potential XSS (extra safety layer)
+            if (task.text.length > 1000) {
+              alert('Invalid tasks file: Task text exceeds maximum length.')
               return
             }
           }
