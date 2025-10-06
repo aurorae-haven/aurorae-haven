@@ -102,7 +102,7 @@ jobs:
         run: npm run build
         env:
           CI: true
-          PUBLIC_URL: '/my-stellar-trail'
+          PUBLIC_URL: '/aurorae-haven'
 
       - name: Verify build output
         run: |
