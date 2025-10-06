@@ -197,11 +197,13 @@ This command:
 **Output**: Production-ready PWA build in `dist/` directory (~273KB)
 
 **Build Performance**:
+
 - Cold build: ~1.5 seconds
 - Dev server start: Sub-second
 - Hot Module Replacement: Instant
 
 **Bundle Optimization**:
+
 - Separate vendor chunks (React, Markdown, Calendar)
 - Tree-shaking removes unused code
 - Minification and compression
@@ -237,12 +239,14 @@ This command:
 The application has been fully migrated from Create React App (CRA) to Vite for improved performance and developer experience.
 
 **Previous Issues with CRA**:
+
 1. Slow builds (30-60 seconds for production)
 2. Deprecated and no longer maintained by Facebook
 3. Large bundle sizes
 4. Slow development server startup
 
 **Vite Migration Benefits**:
+
 1. **10-20x faster builds**: ~1.5s vs 30-60s
 2. **Instant HMR**: Hot Module Replacement updates in milliseconds
 3. **Modern tooling**: Native ES modules, esbuild for transpilation

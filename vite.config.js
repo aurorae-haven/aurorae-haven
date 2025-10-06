@@ -17,7 +17,8 @@ export default defineConfig(({ mode }) => {
         manifest: {
           name: 'Aurorae Haven',
           short_name: 'Aurorae',
-          description: 'A calm, astro-themed productivity app designed for neurodivergent users.',
+          description:
+            'A calm, astro-themed productivity app designed for neurodivergent users.',
           theme_color: '#1a1a2e',
           background_color: '#0f0f1e',
           display: 'standalone',
@@ -38,7 +39,9 @@ export default defineConfig(({ mode }) => {
         },
         workbox: {
           // Cache all static assets
-          globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp,woff,woff2}'],
+          globPatterns: [
+            '**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp,woff,woff2}'
+          ],
           // Runtime caching for external resources
           runtimeCaching: [
             {

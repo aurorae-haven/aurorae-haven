@@ -136,20 +136,25 @@ If import fails, you'll see an error message:
 ### Export Issues
 
 **Problem**: Export button doesn't work
+
 - **Solution**: Check browser console for errors, try refreshing the page
 
 **Problem**: Export file is empty or very small
+
 - **Solution**: You may have no data to export yet, or localStorage is empty
 
 ### Import Issues
 
 **Problem**: "Import failed: Unexpected token" error
+
 - **Solution**: File may be corrupted or not a valid JSON file. Try exporting fresh data from source device.
 
 **Problem**: Import succeeds but data doesn't appear
+
 - **Solution**: Force refresh the page (Ctrl+Shift+R / Cmd+Shift+R) or clear browser cache
 
 **Problem**: Some data missing after import
+
 - **Solution**: Check that the export file includes all expected fields. Re-export from source device if needed.
 
 ### Browser Storage Limits

@@ -213,7 +213,10 @@ describe('Security: Link sanitization hook', () => {
     hookCallback(mockNode)
 
     expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
-    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
   })
 
   test('blocks data: URIs in image sources (XSS prevention)', () => {
@@ -227,7 +230,10 @@ describe('Security: Link sanitization hook', () => {
     hookCallback(mockNode)
 
     expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
-    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
   })
 
   test('blocks vbscript: URIs in image sources (XSS prevention)', () => {
@@ -241,7 +247,10 @@ describe('Security: Link sanitization hook', () => {
     hookCallback(mockNode)
 
     expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
-    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
   })
 
   test('allows safe image sources (http/https)', () => {
@@ -268,7 +277,10 @@ describe('Security: Link sanitization hook', () => {
     hookCallback(mockNode)
 
     expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
-    expect(mockNode.setAttribute).toHaveBeenCalledWith('alt', 'Blocked: Unsafe image source')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
   })
 })
 

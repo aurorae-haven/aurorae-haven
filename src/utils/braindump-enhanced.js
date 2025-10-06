@@ -4,7 +4,7 @@
 // TAB-BDP-SAN-01: Enhanced sanitization configuration
 export function configureSanitization(DOMPurifyInstance) {
   const DOMPurify = DOMPurifyInstance || window.DOMPurify
-  
+
   if (!DOMPurify) {
     console.error('DOMPurify not loaded')
     return null
@@ -72,18 +72,18 @@ export function configureSanitization(DOMPurifyInstance) {
         const href = node.getAttribute('href')
         if (href) {
           const normalizedHref = href.trim().toLowerCase()
-          
+
           // Open external links in new tab
           if (href.startsWith('http://') || href.startsWith('https://')) {
             node.setAttribute('target', '_blank')
             node.setAttribute('rel', 'noopener noreferrer')
           }
-          
+
           // Validate internal links
           if (href.startsWith('#')) {
             // Internal anchor link - safe
           }
-          
+
           // Block javascript:, data:, and vbscript: URIs for links (XSS prevention)
           if (
             normalizedHref.startsWith('javascript:') ||
@@ -94,7 +94,7 @@ export function configureSanitization(DOMPurifyInstance) {
           }
         }
       }
-      
+
       // Sanitize image tags to prevent data: URI XSS attacks
       if (node.tagName === 'IMG') {
         const src = node.getAttribute('src')

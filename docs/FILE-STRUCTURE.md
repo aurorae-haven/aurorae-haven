@@ -30,6 +30,7 @@ The repository contains a **fully React-based Progressive Web App** built with V
 **Files**:
 
 **Pages** (`src/pages/*.jsx`):
+
 - `BrainDump.jsx` - Markdown editor with live preview
 - `Schedule.jsx` - Daily schedule and time blocking
 - `Tasks.jsx` - Task management with Eisenhower matrix
@@ -40,10 +41,12 @@ The repository contains a **fully React-based Progressive Web App** built with V
 - `Home.jsx` - Landing page
 
 **Components** (`src/components/*.jsx`):
+
 - `Layout.jsx` - Main layout wrapper with navigation
 - `Toast.jsx` - Toast notification component
 
 **Utilities** (`src/utils/*.js`):
+
 - `dataManager.js` - LocalStorage data management and import/export
 - `listContinuation.js` - Auto-list continuation for markdown editing
 - `pageHelpers.js` - Common page utilities

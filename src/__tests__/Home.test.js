@@ -33,7 +33,9 @@ describe('Home Component', () => {
       renderWithRouter(<Home />)
       expect(screen.getByText(/Getting Started:/i)).toBeInTheDocument()
       expect(
-        screen.getByText(/Navigate using the menu above to explore different features/i)
+        screen.getByText(
+          /Navigate using the menu above to explore different features/i
+        )
       ).toBeInTheDocument()
     })
   })

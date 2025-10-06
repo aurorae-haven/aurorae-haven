@@ -89,7 +89,11 @@ function RouterApp() {
         </Routes>
       </Layout>
 
-      <Toast message={toast.message} visible={toast.visible} onClose={hideToast} />
+      <Toast
+        message={toast.message}
+        visible={toast.visible}
+        onClose={hideToast}
+      />
     </BrowserRouter>
   )
 }

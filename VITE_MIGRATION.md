@@ -7,11 +7,13 @@ Aurorae Haven has been successfully migrated from Create React App (CRA) to Vite
 ## What Changed
 
 ### Build System
+
 - **Removed**: react-scripts (Create React App)
 - **Added**: Vite + @vitejs/plugin-react + vite-plugin-pwa
 - **Impact**: 20-40x faster builds (1.45s vs 30-60s)
 
 ### File Structure
+
 ```
 Before:                          After:
 public/index.html        →       index.html (root)
@@ -26,11 +28,13 @@ src/braindump-enhanced.js →     src/utils/braindump-enhanced.js
 ```
 
 ### Environment Variables
+
 - **Before**: `process.env.PUBLIC_URL`
 - **After**: `import.meta.env.BASE_URL`
 - **Files**: `.env` (dev), `.env.production` (prod)
 
 ### Scripts
+
 ```bash
 # Development
 npm run dev          # (was: npm start)
@@ -45,18 +49,21 @@ npm run preview      # (was: serve -s dist)
 ## Benefits
 
 ### Performance
+
 - **Build Time**: 1.45s (was 30-60s) - 20-40x faster! 🚀
 - **Dev Server**: Sub-second startup (was 10-30s)
 - **HMR**: Instant updates (was 2-5s)
 - **Bundle Size**: 273KB (was 305KB) - 10% smaller
 
 ### Developer Experience
+
 - Instant Hot Module Replacement
 - Better error messages
 - Faster linting and testing
 - Modern ES modules
 
 ### Maintenance
+
 - Actively maintained (CRA is deprecated)
 - Better ecosystem support
 - More plugins and integrations available
@@ -77,18 +84,21 @@ npm run preview      # (was: serve -s dist)
 If you're working on this project, here's what you need to know:
 
 ### For Development
+
 - [x] Use `npm run dev` instead of `npm start`
 - [x] Environment variables use `import.meta.env.VITE_*` prefix
 - [x] React components use `.jsx` extension
 - [x] HMR is instant - no more waiting!
 
 ### For Deployment
+
 - [x] CI/CD workflow updated for Vite
 - [x] Base URL configured for GitHub Pages
 - [x] PWA assets generated automatically
 - [x] Build output in `dist/` directory
 
 ### For Testing
+
 - [x] All tests pass with current setup
 - [x] Test files excluded from linting
 - [x] Coverage reports work correctly
@@ -98,23 +108,27 @@ If you're working on this project, here's what you need to know:
 ### Configuration Files
 
 **vite.config.js**:
+
 - React plugin for JSX support
 - PWA plugin for service worker generation
 - Bundle splitting for optimal caching
 - Base URL configuration for GitHub Pages
 
 **package.json**:
+
 - New scripts: `dev`, `preview`
 - Updated build script
 - Removed react-scripts dependency
 
 **.env / .env.production**:
+
 - `VITE_BASE_URL=/` (development)
 - `VITE_BASE_URL=/aurorae-haven/` (production)
 
 ### Bundle Analysis
 
 The build creates optimized chunks:
+
 - `react-vendor.js` (174KB) - React, React DOM, React Router
 - `markdown-vendor.js` (61KB) - Marked, DOMPurify
 - `calendar-vendor.js` (empty) - FullCalendar (unused)
@@ -126,6 +140,7 @@ Total: ~273KB gzipped to ~89KB
 ## Troubleshooting
 
 ### If the build fails
+
 ```bash
 # Clean install
 rm -rf node_modules package-lock.json
@@ -134,6 +149,7 @@ npm run build
 ```
 
 ### If the dev server won't start
+
 ```bash
 # Check for port conflicts
 lsof -i :3000
@@ -142,6 +158,7 @@ npm run dev -- --port 3001
 ```
 
 ### If tests fail
+
 ```bash
 # Run tests with verbose output
 npm test -- --verbose
@@ -164,6 +181,7 @@ npm test -- --verbose
 ## Questions?
 
 If you have questions about the migration, check:
+
 1. The updated `README.md` for usage instructions
 2. The `FILE-STRUCTURE.md` for architecture details
 3. The `ARC-APP-COMPLIANCE.md` for technical specifications
