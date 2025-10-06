@@ -53,17 +53,17 @@ function Tasks() {
     setTimeout(() => setErrorMessage(''), 5000)
   }
 
-  const generateUniqueId = () => {
-    // Generate unique ID using cryptographically secure UUID
-    return generateSecureUUID()
-  }
+
+
+
+
 
   const addTask = (e) => {
     e.preventDefault()
     if (!newTask.trim()) return
 
     const task = {
-      id: generateUniqueId(),
+      id: generateSecureUUID(),
       text: newTask.trim(),
       completed: false,
       createdAt: Date.now(),
