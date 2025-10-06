@@ -12,7 +12,7 @@
 - **Routines**: Create, edit, and run daily routines with timers
 - **Tasks**: Prioritise using the Eisenhower matrix
 - **Habits**: Track streaks and small wins
-- **Notes & Brain Dump**: Markdown-ready, export/import `.md` and `.html`
+- **Notes & Brain Dump**: Markdown-ready with comprehensive import/export (`.json` for full backup, `.md` for content only)
 - **Stats Foundation**: Track routine time and structured progress
 - **Gamification** _(v2.0+)_: XP, levels, achievements, confetti/haptics
 - **Reminders** _(v2.0+)_: Tasks, routines, and habits notifications
@@ -137,6 +137,15 @@ The deployment workflow:
 ## 📄 License
 
 [MIT License](./LICENSE)
+
+---
+
+## 📚 Documentation
+
+- **[Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md)**: Learn how to back up, transfer, and restore your data
+- **[Brain Dump Specifications](./docs/BRAIN_DUMP_SPECS.md)**: Technical details about Brain Dump features
+- **[Roadmap](./ROADMAP.md)**: See our development milestones and future plans
+- **[Contributing Guide](./CONTRIBUTING.md)**: How to contribute to the project
 
 ---
 
