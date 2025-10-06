@@ -70,23 +70,28 @@ export function configureSanitization(DOMPurifyInstance) {
       // Sanitize anchor tags
       if (node.tagName === 'A') {
         const href = node.getAttribute('href')
-        // Open external links in new tab
-        if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
-          node.setAttribute('target', '_blank')
-          node.setAttribute('rel', 'noopener noreferrer')
-        }
-        // Validate internal links
-        if (href && href.startsWith('#')) {
-          // Internal anchor link - safe
-        }
-        // Block javascript:, data:, and vbscript: URIs for links (XSS prevention)
-        if (
-          href &&
-          (href.trim().toLowerCase().startsWith('javascript:') ||
-            href.trim().toLowerCase().startsWith('data:') ||
-            href.trim().toLowerCase().startsWith('vbscript:'))
-        ) {
-          node.removeAttribute('href')
+        if (href) {
+          const normalizedHref = href.trim().toLowerCase()
+          
+          // Open external links in new tab
+          if (href.startsWith('http://') || href.startsWith('https://')) {
+            node.setAttribute('target', '_blank')
+            node.setAttribute('rel', 'noopener noreferrer')
+          }
+          
+          // Validate internal links
+          if (href.startsWith('#')) {
+            // Internal anchor link - safe
+          }
+          
+          // Block javascript:, data:, and vbscript: URIs for links (XSS prevention)
+          if (
+            normalizedHref.startsWith('javascript:') ||
+            normalizedHref.startsWith('data:') ||
+            normalizedHref.startsWith('vbscript:')
+          ) {
+            node.removeAttribute('href')
+          }
         }
       }
       
@@ -94,15 +99,17 @@ export function configureSanitization(DOMPurifyInstance) {
       if (node.tagName === 'IMG') {
         const src = node.getAttribute('src')
         // Block javascript:, data:, and vbscript: URIs in image sources (XSS prevention)
-        if (
-          src &&
-          (src.trim().toLowerCase().startsWith('javascript:') ||
-            src.trim().toLowerCase().startsWith('data:') ||
-            src.trim().toLowerCase().startsWith('vbscript:'))
-        ) {
-          node.removeAttribute('src')
-          // Optionally set a placeholder or remove the element entirely
-          node.setAttribute('alt', 'Blocked: Unsafe image source')
+        if (src) {
+          const normalizedSrc = src.trim().toLowerCase()
+          if (
+            normalizedSrc.startsWith('javascript:') ||
+            normalizedSrc.startsWith('data:') ||
+            normalizedSrc.startsWith('vbscript:')
+          ) {
+            node.removeAttribute('src')
+            // Optionally set a placeholder or remove the element entirely
+            node.setAttribute('alt', 'Blocked: Unsafe image source')
+          }
         }
       }
     })
