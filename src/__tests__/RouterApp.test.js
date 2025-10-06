@@ -15,9 +15,6 @@ jest.mock('../utils/dataManager', () => ({
   importJSON: mockImportJSON
 }))
 
-// Mock CSS import
-jest.mock('../assets/styles/styles.css', () => ({}))
-
 describe('RouterApp Setup and Configuration', () => {
   beforeEach(() => {
     jest.clearAllMocks()
