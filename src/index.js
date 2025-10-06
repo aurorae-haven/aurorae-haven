@@ -71,8 +71,8 @@ function RouterApp() {
     <BrowserRouter basename={basename}>
       <Layout onExport={handleExport} onImport={handleImport}>
         <Routes>
-          {/* Redirect root to /schedule */}
-          <Route path='/' element={<Navigate to='/schedule' replace />} />
+          {/* Show Home page at root */}
+          <Route path='/' element={<Home />} />
 
           {/* Explicit routes */}
           <Route path='/home' element={<Home />} />
@@ -84,8 +84,8 @@ function RouterApp() {
           <Route path='/stats' element={<Stats />} />
           <Route path='/settings' element={<Settings />} />
 
-          {/* Fallback: unknown routes → /schedule */}
-          <Route path='*' element={<Navigate to='/schedule' replace />} />
+          {/* Fallback: unknown routes → home */}
+          <Route path='*' element={<Navigate to='/' replace />} />
         </Routes>
       </Layout>
 

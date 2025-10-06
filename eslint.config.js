@@ -50,6 +50,7 @@ export default [
         confirm: "readonly",
         prompt: "readonly",
         MutationObserver: "readonly",
+        process: "readonly",
         // remove these if you now import them as modules:
         DOMPurify: "readonly",
         marked: "readonly",
