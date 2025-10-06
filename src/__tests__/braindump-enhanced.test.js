@@ -20,6 +20,9 @@ describe('Security: configureSanitization', () => {
   beforeEach(() => {
     window.DOMPurify = mockDOMPurify
     mockDOMPurify.addHook.mockClear()
+    // Clear idempotency flags for fresh test
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_hook')]
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_config')]
   })
 
   afterEach(() => {
@@ -83,6 +86,9 @@ describe('Security: Link sanitization hook', () => {
   beforeEach(() => {
     window.DOMPurify = mockDOMPurify
     mockDOMPurify.addHook.mockClear()
+    // Clear idempotency flags for fresh test
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_hook')]
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_config')]
     configureSanitization()
     hookCallback = mockDOMPurify.addHook.mock.calls[0][1]
   })

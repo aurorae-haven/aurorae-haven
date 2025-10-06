@@ -1,6 +1,10 @@
 // Brain Dump Enhanced Features
 // TAB-BDP: Implements file attachments, backlinks, version history, sanitization, and accessibility
 
+// Track if hooks have been registered to prevent duplicate registration
+const HOOK_REGISTERED = Symbol.for('aurorae_haven_sanitization_hook')
+const STORED_CONFIG = Symbol.for('aurorae_haven_sanitization_config')
+
 // TAB-BDP-SAN-01: Enhanced sanitization configuration
 export function configureSanitization(DOMPurifyInstance) {
   const DOMPurify = DOMPurifyInstance || window.DOMPurify
@@ -8,6 +12,11 @@ export function configureSanitization(DOMPurifyInstance) {
   if (!DOMPurify) {
     console.error('DOMPurify not loaded')
     return null
+  }
+
+  // Check if hooks have already been registered (idempotency guard)
+  if (DOMPurify[HOOK_REGISTERED]) {
+    return DOMPurify[STORED_CONFIG]
   }
 
   const config = {
@@ -64,8 +73,13 @@ export function configureSanitization(DOMPurifyInstance) {
     ADD_URI_SAFE_ATTR: []
   }
 
+  // Store config and mark hooks as registered to prevent duplicate registration
+  DOMPurify[STORED_CONFIG] = config
+
   // Add hook to sanitize links and images (only if addHook method exists)
   if (typeof DOMPurify.addHook === 'function') {
+    DOMPurify[HOOK_REGISTERED] = true
+
     DOMPurify.addHook('afterSanitizeAttributes', (node) => {
       // Sanitize anchor tags
       if (node.tagName === 'A') {
