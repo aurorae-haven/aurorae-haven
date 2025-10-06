@@ -16,10 +16,8 @@
 
       // Compute the base path (directory containing this 404.html) to redirect to index.html
       // Example: /aurorae-haven/schedule -> /aurorae-haven/
-      var basePath =
-        location.origin +
-        location.pathname.split('/').slice(0, -1).join('/') +
-        '/'
+      var pathSegments = location.pathname.split('/').slice(0, -1);
+      var basePath = location.origin + pathSegments.join('/') + '/';
 
       // Redirect to the base path (index.html will handle the SPA routing)
       // The React app reads redirectPath from sessionStorage and navigates to the correct route
