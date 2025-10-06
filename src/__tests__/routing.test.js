@@ -8,7 +8,7 @@ import { render, screen } from '@testing-library/react'
 import Home from '../pages/Home.jsx'
 
 // Mock all page components
-jest.mock('../pages/Home', () => {
+jest.mock('../pages/Home.jsx', () => {
   return function MockHome() {
     return <div data-testid='home-page'>Home Page</div>
   }
