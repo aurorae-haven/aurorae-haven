@@ -6,7 +6,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-import Home from '../pages/Home'
+import Home from '../pages/Home.jsx'
 
 // Helper to render component with router
 const renderWithRouter = (component) => {
@@ -33,7 +33,9 @@ describe('Home Component', () => {
       renderWithRouter(<Home />)
       expect(screen.getByText(/Getting Started:/i)).toBeInTheDocument()
       expect(
-        screen.getByText(/Navigate using the menu above to explore different features/i)
+        screen.getByText(
+          /Navigate using the menu above to explore different features/i
+        )
       ).toBeInTheDocument()
     })
   })

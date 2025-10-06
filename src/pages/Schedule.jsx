@@ -90,6 +90,14 @@ function Schedule() {
                     className='block'
                     style={{ top: '46px', height: '23.0px' }}
                     onClick={() => toggleRunner(true)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        toggleRunner(true)
+                      }
+                    }}
+                    role='button'
+                    tabIndex={0}
                   >
                     <div className='title'>Morning Launch</div>
                     <div className='meta'>07:00–07:30</div>

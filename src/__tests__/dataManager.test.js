@@ -42,7 +42,8 @@ describe('Data Manager', () => {
     })
 
     it('should collect Brain Dump tags from localStorage', () => {
-      const testTags = '<span class="tag">#idea</span><span class="tag">#task</span>'
+      const testTags =
+        '<span class="tag">#idea</span><span class="tag">#task</span>'
       localStorage.setItem('brainDumpTags', testTags)
 
       const data = getDataTemplate()
@@ -64,7 +65,11 @@ describe('Data Manager', () => {
 
     it('should collect Brain Dump entries from localStorage', () => {
       const entries = [
-        { id: 'entry_1', content: 'Entry 1', timestamp: '2025-01-01T00:00:00Z' },
+        {
+          id: 'entry_1',
+          content: 'Entry 1',
+          timestamp: '2025-01-01T00:00:00Z'
+        },
         { id: 'entry_2', content: 'Entry 2', timestamp: '2025-01-02T00:00:00Z' }
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(entries))
@@ -154,7 +159,9 @@ describe('Data Manager', () => {
 
       expect(result.success).toBe(true)
       expect(localStorage.getItem('brainDumpContent')).toBe('# Test Content')
-      expect(localStorage.getItem('brainDumpTags')).toBe('<span class="tag">#test</span>')
+      expect(localStorage.getItem('brainDumpTags')).toBe(
+        '<span class="tag">#test</span>'
+      )
     })
 
     it('should import Brain Dump version history', async () => {
@@ -179,7 +186,9 @@ describe('Data Manager', () => {
 
       await importJSON(mockFile)
 
-      const storedVersions = JSON.parse(localStorage.getItem('brainDumpVersions'))
+      const storedVersions = JSON.parse(
+        localStorage.getItem('brainDumpVersions')
+      )
       expect(storedVersions).toEqual(versions)
     })
 
@@ -291,7 +300,9 @@ describe('Data Manager', () => {
 
       await importJSON(mockFile)
 
-      const storedSchedule = JSON.parse(localStorage.getItem('sj.schedule.events'))
+      const storedSchedule = JSON.parse(
+        localStorage.getItem('sj.schedule.events')
+      )
       expect(storedSchedule).toEqual(schedule)
     })
   })

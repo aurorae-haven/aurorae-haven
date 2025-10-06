@@ -8,18 +8,18 @@ import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 import './assets/styles/styles.css'
 
 // Shell components
-import Layout from './components/Layout'
-import Toast from './components/Toast'
+import Layout from './components/Layout.jsx'
+import Toast from './components/Toast.jsx'
 
 // Pages
-import Home from './pages/Home'
-import Schedule from './pages/Schedule'
-import Sequences from './pages/Sequences'
-import BrainDump from './pages/BrainDump'
-import Tasks from './pages/Tasks'
-import Habits from './pages/Habits'
-import Stats from './pages/Stats'
-import Settings from './pages/Settings'
+import Home from './pages/Home.jsx'
+import Schedule from './pages/Schedule.jsx'
+import Sequences from './pages/Sequences.jsx'
+import BrainDump from './pages/BrainDump.jsx'
+import Tasks from './pages/Tasks.jsx'
+import Habits from './pages/Habits.jsx'
+import Stats from './pages/Stats.jsx'
+import Settings from './pages/Settings.jsx'
 
 // Utils
 import { exportJSON, importJSON } from './utils/dataManager'
@@ -32,7 +32,7 @@ function RouterApp() {
     const redirectPath = sessionStorage.getItem('redirectPath')
     if (redirectPath) {
       sessionStorage.removeItem('redirectPath')
-      const basename = process.env.PUBLIC_URL || ''
+      const basename = import.meta.env.BASE_URL || '/'
       const path = redirectPath.replace(basename, '')
       window.history.replaceState(null, '', basename + path)
     }
@@ -64,8 +64,8 @@ function RouterApp() {
     [showToast]
   )
 
-  // Use PUBLIC_URL as basename for GitHub Pages project site (/aurorae-haven)
-  const basename = process.env.PUBLIC_URL || ''
+  // Use import.meta.env.BASE_URL for Vite (GitHub Pages project site /aurorae-haven/)
+  const basename = import.meta.env.BASE_URL || '/'
 
   return (
     <BrowserRouter basename={basename}>
@@ -89,7 +89,11 @@ function RouterApp() {
         </Routes>
       </Layout>
 
-      <Toast message={toast.message} visible={toast.visible} onClose={hideToast} />
+      <Toast
+        message={toast.message}
+        visible={toast.visible}
+        onClose={hideToast}
+      />
     </BrowserRouter>
   )
 }

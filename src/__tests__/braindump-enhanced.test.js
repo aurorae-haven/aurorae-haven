@@ -8,7 +8,7 @@ import {
   VersionHistory,
   Backlinks,
   FileAttachments
-} from '../braindump-enhanced'
+} from '../utils/braindump-enhanced'
 
 // Mock DOMPurify
 const mockDOMPurify = {
@@ -20,6 +20,9 @@ describe('Security: configureSanitization', () => {
   beforeEach(() => {
     window.DOMPurify = mockDOMPurify
     mockDOMPurify.addHook.mockClear()
+    // Clear idempotency flags for fresh test
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_hook')]
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_config')]
   })
 
   afterEach(() => {
@@ -83,6 +86,9 @@ describe('Security: Link sanitization hook', () => {
   beforeEach(() => {
     window.DOMPurify = mockDOMPurify
     mockDOMPurify.addHook.mockClear()
+    // Clear idempotency flags for fresh test
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_hook')]
+    delete mockDOMPurify[Symbol.for('aurorae_haven_sanitization_config')]
     configureSanitization()
     hookCallback = mockDOMPurify.addHook.mock.calls[0][1]
   })
@@ -199,6 +205,88 @@ describe('Security: Link sanitization hook', () => {
     hookCallback(mockNode)
 
     expect(mockNode.getAttribute).not.toHaveBeenCalled()
+  })
+
+  // IMG tag security tests
+  test('blocks javascript: URIs in image sources (XSS prevention)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'javascript:alert(1)'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
+  })
+
+  test('blocks data: URIs in image sources (XSS prevention)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'data:text/html,<script>alert(1)</script>'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
+  })
+
+  test('blocks vbscript: URIs in image sources (XSS prevention)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'vbscript:msgbox'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
+  })
+
+  test('allows safe image sources (http/https)', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => 'https://example.com/image.png'),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).not.toHaveBeenCalled()
+  })
+
+  test('handles IMG tags with whitespace in src', () => {
+    const mockNode = {
+      tagName: 'IMG',
+      getAttribute: jest.fn(() => '  data:text/html,<script>  '),
+      setAttribute: jest.fn(),
+      removeAttribute: jest.fn()
+    }
+
+    hookCallback(mockNode)
+
+    expect(mockNode.removeAttribute).toHaveBeenCalledWith('src')
+    expect(mockNode.setAttribute).toHaveBeenCalledWith(
+      'alt',
+      'Blocked: Unsafe image source'
+    )
   })
 })
 

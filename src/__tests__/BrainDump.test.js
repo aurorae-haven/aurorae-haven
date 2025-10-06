@@ -4,7 +4,7 @@
 
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import BrainDump from '../pages/BrainDump'
+import BrainDump from '../pages/BrainDump.jsx'
 
 // Mock marked and DOMPurify
 jest.mock('marked', () => ({

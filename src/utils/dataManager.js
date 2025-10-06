@@ -4,7 +4,7 @@ export function getDataTemplate() {
   // Collect real data from localStorage
   const brainDumpContent = localStorage.getItem('brainDumpContent') || ''
   const brainDumpTags = localStorage.getItem('brainDumpTags') || ''
-  
+
   // Parse version history if available
   let brainDumpVersions = []
   try {

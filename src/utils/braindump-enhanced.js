@@ -1,11 +1,22 @@
 // Brain Dump Enhanced Features
 // TAB-BDP: Implements file attachments, backlinks, version history, sanitization, and accessibility
 
+// Track if hooks have been registered to prevent duplicate registration
+const HOOK_REGISTERED = Symbol.for('aurorae_haven_sanitization_hook')
+const STORED_CONFIG = Symbol.for('aurorae_haven_sanitization_config')
+
 // TAB-BDP-SAN-01: Enhanced sanitization configuration
-export function configureSanitization() {
-  if (!window.DOMPurify) {
+export function configureSanitization(DOMPurifyInstance) {
+  const DOMPurify = DOMPurifyInstance || window.DOMPurify
+
+  if (!DOMPurify) {
     console.error('DOMPurify not loaded')
     return null
+  }
+
+  // Check if hooks have already been registered (idempotency guard)
+  if (DOMPurify[HOOK_REGISTERED]) {
+    return DOMPurify[STORED_CONFIG]
   }
 
   const config = {
@@ -50,7 +61,7 @@ export function configureSanitization() {
       'data-backlink' // for backlinks
     ],
     ALLOWED_URI_REGEXP:
-      /^(?:(?:(?:f|ht)tps?|mailto|tel|data|#):|[^a-z]|[a-z+.-]+(?:[^a-z+.-]|$))/i,
+      /^(?:(?:(?:f|ht)tps?|mailto|tel):|#|[^a-z]|[a-z+.-]+(?:[^a-z+.-]|$))/i,
     FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'],
     FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
     KEEP_CONTENT: true,
@@ -62,31 +73,64 @@ export function configureSanitization() {
     ADD_URI_SAFE_ATTR: []
   }
 
-  // Add hook to sanitize links
-  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-    if (node.tagName === 'A') {
-      const href = node.getAttribute('href')
-      // Open external links in new tab
-      if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
-        node.setAttribute('target', '_blank')
-        node.setAttribute('rel', 'noopener noreferrer')
+  // Store config and mark hooks as registered to prevent duplicate registration
+  DOMPurify[STORED_CONFIG] = config
+
+  // Add hook to sanitize links and images (only if addHook method exists)
+  if (typeof DOMPurify.addHook === 'function') {
+    DOMPurify[HOOK_REGISTERED] = true
+
+    DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+      // Sanitize anchor tags
+      if (node.tagName === 'A') {
+        const href = node.getAttribute('href')
+        if (href) {
+          const normalizedHref = href.trim().toLowerCase()
+
+          // Open external links in new tab (use normalized for consistent check)
+          if (
+            normalizedHref.startsWith('http://') ||
+            normalizedHref.startsWith('https://')
+          ) {
+            node.setAttribute('target', '_blank')
+            node.setAttribute('rel', 'noopener noreferrer')
+          }
+
+          // Validate internal links (use normalized for consistent check)
+          if (normalizedHref.startsWith('#')) {
+            // Internal anchor link - safe
+          }
+
+          // Block javascript:, data:, and vbscript: URIs for links (XSS prevention)
+          if (
+            normalizedHref.startsWith('javascript:') ||
+            normalizedHref.startsWith('data:') ||
+            normalizedHref.startsWith('vbscript:')
+          ) {
+            node.removeAttribute('href')
+          }
+        }
       }
-      // Validate internal links
-      if (href && href.startsWith('#')) {
-        // Internal anchor link - safe
+
+      // Sanitize image tags to prevent data: URI XSS attacks
+      if (node.tagName === 'IMG') {
+        const src = node.getAttribute('src')
+        // Block javascript:, data:, and vbscript: URIs in image sources (XSS prevention)
+        if (src) {
+          const normalizedSrc = src.trim().toLowerCase()
+          if (
+            normalizedSrc.startsWith('javascript:') ||
+            normalizedSrc.startsWith('data:') ||
+            normalizedSrc.startsWith('vbscript:')
+          ) {
+            node.removeAttribute('src')
+            // Optionally set a placeholder or remove the element entirely
+            node.setAttribute('alt', 'Blocked: Unsafe image source')
+          }
+        }
       }
-      // Block javascript: and data: URIs for links
-      if (
-        href &&
-        // eslint-disable-next-line no-script-url
-        (href.trim().toLowerCase().startsWith('javascript:') ||
-          href.trim().toLowerCase().startsWith('data:') ||
-          href.trim().toLowerCase().startsWith('vbscript:'))
-      ) {
-        node.removeAttribute('href')
-      }
-    }
-  })
+    })
+  }
 
   return config
 }

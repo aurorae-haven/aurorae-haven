@@ -5,54 +5,54 @@
 
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import Home from '../pages/Home'
+import Home from '../pages/Home.jsx'
 
 // Mock all page components
-jest.mock('../pages/Home', () => {
+jest.mock('../pages/Home.jsx', () => {
   return function MockHome() {
-    return <div data-testid="home-page">Home Page</div>
+    return <div data-testid='home-page'>Home Page</div>
   }
 })
 
 jest.mock('../pages/Schedule', () => {
   return function MockSchedule() {
-    return <div data-testid="schedule-page">Schedule Page</div>
+    return <div data-testid='schedule-page'>Schedule Page</div>
   }
 })
 
 jest.mock('../pages/BrainDump', () => {
   return function MockBrainDump() {
-    return <div data-testid="braindump-page">BrainDump Page</div>
+    return <div data-testid='braindump-page'>BrainDump Page</div>
   }
 })
 
 jest.mock('../pages/Sequences', () => {
   return function MockSequences() {
-    return <div data-testid="sequences-page">Sequences Page</div>
+    return <div data-testid='sequences-page'>Sequences Page</div>
   }
 })
 
 jest.mock('../pages/Tasks', () => {
   return function MockTasks() {
-    return <div data-testid="tasks-page">Tasks Page</div>
+    return <div data-testid='tasks-page'>Tasks Page</div>
   }
 })
 
 jest.mock('../pages/Habits', () => {
   return function MockHabits() {
-    return <div data-testid="habits-page">Habits Page</div>
+    return <div data-testid='habits-page'>Habits Page</div>
   }
 })
 
 jest.mock('../pages/Stats', () => {
   return function MockStats() {
-    return <div data-testid="stats-page">Stats Page</div>
+    return <div data-testid='stats-page'>Stats Page</div>
   }
 })
 
 jest.mock('../pages/Settings', () => {
   return function MockSettings() {
-    return <div data-testid="settings-page">Settings Page</div>
+    return <div data-testid='settings-page'>Settings Page</div>
   }
 })
 
@@ -78,7 +78,7 @@ describe('Application Routing Configuration', () => {
         path: '/',
         element: Home
       }
-      
+
       expect(expectedRootRoute.path).toBe('/')
       expect(expectedRootRoute.element).toBe(Home)
     })
@@ -89,7 +89,7 @@ describe('Application Routing Configuration', () => {
         root: { path: '/', element: Home },
         home: { path: '/home', element: Home }
       }
-      
+
       expect(routes.root.element).toBe(routes.home.element)
     })
 
@@ -99,7 +99,7 @@ describe('Application Routing Configuration', () => {
         path: '*',
         redirectTo: '/' // Should be '/' not '/schedule'
       }
-      
+
       expect(fallbackRoute.redirectTo).toBe('/')
       expect(fallbackRoute.redirectTo).not.toBe('/schedule')
     })
@@ -119,7 +119,7 @@ describe('Application Routing Configuration', () => {
         { path: '/settings', name: 'Settings' },
         { path: '*', name: 'Fallback' }
       ]
-      
+
       expect(routes).toHaveLength(10)
       expect(routes[0].path).toBe('/')
       expect(routes[routes.length - 1].path).toBe('*')
@@ -132,7 +132,7 @@ describe('Application Routing Configuration', () => {
         hasNavigate: false, // Should be false (fixed from true)
         rendersHome: true
       }
-      
+
       expect(rootRouteConfig.hasNavigate).toBe(false)
       expect(rootRouteConfig.rendersHome).toBe(true)
     })
@@ -146,7 +146,7 @@ describe('Application Routing Configuration', () => {
         redirectTarget: '/',
         replace: true
       }
-      
+
       expect(fallbackBehavior.redirectTarget).toBe('/')
       expect(fallbackBehavior.unknownPaths).toBe('*')
       expect(fallbackBehavior.replace).toBe(true)
@@ -157,19 +157,19 @@ describe('Application Routing Configuration', () => {
     test('verifies the landing page fix - root shows Home not Schedule', () => {
       // Before fix: <Route path='/' element={<Navigate to='/schedule' replace />} />
       // After fix: <Route path='/' element={<Home />} />
-      
+
       const beforeFix = {
         path: '/',
         element: 'Navigate',
         redirectsTo: '/schedule'
       }
-      
+
       const afterFix = {
         path: '/',
         element: 'Home',
         redirectsTo: null
       }
-      
+
       // Verify the fix
       expect(afterFix.element).toBe('Home')
       expect(afterFix.redirectsTo).toBeNull()
@@ -179,17 +179,17 @@ describe('Application Routing Configuration', () => {
     test('verifies fallback redirects to home not schedule', () => {
       // Before fix: <Route path='*' element={<Navigate to='/schedule' replace />} />
       // After fix: <Route path='*' element={<Navigate to='/' replace />} />
-      
+
       const beforeFix = {
         path: '*',
         redirectsTo: '/schedule'
       }
-      
+
       const afterFix = {
         path: '*',
         redirectsTo: '/'
       }
-      
+
       // Verify the fix
       expect(afterFix.redirectsTo).toBe('/')
       expect(afterFix.redirectsTo).not.toBe('/schedule')

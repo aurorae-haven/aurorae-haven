@@ -42,10 +42,10 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
    npm install
    ```
 
-3. Start the React development server:
+3. Start the Vite development server:
 
    ```bash
-   npm start
+   npm run dev
    ```
 
    The app will open at `http://localhost:3000`
@@ -61,9 +61,10 @@ See the [ROADMAP.md](./ROADMAP.md) for detailed milestones (Alpha, Beta, v1.0, v
 5. Test the production build locally:
 
    ```bash
-   npm install -g serve
-   serve -s dist
+   npm run preview
    ```
+
+   This will start a local server to preview the production build
 
 ---
 
@@ -91,8 +92,7 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
   ```bash
   npm install
   npm run build
-  npm install -g serve
-  serve -s dist
+  npm run preview  # Preview production build locally
   ```
 
 - **Install Methods**:
@@ -116,11 +116,13 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 The app is automatically deployed to GitHub Pages when changes are pushed to `main` or `feature-*` branches.
 The deployment workflow:
 
-1. Installs Node.js dependencies
-2. Builds the React application with `npm run build`
-3. Copies PWA assets (service worker, manifest, icons)
-4. Deploys to GitHub Pages
+1. Runs tests and security audits
+2. Installs Node.js dependencies
+3. Builds the React application with Vite (`npm run build`)
+4. Automatically generates PWA assets (service worker, manifest, icons) via vite-plugin-pwa
+5. Deploys to GitHub Pages
 
+**Build Tool**: Vite (fast, modern bundler with HMR)
 **Live URL**: `https://aurorae-haven.github.io/aurorae-haven/`
 
 ---
