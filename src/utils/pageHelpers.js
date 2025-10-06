@@ -52,7 +52,7 @@ import { getDataTemplate } from './dataManager'
   }
 
   // Detect internal navigation and suppress the prompt for that event
-  function markInternalNav(e) {
+  function markInternalNav() {
     suppressPrompt = true
     setTimeout(() => {
       suppressPrompt = false

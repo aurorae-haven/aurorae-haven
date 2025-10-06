@@ -304,7 +304,7 @@ document.addEventListener('DOMContentLoaded', () => {
     content.appendChild(header)
 
     const list = document.createElement('div')
-    versions.forEach((version, index) => {
+    versions.forEach((version) => {
       const item = document.createElement('div')
       item.style.cssText =
         'padding:10px;margin:10px 0;border:1px solid #ccc;border-radius:4px;'

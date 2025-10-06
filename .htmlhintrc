@@ -1,0 +1,17 @@
+{
+  "doctype-first": false,        // CRA build may inject, allow flexible order
+  "title-require": true,
+  "tag-pair": true,
+  "attr-lowercase": true,
+  "attr-no-duplication": true,
+  "attr-value-double-quotes": true,
+  "id-unique": true,
+  "img-alt-require": true,
+  "style-disabled": false,       // allow <style> in dev
+  "inline-style-disabled": false,
+  "inline-script-disabled": false,
+  "space-tab-mixed-disabled": "space",
+  "spec-char-escape": false,     // JSX/templating may escape via build
+  "src-not-empty": true,
+  "href-abs-or-rel": false       // allow either
+}

@@ -95,11 +95,11 @@ function Home() {
           <ul style={{ marginLeft: '20px', opacity: 0.9 }}>
             <li>
               <strong>Desktop:</strong> Look for the install icon in your
-              browser's address bar, or use the browser menu to install
+              browser&apos;s address bar, or use the browser menu to install
             </li>
             <li>
-              <strong>Mobile:</strong> Tap the share button and select "Add to
-              Home Screen"
+              <strong>Mobile:</strong> Tap the share button and select &quot;Add
+              to Home Screen&quot;
             </li>
           </ul>
           <p style={{ marginTop: '12px', opacity: 0.8 }}>
@@ -115,9 +115,9 @@ function Home() {
         </div>
         <div className='card-b'>
           <p>
-            All your data stays on your device. We don't collect, transmit, or
-            store any personal information. Use the Export/Import buttons in the
-            header to back up your data anytime.
+            All your data stays on your device. We don&apos;t collect, transmit,
+            or store any personal information. Use the Export/Import buttons in
+            the header to back up your data anytime.
           </p>
         </div>
       </div>

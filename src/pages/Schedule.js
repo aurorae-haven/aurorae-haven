@@ -36,7 +36,7 @@ function Schedule() {
           <aside className='sidebar'>
             <div className='card'>
               <div className='card-h'>
-                <strong>Today's queue</strong>
+                <strong>Today&apos;s queue</strong>
               </div>
               <div className='card-b'>
                 <div className='list'>

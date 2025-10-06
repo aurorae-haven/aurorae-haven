@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import PropTypes from 'prop-types'
 
 function Toast({ message, visible, onClose }) {
   useEffect(() => {
@@ -17,6 +18,12 @@ function Toast({ message, visible, onClose }) {
       {message}
     </div>
   )
+}
+
+Toast.propTypes = {
+  message: PropTypes.string,
+  visible: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired
 }
 
 export default Toast
