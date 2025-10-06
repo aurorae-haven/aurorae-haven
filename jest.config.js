@@ -3,7 +3,9 @@ module.exports = {
   transform: {
     '^.+\\.(js|jsx)$': 'babel-jest'
   },
-  transformIgnorePatterns: ['node_modules/(?!(marked|dompurify)/)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(marked|dompurify|react-router|react-router-dom)/)'
+  ],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy'
   },
