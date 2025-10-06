@@ -71,7 +71,7 @@ npm run preview      # (was: serve -s dist)
 
 ## What Works
 
-✅ All 129 tests passing
+✅ All 149 tests passing
 ✅ Zero linting errors
 ✅ Zero production vulnerabilities
 ✅ PWA functionality (service worker, manifest)
