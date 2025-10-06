@@ -95,13 +95,35 @@ function Tasks() {
   }
 
   const exportTasks = () => {
-    const data = JSON.stringify(tasks, null, 2)
-    const blob = new Blob([data], { type: 'application/json' })
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = 'aurorae_tasks.json'
-    a.click()
-    URL.revokeObjectURL(a.href)
+    try {
+      const data = JSON.stringify(tasks, null, 2)
+      let blob
+      try {
+        blob = new Blob([data], { type: 'application/json' })
+      } catch (err) {
+        alert('Failed to create file for export: ' + err.message)
+        return
+      }
+      let url
+      try {
+        url = URL.createObjectURL(blob)
+      } catch (err) {
+        alert('Failed to create download URL: ' + err.message)
+        return
+      }
+      const a = document.createElement('a')
+      a.style.display = 'none'
+      a.href = url
+      a.download = 'aurorae_tasks.json'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      setTimeout(() => {
+        URL.revokeObjectURL(url)
+      }, 1000)
+    } catch (err) {
+      alert('Unexpected error during export: ' + err.message)
+    }
   }
 
   const importTasks = (e) => {
