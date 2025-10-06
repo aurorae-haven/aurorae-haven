@@ -69,11 +69,27 @@ export default defineConfig(({ mode }) => {
       sourcemap: mode === 'development',
       rollupOptions: {
         output: {
-          manualChunks: {
+          manualChunks: (id) => {
             // Split vendor code for better caching
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            'calendar-vendor': ['@fullcalendar/core', '@fullcalendar/daygrid'],
-            'markdown-vendor': ['marked', 'dompurify']
+            if (
+              id.includes('node_modules/@fullcalendar/core') ||
+              id.includes('node_modules/@fullcalendar/daygrid')
+            ) {
+              return 'calendar-vendor';
+            }
+            if (
+              id.includes('node_modules/react') ||
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/react-router-dom')
+            ) {
+              return 'react-vendor';
+            }
+            if (
+              id.includes('node_modules/marked') ||
+              id.includes('node_modules/dompurify')
+            ) {
+              return 'markdown-vendor';
+            }
           }
         }
       }
