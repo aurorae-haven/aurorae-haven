@@ -114,7 +114,7 @@ function Tasks() {
         const imported = JSON.parse(event.target.result)
         setTasks(imported)
       } catch (err) {
-        alert('Failed to import tasks: ' + err.message)
+        alert('Invalid file format. Please select a valid tasks JSON file.')
       }
     }
     reader.readAsText(file)
