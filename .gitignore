@@ -24,6 +24,10 @@ node_modules/
 dist/
 build/
 
+# Environment variables (keep .env and .env.production, ignore local overrides)
+.env.local
+.env.*.local
+
 # Test server
 test-server/
 
