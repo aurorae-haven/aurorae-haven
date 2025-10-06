@@ -22,19 +22,72 @@ import { getDataTemplate } from './dataManager'
     try {
       const text = await file.text()
       const obj = JSON.parse(text)
-      // minimal validation
-      if (
-        !obj.version ||
-        !Array.isArray(obj.tasks) ||
-        !Array.isArray(obj.sequences)
-      ) {
-        throw new Error('Invalid schema')
+
+      // Validate schema
+      if (!obj.version) {
+        throw new Error('Invalid schema: missing version')
       }
-      // store in memory (mock); in real app, write to localStorage/db
+
+      // Validate arrays (use default empty arrays if missing)
+      const tasks = Array.isArray(obj.tasks) ? obj.tasks : []
+      const sequences = Array.isArray(obj.sequences) ? obj.sequences : []
+      const habits = Array.isArray(obj.habits) ? obj.habits : []
+      const dumps = Array.isArray(obj.dumps) ? obj.dumps : []
+      const schedule = Array.isArray(obj.schedule) ? obj.schedule : []
+
+      // Store main data
+      const mainData = {
+        version: obj.version,
+        tasks,
+        sequences,
+        habits,
+        dumps,
+        schedule
+      }
+      localStorage.setItem('aurorae_haven_data', JSON.stringify(mainData))
+
+      // Import Brain Dump data if available
+      if (obj.brainDump && typeof obj.brainDump === 'object') {
+        // Import content
+        if (typeof obj.brainDump.content === 'string') {
+          localStorage.setItem('brainDumpContent', obj.brainDump.content)
+        }
+
+        // Import tags
+        if (typeof obj.brainDump.tags === 'string') {
+          localStorage.setItem('brainDumpTags', obj.brainDump.tags)
+        }
+
+        // Import version history
+        if (Array.isArray(obj.brainDump.versions)) {
+          localStorage.setItem(
+            'brainDumpVersions',
+            JSON.stringify(obj.brainDump.versions)
+          )
+        }
+
+        // Import entries
+        if (Array.isArray(obj.brainDump.entries)) {
+          localStorage.setItem(
+            'brainDumpEntries',
+            JSON.stringify(obj.brainDump.entries)
+          )
+        }
+      }
+
+      // Import schedule data to separate key if available
+      if (schedule.length > 0) {
+        localStorage.setItem('sj.schedule.events', JSON.stringify(schedule))
+      }
+
       window.__SJ_DATA__ = obj
-      localStorage.setItem('aurorae_haven_data', JSON.stringify(obj))
       exported = true // importing counts as having current data saved
-      toast('Data imported successfully')
+      toast('Data imported successfully. Page will reload...')
+
+      // Reload page after a short delay to show the updated data
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
     } catch (e) {
       console.error(e)
       toast('Import failed: ' + e.message)
