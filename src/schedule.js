@@ -24,7 +24,8 @@ document.addEventListener('DOMContentLoaded', function () {
       events = window.sjEvents
     }
   } catch (error) {
-    // Ignore errors when accessing window.sjEvents
+    // Log errors when accessing window.sjEvents for debugging
+    console.error('Error accessing window.sjEvents:', error);
   }
   if (!events.length) {
     const stored = localStorage.getItem('sj.schedule.events')
