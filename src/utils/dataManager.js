@@ -1,4 +1,5 @@
 // Data management utilities for export/import functionality
+import { generateSecureUUID } from './uuidGenerator'
 
 export function getDataTemplate() {
   // Collect real data from localStorage
@@ -65,10 +66,7 @@ export function exportJSON() {
   
   // Generate filename: YYYY-MM-DD_UUID.json
   const date = new Date().toISOString().split('T')[0]
-  const uuid =
-    typeof window.crypto !== 'undefined' && window.crypto.randomUUID
-      ? window.crypto.randomUUID()
-      : Date.now().toString(36) + Math.random().toString(36).substring(2)
+  const uuid = generateSecureUUID()
   const filename = `${date}_${uuid}.json`
   
   const a = document.createElement('a')

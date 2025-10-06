@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { generateSecureUUID } from '../utils/uuidGenerator'
 
 function Tasks() {
   const [tasks, setTasks] = useState({
@@ -12,6 +13,8 @@ function Tasks() {
   const [draggedTask, setDraggedTask] = useState(null)
   const [editingTask, setEditingTask] = useState(null)
   const [editText, setEditText] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const editInputRef = useRef(null)
 
   // Load tasks from localStorage on mount
   useEffect(() => {
@@ -31,12 +34,24 @@ function Tasks() {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
     } catch (e) {
       if (e.name === 'QuotaExceededError') {
-        alert('Storage quota exceeded. Please export your tasks and clear some data.')
+        showError('Storage quota exceeded. Please export your tasks and clear some data.')
       } else {
         console.error('Failed to save tasks:', e)
       }
     }
   }, [tasks])
+
+  // Focus edit input when editing starts
+  useEffect(() => {
+    if (editingTask && editInputRef.current) {
+      editInputRef.current.focus()
+    }
+  }, [editingTask])
+
+  const showError = (message) => {
+    setErrorMessage(message)
+    setTimeout(() => setErrorMessage(''), 5000)
+  }
 
   const generateUniqueId = () => {
     // Generate unique ID using timestamp + random component to prevent duplicates
@@ -143,10 +158,7 @@ function Tasks() {
       
       // Generate filename: YYYY-MM-DD_UUID.json
       const date = new Date().toISOString().split('T')[0]
-      const uuid =
-        typeof window.crypto !== 'undefined' && window.crypto.randomUUID
-          ? window.crypto.randomUUID()
-          : Date.now().toString(36) + Math.random().toString(36).substring(2)
+      const uuid = generateSecureUUID()
       const filename = `${date}_${uuid}.json`
       
       const a = document.createElement('a')
@@ -160,7 +172,7 @@ function Tasks() {
         URL.revokeObjectURL(url)
       }, 1000)
     } catch (err) {
-      alert('Failed to export tasks: ' + err.message)
+      showError('Failed to export tasks: ' + err.message)
     }
   }
 
@@ -184,14 +196,14 @@ function Tasks() {
         // Check if all required quadrant keys exist
         const hasAllKeys = requiredKeys.every((key) => key in imported)
         if (!hasAllKeys) {
-          alert('Invalid tasks file: Missing required quadrants.')
+          showError('Invalid tasks file: Missing required quadrants.')
           return
         }
         
         // Validate that each quadrant is an array
         const allArrays = requiredKeys.every((key) => Array.isArray(imported[key]))
         if (!allArrays) {
-          alert('Invalid tasks file: Quadrants must be arrays.')
+          showError('Invalid tasks file: Quadrants must be arrays.')
           return
         }
         
@@ -205,28 +217,28 @@ function Tasks() {
               typeof task.completed !== 'boolean' ||
               typeof task.createdAt !== 'number'
             ) {
-              alert('Invalid tasks file: Tasks have incorrect structure.')
+              showError('Invalid tasks file: Tasks have incorrect structure.')
               return
             }
             
             // Check for duplicate IDs
             if (seenIds.has(task.id)) {
-              alert('Invalid tasks file: Duplicate task IDs found.')
+              showError('Invalid tasks file: Duplicate task IDs found.')
               return
             }
             seenIds.add(task.id)
             
             // Sanitize text to prevent potential XSS (extra safety layer)
             if (task.text.length > 1000) {
-              alert('Invalid tasks file: Task text exceeds maximum length.')
+              showError('Invalid tasks file: Task text exceeds maximum length.')
               return
             }
           }
         }
         
         setTasks(imported)
-      } catch (err) {
-        alert('Invalid file format. Please select a valid tasks JSON file.')
+      } catch {
+        showError('Invalid file format. Please select a valid tasks JSON file.')
       }
     }
     reader.readAsText(file)
@@ -261,6 +273,16 @@ function Tasks() {
 
   return (
     <div className='tasks-container'>
+      {errorMessage && (
+        <div
+          className='error-notification'
+          role='alert'
+          aria-live='assertive'
+          aria-atomic='true'
+        >
+          {errorMessage}
+        </div>
+      )}
       <div className='card'>
         <div className='card-h'>
           <strong>Tasks</strong>
@@ -360,6 +382,7 @@ function Tasks() {
                       />
                       {isEditing ? (
                         <input
+                          ref={editInputRef}
                           type='text'
                           value={editText}
                           onChange={(e) => setEditText(e.target.value)}
@@ -372,8 +395,6 @@ function Tasks() {
                           }}
                           className='task-edit-input'
                           aria-label='Edit task text'
-                          // eslint-disable-next-line jsx-a11y/no-autofocus
-                          autoFocus
                         />
                       ) : (
                         <span

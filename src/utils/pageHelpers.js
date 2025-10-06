@@ -1,25 +1,7 @@
 // Export/Import + beforeunload only on real exit (suppress for internal nav)
 import { getDataTemplate } from './dataManager'
+import { generateSecureUUID } from './uuidGenerator'
 ;(function () {
-  // Secure fallback UUID generator using crypto.getRandomValues
-  function generateFallbackUUID() {
-    // Generate 16 random bytes, format as UUID v4
-    const bytes = new Uint8Array(16);
-    window.crypto.getRandomValues(bytes);
-    // Set version and variant bits
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
-    // Convert to UUID string
-    const hex = Array.from(bytes, x => x.toString(16).padStart(2, '0')).join('');
-    return (
-      hex.slice(0, 8) + '-' +
-      hex.slice(8, 12) + '-' +
-      hex.slice(12, 16) + '-' +
-      hex.slice(16, 20) + '-' +
-      hex.slice(20)
-    );
-  }
-
   let exported = false
   let suppressPrompt = false
 
@@ -30,12 +12,7 @@ import { getDataTemplate } from './dataManager'
     
     // Generate filename: YYYY-MM-DD_UUID.json
     const date = new Date().toISOString().split('T')[0]
-    const uuid =
-      typeof window.crypto !== 'undefined' && window.crypto.randomUUID
-        ? window.crypto.randomUUID()
-        : (typeof window.crypto !== 'undefined' && window.crypto.getRandomValues
-            ? generateFallbackUUID()
-            : Date.now().toString(36))
+    const uuid = generateSecureUUID()
     const filename = `${date}_${uuid}.json`
     
     const a = document.createElement('a')

@@ -583,10 +583,38 @@ textarea:focus {
   background: rgba(140, 150, 210, 0.32);
 }
 
+.error-notification {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 99, 99, 0.95);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 140, 140, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  max-width: 90%;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
 .eisenhower-matrix {
   display: grid;
-  /* Responsive 2x2 grid: adapts to screen size, max 2 columns */
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* Fixed 2x2 grid layout */
+  grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 14px;
 }
