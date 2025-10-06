@@ -54,10 +54,6 @@ function Tasks() {
   }
 
 
-
-
-
-
   const addTask = (e) => {
     e.preventDefault()
     if (!newTask.trim()) return
