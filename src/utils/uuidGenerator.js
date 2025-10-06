@@ -21,7 +21,7 @@ export function generateSecureUUID() {
 
     // Convert to UUID format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
     const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('')
-    return `${hex.substr(0, 8)}-${hex.substr(8, 4)}-${hex.substr(12, 4)}-${hex.substr(16, 4)}-${hex.substr(20, 12)}`
+    return `${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20, 32)}`
   }
 
   // Last resort fallback (should never happen in modern browsers)
