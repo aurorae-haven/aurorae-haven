@@ -2,11 +2,17 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { handleEnterKey } from '../utils/listContinuation'
+import { configureSanitization } from '../utils/braindump-enhanced'
 
 function BrainDump() {
   const [content, setContent] = useState('')
   const [preview, setPreview] = useState('')
   const editorRef = useRef(null)
+
+  // Configure enhanced sanitization on mount
+  useEffect(() => {
+    configureSanitization(DOMPurify)
+  }, [])
 
   // Load saved content on mount
   useEffect(() => {
@@ -19,7 +25,9 @@ function BrainDump() {
   // Render preview whenever content changes
   useEffect(() => {
     const renderPreview = () => {
-      const html = DOMPurify.sanitize(marked.parse(content))
+      // Use enhanced sanitization configuration
+      const sanitizeConfig = configureSanitization(DOMPurify)
+      const html = DOMPurify.sanitize(marked.parse(content), sanitizeConfig)
       setPreview(html)
     }
     renderPreview()

@@ -13,7 +13,36 @@
     <title>Aurorae Haven</title>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>
+      <div style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        text-align: center;
+        background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+        color: #e0e0ff;
+        font-family: system-ui, -apple-system, sans-serif;
+      ">
+        <h1 style="margin-bottom: 1rem; font-size: 2rem;">🌌 Aurorae Haven</h1>
+        <p style="margin-bottom: 2rem; max-width: 600px; line-height: 1.6;">
+          This application requires JavaScript to run. Aurorae Haven is a Progressive Web App designed to help you manage routines, tasks, habits, and notes.
+        </p>
+        <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 8px; max-width: 500px;">
+          <h2 style="margin-bottom: 1rem; font-size: 1.2rem;">To use this app:</h2>
+          <ol style="text-align: left; line-height: 2; margin: 0 auto; display: inline-block;">
+            <li>Enable JavaScript in your browser settings</li>
+            <li>Enable cookies for local data storage</li>
+            <li>Refresh this page</li>
+          </ol>
+        </div>
+        <p style="margin-top: 2rem; opacity: 0.7; font-size: 0.9rem;">
+          All your data is stored locally on your device. We don't collect or transmit any personal information.
+        </p>
+      </div>
+    </noscript>
     <div id="root"></div>
     <script type="module" src="/src/index.jsx"></script>
   </body>

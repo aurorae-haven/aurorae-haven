@@ -2,8 +2,10 @@
 // TAB-BDP: Implements file attachments, backlinks, version history, sanitization, and accessibility
 
 // TAB-BDP-SAN-01: Enhanced sanitization configuration
-export function configureSanitization() {
-  if (!window.DOMPurify) {
+export function configureSanitization(DOMPurifyInstance) {
+  const DOMPurify = DOMPurifyInstance || window.DOMPurify
+  
+  if (!DOMPurify) {
     console.error('DOMPurify not loaded')
     return null
   }
@@ -62,30 +64,32 @@ export function configureSanitization() {
     ADD_URI_SAFE_ATTR: []
   }
 
-  // Add hook to sanitize links
-  DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-    if (node.tagName === 'A') {
-      const href = node.getAttribute('href')
-      // Open external links in new tab
-      if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
-        node.setAttribute('target', '_blank')
-        node.setAttribute('rel', 'noopener noreferrer')
+  // Add hook to sanitize links (only if addHook method exists)
+  if (typeof DOMPurify.addHook === 'function') {
+    DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+      if (node.tagName === 'A') {
+        const href = node.getAttribute('href')
+        // Open external links in new tab
+        if (href && (href.startsWith('http://') || href.startsWith('https://'))) {
+          node.setAttribute('target', '_blank')
+          node.setAttribute('rel', 'noopener noreferrer')
+        }
+        // Validate internal links
+        if (href && href.startsWith('#')) {
+          // Internal anchor link - safe
+        }
+        // Block javascript: and data: URIs for links
+        if (
+          href &&
+          (href.trim().toLowerCase().startsWith('javascript:') ||
+            href.trim().toLowerCase().startsWith('data:') ||
+            href.trim().toLowerCase().startsWith('vbscript:'))
+        ) {
+          node.removeAttribute('href')
+        }
       }
-      // Validate internal links
-      if (href && href.startsWith('#')) {
-        // Internal anchor link - safe
-      }
-      // Block javascript: and data: URIs for links
-      if (
-        href &&
-        (href.trim().toLowerCase().startsWith('javascript:') ||
-          href.trim().toLowerCase().startsWith('data:') ||
-          href.trim().toLowerCase().startsWith('vbscript:'))
-      ) {
-        node.removeAttribute('href')
-      }
-    }
-  })
+    })
+  }
 
   return config
 }
