@@ -585,7 +585,8 @@ textarea:focus {
 
 .eisenhower-matrix {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* Responsive 2x2 grid: adapts to screen size, max 2 columns */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-template-rows: repeat(2, 1fr);
   gap: 14px;
 }
