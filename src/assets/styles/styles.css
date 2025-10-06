@@ -754,17 +754,77 @@ textarea:focus {
 }
 
 /* Responsive adjustments */
+/* Tablet portrait and mobile landscape - maintain 2x2 grid but smaller */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .eisenhower-matrix {
+    gap: 12px;
+  }
+
+  .matrix-quadrant {
+    min-height: 250px;
+    padding: 14px;
+  }
+
+  .task-input-form {
+    grid-template-columns: 180px 1fr auto;
+    gap: 8px;
+  }
+}
+
+/* Mobile and small tablet - single column */
 @media (max-width: 768px) {
   .task-input-form {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .quadrant-select {
+    width: 100%;
+  }
+
+  .task-input {
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
   }
 
   .eisenhower-matrix {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
+    gap: 12px;
+  }
+
+  .matrix-quadrant {
+    min-height: 200px;
   }
 
   .task-item {
     cursor: default;
+  }
+}
+
+/* Very small mobile screens */
+@media (max-width: 480px) {
+  .tasks-container {
+    gap: 12px;
+  }
+
+  .matrix-quadrant {
+    padding: 12px;
+    min-height: 180px;
+  }
+
+  .quadrant-header h3 {
+    font-size: 14px;
+  }
+
+  .quadrant-header .subtitle {
+    font-size: 11px;
+  }
+
+  .task-text {
+    font-size: 13px;
   }
 }

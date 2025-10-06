@@ -189,7 +189,7 @@ describe('Tasks Component', () => {
     expect(importButton).toBeInTheDocument()
   })
 
-  test('exports tasks as JSON', () => {
+  test('exports tasks as JSON', async () => {
     // Mock URL.createObjectURL
     const mockCreateObjectURL = jest.fn(() => 'blob:mock-url')
     const mockRevokeObjectURL = jest.fn()
@@ -205,7 +205,11 @@ describe('Tasks Component', () => {
     fireEvent.click(exportButton)
 
     expect(mockCreateObjectURL).toHaveBeenCalled()
-    expect(mockRevokeObjectURL).toHaveBeenCalled()
+    
+    // Wait for the async revoke call (setTimeout with 1000ms)
+    await waitFor(() => {
+      expect(mockRevokeObjectURL).toHaveBeenCalled()
+    }, { timeout: 1500 })
     
     // Restore originals
     global.URL.createObjectURL = originalCreateObjectURL
