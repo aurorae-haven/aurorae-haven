@@ -54,8 +54,8 @@ function Tasks() {
   }
 
   const generateUniqueId = () => {
-    // Generate unique ID using timestamp + random component to prevent duplicates
-    return Date.now() + Math.random()
+    // Generate unique ID using cryptographically secure UUID
+    return generateSecureUUID()
   }
 
   const addTask = (e) => {
