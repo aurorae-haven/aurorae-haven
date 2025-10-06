@@ -125,24 +125,21 @@ function Tasks() {
   const exportTasks = () => {
     try {
       const data = JSON.stringify(tasks, null, 2)
-      let blob
-      try {
-        blob = new Blob([data], { type: 'application/json' })
-      } catch (err) {
-        alert('Failed to create file for export: ' + err.message)
-        return
-      }
-      let url
-      try {
-        url = URL.createObjectURL(blob)
-      } catch (err) {
-        alert('Failed to create download URL: ' + err.message)
-        return
-      }
+      const blob = new Blob([data], { type: 'application/json' })
+      const url = URL.createObjectURL(blob)
+      
+      // Generate filename: YYYY-MM-DD_UUID.json
+      const date = new Date().toISOString().split('T')[0]
+      const uuid =
+        typeof window.crypto !== 'undefined' && window.crypto.randomUUID
+          ? window.crypto.randomUUID()
+          : Date.now().toString(36) + Math.random().toString(36).substring(2)
+      const filename = `${date}_${uuid}.json`
+      
       const a = document.createElement('a')
       a.style.display = 'none'
       a.href = url
-      a.download = 'aurorae_tasks.json'
+      a.download = filename
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -150,7 +147,7 @@ function Tasks() {
         URL.revokeObjectURL(url)
       }, 1000)
     } catch (err) {
-      alert('Unexpected error during export: ' + err.message)
+      alert('Failed to export tasks: ' + err.message)
     }
   }
 
@@ -162,6 +159,44 @@ function Tasks() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result)
+        
+        // Validate imported data structure
+        const requiredKeys = [
+          'urgent_important',
+          'not_urgent_important',
+          'urgent_not_important',
+          'not_urgent_not_important'
+        ]
+        
+        // Check if all required quadrant keys exist
+        const hasAllKeys = requiredKeys.every((key) => key in imported)
+        if (!hasAllKeys) {
+          alert('Invalid tasks file: Missing required quadrants.')
+          return
+        }
+        
+        // Validate that each quadrant is an array
+        const allArrays = requiredKeys.every((key) => Array.isArray(imported[key]))
+        if (!allArrays) {
+          alert('Invalid tasks file: Quadrants must be arrays.')
+          return
+        }
+        
+        // Validate task structure in each quadrant
+        for (const key of requiredKeys) {
+          for (const task of imported[key]) {
+            if (
+              typeof task.id !== 'number' ||
+              typeof task.text !== 'string' ||
+              typeof task.completed !== 'boolean' ||
+              typeof task.createdAt !== 'number'
+            ) {
+              alert('Invalid tasks file: Tasks have incorrect structure.')
+              return
+            }
+          }
+        }
+        
         setTasks(imported)
       } catch (err) {
         alert('Invalid file format. Please select a valid tasks JSON file.')

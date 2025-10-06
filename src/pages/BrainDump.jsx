@@ -48,11 +48,21 @@ function BrainDump() {
 
   const handleExport = () => {
     const blob = new Blob([content], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    
+    // Generate filename: YYYY-MM-DD_UUID.md
+    const date = new Date().toISOString().split('T')[0]
+    const uuid =
+      typeof window.crypto !== 'undefined' && window.crypto.randomUUID
+        ? window.crypto.randomUUID()
+        : Date.now().toString(36) + Math.random().toString(36).substring(2)
+    const filename = `${date}_${uuid}.md`
+    
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = 'brain_dump.md'
+    a.href = url
+    a.download = filename
     a.click()
-    URL.revokeObjectURL(a.href)
+    URL.revokeObjectURL(url)
   }
 
   // Handle auto-list continuation on Enter key

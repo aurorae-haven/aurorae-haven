@@ -61,13 +61,23 @@ export function getDataTemplate() {
 export function exportJSON() {
   const data = JSON.stringify(getDataTemplate(), null, 2)
   const blob = new Blob([data], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  
+  // Generate filename: YYYY-MM-DD_UUID.json
+  const date = new Date().toISOString().split('T')[0]
+  const uuid =
+    typeof window.crypto !== 'undefined' && window.crypto.randomUUID
+      ? window.crypto.randomUUID()
+      : Date.now().toString(36) + Math.random().toString(36).substring(2)
+  const filename = `${date}_${uuid}.json`
+  
   const a = document.createElement('a')
-  a.href = URL.createObjectURL(blob)
-  a.download = 'aurorae_haven_data.json'
+  a.href = url
+  a.download = filename
   document.body.appendChild(a)
   a.click()
   a.remove()
-  URL.revokeObjectURL(a.href)
+  URL.revokeObjectURL(url)
   return true
 }
 
