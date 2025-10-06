@@ -708,13 +708,46 @@ textarea:focus {
 }
 
 .task-text {
+  flex: 1;
   font-size: 14px;
   line-height: 1.4;
   color: var(--ink);
   word-break: break-word;
+  cursor: default;
+  user-select: text;
 }
 
-.btn-delete {
+.task-edit-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--mint);
+  border-radius: 8px;
+  background: rgba(16, 20, 44, 0.5);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+}
+
+.task-edit-input:focus {
+  border-color: var(--mint);
+  box-shadow: 0 0 0 2px rgba(134, 245, 224, 0.2);
+}
+
+.task-item.editing {
+  background: rgba(16, 20, 44, 0.5);
+  border-color: var(--mint);
+}
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.btn-edit,
+.btn-delete,
+.btn-save,
+.btn-cancel {
   padding: 6px;
   background: transparent;
   border: none;
@@ -726,20 +759,44 @@ textarea:focus {
   border-radius: 8px;
 }
 
-.btn-delete:hover {
+.btn-edit:hover,
+.btn-delete:hover,
+.btn-save:hover,
+.btn-cancel:hover {
   opacity: 1;
   transform: scale(1.1);
 }
 
-.btn-delete:focus {
-  outline: 3px solid var(--mint);
+.btn-edit:focus,
+.btn-delete:focus,
+.btn-save:focus,
+.btn-cancel:focus {
+  outline: 2px solid var(--mint);
   outline-offset: 2px;
+}
+
+.btn-edit .icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(134, 245, 224, 0.8);
 }
 
 .btn-delete .icon {
   width: 16px;
   height: 16px;
   stroke: rgba(255, 99, 99, 0.8);
+}
+
+.btn-save .icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(134, 245, 224, 0.9);
+}
+
+.btn-cancel .icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(255, 150, 150, 0.8);
 }
 
 .tasks-info {
