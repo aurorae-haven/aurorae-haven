@@ -146,6 +146,7 @@ The deployment workflow:
 
 - **[Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md)**: Learn how to back up, transfer, and restore your data
 - **[Brain Dump Specifications](./docs/BRAIN_DUMP_SPECS.md)**: Technical details about Brain Dump features
+- **[Tasks Specifications](./docs/TASKS_SPECS.md)**: Technical details about Tasks and Eisenhower Matrix
 - **[Roadmap](./ROADMAP.md)**: See our development milestones and future plans
 - **[Contributing Guide](./CONTRIBUTING.md)**: How to contribute to the project
 
