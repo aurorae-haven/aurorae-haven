@@ -156,10 +156,10 @@ function Tasks() {
       const blob = new Blob([data], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
       
-      // Generate filename: YYYY-MM-DD_UUID.json
+      // Generate filename: tasks_YYYY-MM-DD_UUID.json
       const date = new Date().toISOString().split('T')[0]
       const uuid = generateSecureUUID()
-      const filename = `${date}_${uuid}.json`
+      const filename = `tasks_${date}_${uuid}.json`
       
       const a = document.createElement('a')
       a.style.display = 'none'

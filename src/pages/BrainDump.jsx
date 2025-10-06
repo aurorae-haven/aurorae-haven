@@ -51,10 +51,10 @@ function BrainDump() {
     const blob = new Blob([content], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     
-    // Generate filename: YYYY-MM-DD_UUID.md
+    // Generate filename: braindump_YYYY-MM-DD_UUID.md
     const date = new Date().toISOString().split('T')[0]
     const uuid = generateSecureUUID()
-    const filename = `${date}_${uuid}.md`
+    const filename = `braindump_${date}_${uuid}.md`
     
     const a = document.createElement('a')
     a.href = url
