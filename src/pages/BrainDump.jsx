@@ -3,6 +3,7 @@ import { marked } from 'marked'
 import DOMPurify from 'dompurify'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
+import { generateSecureUUID } from '../utils/uuidGenerator'
 
 function BrainDump() {
   const [content, setContent] = useState('')
@@ -48,11 +49,18 @@ function BrainDump() {
 
   const handleExport = () => {
     const blob = new Blob([content], { type: 'text/markdown' })
+    const url = URL.createObjectURL(blob)
+    
+    // Generate filename: braindump_YYYY-MM-DD_UUID.md
+    const date = new Date().toISOString().split('T')[0]
+    const uuid = generateSecureUUID()
+    const filename = `braindump_${date}_${uuid}.md`
+    
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = 'brain_dump.md'
+    a.href = url
+    a.download = filename
     a.click()
-    URL.revokeObjectURL(a.href)
+    URL.revokeObjectURL(url)
   }
 
   // Handle auto-list continuation on Enter key

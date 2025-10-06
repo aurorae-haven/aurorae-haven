@@ -1,5 +1,6 @@
 // Export/Import + beforeunload only on real exit (suppress for internal nav)
 import { getDataTemplate } from './dataManager'
+import { generateSecureUUID } from './uuidGenerator'
 ;(function () {
   let exported = false
   let suppressPrompt = false
@@ -7,15 +8,22 @@ import { getDataTemplate } from './dataManager'
   function exportJSON() {
     const data = JSON.stringify(getDataTemplate(), null, 2)
     const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    
+    // Generate filename: aurorae_YYYY-MM-DD_UUID.json
+    const date = new Date().toISOString().split('T')[0]
+    const uuid = generateSecureUUID()
+    const filename = `aurorae_${date}_${uuid}.json`
+    
     const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = 'aurorae_haven_data.json'
+    a.href = url
+    a.download = filename
     document.body.appendChild(a)
     a.click()
     a.remove()
-    URL.revokeObjectURL(a.href)
+    URL.revokeObjectURL(url)
     exported = true
-    toast('Data exported (aurorae_haven_data.json)')
+    toast(`Data exported (${filename})`)
   }
 
   async function importJSON(file) {

@@ -511,3 +511,406 @@ textarea:focus {
   -webkit-line-clamp: unset;
   overflow: visible;
 }
+
+/* ===== Tasks (Eisenhower Matrix) ===== */
+.tasks-container {
+  display: grid;
+  gap: 16px;
+}
+
+.task-input-form {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.quadrant-select {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(16, 20, 44, 0.32);
+  color: var(--ink);
+  font-size: 14px;
+  transition:
+    border-color var(--dur) var(--ease),
+    filter var(--dur) var(--ease);
+}
+
+.quadrant-select:hover {
+  filter: brightness(1.1);
+}
+
+.quadrant-select:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+
+.task-input {
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(16, 20, 44, 0.32);
+  color: var(--ink);
+  font-size: 14px;
+  transition:
+    border-color var(--dur) var(--ease),
+    filter var(--dur) var(--ease);
+}
+
+.task-input:hover {
+  filter: brightness(1.1);
+}
+
+.task-input:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+  border-color: var(--mint);
+}
+
+.task-input::placeholder {
+  color: var(--dim);
+  opacity: 0.7;
+}
+
+.btn-primary {
+  background: rgba(140, 150, 210, 0.22);
+  padding: 10px 20px;
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: rgba(140, 150, 210, 0.32);
+}
+
+.error-notification {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 99, 99, 0.95);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 140, 140, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  max-width: 90%;
+  text-align: center;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.eisenhower-matrix {
+  display: grid;
+  /* Fixed 2x2 grid layout */
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.matrix-quadrant {
+  background: linear-gradient(180deg, var(--glass-lo), rgba(18, 22, 52, 0.22));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 300px;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.matrix-quadrant.quadrant-red {
+  border-color: rgba(255, 99, 99, 0.4);
+}
+
+.matrix-quadrant.quadrant-red .quadrant-header h3 {
+  color: rgba(255, 140, 140, 0.95);
+}
+
+.matrix-quadrant.quadrant-blue {
+  border-color: rgba(99, 150, 255, 0.4);
+}
+
+.matrix-quadrant.quadrant-blue .quadrant-header h3 {
+  color: rgba(140, 180, 255, 0.95);
+}
+
+.matrix-quadrant.quadrant-yellow {
+  border-color: rgba(255, 200, 99, 0.4);
+}
+
+.matrix-quadrant.quadrant-yellow .quadrant-header h3 {
+  color: rgba(255, 210, 130, 0.95);
+}
+
+.matrix-quadrant.quadrant-green {
+  border-color: rgba(99, 220, 150, 0.4);
+}
+
+.matrix-quadrant.quadrant-green .quadrant-header h3 {
+  color: rgba(140, 230, 180, 0.95);
+}
+
+.quadrant-header {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.quadrant-header h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quadrant-header .subtitle {
+  font-size: 12px;
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.task-list {
+  display: grid;
+  gap: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--dim);
+  font-size: 14px;
+  padding: 20px;
+  opacity: 0.6;
+}
+
+.task-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(16, 20, 44, 0.32);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: grab;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    filter var(--dur) var(--ease);
+}
+
+.task-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  filter: brightness(1.08);
+}
+
+.task-item:active {
+  cursor: grabbing;
+}
+
+.task-item.completed {
+  opacity: 0.6;
+}
+
+.task-item.completed .task-text {
+  text-decoration: line-through;
+  color: var(--dim);
+}
+
+.task-item input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--mint);
+}
+
+.task-text {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--ink);
+  word-break: break-word;
+  cursor: default;
+  user-select: text;
+}
+
+.task-edit-input {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--mint);
+  border-radius: 8px;
+  background: rgba(16, 20, 44, 0.5);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+}
+
+.task-edit-input:focus {
+  border-color: var(--mint);
+  box-shadow: 0 0 0 2px rgba(134, 245, 224, 0.2);
+}
+
+.task-item.editing {
+  background: rgba(16, 20, 44, 0.5);
+  border-color: var(--mint);
+}
+
+.task-actions {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.btn-edit,
+.btn-delete,
+.btn-save,
+.btn-cancel {
+  padding: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+  border-radius: 8px;
+}
+
+.btn-edit:hover,
+.btn-delete:hover,
+.btn-save:hover,
+.btn-cancel:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.btn-edit:focus,
+.btn-delete:focus,
+.btn-save:focus,
+.btn-cancel:focus {
+  outline: 2px solid var(--mint);
+  outline-offset: 2px;
+}
+
+.btn-edit .icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(134, 245, 224, 0.8);
+}
+
+.btn-delete .icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(255, 99, 99, 0.8);
+}
+
+.btn-save .icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(134, 245, 224, 0.9);
+}
+
+.btn-cancel .icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(255, 150, 150, 0.8);
+}
+
+.tasks-info {
+  padding: 12px 16px;
+  background: rgba(16, 20, 44, 0.22);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.tasks-info .small {
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive adjustments */
+/* Tablet portrait and mobile landscape - maintain 2x2 grid but smaller */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .eisenhower-matrix {
+    gap: 12px;
+  }
+
+  .matrix-quadrant {
+    min-height: 250px;
+    padding: 14px;
+  }
+
+  .task-input-form {
+    grid-template-columns: 180px 1fr auto;
+    gap: 8px;
+  }
+}
+
+/* Mobile and small tablet - single column */
+@media (max-width: 768px) {
+  .task-input-form {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .quadrant-select {
+    width: 100%;
+  }
+
+  .task-input {
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+
+  .eisenhower-matrix {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 12px;
+  }
+
+  .matrix-quadrant {
+    min-height: 200px;
+  }
+
+  .task-item {
+    cursor: default;
+  }
+}
+
+/* Very small mobile screens */
+@media (max-width: 480px) {
+  .tasks-container {
+    gap: 12px;
+  }
+
+  .matrix-quadrant {
+    padding: 12px;
+    min-height: 180px;
+  }
+
+  .quadrant-header h3 {
+    font-size: 14px;
+  }
+
+  .quadrant-header .subtitle {
+    font-size: 11px;
+  }
+
+  .task-text {
+    font-size: 13px;
+  }
+}
