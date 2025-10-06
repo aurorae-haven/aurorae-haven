@@ -1,7 +1,36 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" http-equiv="refresh" content="0; url=%PUBLIC_URL%/" />
+    <meta charset="utf-8" />
+    <title>Redirecting...</title>
+    <!--
+      CSP Exception: This inline script is necessary for GitHub Pages SPA routing.
+      It must execute immediately before any redirect to preserve the requested URL.
+      External scripts would load too late, causing the path to be lost.
+      This is a standard pattern for SPA deployment on GitHub Pages.
+    -->
+    <script>
+      // GitHub Pages SPA redirect logic
+      // This script runs when a user navigates directly to a route (e.g., /aurorae-haven/schedule)
+      // and GitHub Pages serves this 404.html file.
+
+      // Store the current path (including query and hash) so the SPA can restore it after redirect
+      sessionStorage.setItem(
+        'redirectPath',
+        location.pathname + location.search + location.hash
+      )
+
+      // Compute the base path (directory containing this 404.html) to redirect to index.html
+      // Example: /aurorae-haven/schedule -> /aurorae-haven/
+      var pathSegments = location.pathname.split('/').slice(0, -1)
+      var basePath = location.origin + pathSegments.join('/') + '/'
+
+      // Redirect to the base path (index.html will handle the SPA routing)
+      // The React app reads redirectPath from sessionStorage and navigates to the correct route
+      location.replace(basePath)
+    </script>
   </head>
-  <body></body>
+  <body>
+    <p>Redirecting to app...</p>
+  </body>
 </html>
