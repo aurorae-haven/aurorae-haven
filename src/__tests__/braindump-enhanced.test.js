@@ -8,7 +8,7 @@ import {
   VersionHistory,
   Backlinks,
   FileAttachments
-} from '../braindump-enhanced'
+} from '../utils/braindump-enhanced'
 
 // Mock DOMPurify
 const mockDOMPurify = {
