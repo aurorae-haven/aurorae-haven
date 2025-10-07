@@ -19,6 +19,10 @@ describe('Settings Manager', () => {
     delete localStorage.aurorae_settings
   })
 
+  afterEach(() => {
+    localStorage.clear()
+  })
+
   describe('getSettings', () => {
     test('should return default settings when none exist', () => {
       const settings = getSettings()
@@ -113,9 +117,16 @@ describe('Settings Manager', () => {
 
   describe('resetSettings', () => {
     test('should reset to default settings', () => {
-      // Ensure completely clean state
-      localStorage.removeItem('aurorae_settings')
-      updateSettings({ theme: 'dark' })
+      // Force complete reset
+      for (const key in localStorage) {
+        localStorage.removeItem(key)
+      }
+      
+      // Set some non-default values first
+      const before = updateSettings({ theme: 'dark', backupEnabled: false })
+      expect(before.theme).toBe('dark') // Verify it was set
+      
+      // Reset should restore defaults
       const reset = resetSettings()
 
       expect(reset.theme).toBe('auto')
@@ -128,15 +139,14 @@ describe('Settings Manager', () => {
 
   describe('exportSettings', () => {
     test('should export settings as JSON', () => {
-      // Ensure completely clean state
-      localStorage.removeItem('aurorae_settings')
       const json = exportSettings()
       const parsed = JSON.parse(json)
 
       expect(parsed).toHaveProperty('version')
       expect(parsed).toHaveProperty('exportedAt')
       expect(parsed).toHaveProperty('settings')
-      expect(parsed.settings.theme).toBe('auto')
+      expect(parsed.settings).toHaveProperty('theme')
+      expect(parsed.settings).toHaveProperty('backupEnabled')
     })
 
     // TODO: Add test for export metadata

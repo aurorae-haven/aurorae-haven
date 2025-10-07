@@ -45,7 +45,7 @@ export function getSettings() {
   } catch (e) {
     console.error('Failed to load settings:', e)
   }
-  return DEFAULT_SETTINGS
+  return { ...DEFAULT_SETTINGS }
 }
 
 /**
@@ -220,7 +220,7 @@ export function validateSettings(settings) {
  */
 export function applySettings(settings) {
   // TODO: Implement settings application logic
-  
+
   // Theme
   if (settings.theme) {
     applyTheme(settings.theme)

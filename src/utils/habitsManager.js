@@ -1,7 +1,7 @@
 // Habits Manager - Feature stub for habit tracking functionality
 // TODO: Implement full habits tracking with IndexedDB integration
 
-import { put, getAll, deleteById, STORES } from './indexedDBManager'
+import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
 
 /**
  * Create a new habit
@@ -58,8 +58,7 @@ export async function deleteHabit(id) {
  */
 export async function completeHabit(id) {
   // TODO: Implement streak calculation and date tracking
-  const habits = await getAll(STORES.HABITS)
-  const habit = habits.find(h => h.id === id)
+  const habit = await getById(STORES.HABITS, id)
   
   if (!habit) {
     throw new Error('Habit not found')
@@ -93,8 +92,7 @@ export async function completeHabit(id) {
  */
 export async function pauseHabit(id, paused) {
   // TODO: Implement pause functionality
-  const habits = await getAll(STORES.HABITS)
-  const habit = habits.find(h => h.id === id)
+  const habit = await getById(STORES.HABITS, id)
   
   if (!habit) {
     throw new Error('Habit not found')
@@ -117,8 +115,7 @@ export async function pauseHabit(id, paused) {
  */
 export async function getHabitStats(id) {
   // TODO: Implement comprehensive statistics
-  const habits = await getAll(STORES.HABITS)
-  const habit = habits.find(h => h.id === id)
+  const habit = await getById(STORES.HABITS, id)
   
   if (!habit) {
     throw new Error('Habit not found')

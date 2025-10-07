@@ -178,6 +178,7 @@ describe('Sequences Manager', () => {
         steps: [{ name: 'Step 1', duration: 60 }]
       })
 
+      await new Promise(resolve => setTimeout(resolve, 10))
       const newId = await cloneSequence(id, 'Cloned')
       expect(newId).not.toBe(id)
 

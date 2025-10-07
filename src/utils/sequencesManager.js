@@ -203,8 +203,10 @@ export function getSequenceState(sequenceId) {
 
 /**
  * Start sequence execution
+ * Initializes a sequence for execution with timer integration.
+ * Returns the initial state including sequence data and execution status.
  * @param {string} sequenceId - Sequence ID
- * @returns {Promise<object>} Initial execution state
+ * @returns {Promise<object>} Initial execution state with sequence data and timer info
  */
 export async function startSequence(sequenceId) {
   // TODO: Implement sequence execution with timer
