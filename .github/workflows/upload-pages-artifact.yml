@@ -126,6 +126,19 @@ jobs:
           test -f dist/sw.js && echo "  ✓ sw.js (service worker)"
           test -d dist/assets && echo "  ✓ assets/ directory"
 
+      - name: Create offline package
+        run: |
+          echo "📦 Creating offline package for download..."
+          node scripts/create-offline-package.js
+
+      - name: Upload offline package as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-package
+          path: dist-offline/*.tar.gz
+          retention-days: 90
+          if-no-files-found: warn
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
