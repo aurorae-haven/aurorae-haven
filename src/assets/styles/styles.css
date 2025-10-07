@@ -327,7 +327,7 @@ body {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.3);
   z-index: 30;
 }
 
@@ -337,7 +337,7 @@ body {
   top: 0;
   left: 0;
   bottom: 0;
-  width: min(320px, 80vw);
+  width: min(280px, 70vw);
   background: rgba(16, 20, 44, 0.95);
   backdrop-filter: var(--blur);
   border-right: 1px solid var(--line);
