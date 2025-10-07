@@ -217,7 +217,7 @@ For issues or questions, visit: https://github.com/aurorae-haven/aurorae-haven
   console.log(`  → Copying files to: ${outputFolder}`)
 
   const { execSync } = await import('child_process')
-  execSync(`cp -r ${DIST_DIR}/* "${outputFolder}/"`, { stdio: 'inherit' })
+  execSync(`cp -r ${DIST_OFFLINE_DIR}/* "${outputFolder}/"`, { stdio: 'inherit' })
 
   // Write README
   const readmePath = join(outputFolder, 'README-OFFLINE.md')
