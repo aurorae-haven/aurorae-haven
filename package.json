@@ -18,7 +18,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "build": "vite build",
-    "build:offline": "npm run build && node scripts/create-offline-package.js",
+    "build:offline": "node scripts/create-offline-package.js",
     "preview": "vite preview",
     "validate-pwa": "node scripts/validate-pwa.js"
   },

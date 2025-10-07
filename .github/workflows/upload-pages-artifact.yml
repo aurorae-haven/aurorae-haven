@@ -129,7 +129,10 @@ jobs:
       - name: Create offline package
         run: |
           echo "📦 Creating offline package for download..."
-          node scripts/create-offline-package.js
+          echo "This will build the app with relative paths for offline use"
+          npm run build:offline
+        env:
+          CI: true
 
       - name: Upload offline package as artifact
         uses: actions/upload-artifact@v4

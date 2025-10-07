@@ -2,31 +2,67 @@
 
 /**
  * Create Offline Package Script
- * 
- * This script creates a downloadable ZIP archive of the built application
- * for offline use. Users can download this ZIP and extract it to run the
- * app locally without build tools.
+ *
+ * This script creates a downloadable archive of the built application
+ * for offline use. It builds the app with relative paths so users can
+ * open index.html directly without needing a web server.
  */
 
-import { createWriteStream, existsSync, mkdirSync, readFileSync } from 'fs'
-import { createReadStream, readdirSync, statSync } from 'fs'
-import { join, relative, dirname } from 'path'
-import { createGzip } from 'zlib'
-import { pipeline } from 'stream/promises'
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'fs'
+import { join } from 'path'
 
 const DIST_DIR = 'dist'
+const DIST_OFFLINE_DIR = 'dist-offline-build'
 const OUTPUT_DIR = 'dist-offline'
 const VERSION = JSON.parse(readFileSync('package.json', 'utf-8')).version
 
 /**
- * Create a tar.gz archive of the dist directory
- * Note: We use tar.gz for better compression and Unix compatibility
+ * Build the application with relative base path for offline use
+ */
+async function buildForOffline() {
+  const { execSync } = await import('child_process')
+
+  console.log(
+    '🔨 Building application for offline use (with relative paths)...'
+  )
+
+  // Clean up previous offline build
+  if (existsSync(DIST_OFFLINE_DIR)) {
+    rmSync(DIST_OFFLINE_DIR, { recursive: true, force: true })
+  }
+
+  try {
+    // Build with relative base path for offline use
+    execSync('npm run build', {
+      stdio: 'inherit',
+      encoding: 'utf-8',
+      env: { ...process.env, VITE_BASE_URL: './', CI: 'true' }
+    })
+
+    // Move the dist directory to our offline build directory
+    if (existsSync(DIST_DIR)) {
+      execSync(`mv "${DIST_DIR}" "${DIST_OFFLINE_DIR}"`, {
+        stdio: 'inherit',
+        encoding: 'utf-8'
+      })
+    }
+
+    console.log('✓ Offline build completed with relative paths')
+    return true
+  } catch (error) {
+    console.error('❌ Build failed:', error.message)
+    return false
+  }
+}
+
+/**
+ * Create a tar.gz archive of the offline build
  */
 async function createTarGz() {
   console.log('📦 Creating offline package...')
 
-  if (!existsSync(DIST_DIR)) {
-    console.error('❌ Error: dist/ directory not found. Run `npm run build` first.')
+  if (!existsSync(DIST_OFFLINE_DIR)) {
+    console.error('❌ Error: offline build directory not found. Build failed.')
     process.exit(1)
   }
 
@@ -35,16 +71,19 @@ async function createTarGz() {
     mkdirSync(OUTPUT_DIR, { recursive: true })
   }
 
-  const outputFile = join(OUTPUT_DIR, `aurorae-haven-offline-v${VERSION}.tar.gz`)
+  const outputFile = join(
+    OUTPUT_DIR,
+    `aurorae-haven-offline-v${VERSION}.tar.gz`
+  )
 
   try {
     // For simplicity, we'll use a shell command to create tar.gz
     const { execSync } = await import('child_process')
-    
-    console.log(`  → Archiving ${DIST_DIR}/ to ${outputFile}`)
-    
+
+    console.log(`  → Archiving ${DIST_OFFLINE_DIR}/ to ${outputFile}`)
+
     // Create tar.gz using shell command (more reliable and compatible)
-    execSync(`tar -czf "${outputFile}" -C "${DIST_DIR}" .`, { 
+    execSync(`tar -czf "${outputFile}" -C "${DIST_OFFLINE_DIR}" .`, {
       stdio: 'inherit',
       encoding: 'utf-8'
     })
@@ -60,8 +99,14 @@ async function createTarGz() {
     console.log('📝 Usage Instructions:')
     console.log('  1. Download the .tar.gz file')
     console.log('  2. Extract: tar -xzf aurorae-haven-offline-*.tar.gz')
-    console.log('  3. Open index.html in a web browser')
-    console.log('  4. Optionally serve with: python3 -m http.server 8000')
+    console.log('  3. Double-click index.html to open in your browser')
+    console.log('  4. No server needed! Works directly from the file system')
+
+    // Clean up the temporary offline build directory
+    if (existsSync(DIST_OFFLINE_DIR)) {
+      rmSync(DIST_OFFLINE_DIR, { recursive: true, force: true })
+      console.log('  ✓ Cleaned up temporary build directory')
+    }
 
     return true
   } catch (error) {
@@ -76,9 +121,11 @@ async function createTarGz() {
  */
 async function createSimpleArchive() {
   console.log('📦 Creating simple archive (fallback method)...')
-  
+
   if (!existsSync(DIST_DIR)) {
-    console.error('❌ Error: dist/ directory not found. Run `npm run build` first.')
+    console.error(
+      '❌ Error: dist/ directory not found. Run `npm run build` first.'
+    )
     process.exit(1)
   }
 
@@ -91,7 +138,7 @@ async function createSimpleArchive() {
 
   console.log(`  → Creating archive: ${outputFile}`)
   console.log('  ℹ️  Note: Compression not available, using uncompressed tar')
-  
+
   // Create README for the offline package
   const readmeContent = `# Aurorae Haven - Offline Package v${VERSION}
 
@@ -149,9 +196,12 @@ For issues or questions, visit: https://github.com/aurorae-haven/aurorae-haven
   // Try to use the archiver package if available
   try {
     const archiver = await import('archiver').catch(() => null)
-    
+
     if (archiver) {
-      return await createZipWithArchiver(outputFile.replace('.tar', '.zip'), readmeContent)
+      return await createZipWithArchiver(
+        outputFile.replace('.tar', '.zip'),
+        readmeContent
+      )
     }
   } catch (error) {
     console.warn('⚠️  archiver package not available, using basic method')
@@ -159,25 +209,25 @@ For issues or questions, visit: https://github.com/aurorae-haven/aurorae-haven
 
   // Fallback: Just copy files to a folder with README
   const outputFolder = join(OUTPUT_DIR, `aurorae-haven-offline-v${VERSION}`)
-  
+
   if (!existsSync(outputFolder)) {
     mkdirSync(outputFolder, { recursive: true })
   }
 
   console.log(`  → Copying files to: ${outputFolder}`)
-  
+
   const { execSync } = await import('child_process')
   execSync(`cp -r ${DIST_DIR}/* "${outputFolder}/"`, { stdio: 'inherit' })
-  
+
   // Write README
   const readmePath = join(outputFolder, 'README-OFFLINE.md')
   const fs = await import('fs')
   fs.writeFileSync(readmePath, readmeContent)
-  
+
   console.log('✓ Offline package folder created!')
   console.log(`  → Location: ${outputFolder}`)
   console.log('  → You can now ZIP this folder manually or use it directly')
-  
+
   return true
 }
 
@@ -187,7 +237,7 @@ For issues or questions, visit: https://github.com/aurorae-haven/aurorae-haven
 async function createZipWithArchiver(outputFile, readmeContent) {
   const archiver = await import('archiver')
   const fs = await import('fs')
-  
+
   return new Promise((resolve, reject) => {
     const output = fs.createWriteStream(outputFile)
     const archive = archiver.default('zip', { zlib: { level: 9 } })
@@ -206,32 +256,41 @@ async function createZipWithArchiver(outputFile, readmeContent) {
     })
 
     archive.pipe(output)
-    
+
     // Add README
     archive.append(readmeContent, { name: 'README-OFFLINE.md' })
-    
+
     // Add all files from dist
     archive.directory(DIST_DIR, false)
-    
+
     archive.finalize()
   })
 }
 
 // Main execution
-(async () => {
+;(async () => {
   console.log('🌌 Aurorae Haven - Offline Package Creator\n')
-  
-  // Try tar.gz first (most compatible)
+
+  // Step 1: Build for offline with relative paths
+  const buildSuccess = await buildForOffline()
+  if (!buildSuccess) {
+    console.error('❌ Build failed, cannot create package')
+    process.exit(1)
+  }
+
+  // Step 2: Create the archive
   try {
     const success = await createTarGz()
     if (success) {
       process.exit(0)
     }
   } catch (error) {
-    console.warn('⚠️  tar command not available, trying alternative method...\n')
+    console.warn(
+      '⚠️  tar command not available, trying alternative method...\n'
+    )
   }
-  
-  // Fallback to simple archive
+
+  // Fallback to simple archive (shouldn't normally be needed)
   try {
     const success = await createSimpleArchive()
     process.exit(success ? 0 : 1)

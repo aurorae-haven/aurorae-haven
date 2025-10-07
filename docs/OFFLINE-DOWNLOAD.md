@@ -55,21 +55,19 @@ tar -xzf aurorae-haven-offline-*.tar.gz
 
 ### Step 2: Open the Application
 
-You have two options:
-
-#### Option A: Direct File Access (Simple but Limited)
+**Simply double-click `index.html` to open in your browser!**
 
 1. Navigate to the extracted folder
 2. Double-click `index.html` to open in your default browser
-3. The app should load and work
+3. The app will load and work immediately
 
-**Note**: Some features may be limited due to browser security restrictions when opening files directly (CORS policy). For full functionality, use Option B.
+**No server needed!** The offline package is built with relative paths so it works directly from your file system.
 
-#### Option B: Local Web Server (Recommended)
+#### Optional: Using a Local Web Server
 
-Serving the files through a local web server provides the best experience:
+While not required, serving through a local web server can provide additional benefits like proper PWA installation:
 
-**Using Python (Most Common):**
+**Using Python:**
 
 ```bash
 cd path/to/extracted/folder
@@ -172,9 +170,12 @@ All user data is stored locally in your browser:
 
 ### App doesn't load when opening index.html directly
 
-**Solution**: Use a local web server (see Step 2, Option B above)
+**Solution**: The offline package is built with relative paths and should work directly. If you experience issues:
 
-**Why**: Modern browsers have security restrictions (CORS) that prevent some features from working when opening files directly from the filesystem.
+1. Make sure you extracted all files properly
+2. Try a different browser (Chrome, Firefox, Edge, Safari)
+3. Check browser console for specific errors (F12 → Console)
+4. As a last resort, use a local web server (see Step 2)
 
 ### Service worker not registering
 
