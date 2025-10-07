@@ -193,10 +193,15 @@ export async function getAvailableSlots(day, duration = 60) {
 }
 
 /**
- * Calculate duration between two times
- * @param {string} startTime - Start time (HH:MM)
- * @param {string} endTime - End time (HH:MM)
- * @returns {number} Duration in minutes
+ * Calculates the duration in minutes between two times given in "HH:MM" 24-hour format.
+ * Both `startTime` and `endTime` must be strings in "HH:MM" format (e.g., "09:30").
+ * The function converts both times to minutes since midnight and returns the difference (`endTime` - `startTime`).
+ * If either input is missing or invalid, returns 0.
+ * If `endTime` is before `startTime`, the result will be negative.
+ *
+ * @param {string} startTime - Start time in "HH:MM" 24-hour format.
+ * @param {string} endTime - End time in "HH:MM" 24-hour format.
+ * @returns {number} Duration in minutes between start and end times.
  */
 function calculateDuration(startTime, endTime) {
   if (!startTime || !endTime) return 0
