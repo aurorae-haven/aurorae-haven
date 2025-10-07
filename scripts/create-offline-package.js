@@ -33,24 +33,55 @@ async function buildForOffline() {
 
   try {
     // Build with relative base path for offline use
-    execSync('npm run build', {
-      stdio: 'inherit',
-      encoding: 'utf-8',
-      env: { ...process.env, VITE_BASE_URL: './', CI: 'true' }
-    })
+    try {
+      execSync('npm run build', {
+        stdio: 'inherit',
+        encoding: 'utf-8',
+        env: { ...process.env, VITE_BASE_URL: './', CI: 'true' }
+      })
+    } catch (buildError) {
+      throw new Error(
+        `Vite build failed: ${buildError.message}\n` +
+          `  Make sure dependencies are installed: npm ci\n` +
+          `  Exit code: ${buildError.status || 'unknown'}`
+      )
+    }
+
+    // Verify build output exists
+    if (!existsSync(DIST_DIR)) {
+      throw new Error(
+        `Build completed but dist/ directory not found.\n` +
+          `  Expected location: ${DIST_DIR}\n` +
+          `  This may indicate a build configuration issue.`
+      )
+    }
 
     // Move the dist directory to our offline build directory
-    if (existsSync(DIST_DIR)) {
+    try {
       execSync(`mv "${DIST_DIR}" "${DIST_OFFLINE_DIR}"`, {
-        stdio: 'inherit',
+        stdio: 'pipe',
         encoding: 'utf-8'
       })
+    } catch (mvError) {
+      throw new Error(
+        `Failed to move build directory: ${mvError.message}\n` +
+          `  From: ${DIST_DIR}\n` +
+          `  To: ${DIST_OFFLINE_DIR}`
+      )
+    }
+
+    // Verify the move was successful
+    if (!existsSync(DIST_OFFLINE_DIR)) {
+      throw new Error(
+        `Build directory was not moved to expected location: ${DIST_OFFLINE_DIR}`
+      )
     }
 
     console.log('✓ Offline build completed with relative paths')
     return true
   } catch (error) {
-    console.error('❌ Build failed:', error.message)
+    console.error('❌ Build failed:')
+    console.error(error.message)
     return false
   }
 }
@@ -82,15 +113,69 @@ async function createTarGz() {
 
     console.log(`  → Archiving ${DIST_OFFLINE_DIR}/ to ${outputFile}`)
 
+    // Validate source directory before archiving
+    if (!existsSync(DIST_OFFLINE_DIR)) {
+      throw new Error(
+        `Source directory not found: ${DIST_OFFLINE_DIR}. Build may have failed.`
+      )
+    }
+
     // Create tar.gz using shell command (more reliable and compatible)
-    execSync(`tar -czf "${outputFile}" -C "${DIST_OFFLINE_DIR}" .`, {
-      stdio: 'inherit',
-      encoding: 'utf-8'
-    })
+    try {
+      execSync(`tar -czf "${outputFile}" -C "${DIST_OFFLINE_DIR}" .`, {
+        stdio: 'pipe',
+        encoding: 'utf-8'
+      })
+    } catch (tarError) {
+      // Provide detailed error information based on error type
+      if (tarError.code === 127 || tarError.message.includes('not found')) {
+        throw new Error(
+          'tar command not found. Please install tar utility:\n' +
+            '  - Linux/macOS: tar is usually pre-installed\n' +
+            '  - Windows: Install via Git Bash, WSL, or 7-Zip'
+        )
+      } else if (
+        tarError.message.includes('Permission denied') ||
+        tarError.code === 'EACCES'
+      ) {
+        throw new Error(
+          `Permission denied while creating archive.\n` +
+            `  - Check write permissions for: ${OUTPUT_DIR}\n` +
+            `  - Check read permissions for: ${DIST_OFFLINE_DIR}`
+        )
+      } else if (
+        tarError.message.includes('No space left') ||
+        tarError.code === 'ENOSPC'
+      ) {
+        throw new Error(
+          'No space left on device. Free up disk space and try again.'
+        )
+      } else {
+        throw new Error(
+          `Failed to create tar.gz archive: ${tarError.message}\n` +
+            `  Command: tar -czf "${outputFile}" -C "${DIST_OFFLINE_DIR}" .\n` +
+            `  Exit code: ${tarError.status || 'unknown'}`
+        )
+      }
+    }
+
+    // Verify the archive was created successfully
+    if (!existsSync(outputFile)) {
+      throw new Error(
+        `Archive was not created at expected location: ${outputFile}`
+      )
+    }
 
     // Get file size
     const stats = statSync(outputFile)
     const sizeKB = (stats.size / 1024).toFixed(2)
+
+    // Verify the archive has content
+    if (stats.size === 0) {
+      throw new Error(
+        'Archive was created but is empty. Source directory may be empty.'
+      )
+    }
 
     console.log(`✓ Offline package created successfully!`)
     console.log(`  → Location: ${outputFile}`)
@@ -110,7 +195,8 @@ async function createTarGz() {
 
     return true
   } catch (error) {
-    console.error('❌ Error creating package:', error.message)
+    console.error('❌ Error creating package:')
+    console.error(error.message)
     return false
   }
 }
@@ -123,9 +209,7 @@ async function createSimpleArchive() {
   console.log('📦 Creating simple archive (fallback method)...')
 
   if (!existsSync(DIST_OFFLINE_DIR)) {
-    console.error(
-      '❌ Error: offline build directory not found. Build failed.'
-    )
+    console.error('❌ Error: offline build directory not found. Build failed.')
     process.exit(1)
   }
 
@@ -217,7 +301,9 @@ For issues or questions, visit: https://github.com/aurorae-haven/aurorae-haven
   console.log(`  → Copying files to: ${outputFolder}`)
 
   const { execSync } = await import('child_process')
-  execSync(`cp -r ${DIST_OFFLINE_DIR}/* "${outputFolder}/"`, { stdio: 'inherit' })
+  execSync(`cp -r ${DIST_OFFLINE_DIR}/* "${outputFolder}/"`, {
+    stdio: 'inherit'
+  })
 
   // Write README
   const readmePath = join(outputFolder, 'README-OFFLINE.md')
