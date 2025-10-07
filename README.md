@@ -84,6 +84,29 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 
 **Benefits**: Works offline, faster loading, native app experience
 
+### Offline Download Package
+
+**Download the full website for offline use without build tools!**
+
+1. Go to the [GitHub Actions page](https://github.com/aurorae-haven/aurorae-haven/actions/workflows/upload-pages-artifact.yml)
+2. Click on the latest successful workflow run
+3. Scroll down to "Artifacts" section
+4. Download `offline-package`
+5. Extract the `.tar.gz` file:
+
+   ```bash
+   tar -xzf aurorae-haven-offline-*.tar.gz
+   ```
+
+6. Double-click `index.html` to open in your browser - no server needed!
+
+   ```bash
+   # Optional: Serve with a local server for PWA installation
+   python3 -m http.server 8000
+   ```
+
+**What's included**: Complete static website with all assets, service worker, and PWA manifest. Built with relative paths so it works directly from your file system!
+
 ### Development Setup
 
 - **Dependencies**:
@@ -108,23 +131,27 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 ## 💾 Data Management
 
 ### Storage Architecture
+
 - **IndexedDB**: Primary storage for structured data (tasks, habits, schedules, stats)
 - **OPFS**: File attachments with metadata references in IndexedDB
 - **localStorage**: Fallback and UI state (brain dump content, tags, version history)
 - **Automatic Backups**: Daily backups stored in IndexedDB (keeps last 10)
 
 ### Features
+
 - ✅ **Export**: Download all data as JSON file with timestamp and UUID
 - ✅ **Import**: Restore from any previous export with validation
 - ✅ **Auto-Migration**: Automatic migration from localStorage to IndexedDB
 - ✅ **Backward Compatible**: Works with both old and new storage systems
 
 ### Storage Limits
+
 - **localStorage**: ~5-10 MB (fallback)
 - **IndexedDB**: ~50 MB+ (primary, varies by browser)
 - **OPFS**: Limited by available disk space
 
 ### Documentation
+
 - [Data Management Architecture](./docs/DATA_MANAGEMENT.md) - Full technical documentation
 - [Migration Guide](./docs/MIGRATION_GUIDE.md) - Upgrade from localStorage
 - [Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md) - Backup and restore instructions
@@ -180,16 +207,19 @@ The deployment workflow:
 ## 📚 Documentation
 
 ### Data Management
+
 - **[Data Management Architecture](./docs/DATA_MANAGEMENT.md)**: Technical documentation on IndexedDB, OPFS, and backups
 - **[Migration Guide](./docs/MIGRATION_GUIDE.md)**: Upgrade from localStorage to IndexedDB
 - **[Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md)**: Back up, transfer, and restore your data
 
 ### Feature Specifications
+
 - **[Brain Dump Specifications](./docs/BRAIN_DUMP_SPECS.md)**: Technical details about Brain Dump features
 - **[Tasks Specifications](./docs/TASKS_SPECS.md)**: Technical details about Tasks and Eisenhower Matrix
 - **[ARC-APP Compliance](./docs/ARC-APP-COMPLIANCE.md)**: PWA architecture compliance report
 
 ### Project Information
+
 - **[Roadmap](./ROADMAP.md)**: Development milestones and future plans
 - **[Contributing Guide](./CONTRIBUTING.md)**: How to contribute to the project
 
