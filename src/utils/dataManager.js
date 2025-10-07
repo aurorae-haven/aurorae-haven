@@ -1,8 +1,102 @@
 // Data management utilities for export/import functionality
 import { generateSecureUUID } from './uuidGenerator'
+import {
+  exportAllData as exportFromIndexedDB,
+  importAllData as importToIndexedDB,
+  isIndexedDBAvailable,
+  saveBackup,
+  cleanOldBackups
+} from './indexedDBManager'
 
-export function getDataTemplate() {
-  // Collect real data from localStorage
+// ARC-DAT-03: Automatic backup configuration
+const BACKUP_INTERVAL = 24 * 60 * 60 * 1000 // 24 hours
+const MAX_BACKUPS = 10
+const LAST_BACKUP_KEY = 'aurorae_last_backup'
+
+/**
+ * ARC-DAT-03: Initialize automatic backup system
+ * Should be called when the app loads
+ */
+export async function initAutoBackup() {
+  if (!isIndexedDBAvailable()) {
+    console.warn('IndexedDB not available, auto-backup disabled')
+    return
+  }
+
+  // Check if backup is needed
+  const lastBackup = localStorage.getItem(LAST_BACKUP_KEY)
+  const lastBackupTime = lastBackup ? parseInt(lastBackup, 10) : 0
+  const now = Date.now()
+
+  if (now - lastBackupTime >= BACKUP_INTERVAL) {
+    try {
+      await performAutoBackup()
+    } catch (e) {
+      console.error('Auto-backup failed:', e)
+    }
+  }
+
+  // Schedule next backup check (every hour)
+  setInterval(async () => {
+    const lastBackup = localStorage.getItem(LAST_BACKUP_KEY)
+    const lastBackupTime = lastBackup ? parseInt(lastBackup, 10) : 0
+    const now = Date.now()
+
+    if (now - lastBackupTime >= BACKUP_INTERVAL) {
+      try {
+        await performAutoBackup()
+      } catch (e) {
+        console.error('Auto-backup failed:', e)
+      }
+    }
+  }, 60 * 60 * 1000) // Check every hour
+}
+
+/**
+ * ARC-DAT-03: Perform automatic backup
+ */
+async function performAutoBackup() {
+  const data = await getDataTemplate()
+  await saveBackup(data)
+  await cleanOldBackups(MAX_BACKUPS)
+  localStorage.setItem(LAST_BACKUP_KEY, Date.now().toString())
+  console.log('Auto-backup completed at', new Date().toISOString())
+}
+
+/**
+ * ARC-DAT-03: Manually trigger backup
+ * @returns {Promise<boolean>}
+ */
+export async function triggerManualBackup() {
+  if (!isIndexedDBAvailable()) {
+    return false
+  }
+
+  try {
+    await performAutoBackup()
+    return true
+  } catch (e) {
+    console.error('Manual backup failed:', e)
+    return false
+  }
+}
+
+/**
+ * Get data template from storage
+ * Uses IndexedDB if available, falls back to localStorage
+ * @returns {Promise<object>}
+ */
+export async function getDataTemplate() {
+  // ARC-DAT-01: Use IndexedDB if available
+  if (isIndexedDBAvailable()) {
+    try {
+      return await exportFromIndexedDB()
+    } catch (e) {
+      console.warn('Failed to export from IndexedDB, falling back to localStorage:', e)
+    }
+  }
+
+  // Fallback to localStorage (backward compatibility)
   const brainDumpContent = localStorage.getItem('brainDumpContent') || ''
   const brainDumpTags = localStorage.getItem('brainDumpTags') || ''
 
@@ -59,8 +153,8 @@ export function getDataTemplate() {
   }
 }
 
-export function exportJSON() {
-  const data = JSON.stringify(getDataTemplate(), null, 2)
+export async function exportJSON() {
+  const data = JSON.stringify(await getDataTemplate(), null, 2)
   const blob = new Blob([data], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
   
@@ -89,6 +183,17 @@ export async function importJSON(file) {
       throw new Error('Invalid schema: missing version')
     }
 
+    // ARC-DAT-01: Use IndexedDB if available
+    if (isIndexedDBAvailable()) {
+      const result = await importToIndexedDB(obj)
+      if (result.success) {
+        return { success: true, message: 'Data imported successfully' }
+      } else {
+        throw new Error(result.errors.join(', '))
+      }
+    }
+
+    // Fallback to localStorage (backward compatibility)
     // Validate arrays (use default empty arrays if missing)
     const tasks = Array.isArray(obj.tasks) ? obj.tasks : []
     const sequences = Array.isArray(obj.sequences) ? obj.sequences : []

@@ -15,8 +15,8 @@ describe('Data Manager', () => {
   })
 
   describe('getDataTemplate', () => {
-    it('should return a valid data structure with empty Brain Dump data', () => {
-      const data = getDataTemplate()
+    it('should return a valid data structure with empty Brain Dump data', async () => {
+      const data = await getDataTemplate()
 
       expect(data).toHaveProperty('version')
       expect(data).toHaveProperty('exportedAt')
@@ -32,38 +32,38 @@ describe('Data Manager', () => {
       expect(Array.isArray(data.schedule)).toBe(true)
     })
 
-    it('should collect Brain Dump content from localStorage', () => {
+    it('should collect Brain Dump content from localStorage', async () => {
       const testContent = '# My Brain Dump\n\nSome notes here'
       localStorage.setItem('brainDumpContent', testContent)
 
-      const data = getDataTemplate()
+      const data = await getDataTemplate()
 
       expect(data.brainDump.content).toBe(testContent)
     })
 
-    it('should collect Brain Dump tags from localStorage', () => {
+    it('should collect Brain Dump tags from localStorage', async () => {
       const testTags =
         '<span class="tag">#idea</span><span class="tag">#task</span>'
       localStorage.setItem('brainDumpTags', testTags)
 
-      const data = getDataTemplate()
+      const data = await getDataTemplate()
 
       expect(data.brainDump.tags).toBe(testTags)
     })
 
-    it('should collect Brain Dump version history from localStorage', () => {
+    it('should collect Brain Dump version history from localStorage', async () => {
       const versions = [
         { id: 1, content: 'Version 1', timestamp: '2025-01-01T00:00:00Z' },
         { id: 2, content: 'Version 2', timestamp: '2025-01-02T00:00:00Z' }
       ]
       localStorage.setItem('brainDumpVersions', JSON.stringify(versions))
 
-      const data = getDataTemplate()
+      const data = await getDataTemplate()
 
       expect(data.brainDump.versions).toEqual(versions)
     })
 
-    it('should collect Brain Dump entries from localStorage', () => {
+    it('should collect Brain Dump entries from localStorage', async () => {
       const entries = [
         {
           id: 'entry_1',
@@ -74,16 +74,16 @@ describe('Data Manager', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(entries))
 
-      const data = getDataTemplate()
+      const data = await getDataTemplate()
 
       expect(data.brainDump.entries).toEqual(entries)
     })
 
-    it('should handle invalid JSON in localStorage gracefully', () => {
+    it('should handle invalid JSON in localStorage gracefully', async () => {
       localStorage.setItem('brainDumpVersions', 'invalid json{')
       localStorage.setItem('brainDumpEntries', 'also invalid')
 
-      const data = getDataTemplate()
+      const data = await getDataTemplate()
 
       expect(Array.isArray(data.brainDump.versions)).toBe(true)
       expect(data.brainDump.versions).toHaveLength(0)
@@ -91,20 +91,20 @@ describe('Data Manager', () => {
       expect(data.brainDump.entries).toHaveLength(0)
     })
 
-    it('should collect schedule data from localStorage', () => {
+    it('should collect schedule data from localStorage', async () => {
       const schedule = [
         { day: '2025-01-15', blocks: [{ type: 'task', start: '09:00' }] }
       ]
       localStorage.setItem('sj.schedule.events', JSON.stringify(schedule))
 
-      const data = getDataTemplate()
+      const data = await getDataTemplate()
 
       expect(data.schedule).toEqual(schedule)
     })
   })
 
   describe('exportJSON', () => {
-    it('should create a blob and trigger download', () => {
+    it('should create a blob and trigger download', async () => {
       const mockAppendChild = jest.fn()
       const mockRemove = jest.fn()
       const mockClick = jest.fn()
@@ -124,7 +124,7 @@ describe('Data Manager', () => {
         return {}
       })
 
-      const result = exportJSON()
+      const result = await exportJSON()
 
       expect(result).toBe(true)
       expect(mockClick).toHaveBeenCalled()

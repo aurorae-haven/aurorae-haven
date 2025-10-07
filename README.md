@@ -13,7 +13,10 @@
 - **Tasks**: Prioritise using the Eisenhower matrix
 - **Habits**: Track streaks and small wins
 - **Notes & Brain Dump**: Markdown-ready with comprehensive import/export (`.json` for full backup, `.md` for content only)
-- **Stats Foundation**: Track routine time and structured progress
+- **Stats Foundation**: Track routine time and structured progress with IndexedDB
+- **Auto-Backup**: Automatic backups every 24 hours to prevent data loss
+- **IndexedDB Storage**: Fast, reliable structured data storage (up to 50MB+)
+- **File Attachments**: OPFS support for attaching files to notes
 - **Gamification** _(v2.0+)_: XP, levels, achievements, confetti/haptics
 - **Reminders** _(v2.0+)_: Tasks, routines, and habits notifications
 - **Secure by design**: Strict CSP, modular code, no inline scripts
@@ -102,11 +105,39 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 
 ---
 
+## 💾 Data Management
+
+### Storage Architecture
+- **IndexedDB**: Primary storage for structured data (tasks, habits, schedules, stats)
+- **OPFS**: File attachments with metadata references in IndexedDB
+- **localStorage**: Fallback and UI state (brain dump content, tags, version history)
+- **Automatic Backups**: Daily backups stored in IndexedDB (keeps last 10)
+
+### Features
+- ✅ **Export**: Download all data as JSON file with timestamp and UUID
+- ✅ **Import**: Restore from any previous export with validation
+- ✅ **Auto-Migration**: Automatic migration from localStorage to IndexedDB
+- ✅ **Backward Compatible**: Works with both old and new storage systems
+
+### Storage Limits
+- **localStorage**: ~5-10 MB (fallback)
+- **IndexedDB**: ~50 MB+ (primary, varies by browser)
+- **OPFS**: Limited by available disk space
+
+### Documentation
+- [Data Management Architecture](./docs/DATA_MANAGEMENT.md) - Full technical documentation
+- [Migration Guide](./docs/MIGRATION_GUIDE.md) - Upgrade from localStorage
+- [Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md) - Backup and restore instructions
+
+---
+
 ## 🏗️ Architecture
 
 - **Progressive Web App (PWA)**: Installable, offline-capable, app-like experience
 - **ReactJS**: Modular component-based architecture for maintainability
 - **HTML5 & CSS**: Modern web standards with responsive design
+- **IndexedDB**: Structured data storage with indexes and transactions
+- **OPFS**: File system access for attachments
 - **Service Worker**: Enables offline functionality and caching strategies
 - **Web Manifest**: Provides app metadata for installation
 - **Modular Components**: Organized codebase with clear separation of concerns
@@ -127,12 +158,16 @@ The deployment workflow:
 
 ---
 
-## 🔒 Security
+## 🔒 Security & Privacy
 
-- Enforced **Content Security Policy (CSP)**
-- No inline scripts or styles
-- External scripts loaded with **Subresource Integrity (SRI)** or self-hosted
-- Regular audits to maintain secure defaults
+- **Strict Content Security Policy (CSP)**: No inline scripts or styles
+- **No external dependencies**: All resources served locally or with SRI
+- **No tracking**: Your data never leaves your device
+- **Local-only storage**: IndexedDB + OPFS, all data stays on your device
+- **Export anytime**: JSON export for backup and migration
+- **Open source**: Auditable codebase
+- **Automatic backups**: Daily backups to prevent data loss
+- **Regular audits**: Security scanning and vulnerability checks
 
 ---
 
@@ -144,10 +179,18 @@ The deployment workflow:
 
 ## 📚 Documentation
 
-- **[Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md)**: Learn how to back up, transfer, and restore your data
+### Data Management
+- **[Data Management Architecture](./docs/DATA_MANAGEMENT.md)**: Technical documentation on IndexedDB, OPFS, and backups
+- **[Migration Guide](./docs/MIGRATION_GUIDE.md)**: Upgrade from localStorage to IndexedDB
+- **[Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md)**: Back up, transfer, and restore your data
+
+### Feature Specifications
 - **[Brain Dump Specifications](./docs/BRAIN_DUMP_SPECS.md)**: Technical details about Brain Dump features
 - **[Tasks Specifications](./docs/TASKS_SPECS.md)**: Technical details about Tasks and Eisenhower Matrix
-- **[Roadmap](./ROADMAP.md)**: See our development milestones and future plans
+- **[ARC-APP Compliance](./docs/ARC-APP-COMPLIANCE.md)**: PWA architecture compliance report
+
+### Project Information
+- **[Roadmap](./ROADMAP.md)**: Development milestones and future plans
 - **[Contributing Guide](./CONTRIBUTING.md)**: How to contribute to the project
 
 ---
