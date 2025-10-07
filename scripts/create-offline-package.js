@@ -260,8 +260,8 @@ async function createZipWithArchiver(outputFile, readmeContent) {
     // Add README
     archive.append(readmeContent, { name: 'README-OFFLINE.md' })
 
-    // Add all files from dist
-    archive.directory(DIST_DIR, false)
+    // Add all files from offline build directory
+    archive.directory(DIST_OFFLINE_DIR, false)
 
     archive.finalize()
   })
