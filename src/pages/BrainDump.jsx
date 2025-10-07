@@ -4,10 +4,15 @@ import DOMPurify from 'dompurify'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
 import { generateSecureUUID } from '../utils/uuidGenerator'
+import { generateBrainDumpFilename, extractTitleFromFilename } from '../utils/fileHelpers'
 
 function BrainDump() {
+  const [notes, setNotes] = useState([])
+  const [currentNoteId, setCurrentNoteId] = useState(null)
+  const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [preview, setPreview] = useState('')
+  const [showNoteList, setShowNoteList] = useState(true)
   const editorRef = useRef(null)
 
   // Configure enhanced sanitization on mount
@@ -15,13 +20,47 @@ function BrainDump() {
     configureSanitization(DOMPurify)
   }, [])
 
-  // Load saved content on mount
+  // Load saved notes on mount (migrate old single note if needed)
   useEffect(() => {
-    const saved = localStorage.getItem('brainDumpContent')
-    if (saved) {
-      setContent(saved)
+    const entriesData = localStorage.getItem('brainDumpEntries')
+    let loadedNotes = []
+    
+    try {
+      loadedNotes = entriesData ? JSON.parse(entriesData) : []
+    } catch (e) {
+      console.warn('Failed to parse brainDumpEntries:', e)
+    }
+
+    // Migration: if no entries exist, migrate old single-note content
+    if (loadedNotes.length === 0) {
+      const oldContent = localStorage.getItem('brainDumpContent')
+      if (oldContent && oldContent.trim()) {
+        const migratedNote = {
+          id: generateSecureUUID(),
+          title: 'Migrated Note',
+          content: oldContent,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+        loadedNotes = [migratedNote]
+        localStorage.setItem('brainDumpEntries', JSON.stringify(loadedNotes))
+      }
+    }
+
+    setNotes(loadedNotes)
+    
+    // Load first note if available
+    if (loadedNotes.length > 0) {
+      loadNote(loadedNotes[0])
     }
   }, [])
+
+  // Load a note
+  const loadNote = (note) => {
+    setCurrentNoteId(note.id)
+    setTitle(note.title)
+    setContent(note.content)
+  }
 
   // Render preview whenever content changes
   useEffect(() => {
@@ -34,33 +73,105 @@ function BrainDump() {
     renderPreview()
   }, [content])
 
-  // Autosave to localStorage
+  // Autosave current note
   useEffect(() => {
-    localStorage.setItem('brainDumpContent', content)
-  }, [content])
+    if (!currentNoteId) return
 
-  const handleClear = () => {
-    if (window.confirm('Clear all notes and tags?')) {
+    const saveTimeout = setTimeout(() => {
+      const updatedNotes = notes.map(note => 
+        note.id === currentNoteId 
+          ? { ...note, title, content, updatedAt: new Date().toISOString() }
+          : note
+      )
+      setNotes(updatedNotes)
+      localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    }, 500) // Debounce autosave
+
+    return () => clearTimeout(saveTimeout)
+  }, [currentNoteId, title, content, notes])
+
+  // Create new note
+  const handleNewNote = () => {
+    const newNote = {
+      id: generateSecureUUID(),
+      title: 'Untitled Note',
+      content: '',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }
+    const updatedNotes = [...notes, newNote]
+    setNotes(updatedNotes)
+    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    loadNote(newNote)
+  }
+
+  // Delete current note
+  const handleDelete = () => {
+    if (!currentNoteId) return
+    
+    const currentNote = notes.find(n => n.id === currentNoteId)
+    if (!window.confirm(`Delete "${currentNote?.title || 'this note'}"?`)) return
+
+    const updatedNotes = notes.filter(n => n.id !== currentNoteId)
+    setNotes(updatedNotes)
+    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+
+    // Load next note or create new one
+    if (updatedNotes.length > 0) {
+      loadNote(updatedNotes[0])
+    } else {
+      setCurrentNoteId(null)
+      setTitle('')
       setContent('')
-      localStorage.removeItem('brainDumpContent')
-      localStorage.removeItem('brainDumpTags')
     }
   }
 
+  // Export current note with new filename format
   const handleExport = () => {
+    if (!content) return
+
     const blob = new Blob([content], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     
-    // Generate filename: braindump_YYYY-MM-DD_UUID.md
-    const date = new Date().toISOString().split('T')[0]
-    const uuid = generateSecureUUID()
-    const filename = `braindump_${date}_${uuid}.md`
+    // Generate filename using utility function
+    const filename = generateBrainDumpFilename(title)
     
     const a = document.createElement('a')
     a.href = url
     a.download = filename
     a.click()
     URL.revokeObjectURL(url)
+  }
+
+  // Import note from markdown file
+  const handleImport = (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const fileContent = event.target?.result
+      if (typeof fileContent !== 'string') return
+
+      // Extract title from filename using utility function
+      const noteTitle = extractTitleFromFilename(file.name)
+      
+      const importedNote = {
+        id: generateSecureUUID(),
+        title: noteTitle,
+        content: fileContent,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+
+      const updatedNotes = [...notes, importedNote]
+      setNotes(updatedNotes)
+      localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+      loadNote(importedNote)
+    }
+
+    reader.readAsText(file)
+    e.target.value = '' // Reset input
   }
 
   // Handle auto-list continuation on Enter key
@@ -84,57 +195,145 @@ function BrainDump() {
   }, [])
 
   return (
-    <div className='card'>
-      <div className='card-h'>
-        <strong>Brain Dump</strong>
-        <div className='toolbar'>
-          <button className='btn' aria-label='Bold'>
+    <div className='brain-dump-container'>
+      {/* Note List Sidebar */}
+      <div className={`note-list-sidebar ${showNoteList ? 'visible' : 'hidden'}`}>
+        <div className='note-list-header'>
+          <strong>Notes</strong>
+          <button 
+            className='btn btn-icon' 
+            onClick={handleNewNote}
+            aria-label='New Note'
+            title='New Note'
+          >
             <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M6 4h8a4 4 0 0 1 0 8H6z' />
-              <path d='M6 12h9a4 4 0 0 1 0 8H6z' />
-            </svg>
-          </button>
-          <button className='btn' aria-label='Code'>
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M7 17V7h10v10z' />
-              <path d='M5 5v16h16V5z' />
-            </svg>
-          </button>
-          <button className='btn' aria-label='List'>
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M8 6h13M8 12h13M8 18h13' />
-              <path d='M3 6h.01M3 12h.01M3 18h.01' />
-            </svg>
-          </button>
-          <button className='btn' onClick={handleClear} aria-label='Clear'>
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
-              <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
-            </svg>
-          </button>
-          <button className='btn' onClick={handleExport} aria-label='Export'>
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-              <polyline points='7 10 12 15 17 10' />
-              <line x1='12' y1='15' x2='12' y2='3' />
+              <line x1='12' y1='5' x2='12' y2='19' />
+              <line x1='5' y1='12' x2='19' y2='12' />
             </svg>
           </button>
         </div>
+        <div className='note-list'>
+          {notes.map(note => (
+            <div 
+              key={note.id}
+              className={`note-item ${note.id === currentNoteId ? 'active' : ''}`}
+              onClick={() => loadNote(note)}
+              role='button'
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  loadNote(note)
+                }
+              }}
+            >
+              <div className='note-item-title'>{note.title || 'Untitled'}</div>
+              <div className='note-item-date'>
+                {new Date(note.updatedAt).toLocaleDateString()}
+              </div>
+            </div>
+          ))}
+          {notes.length === 0 && (
+            <div className='note-list-empty'>
+              No notes yet. Click + to create one.
+            </div>
+          )}
+        </div>
       </div>
-      <div className='card-b'>
-        <div className='brain-dump-split'>
-          <div className='editor-pane'>
-            <textarea
-              id='editor'
-              ref={editorRef}
-              placeholder='Start typing your thoughts...'
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
+
+      {/* Main Editor Area */}
+      <div className='brain-dump-main'>
+        <div className='card'>
+          <div className='card-h'>
+            <div className='title-input-wrapper'>
+              <button 
+                className='btn btn-icon toggle-notes-btn'
+                onClick={() => setShowNoteList(!showNoteList)}
+                aria-label={showNoteList ? 'Hide notes list' : 'Show notes list'}
+                title={showNoteList ? 'Hide notes list' : 'Show notes list'}
+              >
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <line x1='3' y1='12' x2='21' y2='12' />
+                  <line x1='3' y1='6' x2='21' y2='6' />
+                  <line x1='3' y1='18' x2='21' y2='18' />
+                </svg>
+              </button>
+              <input
+                type='text'
+                className='note-title-input'
+                placeholder='Note title...'
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                aria-label='Note title'
+              />
+            </div>
+            <div className='toolbar'>
+              <label className='btn' aria-label='Import' title='Import'>
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+                  <polyline points='17 8 12 3 7 8' />
+                  <line x1='12' y1='3' x2='12' y2='15' />
+                </svg>
+                <input
+                  type='file'
+                  accept='.md,.markdown,.txt'
+                  onChange={handleImport}
+                  style={{ display: 'none' }}
+                  aria-label='Import markdown file'
+                />
+              </label>
+              <button 
+                className='btn' 
+                onClick={handleExport} 
+                aria-label='Export'
+                title='Export'
+                disabled={!currentNoteId}
+              >
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+                  <polyline points='7 10 12 15 17 10' />
+                  <line x1='12' y1='15' x2='12' y2='3' />
+                </svg>
+              </button>
+              <button 
+                className='btn btn-delete' 
+                onClick={handleDelete} 
+                aria-label='Delete'
+                title='Delete'
+                disabled={!currentNoteId}
+              >
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+                  <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+                </svg>
+              </button>
+            </div>
           </div>
-          <div className='preview-pane'>
-            <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
+          <div className='card-b'>
+            <div className='brain-dump-split'>
+              <div className='editor-pane'>
+                <textarea
+                  id='editor'
+                  ref={editorRef}
+                  className='resizable-textarea'
+                  placeholder='Start typing your thoughts...'
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={!currentNoteId}
+                  aria-label='Note content'
+                  aria-describedby={!currentNoteId ? 'editor-disabled-message' : undefined}
+                />
+                {!currentNoteId && (
+                  <span id='editor-disabled-message' className='sr-only'>
+                    Editor is disabled. Create or select a note to start editing.
+                  </span>
+                )}
+              </div>
+              <div className='preview-pane'>
+                <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

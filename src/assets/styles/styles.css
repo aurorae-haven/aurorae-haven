@@ -207,6 +207,7 @@ body {
   cursor: pointer;
   color: #fff;
   padding: 9px 12px;
+  min-height: 44px;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: rgba(35, 45, 100, 0.28);
@@ -402,12 +403,189 @@ body {
   grid-template-columns: 360px 1fr;
   gap: 14px;
 }
+
+/* Brain Dump multi-note layout */
+.brain-dump-container {
+  display: flex;
+  gap: 14px;
+  height: calc(100vh - 120px);
+  min-height: 500px;
+}
+
+.note-list-sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: rgba(16, 20, 44, 0.3);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition:
+    width var(--dur) var(--ease),
+    min-width var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
+}
+
+.note-list-sidebar.hidden {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  opacity: 0;
+  overflow: hidden;
+  border: none;
+}
+
+.note-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.note-list-header strong {
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.note-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note-item {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(16, 20, 44, 0.32);
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.note-item:hover {
+  background: rgba(25, 30, 60, 0.45);
+  border-color: rgba(200, 210, 255, 0.3);
+}
+
+.note-item.active {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.note-item-title {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item-date {
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.note-list-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--dim);
+  font-size: 14px;
+}
+
+.brain-dump-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.brain-dump-main .card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.brain-dump-main .card-b {
+  flex: 1;
+  overflow: hidden;
+}
+
+.title-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.toggle-notes-btn {
+  flex-shrink: 0;
+}
+
+.note-title-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(10, 14, 38, 0.5);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.note-title-input:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+  border-color: var(--mint);
+}
+
+.note-title-input::placeholder {
+  color: var(--dim);
+  font-weight: 400;
+}
+
+.brain-dump-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  height: 100%;
+}
+
+.editor-pane,
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .toolbar {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   margin-bottom: 8px;
 }
+
+.btn-icon {
+  padding: 8px;
+}
+
+.btn-delete:hover {
+  background: rgba(255, 99, 99, 0.2);
+  border-color: rgba(255, 140, 140, 0.4);
+}
+
 textarea {
   width: 100%;
   min-height: 180px;
@@ -416,6 +594,24 @@ textarea {
   border: 1px solid var(--line);
   background: rgba(10, 14, 38, 0.5);
   color: var(--ink);
+}
+
+.resizable-textarea {
+  resize: vertical;
+  min-height: 200px;
+  max-height: 80vh;
+  flex: 1;
+}
+
+textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 .tag-palette {
   display: flex;
@@ -450,6 +646,19 @@ textarea:focus {
   outline: 3px solid var(--mint);
   outline-offset: 2px;
   border-radius: 12px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 .toast {
   position: fixed;
@@ -855,6 +1064,21 @@ textarea:focus {
     grid-template-columns: 180px 1fr auto;
     gap: 8px;
   }
+
+  /* Brain Dump responsive - tablet */
+  .brain-dump-container {
+    height: auto;
+    min-height: 400px;
+  }
+
+  .note-list-sidebar {
+    width: 240px;
+    min-width: 240px;
+  }
+
+  .brain-dump-split {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* Mobile and small tablet - single column */
@@ -889,6 +1113,64 @@ textarea:focus {
   .task-item {
     cursor: default;
   }
+
+  /* Brain Dump responsive - mobile */
+  .brain-dump-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 500px;
+  }
+
+  .note-list-sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-height: 200px;
+    order: -1;
+  }
+
+  .note-list-sidebar.hidden {
+    max-height: 0;
+  }
+
+  .brain-dump-main {
+    width: 100%;
+  }
+
+  .brain-dump-split {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-height: calc(100vh - 300px);
+  }
+
+  .editor-pane {
+    min-height: 250px;
+  }
+
+  .preview-pane {
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .title-input-wrapper {
+    flex-wrap: wrap;
+  }
+
+  .toolbar {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 44px;
+  }
+
+  .resizable-textarea {
+    min-height: 250px;
+    max-height: 60vh;
+  }
 }
 
 /* Very small mobile screens */
@@ -912,5 +1194,31 @@ textarea:focus {
 
   .task-text {
     font-size: 13px;
+  }
+
+  /* Brain Dump responsive - small mobile */
+  .brain-dump-split {
+    grid-template-columns: 1fr;
+  }
+
+  .note-title-input {
+    font-size: 14px;
+  }
+
+  .note-item-title {
+    font-size: 14px;
+  }
+
+  .toolbar {
+    gap: 6px;
+  }
+
+  .btn {
+    padding: 8px;
+    min-width: 40px;
+  }
+
+  .btn-icon {
+    padding: 6px;
   }
 }
