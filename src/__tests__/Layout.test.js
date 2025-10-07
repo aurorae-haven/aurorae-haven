@@ -34,9 +34,8 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       // Logo button
       expect(screen.getByRole('button', { name: /return to tasks/i })).toBeInTheDocument()
       
-      // Brand text
+      // Brand text (slogan removed for compact design)
       expect(screen.getByText(/aurorae haven/i)).toBeInTheDocument()
-      expect(screen.getByText(/find your light/i)).toBeInTheDocument()
     })
 
     test('renders center zone with primary tabs', () => {

@@ -170,11 +170,15 @@ describe('Settings Manager', () => {
     })
 
     test('should reject invalid JSON', () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       expect(() => importSettings('invalid json')).toThrow()
+      consoleErrorSpy.mockRestore()
     })
 
     test('should reject invalid format', () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation()
       expect(() => importSettings('{}')).toThrow('Invalid settings format')
+      consoleErrorSpy.mockRestore()
     })
 
     // TODO: Add test for version compatibility
