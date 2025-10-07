@@ -103,17 +103,20 @@ body {
   backdrop-filter: var(--blur);
   border-bottom: 1px solid var(--line);
   box-shadow: var(--shadow);
+  max-width: 100vw;
+  overflow-x: auto;
 }
 
 /* TAB-NAV-01: Three-zone layout */
 .appbar .inner {
-  max-width: 1240px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 12px 18px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   justify-content: space-between;
+  flex-wrap: nowrap;
 }
 
 /* TAB-NAV-04: Left Zone - Logo/Title */
@@ -173,12 +176,8 @@ body {
   font-weight: 700;
   letter-spacing: 0.2px;
   color: var(--ink);
-}
-
-.brand small {
-  color: var(--dim);
-  opacity: 0.95;
-  font-size: 0.85rem;
+  font-size: 1rem;
+  white-space: nowrap;
 }
 
 /* TAB-NAV-06: Center Zone - Primary Tabs */
@@ -190,25 +189,27 @@ body {
 
 .appnav {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 /* TAB-NAV-07: Pill-shaped tab buttons with hover/active states */
 .nav-tab {
   display: inline-flex;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
-  padding: 8px 14px;
+  padding: 6px 10px;
   border-radius: 20px;
   color: var(--dim);
   background: transparent;
   border: 1px solid transparent;
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition:
     all var(--dur) var(--ease);
   cursor: pointer;
+  white-space: nowrap;
   white-space: nowrap;
 }
 
@@ -236,8 +237,8 @@ body {
 }
 
 .nav-tab .icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
@@ -286,6 +287,32 @@ body {
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* Mobile Settings Button (hidden on desktop) */
+.mobile-settings-button {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all var(--dur) var(--ease);
+  text-decoration: none;
+}
+
+.mobile-settings-button:hover {
+  background: rgba(140, 150, 210, 0.12);
+  color: var(--mint);
+}
+
+.mobile-settings-button:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
 }
 
 /* TAB-NAV-13: Hamburger button (hidden on desktop) */
@@ -401,9 +428,13 @@ body {
     display: none;
   }
 
-  .hamburger-button {
+  .mobile-settings-button {
     display: flex;
     margin-left: auto;
+  }
+
+  .hamburger-button {
+    display: flex;
   }
 
   .navbar-right .icon-button,
@@ -415,9 +446,57 @@ body {
   .mobile-menu {
     display: block;
   }
+}
 
-  .brand small {
+/* Mobile/Tablet Portrait: Navbar at bottom */
+@media (max-width: 968px) and (orientation: portrait) {
+  .appbar {
+    top: auto;
+    bottom: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: none;
+  }
+
+  .shell {
+    padding-bottom: 80px;
+  }
+}
+
+/* Tablet Landscape: Navbar on left side */
+@media (min-width: 769px) and (max-width: 968px) and (orientation: landscape) {
+  .appbar {
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: 0;
+    width: 80px;
+    border-right: 1px solid var(--line);
+    border-bottom: none;
+  }
+
+  .appbar .inner {
+    flex-direction: column;
+    padding: 12px 8px;
+    height: 100%;
+  }
+
+  .navbar-left {
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+  }
+
+  .brand b {
     display: none;
+  }
+
+  .mobile-settings-button,
+  .hamburger-button {
+    margin: auto 0 0;
+  }
+
+  .shell {
+    padding-left: 90px;
   }
 }
 
@@ -439,7 +518,7 @@ body {
 .shell {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 80px 18px 24px;
+  padding: 70px 18px 24px;
 }
 .card {
   background: linear-gradient(180deg, var(--glass-lo), rgba(18, 22, 52, 0.22));

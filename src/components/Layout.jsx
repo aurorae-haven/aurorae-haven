@@ -110,7 +110,6 @@ function Layout({ children, onExport, onImport }) {
             </button>
             <div className='brand'>
               <b>Aurorae Haven</b>
-              <small>Find your light. Navigate your path.</small>
             </div>
           </div>
 
@@ -137,6 +136,18 @@ function Layout({ children, onExport, onImport }) {
               ))}
             </div>
           </nav>
+
+          {/* Mobile Settings Button (tablet/phone) */}
+          <Link
+            className='mobile-settings-button icon-button'
+            to='/settings'
+            aria-label='Settings'
+            title='Settings'
+          >
+            <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
+              <path d='M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z' />
+            </svg>
+          </Link>
 
           {/* TAB-NAV-13: Mobile hamburger button */}
           <button
