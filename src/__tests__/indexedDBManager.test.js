@@ -1,0 +1,315 @@
+import 'fake-indexeddb/auto'
+import {
+  openDB,
+  getAll,
+  getById,
+  put,
+  deleteById,
+  clear,
+  getByIndex,
+  addFileReference,
+  getFileReferences,
+  deleteFileReference,
+  saveStats,
+  getStatsByType,
+  getStatsByDateRange,
+  saveBackup,
+  getRecentBackups,
+  cleanOldBackups,
+  migrateFromLocalStorage,
+  exportAllData,
+  importAllData,
+  isIndexedDBAvailable,
+  STORES
+} from '../utils/indexedDBManager'
+
+describe('IndexedDBManager', () => {
+  beforeEach(async () => {
+    // Clear all stores before each test
+    const stores = Object.values(STORES)
+    for (const store of stores) {
+      try {
+        await clear(store)
+      } catch (e) {
+        // Store might not exist yet
+      }
+    }
+    // Clear localStorage
+    localStorage.clear()
+  })
+
+  describe('Basic Operations', () => {
+    test('openDB creates database with correct stores', async () => {
+      const db = await openDB()
+      expect(db.name).toBe('aurorae_haven_db')
+      expect(db.objectStoreNames.contains(STORES.TASKS)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.SEQUENCES)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.HABITS)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.DUMPS)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.SCHEDULE)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.STATS)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.FILE_REFS)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.BACKUPS)).toBe(true)
+      db.close()
+    })
+
+    test('put and getAll work correctly', async () => {
+      await put(STORES.TASKS, { id: 1, title: 'Test Task', done: false })
+      await put(STORES.TASKS, { id: 2, title: 'Another Task', done: true })
+
+      const tasks = await getAll(STORES.TASKS)
+      expect(tasks).toHaveLength(2)
+      expect(tasks[0].title).toBe('Test Task')
+      expect(tasks[1].title).toBe('Another Task')
+    })
+
+    test('getById retrieves correct item', async () => {
+      await put(STORES.TASKS, { id: 1, title: 'Test Task', done: false })
+      
+      const task = await getById(STORES.TASKS, 1)
+      expect(task).toBeDefined()
+      expect(task.title).toBe('Test Task')
+    })
+
+    test('deleteById removes item', async () => {
+      await put(STORES.TASKS, { id: 1, title: 'Test Task', done: false })
+      await deleteById(STORES.TASKS, 1)
+
+      const tasks = await getAll(STORES.TASKS)
+      expect(tasks).toHaveLength(0)
+    })
+
+    test('clear removes all items from store', async () => {
+      await put(STORES.TASKS, { id: 1, title: 'Test Task 1', done: false })
+      await put(STORES.TASKS, { id: 2, title: 'Test Task 2', done: false })
+      await clear(STORES.TASKS)
+
+      const tasks = await getAll(STORES.TASKS)
+      expect(tasks).toHaveLength(0)
+    })
+  })
+
+  describe('File References (ARC-DAT-02)', () => {
+    test('addFileReference creates reference', async () => {
+      const id = await addFileReference(
+        'test.pdf',
+        'dump',
+        123,
+        { size: 1024, type: 'application/pdf' }
+      )
+      expect(id).toBeDefined()
+
+      const refs = await getAll(STORES.FILE_REFS)
+      expect(refs).toHaveLength(1)
+      expect(refs[0].fileName).toBe('test.pdf')
+      expect(refs[0].parentType).toBe('dump')
+      expect(refs[0].parentId).toBe(123)
+    })
+
+    test('getFileReferences filters by parent', async () => {
+      await addFileReference('file1.pdf', 'dump', 1, {})
+      await addFileReference('file2.jpg', 'dump', 1, {})
+      await addFileReference('file3.png', 'task', 2, {})
+
+      const dumpRefs = await getFileReferences('dump', 1)
+      expect(dumpRefs).toHaveLength(2)
+
+      const taskRefs = await getFileReferences('task', 2)
+      expect(taskRefs).toHaveLength(1)
+    })
+
+    test('deleteFileReference removes reference', async () => {
+      await addFileReference('test.pdf', 'dump', 1, {})
+      await deleteFileReference('test.pdf')
+
+      const refs = await getAll(STORES.FILE_REFS)
+      expect(refs).toHaveLength(0)
+    })
+  })
+
+  describe('Statistics (ARC-DAT-04)', () => {
+    test('saveStats stores statistics', async () => {
+      await saveStats('task_completion', { count: 5, percentage: 80 })
+      
+      const stats = await getAll(STORES.STATS)
+      expect(stats).toHaveLength(1)
+      expect(stats[0].type).toBe('task_completion')
+      expect(stats[0].count).toBe(5)
+    })
+
+    test('getStatsByType filters by type', async () => {
+      await saveStats('task_completion', { count: 5 })
+      await saveStats('habit_streak', { streak: 7 })
+      await saveStats('task_completion', { count: 10 })
+
+      const taskStats = await getStatsByType('task_completion')
+      expect(taskStats).toHaveLength(2)
+
+      const habitStats = await getStatsByType('habit_streak')
+      expect(habitStats).toHaveLength(1)
+    })
+
+    test('getStatsByDateRange filters by date', async () => {
+      const today = new Date().toISOString().split('T')[0]
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+      
+      await saveStats('task_completion', { count: 5 })
+      
+      const stats = await getStatsByDateRange(yesterday, today)
+      expect(stats.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('Backups (ARC-DAT-03)', () => {
+    test('saveBackup stores backup', async () => {
+      const data = { tasks: [], sequences: [] }
+      await saveBackup(data)
+
+      const backups = await getAll(STORES.BACKUPS)
+      expect(backups).toHaveLength(1)
+      expect(backups[0].data).toBe(JSON.stringify(data))
+    })
+
+    test('getRecentBackups returns limited results', async () => {
+      for (let i = 0; i < 15; i++) {
+        await saveBackup({ count: i })
+        // Add small delay to ensure different timestamps
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
+
+      const recent = await getRecentBackups(5)
+      expect(recent).toHaveLength(5)
+      // Should be sorted by timestamp descending
+      expect(recent[0].timestamp).toBeGreaterThan(recent[1].timestamp)
+    })
+
+    test('cleanOldBackups removes old backups', async () => {
+      for (let i = 0; i < 15; i++) {
+        await saveBackup({ count: i })
+        await new Promise(resolve => setTimeout(resolve, 10))
+      }
+
+      await cleanOldBackups(5)
+
+      const remaining = await getAll(STORES.BACKUPS)
+      expect(remaining).toHaveLength(5)
+    })
+  })
+
+  describe('Migration', () => {
+    test('migrateFromLocalStorage migrates data', async () => {
+      const mainData = {
+        version: 1,
+        tasks: [{ id: 1, title: 'Task 1' }],
+        sequences: [{ id: 'seq1', name: 'Sequence 1' }],
+        habits: [{ id: 1, name: 'Habit 1' }],
+        dumps: [],
+        schedule: []
+      }
+      localStorage.setItem('aurorae_haven_data', JSON.stringify(mainData))
+
+      const report = await migrateFromLocalStorage()
+      
+      expect(report.success).toBe(true)
+      expect(report.migrated.tasks).toBe(1)
+      expect(report.migrated.sequences).toBe(1)
+      expect(report.migrated.habits).toBe(1)
+
+      const tasks = await getAll(STORES.TASKS)
+      expect(tasks).toHaveLength(1)
+      expect(tasks[0].title).toBe('Task 1')
+    })
+
+    test('migrateFromLocalStorage handles missing data gracefully', async () => {
+      const report = await migrateFromLocalStorage()
+      expect(report.success).toBe(true)
+      expect(report.migrated).toEqual({})
+    })
+  })
+
+  describe('Export/Import', () => {
+    test('exportAllData exports all stores', async () => {
+      await put(STORES.TASKS, { id: 1, title: 'Test Task' })
+      await put(STORES.SEQUENCES, { id: 'seq1', name: 'Test Sequence' })
+      await saveStats('test', { value: 100 })
+
+      const exported = await exportAllData()
+
+      expect(exported.version).toBe(1)
+      expect(exported.exportedAt).toBeDefined()
+      expect(exported.tasks).toHaveLength(1)
+      expect(exported.sequences).toHaveLength(1)
+      expect(exported.stats).toHaveLength(1)
+      expect(exported.brainDump).toBeDefined()
+    })
+
+    test('importAllData imports all data', async () => {
+      const data = {
+        version: 1,
+        tasks: [{ id: 1, title: 'Imported Task' }],
+        sequences: [{ id: 'seq1', name: 'Imported Sequence' }],
+        habits: [],
+        dumps: [],
+        schedule: [],
+        stats: [{ id: 1, type: 'test', value: 50 }],
+        fileRefs: [],
+        brainDump: {
+          content: 'Test content',
+          tags: '',
+          versions: [],
+          entries: []
+        }
+      }
+
+      const report = await importAllData(data)
+
+      expect(report.success).toBe(true)
+      expect(report.imported.tasks).toBe(1)
+      expect(report.imported.sequences).toBe(1)
+      expect(report.imported.stats).toBe(1)
+
+      const tasks = await getAll(STORES.TASKS)
+      expect(tasks[0].title).toBe('Imported Task')
+
+      const brainDump = localStorage.getItem('brainDumpContent')
+      expect(brainDump).toBe('Test content')
+    })
+
+    test('importAllData clears existing data before import', async () => {
+      await put(STORES.TASKS, { id: 1, title: 'Old Task' })
+      
+      const data = {
+        version: 1,
+        tasks: [{ id: 2, title: 'New Task' }],
+        sequences: [],
+        habits: [],
+        dumps: [],
+        schedule: [],
+        stats: [],
+        fileRefs: [],
+        brainDump: {}
+      }
+
+      await importAllData(data)
+
+      const tasks = await getAll(STORES.TASKS)
+      expect(tasks).toHaveLength(1)
+      expect(tasks[0].title).toBe('New Task')
+    })
+  })
+
+  describe('Utility Functions', () => {
+    test('isIndexedDBAvailable returns true', () => {
+      expect(isIndexedDBAvailable()).toBe(true)
+    })
+
+    test('getByIndex retrieves items by index', async () => {
+      await put(STORES.TASKS, { id: 1, title: 'Task 1', status: 'pending', timestamp: 1000 })
+      await put(STORES.TASKS, { id: 2, title: 'Task 2', status: 'done', timestamp: 2000 })
+      await put(STORES.TASKS, { id: 3, title: 'Task 3', status: 'pending', timestamp: 3000 })
+
+      const pendingTasks = await getByIndex(STORES.TASKS, 'status', 'pending')
+      expect(pendingTasks).toHaveLength(2)
+    })
+  })
+})
