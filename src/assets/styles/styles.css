@@ -210,7 +210,6 @@ body {
     all var(--dur) var(--ease);
   cursor: pointer;
   white-space: nowrap;
-  white-space: nowrap;
 }
 
 /* TAB-NAV-07 & TAB-NAV-17: Active state with accent background */
