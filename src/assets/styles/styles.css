@@ -337,7 +337,7 @@ body {
   top: 0;
   left: 0;
   bottom: 0;
-  width: min(280px, 70vw);
+  width: 80px;
   background: rgba(16, 20, 44, 0.95);
   backdrop-filter: var(--blur);
   border-right: 1px solid var(--line);
@@ -347,32 +347,31 @@ body {
 }
 
 .mobile-menu-content {
-  padding: 80px 16px 16px;
+  padding: 80px 8px 16px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 /* TAB-NAV-14 & TAB-NAV-15: Mobile menu items with ≥48×48px touch targets */
 .mobile-menu-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  min-height: 48px;
-  border-radius: 8px;
+  justify-content: center;
+  width: 64px;
+  height: 56px;
+  border-radius: 12px;
   color: var(--dim);
   text-decoration: none;
-  font-size: 1rem;
   transition: all var(--dur) var(--ease);
   border-left: 3px solid transparent;
+  position: relative;
 }
 
-/* TAB-NAV-15: Active tab with bold text and accent bar */
+/* TAB-NAV-15: Active tab with accent background and bar */
 .mobile-menu-item.active {
-  background: rgba(134, 245, 224, 0.1);
-  color: var(--ink);
-  font-weight: 700;
+  background: rgba(134, 245, 224, 0.15);
+  color: var(--mint);
   border-left-color: var(--mint);
 }
 
@@ -387,14 +386,13 @@ body {
 }
 
 .mobile-menu-item .icon {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  flex-shrink: 0;
 }
 
 /* TAB-NAV-13: Responsive behavior for tablet/mobile */

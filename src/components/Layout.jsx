@@ -216,11 +216,12 @@ function Layout({ children, onExport, onImport }) {
                   onClick={() => setMobileMenuOpen(false)}
                   role='menuitem'
                   aria-current={isActive(tab.path) ? 'page' : undefined}
+                  aria-label={tab.label}
+                  title={tab.label}
                 >
                   <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                     <path d={tab.icon} />
                   </svg>
-                  <span>{tab.label}</span>
                 </Link>
               ))}
             </div>
