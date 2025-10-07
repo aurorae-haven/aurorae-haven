@@ -4,6 +4,7 @@ import DOMPurify from 'dompurify'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
 import { generateSecureUUID } from '../utils/uuidGenerator'
+import { generateBrainDumpFilename, extractTitleFromFilename } from '../utils/fileHelpers'
 
 function BrainDump() {
   const [notes, setNotes] = useState([])
@@ -132,12 +133,8 @@ function BrainDump() {
     const blob = new Blob([content], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
     
-    // Generate filename: braindump_title_YYYYMMDD_HHmm.md
-    const now = new Date()
-    const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
-    const timeStr = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`
-    const safeTitle = (title || 'untitled').replace(/[^a-z0-9]/gi, '_').toLowerCase().slice(0, 30)
-    const filename = `braindump_${safeTitle}_${dateStr}_${timeStr}.md`
+    // Generate filename using utility function
+    const filename = generateBrainDumpFilename(title)
     
     const a = document.createElement('a')
     a.href = url
@@ -156,15 +153,12 @@ function BrainDump() {
       const fileContent = event.target?.result
       if (typeof fileContent !== 'string') return
 
-      // Extract title from filename (remove braindump_ prefix and extension)
-      let noteTitle = file.name.replace(/\.md$/i, '').replace(/^braindump_/i, '')
-      // Remove date/time suffix if present (e.g., _20250115_1430)
-      noteTitle = noteTitle.replace(/_\d{8}_\d{4}$/, '')
-      noteTitle = noteTitle.replace(/_/g, ' ')
+      // Extract title from filename using utility function
+      const noteTitle = extractTitleFromFilename(file.name)
       
       const importedNote = {
         id: generateSecureUUID(),
-        title: noteTitle || 'Imported Note',
+        title: noteTitle,
         content: fileContent,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
@@ -328,7 +322,13 @@ function BrainDump() {
                   onKeyDown={handleKeyDown}
                   disabled={!currentNoteId}
                   aria-label='Note content'
+                  aria-describedby={!currentNoteId ? 'editor-disabled-message' : undefined}
                 />
+                {!currentNoteId && (
+                  <span id='editor-disabled-message' className='sr-only'>
+                    Editor is disabled. Create or select a note to start editing.
+                  </span>
+                )}
               </div>
               <div className='preview-pane'>
                 <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />

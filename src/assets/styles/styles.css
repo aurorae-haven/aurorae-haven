@@ -207,6 +207,7 @@ body {
   cursor: pointer;
   color: #fff;
   padding: 9px 12px;
+  min-height: 44px;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: rgba(35, 45, 100, 0.28);
@@ -645,6 +646,19 @@ textarea:focus {
   outline: 3px solid var(--mint);
   outline-offset: 2px;
   border-radius: 12px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 .toast {
   position: fixed;
