@@ -523,5 +523,73 @@ describe('BrainDump Component', () => {
       // Restore mocks
       document.createElement = originalCreateElement
     })
+
+    test('does not export when no note is selected', () => {
+      render(<BrainDump />)
+
+      const exportButton = screen.getByRole('button', { name: /export/i })
+      expect(exportButton).toBeDisabled()
+    })
+  })
+
+  describe('Import functionality', () => {
+    test('imports markdown file as new note', async () => {
+      render(<BrainDump />)
+
+      const importInput = screen.getByLabelText('Import markdown file')
+      
+      const fileContent = '# Imported Note\n\nThis is imported content.'
+      const file = new File([fileContent], 'braindump_my_note_20250115_1430.md', {
+        type: 'text/markdown'
+      })
+
+      // Mock FileReader
+      const mockFileReader = {
+        readAsText: jest.fn(),
+        onload: null,
+        result: fileContent
+      }
+      
+      global.FileReader = jest.fn(() => mockFileReader)
+
+      fireEvent.change(importInput, { target: { files: [file] } })
+
+      // Simulate file read completion
+      mockFileReader.onload({ target: { result: fileContent } })
+
+      await waitFor(() => {
+        const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+        expect(entries.length).toBe(1)
+        expect(entries[0].title).toBe('my note')
+        expect(entries[0].content).toBe(fileContent)
+      })
+    })
+
+    test('extracts title from filename correctly', async () => {
+      render(<BrainDump />)
+
+      const importInput = screen.getByLabelText('Import markdown file')
+      
+      const fileContent = 'Content'
+      const file = new File([fileContent], 'test_note_name.md', {
+        type: 'text/markdown'
+      })
+
+      const mockFileReader = {
+        readAsText: jest.fn(),
+        onload: null,
+        result: fileContent
+      }
+      
+      global.FileReader = jest.fn(() => mockFileReader)
+
+      fireEvent.change(importInput, { target: { files: [file] } })
+      mockFileReader.onload({ target: { result: fileContent } })
+
+      await waitFor(() => {
+        const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+        expect(entries[0].title).toBe('test note name')
+      })
+    })
   })
 })
