@@ -58,7 +58,16 @@ describe('BrainDump Component', () => {
     })
 
     test('loads saved content from localStorage on mount', () => {
-      localStorage.setItem('brainDumpContent', 'Test content')
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: 'Test content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -66,16 +75,58 @@ describe('BrainDump Component', () => {
       expect(textarea).toHaveValue('Test content')
     })
 
-    test('saves content to localStorage on change', () => {
+    test('migrates old single-note content to new structure', () => {
+      localStorage.setItem('brainDumpContent', 'Old content')
+      render(<BrainDump />)
+      const textarea = screen.getByPlaceholderText(
+        'Start typing your thoughts...'
+      )
+      expect(textarea).toHaveValue('Old content')
+      
+      // Check that migration created brainDumpEntries
+      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      expect(entries.length).toBe(1)
+      expect(entries[0].content).toBe('Old content')
+      expect(entries[0].title).toBe('Migrated Note')
+    })
+
+    test('saves content to localStorage on change', async () => {
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: 'Initial content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+      
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
       )
       fireEvent.change(textarea, { target: { value: 'New content' } })
-      expect(localStorage.getItem('brainDumpContent')).toBe('New content')
+
+      // Wait for debounced autosave (500ms + buffer)
+      await waitFor(() => {
+        const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+        expect(entries[0].content).toBe('New content')
+      }, { timeout: 1000 })
     })
 
     test('renders markdown preview', async () => {
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+      
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -93,6 +144,17 @@ describe('BrainDump Component', () => {
 
   describe('Auto-list continuation', () => {
     test('continues task list on Enter', async () => {
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+      
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -112,7 +174,22 @@ describe('BrainDump Component', () => {
       })
     })
 
+    // Helper to set up a note for list continuation tests
+    const setupNoteForTest = () => {
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+    }
+
     test('removes empty task list item on second Enter', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -135,6 +212,7 @@ describe('BrainDump Component', () => {
     })
 
     test('continues bullet list on Enter', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -151,6 +229,7 @@ describe('BrainDump Component', () => {
     })
 
     test('removes empty bullet list item on second Enter', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -167,6 +246,7 @@ describe('BrainDump Component', () => {
     })
 
     test('continues numbered list on Enter', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -183,6 +263,7 @@ describe('BrainDump Component', () => {
     })
 
     test('removes empty numbered list item on second Enter', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -199,6 +280,7 @@ describe('BrainDump Component', () => {
     })
 
     test('handles task list with asterisk marker', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -217,6 +299,7 @@ describe('BrainDump Component', () => {
     })
 
     test('handles indented lists', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -233,6 +316,7 @@ describe('BrainDump Component', () => {
     })
 
     test('does not intercept Enter with Shift key', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -249,6 +333,7 @@ describe('BrainDump Component', () => {
     })
 
     test('does not intercept Enter with Ctrl key', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -265,6 +350,7 @@ describe('BrainDump Component', () => {
     })
 
     test('does not intercept Enter on non-list content', async () => {
+      setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -280,44 +366,114 @@ describe('BrainDump Component', () => {
     })
   })
 
-  describe('Clear functionality', () => {
-    test('clears content on clear button click with confirmation', () => {
+  describe('Delete functionality', () => {
+    test('deletes note on delete button click with confirmation', () => {
       window.confirm = jest.fn(() => true)
 
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: 'Some content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
       )
+      expect(textarea).toHaveValue('Some content')
 
-      fireEvent.change(textarea, { target: { value: 'Some content' } })
+      // Find and click delete button
+      const deleteButton = screen.getByRole('button', { name: /delete/i })
+      fireEvent.click(deleteButton)
 
-      // Find and click clear button
-      const clearButton = screen.getByRole('button', { name: /clear/i })
-      fireEvent.click(clearButton)
-
-      expect(textarea.value).toBe('')
-      expect(localStorage.getItem('brainDumpContent')).toBeNull()
+      expect(textarea).toBeDisabled()
+      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      expect(entries.length).toBe(0)
     })
 
-    test('does not clear content if user cancels confirmation', () => {
+    test('does not delete note if user cancels confirmation', () => {
       window.confirm = jest.fn(() => false)
+
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: 'Some content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
       )
 
-      fireEvent.change(textarea, { target: { value: 'Some content' } })
+      const deleteButton = screen.getByRole('button', { name: /delete/i })
+      fireEvent.click(deleteButton)
 
-      const clearButton = screen.getByRole('button', { name: /clear/i })
-      fireEvent.click(clearButton)
+      expect(textarea).toHaveValue('Some content')
+      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      expect(entries.length).toBe(1)
+    })
+  })
 
-      expect(textarea.value).toBe('Some content')
+  describe('Multi-note functionality', () => {
+    test('creates new note on new button click', () => {
+      render(<BrainDump />)
+
+      const newButton = screen.getByRole('button', { name: /new note/i })
+      fireEvent.click(newButton)
+
+      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      expect(entries.length).toBe(1)
+      expect(entries[0].title).toBe('Untitled Note')
+    })
+
+    test('switches between notes', () => {
+      const mockEntries = [
+        {
+          id: 'test-id-1',
+          title: 'First Note',
+          content: 'First content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'test-id-2',
+          title: 'Second Note',
+          content: 'Second content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+
+      render(<BrainDump />)
+      const textarea = screen.getByPlaceholderText(
+        'Start typing your thoughts...'
+      )
+
+      // Should load first note by default
+      expect(textarea).toHaveValue('First content')
+
+      // Click second note in list
+      const secondNoteItem = screen.getByText('Second Note')
+      fireEvent.click(secondNoteItem)
+
+      // Should load second note
+      expect(textarea).toHaveValue('Second content')
     })
   })
 
   describe('Export functionality', () => {
-    test('exports content as markdown file', () => {
+    test('exports content as markdown file with new filename format', () => {
       // Mock URL.createObjectURL and revokeObjectURL
       global.URL.createObjectURL = jest.fn(() => 'blob:mock')
       global.URL.revokeObjectURL = jest.fn()
@@ -325,20 +481,34 @@ describe('BrainDump Component', () => {
       // Mock createElement to spy on the download link
       const originalCreateElement = document.createElement
       const mockClick = jest.fn()
+      let downloadFilename = ''
       document.createElement = jest.fn((tag) => {
         if (tag === 'a') {
           const element = originalCreateElement.call(document, tag)
           element.click = mockClick
+          Object.defineProperty(element, 'download', {
+            set: (value) => {
+              downloadFilename = value
+            },
+            get: () => downloadFilename
+          })
           return element
         }
         return originalCreateElement.call(document, tag)
       })
 
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'My Test Note',
+          content: 'Export this content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+
       render(<BrainDump />)
-      const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
-      )
-      fireEvent.change(textarea, { target: { value: 'Export this content' } })
 
       // Find and click export button
       const exportButton = screen.getByRole('button', { name: /export/i })
@@ -346,6 +516,9 @@ describe('BrainDump Component', () => {
 
       expect(mockClick).toHaveBeenCalled()
       expect(global.URL.createObjectURL).toHaveBeenCalled()
+      
+      // Check filename format: braindump_title_YYYYMMDD_HHmm.md
+      expect(downloadFilename).toMatch(/^braindump_my_test_note_\d{8}_\d{4}\.md$/)
 
       // Restore mocks
       document.createElement = originalCreateElement
