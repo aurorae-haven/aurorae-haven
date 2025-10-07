@@ -122,9 +122,9 @@ async function createTarGz() {
 async function createSimpleArchive() {
   console.log('📦 Creating simple archive (fallback method)...')
 
-  if (!existsSync(DIST_DIR)) {
+  if (!existsSync(DIST_OFFLINE_DIR)) {
     console.error(
-      '❌ Error: dist/ directory not found. Run `npm run build` first.'
+      '❌ Error: offline build directory not found. Build failed.'
     )
     process.exit(1)
   }
