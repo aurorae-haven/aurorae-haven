@@ -221,7 +221,8 @@ function validateExportData(data) {
   let stringified = null
   try {
     stringified = JSON.stringify(data, null, 2)
-  } catch {
+  } catch (error) {
+    console.error('Serialization error in export data:', error);
     errors.push('Export data contains circular references or non-serializable values')
   }
 
