@@ -206,14 +206,14 @@ export async function getDataTemplate() {
 /**
  * Helper function to validate field type
  * @param {*} value - Value to validate
- * @param {string} expectedType - Expected type ('string' or 'array')
+ * @param {string} expectedType - Expected type (VALIDATION_TYPES.STRING or VALIDATION_TYPES.ARRAY)
  * @returns {boolean} True if valid
  */
 function isValidFieldType(value, expectedType) {
-  if (expectedType === 'string') {
+  if (expectedType === VALIDATION_TYPES.STRING) {
     return typeof value === 'string'
   }
-  if (expectedType === 'array') {
+  if (expectedType === VALIDATION_TYPES.ARRAY) {
     return Array.isArray(value)
   }
   return false
@@ -357,7 +357,8 @@ function validateImportData(obj) {
   }
 
   // Validate top-level array fields using reusable helper
-  errors.push(...validateArrayFields(obj, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY))
+  const arrayFieldErrors = validateArrayFields(obj, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY)
+  arrayFieldErrors.forEach(error => errors.push(error))
 
   // Validate brainDump structure if present
   if (obj.brainDump !== undefined) {
@@ -365,9 +366,8 @@ function validateImportData(obj) {
       errors.push('Invalid type for brainDump: expected object')
     } else {
       // Validate brainDump fields using reusable helper
-      errors.push(
-        ...validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.')
-      )
+      const brainDumpErrors = validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.')
+      brainDumpErrors.forEach(error => errors.push(error))
     }
   }
 
