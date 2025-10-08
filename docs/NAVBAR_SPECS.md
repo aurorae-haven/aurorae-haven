@@ -66,23 +66,27 @@ Seven primary navigation tabs:
 ### TAB-NAV-07: Tab Styling
 
 **Base Style:**
+
 - Pill-shaped buttons (`border-radius: 20px`)
 - Padding: 8px vertical, 14px horizontal
 - Icon + text layout with 8px gap
 - Transparent background
 
 **Active State:**
+
 - Background: `var(--mint)` (accent color)
 - Text color: `var(--ink)` (high contrast)
 - Font weight: 700 (bold)
 - Border: 1px solid `var(--mint)`
 
 **Hover State (Inactive tabs):**
+
 - Background: `rgba(140, 150, 210, 0.12)` (semi-transparent)
 - Text decoration: underline with `var(--mint)` color
 - Underline offset: 4px
 
 **Inactive State:**
+
 - Text color: `var(--dim)` (dimmed)
 - No background
 
@@ -105,6 +109,7 @@ Full keyboard support for accessibility:
 - **Enter**: Activate focused tab (navigate to page)
 
 **Tab Focus Management:**
+
 - Active tab: `tabindex="0"` (focusable)
 - Inactive tabs: `tabindex="-1"` (not in tab order, but focusable via arrow keys)
 
@@ -113,21 +118,25 @@ Full keyboard support for accessibility:
 ### TAB-NAV-10: Action Buttons
 
 **Search Icon:**
+
 - Placeholder for future search functionality
 - Aria-label: "Search"
 - Title: "Search (Coming soon)"
 
 **Theme Toggle:**
+
 - Placeholder for light/dark/auto theme switching
 - Aria-label: "Toggle theme"
 - Title: "Theme (Coming soon)"
 
 **Export Button:**
+
 - Exports all app data as JSON
 - Aria-label: "Export data"
 - Functional and connected to data manager
 
 **Import Button:**
+
 - Imports JSON data file
 - File input hidden, styled as button
 - Aria-label: "Import data file"
@@ -136,6 +145,7 @@ Full keyboard support for accessibility:
 ### TAB-NAV-11 & TAB-NAV-12: Mobile Behavior
 
 On tablet/mobile (≤968px):
+
 - Search, theme, and export/import buttons hidden
 - Access via mobile menu or future overflow menu
 - Functionality preserved in mobile view
@@ -154,16 +164,19 @@ On tablet/mobile (≤968px):
 ### TAB-NAV-13: Breakpoints
 
 **Desktop (>968px):**
+
 - All three zones visible
 - Center tabs displayed horizontally
 - Full right zone actions visible
 
 **Tablet/Mobile (≤968px):**
+
 - Left zone: Logo + brand title visible
 - Center zone: Hidden, replaced by hamburger button
 - Right zone: Hidden (actions in mobile menu if needed)
 
 **Small Mobile (≤640px):**
+
 - Tagline hidden
 - Reduced padding
 - Font sizes adjusted
@@ -171,6 +184,7 @@ On tablet/mobile (≤968px):
 ### TAB-NAV-14: Hamburger Menu
 
 **Button:**
+
 - Display: Hidden on desktop, visible on mobile
 - Size: 44×44px (large touch target)
 - Icon: Hamburger (☰) when closed, X when open
@@ -178,6 +192,7 @@ On tablet/mobile (≤968px):
 - Aria-controls: "mobile-menu"
 
 **Menu Panel:**
+
 - Slides in from left
 - Width: `min(320px, 80vw)`
 - Background: `rgba(16, 20, 44, 0.95)` with backdrop blur
@@ -185,6 +200,7 @@ On tablet/mobile (≤968px):
 - Z-index: 40 (above navbar)
 
 **Overlay:**
+
 - Full-screen semi-transparent overlay
 - Background: `rgba(0, 0, 0, 0.5)`
 - Click to close menu
@@ -193,17 +209,20 @@ On tablet/mobile (≤968px):
 ### TAB-NAV-15: Mobile Menu Items
 
 **Touch Targets:**
+
 - Minimum size: 48×48px (WCAG AAA)
 - Padding: 14px vertical, 16px horizontal
 - Vertical list layout with 4px gap
 
 **Active Item:**
+
 - Background: `rgba(134, 245, 224, 0.1)`
 - Font weight: 700 (bold)
 - Left border: 3px solid `var(--mint)` (accent bar)
 - Color: `var(--ink)`
 
 **Inactive Items:**
+
 - Color: `var(--dim)`
 - Hover: Semi-transparent background, color changes to `var(--ink)`
 
@@ -212,6 +231,7 @@ On tablet/mobile (≤968px):
 ### TAB-NAV-18: Focus Indicators
 
 All interactive elements have visible focus indicators:
+
 - Outline: 3px solid `var(--mint)`
 - Outline offset: 2px
 - Meets WCAG 2.2 AA requirements (contrast and visibility)
@@ -219,11 +239,12 @@ All interactive elements have visible focus indicators:
 ### TAB-NAV-20 & TAB-NAV-21: ARIA Roles
 
 **Semantic HTML:**
+
 ```jsx
-<header role="banner">
-  <nav role="navigation" aria-label="Main">
-    <div role="tablist" aria-label="Primary navigation tabs">
-      <Link role="tab" aria-selected={isActive} aria-label="Tasks">
+<header role='banner'>
+  <nav role='navigation' aria-label='Main'>
+    <div role='tablist' aria-label='Primary navigation tabs'>
+      <Link role='tab' aria-selected={isActive} aria-label='Tasks'>
         Tasks
       </Link>
       {/* ... other tabs ... */}
@@ -233,6 +254,7 @@ All interactive elements have visible focus indicators:
 ```
 
 **Roles and Labels:**
+
 - Header: `role="banner"` (landmark)
 - Navigation: `role="navigation"` with `aria-label="Main"`
 - Tab list: `role="tablist"` with descriptive label
@@ -243,6 +265,7 @@ All interactive elements have visible focus indicators:
 ### TAB-NAV-22: Mobile Menu Modal
 
 **Modal Behavior:**
+
 - `role="dialog"` (modal dialog)
 - `aria-modal="true"` (restricts interaction)
 - `aria-label="Mobile navigation menu"`
@@ -250,6 +273,7 @@ All interactive elements have visible focus indicators:
 - Escape key: Closes menu, returns focus to hamburger button
 
 **Focus Management:**
+
 - When opened: Focus moves to first menu item
 - When closed: Focus returns to hamburger button
 - Tab wraps: Last item → first item, first item → last item (with Shift+Tab)
@@ -257,6 +281,7 @@ All interactive elements have visible focus indicators:
 ### TAB-NAV-23: Screen Reader Support
 
 All interactive elements announce properly:
+
 - Tab navigation: "Tasks, tab, selected" or "Routines, tab, not selected"
 - Logo button: "Return to Tasks, button"
 - Action buttons: Descriptive labels like "Search, button, Search (Coming soon)"
@@ -283,7 +308,7 @@ All interactive elements announce properly:
    - Focus indicators
    - Hover states
 
-3. **src/__tests__/Layout.test.js** (NEW)
+3. **src/**tests**/Layout.test.js** (NEW)
    - 31 comprehensive tests
    - Coverage: 86.66% statements, 92.85% functions
    - Tests for all TAB-NAV specifications
@@ -319,6 +344,7 @@ const isActive = (path) => location.pathname === path
 ### Test Coverage
 
 31 tests covering:
+
 - Three-zone structure rendering
 - Logo functionality
 - Tab active/inactive states
@@ -349,12 +375,14 @@ const isActive = (path) => location.pathname === path
 ## Browser Support
 
 Tested and compatible with:
+
 - Chrome 90+ ✓
 - Firefox 88+ ✓
 - Safari 14+ ✓
 - Edge 90+ ✓
 
 Features used:
+
 - CSS `position: fixed`
 - CSS `backdrop-filter` (with fallback)
 - Flexbox layout
@@ -383,6 +411,7 @@ Planned for future versions:
 ## Changelog
 
 ### v1.0.0 (Current)
+
 - ✅ Implemented full TAB-NAV specification
 - ✅ Three-zone layout with responsive behavior
 - ✅ Mobile hamburger menu with focus trap
@@ -394,5 +423,5 @@ Planned for future versions:
 
 ---
 
-*Last updated: 2025-01-XX*
-*Specification version: TAB-NAV v1.0*
+_Last updated: 2025-01-XX_
+_Specification version: TAB-NAV v1.0_

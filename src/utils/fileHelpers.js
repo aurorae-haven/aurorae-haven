@@ -14,7 +14,7 @@ export function sanitizeFilename(text, maxLength = 30) {
   if (!text || typeof text !== 'string') {
     return 'untitled'
   }
-  
+
   return text
     .replace(/[^a-z0-9]/gi, '_') // Replace non-alphanumeric with underscore
     .toLowerCase()
@@ -32,7 +32,7 @@ export function generateBrainDumpFilename(title) {
   const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
   const timeStr = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`
   const safeTitle = sanitizeFilename(title)
-  
+
   return `braindump_${safeTitle}_${dateStr}_${timeStr}.md`
 }
 
@@ -47,12 +47,12 @@ export function extractTitleFromFilename(filename) {
   if (!filename || typeof filename !== 'string') {
     return 'Imported Note'
   }
-  
+
   let noteTitle = filename
     .replace(/\.md$/i, '') // Remove .md extension
     .replace(/^braindump_/i, '') // Remove braindump_ prefix
     .replace(/_\d{8}_\d{4}$/, '') // Remove date/time suffix (e.g., _20250115_1430)
     .replace(/_/g, ' ') // Convert underscores to spaces
-  
+
   return noteTitle || 'Imported Note'
 }

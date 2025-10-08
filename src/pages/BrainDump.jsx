@@ -4,7 +4,10 @@ import DOMPurify from 'dompurify'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
 import { generateSecureUUID } from '../utils/uuidGenerator'
-import { generateBrainDumpFilename, extractTitleFromFilename } from '../utils/fileHelpers'
+import {
+  generateBrainDumpFilename,
+  extractTitleFromFilename
+} from '../utils/fileHelpers'
 
 function BrainDump() {
   const [notes, setNotes] = useState([])
@@ -24,7 +27,7 @@ function BrainDump() {
   useEffect(() => {
     const entriesData = localStorage.getItem('brainDumpEntries')
     let loadedNotes = []
-    
+
     try {
       loadedNotes = entriesData ? JSON.parse(entriesData) : []
     } catch (e) {
@@ -48,7 +51,7 @@ function BrainDump() {
     }
 
     setNotes(loadedNotes)
-    
+
     // Load first note if available
     if (loadedNotes.length > 0) {
       loadNote(loadedNotes[0])
@@ -78,8 +81,8 @@ function BrainDump() {
     if (!currentNoteId) return
 
     const saveTimeout = setTimeout(() => {
-      const updatedNotes = notes.map(note => 
-        note.id === currentNoteId 
+      const updatedNotes = notes.map((note) =>
+        note.id === currentNoteId
           ? { ...note, title, content, updatedAt: new Date().toISOString() }
           : note
       )
@@ -108,11 +111,12 @@ function BrainDump() {
   // Delete current note
   const handleDelete = () => {
     if (!currentNoteId) return
-    
-    const currentNote = notes.find(n => n.id === currentNoteId)
-    if (!window.confirm(`Delete "${currentNote?.title || 'this note'}"?`)) return
 
-    const updatedNotes = notes.filter(n => n.id !== currentNoteId)
+    const currentNote = notes.find((n) => n.id === currentNoteId)
+    if (!window.confirm(`Delete "${currentNote?.title || 'this note'}"?`))
+      return
+
+    const updatedNotes = notes.filter((n) => n.id !== currentNoteId)
     setNotes(updatedNotes)
     localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
 
@@ -132,10 +136,10 @@ function BrainDump() {
 
     const blob = new Blob([content], { type: 'text/markdown' })
     const url = URL.createObjectURL(blob)
-    
+
     // Generate filename using utility function
     const filename = generateBrainDumpFilename(title)
-    
+
     const a = document.createElement('a')
     a.href = url
     a.download = filename
@@ -155,7 +159,7 @@ function BrainDump() {
 
       // Extract title from filename using utility function
       const noteTitle = extractTitleFromFilename(file.name)
-      
+
       const importedNote = {
         id: generateSecureUUID(),
         title: noteTitle,
@@ -197,11 +201,13 @@ function BrainDump() {
   return (
     <div className='brain-dump-container'>
       {/* Note List Sidebar */}
-      <div className={`note-list-sidebar ${showNoteList ? 'visible' : 'hidden'}`}>
+      <div
+        className={`note-list-sidebar ${showNoteList ? 'visible' : 'hidden'}`}
+      >
         <div className='note-list-header'>
           <strong>Notes</strong>
-          <button 
-            className='btn btn-icon' 
+          <button
+            className='btn btn-icon'
             onClick={handleNewNote}
             aria-label='New Note'
             title='New Note'
@@ -213,8 +219,8 @@ function BrainDump() {
           </button>
         </div>
         <div className='note-list'>
-          {notes.map(note => (
-            <div 
+          {notes.map((note) => (
+            <div
               key={note.id}
               className={`note-item ${note.id === currentNoteId ? 'active' : ''}`}
               onClick={() => loadNote(note)}
@@ -246,10 +252,12 @@ function BrainDump() {
         <div className='card'>
           <div className='card-h'>
             <div className='title-input-wrapper'>
-              <button 
+              <button
                 className='btn btn-icon toggle-notes-btn'
                 onClick={() => setShowNoteList(!showNoteList)}
-                aria-label={showNoteList ? 'Hide notes list' : 'Show notes list'}
+                aria-label={
+                  showNoteList ? 'Hide notes list' : 'Show notes list'
+                }
                 title={showNoteList ? 'Hide notes list' : 'Show notes list'}
               >
                 <svg className='icon' viewBox='0 0 24 24'>
@@ -282,9 +290,9 @@ function BrainDump() {
                   aria-label='Import markdown file'
                 />
               </label>
-              <button 
-                className='btn' 
-                onClick={handleExport} 
+              <button
+                className='btn'
+                onClick={handleExport}
                 aria-label='Export'
                 title='Export'
                 disabled={!currentNoteId}
@@ -295,9 +303,9 @@ function BrainDump() {
                   <line x1='12' y1='15' x2='12' y2='3' />
                 </svg>
               </button>
-              <button 
-                className='btn btn-delete' 
-                onClick={handleDelete} 
+              <button
+                className='btn btn-delete'
+                onClick={handleDelete}
                 aria-label='Delete'
                 title='Delete'
                 disabled={!currentNoteId}
@@ -322,16 +330,22 @@ function BrainDump() {
                   onKeyDown={handleKeyDown}
                   disabled={!currentNoteId}
                   aria-label='Note content'
-                  aria-describedby={!currentNoteId ? 'editor-disabled-message' : undefined}
+                  aria-describedby={
+                    !currentNoteId ? 'editor-disabled-message' : undefined
+                  }
                 />
                 {!currentNoteId && (
                   <span id='editor-disabled-message' className='sr-only'>
-                    Editor is disabled. Create or select a note to start editing.
+                    Editor is disabled. Create or select a note to start
+                    editing.
                   </span>
                 )}
               </div>
               <div className='preview-pane'>
-                <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
+                <div
+                  id='preview'
+                  dangerouslySetInnerHTML={{ __html: preview }}
+                />
               </div>
             </div>
           </div>

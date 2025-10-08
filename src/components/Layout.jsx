@@ -29,7 +29,7 @@ function Layout({ children, onExport, onImport }) {
 
     const handleFocusTrap = (e) => {
       if (!mobileMenuRef.current) return
-      
+
       const focusableElements = mobileMenuRef.current.querySelectorAll(
         'a[href], button:not([disabled])'
       )
@@ -59,7 +59,7 @@ function Layout({ children, onExport, onImport }) {
   // TAB-NAV-09: Keyboard navigation with arrow keys
   const handleTabKeyDown = (e, tabs, currentIndex) => {
     let newIndex = currentIndex
-    
+
     if (e.key === 'ArrowLeft') {
       e.preventDefault()
       newIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1
@@ -81,13 +81,41 @@ function Layout({ children, onExport, onImport }) {
   }
 
   const tabs = [
-    { path: '/tasks', label: 'Tasks', icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01' },
-    { path: '/sequences', label: 'Routines', icon: 'M12 13m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0M12 9v5l3 2M9 2h6' },
-    { path: '/habits', label: 'Habits', icon: 'M7 20s6-3 6-10V4M14 4s5 0 6 5c-5 1-6-5-6-5zM2 9c2-5 8-5 8-5s0 6-8 5z' },
-    { path: '/schedule', label: 'Schedule', icon: 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18' },
-    { path: '/braindump', label: 'Brain Dump', icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z' },
-    { path: '/stats', label: 'Library', icon: 'M3 3v18h18M7 12h3v6H7zM12 9h3v9h-3zM17 5h3v13h-3z' },
-    { path: '/settings', label: 'Settings', icon: 'M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z' }
+    {
+      path: '/tasks',
+      label: 'Tasks',
+      icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'
+    },
+    {
+      path: '/sequences',
+      label: 'Routines',
+      icon: 'M12 13m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0M12 9v5l3 2M9 2h6'
+    },
+    {
+      path: '/habits',
+      label: 'Habits',
+      icon: 'M7 20s6-3 6-10V4M14 4s5 0 6 5c-5 1-6-5-6-5zM2 9c2-5 8-5 8-5s0 6-8 5z'
+    },
+    {
+      path: '/schedule',
+      label: 'Schedule',
+      icon: 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18'
+    },
+    {
+      path: '/braindump',
+      label: 'Brain Dump',
+      icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z'
+    },
+    {
+      path: '/stats',
+      label: 'Library',
+      icon: 'M3 3v18h18M7 12h3v6H7zM12 9h3v9h-3zM17 5h3v13h-3z'
+    },
+    {
+      path: '/settings',
+      label: 'Settings',
+      icon: 'M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z'
+    }
   ]
 
   return (
@@ -116,7 +144,11 @@ function Layout({ children, onExport, onImport }) {
           {/* TAB-NAV-06: Center Zone - Primary Tabs (Desktop) */}
           {/* TAB-NAV-20 & TAB-NAV-21: role="navigation" and role="tablist" */}
           <nav className='navbar-center' aria-label='Main' role='navigation'>
-            <div className='appnav' role='tablist' aria-label='Primary navigation tabs'>
+            <div
+              className='appnav'
+              role='tablist'
+              aria-label='Primary navigation tabs'
+            >
               {tabs.map((tab, index) => (
                 <Link
                   key={tab.path}
@@ -170,7 +202,11 @@ function Layout({ children, onExport, onImport }) {
           {/* TAB-NAV-10: Right Zone - Global Actions */}
           <div className='navbar-right'>
             {/* TAB-NAV-10: Search icon (placeholder for future) */}
-            <button className='icon-button' aria-label='Search' title='Search (Coming soon)'>
+            <button
+              className='icon-button'
+              aria-label='Search'
+              title='Search (Coming soon)'
+            >
               <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                 <circle cx='11' cy='11' r='8' />
                 <path d='M21 21l-4.35-4.35' />
@@ -178,7 +214,11 @@ function Layout({ children, onExport, onImport }) {
             </button>
 
             {/* TAB-NAV-10: Theme toggle (placeholder for future) */}
-            <button className='icon-button' aria-label='Toggle theme' title='Theme (Coming soon)'>
+            <button
+              className='icon-button'
+              aria-label='Toggle theme'
+              title='Theme (Coming soon)'
+            >
               <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                 <path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' />
               </svg>

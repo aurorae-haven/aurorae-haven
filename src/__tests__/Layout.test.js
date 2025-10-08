@@ -32,8 +32,10 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       )
 
       // Logo button
-      expect(screen.getByRole('button', { name: /return to tasks/i })).toBeInTheDocument()
-      
+      expect(
+        screen.getByRole('button', { name: /return to tasks/i })
+      ).toBeInTheDocument()
+
       // Brand text (slogan removed for compact design)
       expect(screen.getByText(/aurorae haven/i)).toBeInTheDocument()
     })
@@ -47,12 +49,22 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
 
       // Check all primary tabs exist
       expect(screen.getByRole('tab', { name: /^tasks$/i })).toBeInTheDocument()
-      expect(screen.getByRole('tab', { name: /^routines$/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('tab', { name: /^routines$/i })
+      ).toBeInTheDocument()
       expect(screen.getByRole('tab', { name: /^habits$/i })).toBeInTheDocument()
-      expect(screen.getByRole('tab', { name: /^schedule$/i })).toBeInTheDocument()
-      expect(screen.getByRole('tab', { name: /brain dump/i })).toBeInTheDocument()
-      expect(screen.getByRole('tab', { name: /^library$/i })).toBeInTheDocument()
-      expect(screen.getByRole('tab', { name: /^settings$/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('tab', { name: /^schedule$/i })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('tab', { name: /brain dump/i })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('tab', { name: /^library$/i })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('tab', { name: /^settings$/i })
+      ).toBeInTheDocument()
     })
 
     test('renders right zone with global actions', () => {
@@ -63,11 +75,17 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       )
 
       // Search and theme toggle icons
-      expect(screen.getByRole('button', { name: /search/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /toggle theme/i })).toBeInTheDocument()
-      
+      expect(
+        screen.getByRole('button', { name: /search/i })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /toggle theme/i })
+      ).toBeInTheDocument()
+
       // Export/Import buttons
-      expect(screen.getByRole('button', { name: /export data/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /export data/i })
+      ).toBeInTheDocument()
       expect(screen.getByText(/import/i)).toBeInTheDocument()
     })
   })
@@ -80,7 +98,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const logoButton = screen.getByRole('button', { name: /return to tasks/i })
+      const logoButton = screen.getByRole('button', {
+        name: /return to tasks/i
+      })
       expect(logoButton).toHaveAttribute('title', 'Stellar-Journey')
     })
 
@@ -92,8 +112,10 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         { route: '/schedule' }
       )
 
-      const logoButton = screen.getByRole('button', { name: /return to tasks/i })
-      
+      const logoButton = screen.getByRole('button', {
+        name: /return to tasks/i
+      })
+
       // Should not throw error
       expect(() => fireEvent.click(logoButton)).not.toThrow()
     })
@@ -119,7 +141,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       )
 
       const tasksTab = screen.getByRole('tab', { name: /^tasks$/i })
-      
+
       // Check for icon (SVG) and text
       expect(tasksTab.querySelector('svg')).toBeInTheDocument()
       expect(tasksTab.querySelector('span')).toHaveTextContent('Tasks')
@@ -150,7 +172,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
 
       const routinesTab = screen.getByRole('tab', { name: /^routines$/i })
       const tasksTab = screen.getByRole('tab', { name: /^tasks$/i })
-      
+
       // Both tabs should have tabindex attribute (either 0 or -1)
       expect(routinesTab).toHaveAttribute('tabindex')
       expect(tasksTab).toHaveAttribute('tabindex')
@@ -319,7 +341,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const hamburgerButton = screen.getByRole('button', { name: /toggle navigation menu/i })
+      const hamburgerButton = screen.getByRole('button', {
+        name: /toggle navigation menu/i
+      })
       expect(hamburgerButton).toBeInTheDocument()
       expect(hamburgerButton).toHaveAttribute('aria-expanded', 'false')
       expect(hamburgerButton).toHaveAttribute('aria-controls', 'mobile-menu')
@@ -332,7 +356,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const hamburgerButton = screen.getByRole('button', { name: /toggle navigation menu/i })
+      const hamburgerButton = screen.getByRole('button', {
+        name: /toggle navigation menu/i
+      })
       fireEvent.click(hamburgerButton)
 
       // Check aria-expanded changed
@@ -340,7 +366,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
 
       // Check mobile menu appears
       await waitFor(() => {
-        const mobileMenu = screen.getByRole('dialog', { name: /mobile navigation menu/i })
+        const mobileMenu = screen.getByRole('dialog', {
+          name: /mobile navigation menu/i
+        })
         expect(mobileMenu).toBeInTheDocument()
       })
     })
@@ -352,7 +380,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const hamburgerButton = screen.getByRole('button', { name: /toggle navigation menu/i })
+      const hamburgerButton = screen.getByRole('button', {
+        name: /toggle navigation menu/i
+      })
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
@@ -368,7 +398,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const hamburgerButton = screen.getByRole('button', { name: /toggle navigation menu/i })
+      const hamburgerButton = screen.getByRole('button', {
+        name: /toggle navigation menu/i
+      })
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
@@ -413,7 +445,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const tablist = screen.getByRole('tablist', { name: /primary navigation tabs/i })
+      const tablist = screen.getByRole('tablist', {
+        name: /primary navigation tabs/i
+      })
       expect(tablist).toBeInTheDocument()
     })
 
@@ -425,7 +459,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       )
 
       const tabs = screen.getAllByRole('tab')
-      tabs.forEach(tab => {
+      tabs.forEach((tab) => {
         expect(tab).toHaveAttribute('role', 'tab')
       })
     })
@@ -439,7 +473,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const hamburgerButton = screen.getByRole('button', { name: /toggle navigation menu/i })
+      const hamburgerButton = screen.getByRole('button', {
+        name: /toggle navigation menu/i
+      })
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
@@ -461,7 +497,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         </Layout>
       )
 
-      const hamburgerButton = screen.getByRole('button', { name: /toggle navigation menu/i })
+      const hamburgerButton = screen.getByRole('button', {
+        name: /toggle navigation menu/i
+      })
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
