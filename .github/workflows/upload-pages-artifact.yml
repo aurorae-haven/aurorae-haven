@@ -155,7 +155,12 @@ jobs:
             exit 1
           fi
 
+          # Get package size in KB
+          PACKAGE_SIZE_BYTES=$(stat -f%z "$PACKAGE_FILE" 2>/dev/null || stat -c%s "$PACKAGE_FILE")
+          PACKAGE_SIZE_KB=$((PACKAGE_SIZE_BYTES / 1024))
+
           echo "  → Package: $PACKAGE_NAME"
+          echo "  → Size: ${PACKAGE_SIZE_KB} KB"
 
           # Configure git
           git config --global user.name "github-actions[bot]"
@@ -202,7 +207,7 @@ jobs:
           - ✅ Service worker for offline functionality
           - ✅ PWA manifest for installation
           - ✅ All assets optimized and minified
-          - ✅ Total size: ~105 KB compressed
+          - ✅ Total size: PACKAGE_SIZE_PLACEHOLDER KB compressed
 
           ## 📚 Full Documentation
 
@@ -231,6 +236,7 @@ jobs:
 
           # Replace placeholders
           sed -i "s/PACKAGE_NAME_PLACEHOLDER/$PACKAGE_NAME/" README.md
+          sed -i "s/PACKAGE_SIZE_PLACEHOLDER/$PACKAGE_SIZE_KB/" README.md
           sed -i "s/BUILD_DATE_PLACEHOLDER/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/" README.md
           sed -i "s/BUILD_BRANCH_PLACEHOLDER/${GITHUB_REF##*/}/" README.md
           sed -i "s/BUILD_COMMIT_PLACEHOLDER/${GITHUB_SHA:0:7}/" README.md
