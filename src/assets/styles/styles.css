@@ -1069,6 +1069,16 @@ body {
   overflow-y: auto;
 }
 
+#preview a {
+  color: var(--mint);
+  text-decoration: underline;
+}
+
+#preview a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
 .toolbar {
   display: flex;
   gap: 8px;
