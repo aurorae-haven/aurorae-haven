@@ -71,10 +71,10 @@ async function buildForOffline() {
       )
     }
 
-    // Verify the move was successful
+    // Verify the copy was successful
     if (!existsSync(DIST_OFFLINE_DIR)) {
       throw new Error(
-        `Build directory was not moved to expected location: ${DIST_OFFLINE_DIR}`
+        `Build directory was not copied to expected location: ${DIST_OFFLINE_DIR}`
       )
     }
 
