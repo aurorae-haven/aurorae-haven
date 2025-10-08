@@ -168,7 +168,10 @@ jobs:
           fi
           
           # Clean the branch (keep only offline packages)
-          git rm -rf . 2>/dev/null || true
+          # Remove all tracked files except .git (if any)
+          if [ -n "$(git ls-files)" ]; then
+            git rm -rf . || { echo "❌ Failed to remove files from branch!"; exit 1; }
+          fi
           
           # Create README for GitHub display
           cat > README.md <<'READMEEOF'
