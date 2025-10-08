@@ -101,6 +101,36 @@ describe('Data Manager', () => {
 
       expect(data.schedule).toEqual(schedule)
     })
+
+    it('should collect tasks from aurorae_tasks localStorage key', async () => {
+      const tasksData = {
+        urgent_important: [
+          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+        ],
+        not_urgent_important: [],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+      localStorage.setItem('aurorae_tasks', JSON.stringify(tasksData))
+
+      const data = await getDataTemplate()
+
+      expect(data.auroraeTasksData).toEqual(tasksData)
+    })
+
+    it('should handle missing aurorae_tasks gracefully', async () => {
+      const data = await getDataTemplate()
+
+      expect(data.auroraeTasksData).toBeNull()
+    })
+
+    it('should handle invalid JSON in aurorae_tasks', async () => {
+      localStorage.setItem('aurorae_tasks', 'invalid json{')
+
+      const data = await getDataTemplate()
+
+      expect(data.auroraeTasksData).toBeNull()
+    })
   })
 
   describe('exportJSON', () => {
@@ -304,6 +334,79 @@ describe('Data Manager', () => {
         localStorage.getItem('sj.schedule.events')
       )
       expect(storedSchedule).toEqual(schedule)
+    })
+
+    it('should import tasks to aurorae_tasks', async () => {
+      const tasksData = {
+        urgent_important: [
+          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+        ],
+        not_urgent_important: [],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+      const testData = {
+        version: 1,
+        tasks: [],
+        sequences: [],
+        auroraeTasksData: tasksData
+      }
+
+      const mockFile = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
+      }
+
+      await importJSON(mockFile)
+
+      const storedTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      expect(storedTasks).toEqual(tasksData)
+    })
+
+    it('should handle missing auroraeTasksData gracefully', async () => {
+      const testData = {
+        version: 1,
+        tasks: [],
+        sequences: []
+      }
+
+      const mockFile = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
+      }
+
+      await importJSON(mockFile)
+
+      expect(localStorage.getItem('aurorae_tasks')).toBeNull()
+    })
+
+    it('should roundtrip export and import tasks correctly', async () => {
+      const tasksData = {
+        urgent_important: [
+          { id: 1, text: 'Do this now', completed: false, createdAt: 1234567890 }
+        ],
+        not_urgent_important: [
+          { id: 2, text: 'Plan this', completed: false, createdAt: 1234567891 }
+        ],
+        urgent_not_important: [],
+        not_urgent_not_important: [
+          { id: 3, text: 'Maybe later', completed: true, createdAt: 1234567892 }
+        ]
+      }
+      localStorage.setItem('aurorae_tasks', JSON.stringify(tasksData))
+
+      // Export
+      const exportedData = await getDataTemplate()
+      expect(exportedData.auroraeTasksData).toEqual(tasksData)
+
+      // Clear and import
+      localStorage.clear()
+      const mockFile = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
+      }
+      await importJSON(mockFile)
+
+      // Verify
+      const importedTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      expect(importedTasks).toEqual(tasksData)
     })
   })
 })

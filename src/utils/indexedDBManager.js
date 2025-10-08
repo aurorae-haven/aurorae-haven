@@ -461,6 +461,15 @@ export async function exportAllData() {
     entries: JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
   }
 
+  // Include tasks from aurorae_tasks (Eisenhower matrix format)
+  try {
+    const tasksStr = localStorage.getItem('aurorae_tasks')
+    data.auroraeTasksData = tasksStr ? JSON.parse(tasksStr) : null
+  } catch (e) {
+    console.warn('Failed to parse aurorae_tasks during export:', e)
+    data.auroraeTasksData = null
+  }
+
   return data
 }
 
@@ -562,6 +571,12 @@ export async function importAllData(data) {
           JSON.stringify(data.brainDump.entries)
         )
       }
+    }
+
+    // Import tasks to aurorae_tasks (Eisenhower matrix format)
+    if (data.auroraeTasksData && typeof data.auroraeTasksData === 'object') {
+      localStorage.setItem('aurorae_tasks', JSON.stringify(data.auroraeTasksData))
+      importReport.imported.auroraeTasksData = true
     }
 
     importReport.success = true

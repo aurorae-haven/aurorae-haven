@@ -243,6 +243,28 @@ describe('IndexedDBManager', () => {
       expect(exported.brainDump).toBeDefined()
     })
 
+    test('exportAllData exports aurorae_tasks from localStorage', async () => {
+      const tasksData = {
+        urgent_important: [
+          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+        ],
+        not_urgent_important: [],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+      localStorage.setItem('aurorae_tasks', JSON.stringify(tasksData))
+
+      const exported = await exportAllData()
+
+      expect(exported.auroraeTasksData).toEqual(tasksData)
+    })
+
+    test('exportAllData handles missing aurorae_tasks gracefully', async () => {
+      const exported = await exportAllData()
+
+      expect(exported.auroraeTasksData).toBeNull()
+    })
+
     test('importAllData imports all data', async () => {
       const data = {
         version: 1,
@@ -295,6 +317,57 @@ describe('IndexedDBManager', () => {
       const tasks = await getAll(STORES.TASKS)
       expect(tasks).toHaveLength(1)
       expect(tasks[0].title).toBe('New Task')
+    })
+
+    test('importAllData imports auroraeTasksData to localStorage', async () => {
+      const tasksData = {
+        urgent_important: [
+          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+        ],
+        not_urgent_important: [],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+
+      const data = {
+        version: 1,
+        tasks: [],
+        sequences: [],
+        habits: [],
+        dumps: [],
+        schedule: [],
+        stats: [],
+        fileRefs: [],
+        auroraeTasksData: tasksData,
+        brainDump: {}
+      }
+
+      const report = await importAllData(data)
+
+      expect(report.success).toBe(true)
+      expect(report.imported.auroraeTasksData).toBe(true)
+
+      const storedTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      expect(storedTasks).toEqual(tasksData)
+    })
+
+    test('importAllData handles missing auroraeTasksData gracefully', async () => {
+      const data = {
+        version: 1,
+        tasks: [],
+        sequences: [],
+        habits: [],
+        dumps: [],
+        schedule: [],
+        stats: [],
+        fileRefs: [],
+        brainDump: {}
+      }
+
+      const report = await importAllData(data)
+
+      expect(report.success).toBe(true)
+      expect(localStorage.getItem('aurorae_tasks')).toBeNull()
     })
   })
 
