@@ -131,7 +131,19 @@ git checkout offline-releases
 git rm -rf .
 cp package.tar.gz .
 cat > index.html <<EOF
-<!-- Simple download page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Offline Package Download</title>
+</head>
+<body>
+  <h1>Download Offline Package</h1>
+  <p>
+    <a href="package.tar.gz" download>Click here to download the latest offline package</a>
+  </p>
+</body>
+</html>
 EOF
 
 # Commit and push
