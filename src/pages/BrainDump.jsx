@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { marked } from 'marked'
+import markedKatex from 'marked-katex-extension'
 import DOMPurify from 'dompurify'
+import 'katex/dist/katex.min.css'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
 import { generateSecureUUID } from '../utils/uuidGenerator'
@@ -19,8 +21,22 @@ function BrainDump() {
   const [searchQuery, setSearchQuery] = useState('')
   const editorRef = useRef(null)
 
-  // Configure enhanced sanitization on mount
+  // Configure marked and sanitization on mount
   useEffect(() => {
+    // Configure KaTeX extension for LaTeX support
+    marked.use(
+      markedKatex({
+        throwOnError: false,
+        displayMode: false
+      })
+    )
+    
+    // Configure marked to allow images
+    marked.setOptions({
+      breaks: true,
+      gfm: true
+    })
+    
     configureSanitization(DOMPurify)
   }, [])
 

@@ -1116,6 +1116,24 @@ body {
   text-decoration: underline;
 }
 
+#preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 12px 0;
+  display: block;
+}
+
+#preview .katex {
+  font-size: 1.1em;
+}
+
+#preview .katex-display {
+  margin: 16px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .toolbar {
   display: flex;
   gap: 8px;
