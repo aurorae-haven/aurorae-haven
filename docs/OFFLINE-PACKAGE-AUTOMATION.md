@@ -327,5 +327,4 @@ Potential enhancements:
 
 ---
 
-**Last Updated**: October 8, 2024
 **Implemented in**: v1.0.0
