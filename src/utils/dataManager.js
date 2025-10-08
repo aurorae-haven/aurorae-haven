@@ -284,7 +284,7 @@ export async function exportJSON() {
     // Validate data before export (includes serialization test)
     const validation = validateExportData(dataTemplate)
     if (!validation.valid) {
-      throw new Error('Export validation failed: ' + validation.errors.join(', '))
+      throw new Error(`Export validation failed: ${validation.errors.join(', ')}`)
     }
 
     // Use cached stringified result from validation to avoid double serialization
