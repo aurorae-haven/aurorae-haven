@@ -194,7 +194,7 @@ wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae
 
 # Extract
 tar -xzf aurorae-haven-offline-v1.0.0.tar.gz
-unzip aurorae-haven-offline-v1.0.0.tar.gz
+unzip aurorae-haven-offline-v1.0.0.zip
 
 # Open in browser
 open index.html  # macOS
