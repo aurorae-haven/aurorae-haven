@@ -265,11 +265,11 @@ function validateImportData(obj) {
   }
 
   // Validate that if fields exist, they're the correct type
-  ARRAY_FIELDS.forEach((field) => {
+  for (const field of ARRAY_FIELDS) {
     if (obj[field] !== undefined && !Array.isArray(obj[field])) {
       errors.push(`Invalid type for ${field}: expected array`)
     }
-  })
+  }
 
   // Validate brainDump structure if present
   if (obj.brainDump !== undefined) {
