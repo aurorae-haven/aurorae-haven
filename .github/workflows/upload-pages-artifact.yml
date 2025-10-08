@@ -242,7 +242,7 @@ jobs:
           sed -i "s/BUILD_COMMIT_PLACEHOLDER/${GITHUB_SHA:0:7}/" README.md
 
           # Create a simple index.html for direct browsing
-          cat > index.html <<EOF
+          cat > index.html <<'EOF'
           <!DOCTYPE html>
           <html lang="en">
           <head>
@@ -263,15 +263,15 @@ jobs:
             <p>Download the latest offline package to run Aurorae Haven without internet access.</p>
             
             <div class="package">
-              <a href="$PACKAGE_NAME" download>📦 $PACKAGE_NAME</a>
-              <p class="info">Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
-              <p class="info">Branch: ${GITHUB_REF##*/} | Commit: ${GITHUB_SHA:0:7}</p>
+              <a href="PACKAGE_NAME_PLACEHOLDER" download>📦 PACKAGE_NAME_PLACEHOLDER</a>
+              <p class="info">Built: BUILD_DATE_PLACEHOLDER</p>
+              <p class="info">Branch: BUILD_BRANCH_PLACEHOLDER | Commit: BUILD_COMMIT_PLACEHOLDER</p>
             </div>
             
             <h2>Installation Instructions</h2>
             <ol>
               <li>Download the package above</li>
-              <li>Extract: <code>tar -xzf $PACKAGE_NAME</code></li>
+              <li>Extract: <code>tar -xzf PACKAGE_NAME_PLACEHOLDER</code></li>
               <li>Open <code>index.html</code> in your browser</li>
             </ol>
             
@@ -280,6 +280,12 @@ jobs:
           </body>
           </html>
           EOF
+
+          # Replace placeholders in index.html
+          sed -i "s/PACKAGE_NAME_PLACEHOLDER/$PACKAGE_NAME/g" index.html
+          sed -i "s/BUILD_DATE_PLACEHOLDER/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/" index.html
+          sed -i "s/BUILD_BRANCH_PLACEHOLDER/${GITHUB_REF##*/}/" index.html
+          sed -i "s/BUILD_COMMIT_PLACEHOLDER/${GITHUB_SHA:0:7}/" index.html
 
           # Copy the package
           cp "$PACKAGE_FILE" .
