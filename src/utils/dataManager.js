@@ -252,8 +252,13 @@ function validateObjectFields(obj, fieldsConfig, prefix = '') {
 function validateArrayFields(obj, fieldNames, expectedType, prefix = '') {
   const errors = []
   for (const field of fieldNames) {
-    if (obj[field] !== undefined && !isValidFieldType(obj[field], expectedType)) {
-      errors.push(`Invalid type for ${prefix}${field}: expected ${expectedType}`)
+    if (
+      obj[field] !== undefined &&
+      !isValidFieldType(obj[field], expectedType)
+    ) {
+      errors.push(
+        `Invalid type for ${prefix}${field}: expected ${expectedType}`
+      )
     }
   }
   return errors
@@ -273,13 +278,20 @@ function validateExportData(data) {
   }
 
   // Check for circular references by attempting serialization test
-  // Cache the stringified result to avoid double serialization
+  // Use compact serialization for validation to minimize overhead
   let stringified = null
   try {
-    stringified = JSON.stringify(data, null, 2)
+    JSON.stringify(data)
   } catch (error) {
     console.error('Serialization error in export data:', error)
-    errors.push('Export data contains circular references or non-serializable values')
+    errors.push(
+      'Export data contains circular references or non-serializable values'
+    )
+  }
+
+  // Only pretty-print if validation passes to avoid unnecessary overhead
+  if (errors.length === 0) {
+    stringified = JSON.stringify(data, null, 2)
   }
   return {
     valid: errors.length === 0,
@@ -295,7 +307,9 @@ export async function exportJSON() {
     // Validate data before export (includes serialization test)
     const validation = validateExportData(dataTemplate)
     if (!validation.valid) {
-      throw new Error(`Export validation failed: ${validation.errors.join(', ')}`)
+      throw new Error(
+        `Export validation failed: ${validation.errors.join(', ')}`
+      )
     }
 
     // Serialize data for export (independent of validation formatting)
@@ -351,7 +365,9 @@ function validateImportData(obj) {
       errors.push('Invalid type for brainDump: expected object')
     } else {
       // Validate brainDump fields using reusable helper
-      errors.push(...validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.'))
+      errors.push(
+        ...validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.')
+      )
     }
   }
 
@@ -437,7 +453,10 @@ export async function importJSON(file) {
 
     // Import tasks to aurorae_tasks (Eisenhower matrix format)
     if (obj.auroraeTasksData && typeof obj.auroraeTasksData === 'object') {
-      localStorage.setItem('aurorae_tasks', JSON.stringify(obj.auroraeTasksData))
+      localStorage.setItem(
+        'aurorae_tasks',
+        JSON.stringify(obj.auroraeTasksData)
+      )
     }
 
     return { success: true, message: 'Data imported successfully' }
