@@ -51,6 +51,9 @@ jobs:
           echo "Version: $VERSION"
 
       - name: Create Release
+        # Only create release when triggered by a version tag push (v*.*.*)
+        # Skip when manually triggered via workflow_dispatch to prevent errors
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.package.outputs.file }}
@@ -102,10 +105,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Release summary
+      - name: Release summary (version tag)
+        if: startsWith(github.ref, 'refs/tags/v')
         run: |
           echo "✓ Release created successfully!"
           echo "  → Version: ${{ steps.package.outputs.version }}"
           echo "  → Package: ${{ steps.package.outputs.name }}"
           echo "  → Tag: ${{ github.ref_name }}"
           echo "  → URL: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+
+      - name: Release summary (non-tag)
+        if: "!startsWith(github.ref, 'refs/tags/v')"
+        run: |
+          echo "✓ Offline package built successfully!"
+          echo "  → Version: ${{ steps.package.outputs.version }}"
+          echo "  → Package: ${{ steps.package.outputs.name }}"
+          echo "  → Note: Release creation skipped (not a version tag)"
+          echo "  → To create a release, push a version tag: git tag v1.0.0 && git push origin v1.0.0"

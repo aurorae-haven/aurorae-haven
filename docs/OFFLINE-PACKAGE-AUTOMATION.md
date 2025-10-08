@@ -26,9 +26,9 @@ The offline package is automatically generated and uploaded to multiple location
 
 **Access**:
 
-- Branch: https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases
-- Direct download: https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz
-- Direct download: https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip
+- Branch: <https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases>
+- Direct download: <https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz>
+- Direct download: <https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip>
 
 **Benefits**:
 
@@ -43,19 +43,24 @@ The offline package is automatically generated and uploaded to multiple location
 
 **Workflow**: `.github/workflows/release-offline-package.yml`
 
-**Trigger**: Version tags (e.g., `v1.0.0`, `v1.1.0`)
+**Trigger**:
+
+- Automatic: Push to version tags (e.g., `v1.0.0`, `v1.1.0`)
+- Manual: `workflow_dispatch` (builds package but skips release creation)
 
 **Process**:
 
 1. Build the offline package
 2. Extract version from package name
-3. Create GitHub Release with tag
+3. Create GitHub Release with tag (only when triggered by version tag)
 4. Attach `.tar.gz` and `.zip` as release assets
 5. Generate release notes with installation instructions
 
+**Note**: Manual workflow runs (`workflow_dispatch`) will build the package successfully but skip release creation. This is useful for testing the build process without creating a release.
+
 **Access**:
 
-- Releases page: https://github.com/aurorae-haven/aurorae-haven/releases
+- Releases page: <https://github.com/aurorae-haven/aurorae-haven/releases>
 
 **Benefits**:
 
@@ -204,7 +209,7 @@ start index.html  # Windows
 
 **Download stable release:**
 
-1. Visit https://github.com/aurorae-haven/aurorae-haven/releases
+1. Visit <https://github.com/aurorae-haven/aurorae-haven/releases>
 2. Click on the latest release
 3. Download the `.tar.gz` file under "Assets"
 4. Download the `.zip` file under "Assets"
@@ -284,6 +289,22 @@ ls -lh dist-offline/
 - Verify `npm run build:offline` works locally
 - Review `scripts/create-offline-package.js` for errors
 
+### Cannot upload assets to immutable release
+
+**Symptom**: "Cannot upload assets to an immutable release" error
+
+**Possible causes**:
+
+- Workflow manually triggered from a branch/tag that already has a release
+- Trying to update an existing release that is immutable
+
+**Solution**:
+
+- The workflow now automatically skips release creation when not triggered by a version tag
+- To create a new release, push a version tag: `git tag v1.0.1 && git push origin v1.0.1`
+- Manual workflow runs (`workflow_dispatch`) will build the package but skip release creation
+- This is expected behavior and not an error
+
 ## Maintenance
 
 ### Updating the workflow
@@ -314,17 +335,17 @@ When modifying the workflows:
 
 **Check upload success**:
 
-- Visit https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases
+- Visit <https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases>
 - Verify package exists and timestamp is recent
 
 **Check releases**:
 
-- Visit https://github.com/aurorae-haven/aurorae-haven/releases
+- Visit <https://github.com/aurorae-haven/aurorae-haven/releases>
 - Verify releases have attached assets
 
 **Check artifacts**:
 
-- Visit https://github.com/aurorae-haven/aurorae-haven/actions
+- Visit <https://github.com/aurorae-haven/aurorae-haven/actions>
 - Click on recent workflow run
 - Verify "offline-package" artifact exists
 
