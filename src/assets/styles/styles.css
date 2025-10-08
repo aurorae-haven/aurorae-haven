@@ -837,6 +837,27 @@ body {
   transform: translateY(-1px);
 }
 
+/* Empty state for routine library */
+.routine-library-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+.routine-library-empty .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+}
+.routine-library-empty .empty-state-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 16px 0 0;
+}
+
 .bottom-split {
   display: grid;
   grid-template-columns: 1fr 1fr;
