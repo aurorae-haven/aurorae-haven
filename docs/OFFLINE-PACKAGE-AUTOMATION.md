@@ -299,7 +299,7 @@ The `offline-releases` branch:
 ### Package Integrity
 
 - Packages include checksums in release notes
-- Users can verify integrity by checking release source
+- Users can verify integrity by downloading the package and comparing its checksum (e.g., SHA256) with the value provided in the release notes. For additional assurance, users may review the workflow logs to confirm the package was built and published by the automated CI/CD process.
 - All build steps are transparent in workflow logs
 
 ## Future Improvements
