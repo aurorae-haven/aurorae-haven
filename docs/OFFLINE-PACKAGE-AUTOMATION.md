@@ -49,7 +49,7 @@ The offline package is automatically generated and uploaded to multiple location
 1. Build the offline package
 2. Extract version from package name
 3. Create GitHub Release with tag
-4. Attach `.tar.gz` as release asset
+4. Attach `.tar.gz` and `.zip` as release assets
 5. Generate release notes with installation instructions
 
 **Access**:
