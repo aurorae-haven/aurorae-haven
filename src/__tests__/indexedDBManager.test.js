@@ -65,7 +65,7 @@ describe('IndexedDBManager', () => {
 
     test('getById retrieves correct item', async () => {
       await put(STORES.TASKS, { id: 1, title: 'Test Task', done: false })
-      
+
       const task = await getById(STORES.TASKS, 1)
       expect(task).toBeDefined()
       expect(task.title).toBe('Test Task')
@@ -91,12 +91,10 @@ describe('IndexedDBManager', () => {
 
   describe('File References (ARC-DAT-02)', () => {
     test('addFileReference creates reference', async () => {
-      const id = await addFileReference(
-        'test.pdf',
-        'dump',
-        123,
-        { size: 1024, type: 'application/pdf' }
-      )
+      const id = await addFileReference('test.pdf', 'dump', 123, {
+        size: 1024,
+        type: 'application/pdf'
+      })
       expect(id).toBeDefined()
 
       const refs = await getAll(STORES.FILE_REFS)
@@ -130,7 +128,7 @@ describe('IndexedDBManager', () => {
   describe('Statistics (ARC-DAT-04)', () => {
     test('saveStats stores statistics', async () => {
       await saveStats('task_completion', { count: 5, percentage: 80 })
-      
+
       const stats = await getAll(STORES.STATS)
       expect(stats).toHaveLength(1)
       expect(stats[0].type).toBe('task_completion')
@@ -151,10 +149,12 @@ describe('IndexedDBManager', () => {
 
     test('getStatsByDateRange filters by date', async () => {
       const today = new Date().toISOString().split('T')[0]
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-      
+      const yesterday = new Date(Date.now() - 86400000)
+        .toISOString()
+        .split('T')[0]
+
       await saveStats('task_completion', { count: 5 })
-      
+
       const stats = await getStatsByDateRange(yesterday, today)
       expect(stats.length).toBeGreaterThan(0)
     })
@@ -174,7 +174,7 @@ describe('IndexedDBManager', () => {
       for (let i = 0; i < 15; i++) {
         await saveBackup({ count: i })
         // Add small delay to ensure different timestamps
-        await new Promise(resolve => setTimeout(resolve, 10))
+        await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
       const recent = await getRecentBackups(5)
@@ -186,7 +186,7 @@ describe('IndexedDBManager', () => {
     test('cleanOldBackups removes old backups', async () => {
       for (let i = 0; i < 15; i++) {
         await saveBackup({ count: i })
-        await new Promise(resolve => setTimeout(resolve, 10))
+        await new Promise((resolve) => setTimeout(resolve, 10))
       }
 
       await cleanOldBackups(5)
@@ -209,7 +209,7 @@ describe('IndexedDBManager', () => {
       localStorage.setItem('aurorae_haven_data', JSON.stringify(mainData))
 
       const report = await migrateFromLocalStorage()
-      
+
       expect(report.success).toBe(true)
       expect(report.migrated.tasks).toBe(1)
       expect(report.migrated.sequences).toBe(1)
@@ -277,7 +277,7 @@ describe('IndexedDBManager', () => {
 
     test('importAllData clears existing data before import', async () => {
       await put(STORES.TASKS, { id: 1, title: 'Old Task' })
-      
+
       const data = {
         version: 1,
         tasks: [{ id: 2, title: 'New Task' }],
@@ -304,9 +304,24 @@ describe('IndexedDBManager', () => {
     })
 
     test('getByIndex retrieves items by index', async () => {
-      await put(STORES.TASKS, { id: 1, title: 'Task 1', status: 'pending', timestamp: 1000 })
-      await put(STORES.TASKS, { id: 2, title: 'Task 2', status: 'done', timestamp: 2000 })
-      await put(STORES.TASKS, { id: 3, title: 'Task 3', status: 'pending', timestamp: 3000 })
+      await put(STORES.TASKS, {
+        id: 1,
+        title: 'Task 1',
+        status: 'pending',
+        timestamp: 1000
+      })
+      await put(STORES.TASKS, {
+        id: 2,
+        title: 'Task 2',
+        status: 'done',
+        timestamp: 2000
+      })
+      await put(STORES.TASKS, {
+        id: 3,
+        title: 'Task 3',
+        status: 'pending',
+        timestamp: 3000
+      })
 
       const pendingTasks = await getByIndex(STORES.TASKS, 'status', 'pending')
       expect(pendingTasks).toHaveLength(2)

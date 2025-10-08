@@ -238,7 +238,12 @@ export async function getByIndex(storeName, indexName, value) {
  * @param {object} metadata
  * @returns {Promise<number>}
  */
-export async function addFileReference(fileName, parentType, parentId, metadata = {}) {
+export async function addFileReference(
+  fileName,
+  parentType,
+  parentId,
+  metadata = {}
+) {
   const fileRef = {
     fileName,
     parentType,
@@ -335,9 +340,7 @@ export async function saveBackup(data) {
  */
 export async function getRecentBackups(limit = 10) {
   const backups = await getAll(STORES.BACKUPS)
-  return backups
-    .sort((a, b) => b.timestamp - a.timestamp)
-    .slice(0, limit)
+  return backups.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit)
 }
 
 /**
@@ -348,7 +351,7 @@ export async function getRecentBackups(limit = 10) {
 export async function cleanOldBackups(keepCount = 10) {
   const backups = await getAll(STORES.BACKUPS)
   const sorted = backups.sort((a, b) => b.timestamp - a.timestamp)
-  
+
   // Delete backups beyond the keep count
   for (let i = keepCount; i < sorted.length; i++) {
     await deleteById(STORES.BACKUPS, sorted[i].id)
@@ -548,10 +551,16 @@ export async function importAllData(data) {
         localStorage.setItem('brainDumpTags', data.brainDump.tags)
       }
       if (data.brainDump.versions) {
-        localStorage.setItem('brainDumpVersions', JSON.stringify(data.brainDump.versions))
+        localStorage.setItem(
+          'brainDumpVersions',
+          JSON.stringify(data.brainDump.versions)
+        )
       }
       if (data.brainDump.entries) {
-        localStorage.setItem('brainDumpEntries', JSON.stringify(data.brainDump.entries))
+        localStorage.setItem(
+          'brainDumpEntries',
+          JSON.stringify(data.brainDump.entries)
+        )
       }
     }
 
@@ -568,5 +577,9 @@ export async function importAllData(data) {
  * @returns {boolean}
  */
 export function isIndexedDBAvailable() {
-  return typeof window !== 'undefined' && 'indexedDB' in window && window.indexedDB !== null
+  return (
+    typeof window !== 'undefined' &&
+    'indexedDB' in window &&
+    window.indexedDB !== null
+  )
 }

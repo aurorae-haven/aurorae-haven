@@ -38,9 +38,15 @@ describe('Tasks Component', () => {
     render(<Tasks />)
     const quadrantHeaders = screen.getAllByText('Urgent & Important')
     expect(quadrantHeaders.length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Not Urgent & Important').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Urgent & Not Important').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Not Urgent & Not Important').length).toBeGreaterThan(0)
+    expect(
+      screen.getAllByText('Not Urgent & Important').length
+    ).toBeGreaterThan(0)
+    expect(
+      screen.getAllByText('Urgent & Not Important').length
+    ).toBeGreaterThan(0)
+    expect(
+      screen.getAllByText('Not Urgent & Not Important').length
+    ).toBeGreaterThan(0)
   })
 
   test('displays quadrant subtitles', () => {
@@ -96,9 +102,7 @@ describe('Tasks Component', () => {
     fireEvent.click(addButton)
 
     await waitFor(() => {
-      const checkbox = screen.getByLabelText(
-        'Mark "Complete me" as complete'
-      )
+      const checkbox = screen.getByLabelText('Mark "Complete me" as complete')
       expect(checkbox).not.toBeChecked()
 
       fireEvent.click(checkbox)
@@ -195,7 +199,7 @@ describe('Tasks Component', () => {
     const mockRevokeObjectURL = jest.fn()
     const originalCreateObjectURL = global.URL.createObjectURL
     const originalRevokeObjectURL = global.URL.revokeObjectURL
-    
+
     global.URL.createObjectURL = mockCreateObjectURL
     global.URL.revokeObjectURL = mockRevokeObjectURL
 
@@ -205,12 +209,15 @@ describe('Tasks Component', () => {
     fireEvent.click(exportButton)
 
     expect(mockCreateObjectURL).toHaveBeenCalled()
-    
+
     // Wait for the async revoke call (setTimeout with 1000ms)
-    await waitFor(() => {
-      expect(mockRevokeObjectURL).toHaveBeenCalled()
-    }, { timeout: 1500 })
-    
+    await waitFor(
+      () => {
+        expect(mockRevokeObjectURL).toHaveBeenCalled()
+      },
+      { timeout: 1500 }
+    )
+
     // Restore originals
     global.URL.createObjectURL = originalCreateObjectURL
     global.URL.revokeObjectURL = originalRevokeObjectURL
@@ -266,7 +273,12 @@ describe('Tasks Component', () => {
 
     const mockTasks = {
       urgent_important: [
-        { id: 1, text: 'Imported task', completed: false, createdAt: Date.now() }
+        {
+          id: 1,
+          text: 'Imported task',
+          completed: false,
+          createdAt: Date.now()
+        }
       ],
       not_urgent_important: [],
       urgent_not_important: [],
@@ -278,13 +290,13 @@ describe('Tasks Component', () => {
     })
 
     const importInput = container.querySelector('input[type="file"]')
-    
+
     // Simulate file selection
     Object.defineProperty(importInput, 'files', {
       value: [file],
       writable: false
     })
-    
+
     fireEvent.change(importInput)
 
     await waitFor(() => {
@@ -320,7 +332,7 @@ describe('Tasks Component', () => {
     await waitFor(() => {
       const editButton = screen.getByLabelText('Edit task "Editable task"')
       fireEvent.click(editButton)
-      
+
       // Should show edit input
       const editInput = screen.getByDisplayValue('Editable task')
       expect(editInput).toBeInTheDocument()
@@ -438,7 +450,7 @@ describe('Tasks Component', () => {
     await waitFor(() => {
       const editButton = screen.getByLabelText('Edit task "Checkbox test"')
       fireEvent.click(editButton)
-      
+
       const checkbox = screen.getByRole('checkbox')
       expect(checkbox).toBeDisabled()
     })
@@ -456,7 +468,7 @@ describe('Tasks Component', () => {
     await waitFor(() => {
       const editButton = screen.getByLabelText('Edit task "Drag test"')
       fireEvent.click(editButton)
-      
+
       const taskItem = container.querySelector('.task-item')
       expect(taskItem).toHaveAttribute('draggable', 'false')
     })
@@ -486,7 +498,7 @@ describe('Tasks Component', () => {
       value: [file],
       writable: false
     })
-    
+
     fireEvent.change(importInput)
 
     await waitFor(() => {
@@ -499,11 +511,11 @@ describe('Tasks Component', () => {
 
     const longTextTask = {
       urgent_important: [
-        { 
-          id: 1, 
+        {
+          id: 1,
           text: 'x'.repeat(1001), // Exceeds 1000 char limit
-          completed: false, 
-          createdAt: Date.now() 
+          completed: false,
+          createdAt: Date.now()
         }
       ],
       not_urgent_important: [],
@@ -520,7 +532,7 @@ describe('Tasks Component', () => {
       value: [file],
       writable: false
     })
-    
+
     fireEvent.change(importInput)
 
     await waitFor(() => {
@@ -549,7 +561,7 @@ describe('Tasks Component', () => {
       value: [file],
       writable: false
     })
-    
+
     fireEvent.change(importInput)
 
     await waitFor(() => {
@@ -575,11 +587,13 @@ describe('Tasks Component', () => {
       value: [file],
       writable: false
     })
-    
+
     fireEvent.change(importInput)
 
     await waitFor(() => {
-      expect(screen.getByText(/Missing required quadrants/i)).toBeInTheDocument()
+      expect(
+        screen.getByText(/Missing required quadrants/i)
+      ).toBeInTheDocument()
     })
   })
 
@@ -597,7 +611,7 @@ describe('Tasks Component', () => {
       value: [file],
       writable: false
     })
-    
+
     fireEvent.change(importInput)
 
     await waitFor(() => {
@@ -623,7 +637,7 @@ describe('Tasks Component', () => {
       value: [file],
       writable: false
     })
-    
+
     fireEvent.change(importInput)
 
     await waitFor(() => {
@@ -646,7 +660,7 @@ describe('Tasks Component', () => {
     const mockRevokeObjectURL = jest.fn()
     const originalCreateObjectURL = global.URL.createObjectURL
     const originalRevokeObjectURL = global.URL.revokeObjectURL
-    
+
     global.URL.createObjectURL = mockCreateObjectURL
     global.URL.revokeObjectURL = mockRevokeObjectURL
 
@@ -671,8 +685,10 @@ describe('Tasks Component', () => {
     fireEvent.click(exportButton)
 
     // Accept both hex UUID format (from crypto.randomUUID/getRandomValues) and base-36 fallback
-    expect(capturedFilename).toMatch(/^tasks_\d{4}-\d{2}-\d{2}_[a-f0-9-]+\.json$|^tasks_\d{4}-\d{2}-\d{2}_[a-z0-9]+\.json$/)
-    
+    expect(capturedFilename).toMatch(
+      /^tasks_\d{4}-\d{2}-\d{2}_[a-f0-9-]+\.json$|^tasks_\d{4}-\d{2}-\d{2}_[a-z0-9]+\.json$/
+    )
+
     // Restore
     global.URL.createObjectURL = originalCreateObjectURL
     global.URL.revokeObjectURL = originalRevokeObjectURL
@@ -692,7 +708,7 @@ describe('Tasks Component', () => {
     await waitFor(() => {
       const taskText = screen.getByText('Double click me')
       fireEvent.doubleClick(taskText)
-      
+
       // Should show edit input
       const editInput = screen.getByDisplayValue('Double click me')
       expect(editInput).toBeInTheDocument()

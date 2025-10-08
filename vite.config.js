@@ -5,7 +5,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   // Load environment variables from .env files
-  const env = loadEnv(mode, process.cwd());
+  const env = loadEnv(mode, process.cwd())
   // Use environment variable or default for GitHub Pages
   const base = env.VITE_BASE_URL || '/aurorae-haven/'
 
@@ -75,20 +75,20 @@ export default defineConfig(({ mode }) => {
               id.includes('node_modules/@fullcalendar/core') ||
               id.includes('node_modules/@fullcalendar/daygrid')
             ) {
-              return 'calendar-vendor';
+              return 'calendar-vendor'
             }
             if (
               id.includes('node_modules/react') ||
               id.includes('node_modules/react-dom') ||
               id.includes('node_modules/react-router-dom')
             ) {
-              return 'react-vendor';
+              return 'react-vendor'
             }
             if (
               id.includes('node_modules/marked') ||
               id.includes('node_modules/dompurify')
             ) {
-              return 'markdown-vendor';
+              return 'markdown-vendor'
             }
           }
         }

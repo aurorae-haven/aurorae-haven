@@ -12,7 +12,7 @@ This document lists all GitHub issues and sub-issues that should be created base
 
 ### Issue #1: TAB-SEC Implementation
 
-**Title**: Implement TAB-SEC: 
+**Title**: Implement TAB-SEC:
 
 **Labels**: `specification`, `tab-sec`, `enhancement`
 
@@ -29,7 +29,7 @@ Implement all specifications for TAB-SEC (42 specifications).
 3. **TAB-SEC-03**: The Strength meter shall classify passphrases as Weak, Medium, Strong based on e...
 4. **TAB-SEC-04**: A Save button shall remain disabled until both fields match and meet minimum str...
 5. **TAB-SEC-05**: Error states (mismatch, weak) shall appear inline with aria-describedby; screen ...
-... and 37 more specifications
+   ... and 37 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -82,7 +82,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #2: TAB-HAB Implementation
 
-**Title**: Implement TAB-HAB: 
+**Title**: Implement TAB-HAB:
 
 **Labels**: `specification`, `tab-hab`, `enhancement`
 
@@ -99,7 +99,7 @@ Implement all specifications for TAB-HAB (52 specifications).
 3. **TAB-HAB-03**: The toolbar shall include: [New Habit], [Filter], [Sort], [Toggle Paused], [Impo...
 4. **TAB-HAB-04**: Filter shall include: Category, Tag, Status (Active/Paused), Has Streak ≥ N days...
 5. **TAB-HAB-05**: Sort shall include: Title, Longest streak, Current streak, Last check-in, Create...
-... and 47 more specifications
+   ... and 47 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -162,7 +162,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #3: TAB-RTN Implementation
 
-**Title**: Implement TAB-RTN: 
+**Title**: Implement TAB-RTN:
 
 **Labels**: `specification`, `tab-rtn`, `enhancement`
 
@@ -179,7 +179,7 @@ Implement all specifications for TAB-RTN (58 specifications).
 3. **TAB-RTN-03**: The “Current Routine” runner shall feature a prominent progress indicator (horiz...
 4. **TAB-RTN-04**: Routine Library entries shall render as cards showing: Title, Tags, Version, Est...
 5. **TAB-RTN-05**: The toolbar shall include: [New Routine], [Import], [Export], [Filter], [Sort], ...
-... and 53 more specifications
+   ... and 53 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -250,7 +250,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #4: TAB-LIB Implementation
 
-**Title**: Implement TAB-LIB: 
+**Title**: Implement TAB-LIB:
 
 **Labels**: `specification`, `tab-lib`, `enhancement`
 
@@ -267,7 +267,7 @@ Implement all specifications for TAB-LIB (39 specifications).
 3. **TAB-LIB-03**: The toolbar shall include: [New Template], [Import], [Export], [Search], [Filter...
 4. **TAB-LIB-04**: “Search” shall filter templates by Title, Tags, Type (Task/Routine)....
 5. **TAB-LIB-05**: “Filter” shall allow filtering by: Type (Task vs Routine), Tag(s), Duration rang...
-... and 34 more specifications
+   ... and 34 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -317,7 +317,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #5: TAB-SCH Implementation
 
-**Title**: Implement TAB-SCH: 
+**Title**: Implement TAB-SCH:
 
 **Labels**: `specification`, `tab-sch`, `enhancement`
 
@@ -334,7 +334,7 @@ Implement all specifications for TAB-SCH (52 specifications).
 3. **TAB-SCH-03**: The calendar grid shall render a left time column and a right slots column; hour...
 4. **TAB-SCH-04**: The visible hour range shall be 06:00–21:00 by default (as in the mock-up), conf...
 5. **TAB-SCH-05**: The grid shall use two columns: .hours { grid-template-columns: 80px 1fr } with ...
-... and 47 more specifications
+   ... and 47 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -397,7 +397,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #6: TAB-STT Implementation
 
-**Title**: Implement TAB-STT: 
+**Title**: Implement TAB-STT:
 
 **Labels**: `specification`, `tab-stt`, `enhancement`
 
@@ -414,7 +414,7 @@ Implement all specifications for TAB-STT (42 specifications).
 3. **TAB-STT-05**: A bar chart shall display weekly task completions per quadrant, stacked or group...
 4. **TAB-STT-06**: Key metrics shall include: Total tasks completed, % per quadrant, Average time t...
 5. **TAB-STT-07**: Filters: Last 7 days, Last 30 days, Custom date range....
-... and 37 more specifications
+   ... and 37 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -469,7 +469,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #7: TAB-SPG Implementation
 
-**Title**: Implement TAB-SPG: 
+**Title**: Implement TAB-SPG:
 
 **Labels**: `specification`, `tab-spg`, `enhancement`
 
@@ -486,7 +486,7 @@ Implement all specifications for TAB-SPG (29 specifications).
 3. **TAB-SPG-03**: Static pages shall use a simple article layout: Title (H1), Section headers (H2)...
 4. **TAB-SPG-04**: A sticky back button [← Back] shall return to the previous screen or Settings ta...
 5. **TAB-SPG-05**: The Privacy Policy page shall include the following sections:...
-... and 24 more specifications
+   ... and 24 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -510,7 +510,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 - [ ] TAB-SPG-16: Reduced motion disables accordion animation on mobile; expands/collaps...
 - [ ] TAB-SPG-17: Layout shall collapse into a single vertical scroll with collapsible s...
 - [ ] TAB-SPG-18: The Back button shall appear sticky at top; bottom navigation hidden w...
-- [ ] TAB-SPG-19: Links open in new tab (target=_blank) with rel="noopener"; external li...
+- [ ] TAB-SPG-19: Links open in new tab (target=\_blank) with rel="noopener"; external li...
 - [ ] TAB-SPG-20: Pages shall use role="document"; each section shall use role="region" ...
 - [ ] TAB-SPG-21: Accordion sections shall expose aria-expanded states and aria-controls...
 - [ ] TAB-SPG-22: Text shall meet WCAG AA minimum font size (≥16px body) and contrast (≥...
@@ -526,7 +526,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #8: TAB-SET Implementation
 
-**Title**: Implement TAB-SET: 
+**Title**: Implement TAB-SET:
 
 **Labels**: `specification`, `tab-set`, `enhancement`
 
@@ -543,7 +543,7 @@ Implement all specifications for TAB-SET (44 specifications).
 3. **TAB-SET-03**: Visual design: frosted glass panels with 14–16px rounded corners, 1px var(--line...
 4. **TAB-SET-04**: General shall include: Language selector, Theme (Light / Dark / Auto), Date/Time...
 5. **TAB-SET-05**: Language selector shall use a dropdown with preview text (“Bonjour / Hello”) for...
-... and 39 more specifications
+   ... and 39 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -598,7 +598,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #9: TAB-POP Implementation
 
-**Title**: Implement TAB-POP: 
+**Title**: Implement TAB-POP:
 
 **Labels**: `specification`, `tab-pop`, `enhancement`
 
@@ -615,7 +615,7 @@ Implement all specifications for TAB-POP (30 specifications).
 3. **TAB-POP-03**: The background behind a dialog shall dim with a semi-transparent overlay (rgba(0...
 4. **TAB-POP-04**: Confirmation dialogs shall be used for destructive actions (Delete, Wipe, Reset)...
 5. **TAB-POP-05**: Input dialogs shall collect small amounts of data (e.g., new passphrase, rename ...
-... and 25 more specifications
+   ... and 25 more specifications
 
 See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
@@ -952,7 +952,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #19: STP-AST Implementation
 
-**Title**: Implement STP-AST: 
+**Title**: Implement STP-AST:
 
 **Labels**: `specification`, `stp-ast`, `enhancement`
 
@@ -982,7 +982,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #20: STP-HDR Implementation
 
-**Title**: Implement STP-HDR: 
+**Title**: Implement STP-HDR:
 
 **Labels**: `specification`, `stp-hdr`, `enhancement`
 
@@ -1010,7 +1010,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #21: STP-IEX Implementation
 
-**Title**: Implement STP-IEX: 
+**Title**: Implement STP-IEX:
 
 **Labels**: `specification`, `stp-iex`, `enhancement`
 
@@ -1040,7 +1040,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #22: STP-IRB Implementation
 
-**Title**: Implement STP-IRB: 
+**Title**: Implement STP-IRB:
 
 **Labels**: `specification`, `stp-irb`, `enhancement`
 
@@ -1066,7 +1066,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #23: STP-SUP Implementation
 
-**Title**: Implement STP-SUP: 
+**Title**: Implement STP-SUP:
 
 **Labels**: `specification`, `stp-sup`, `enhancement`
 
@@ -1094,7 +1094,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #24: STP-SWP Implementation
 
-**Title**: Implement STP-SWP: 
+**Title**: Implement STP-SWP:
 
 **Labels**: `specification`, `stp-swp`, `enhancement`
 
@@ -1122,7 +1122,7 @@ See [COMPLETE_SPECIFICATIONS.md](./COMPLETE_SPECIFICATIONS.md) for full details.
 
 ### Issue #25: STP-UIA Implementation
 
-**Title**: Implement STP-UIA: 
+**Title**: Implement STP-UIA:
 
 **Labels**: `specification`, `stp-uia`, `enhancement`
 
@@ -1175,15 +1175,15 @@ EOF
 
 ## Issue Creation Statistics
 
-| Priority Group | Parent Issues | Total Sub-Issues |
-|----------------|---------------|------------------|
-| Critical (v1.1) | 3 | 152 |
-| High Priority (v1.2) | 3 | 133 |
-| Medium Priority (v1.3) | 3 | 103 |
-| Architecture & Infrastructure | 9 | 38 |
-| Security Testing & Validation | 7 | 22 |
-| **Total** | **25** | **448** |
+| Priority Group                | Parent Issues | Total Sub-Issues |
+| ----------------------------- | ------------- | ---------------- |
+| Critical (v1.1)               | 3             | 152              |
+| High Priority (v1.2)          | 3             | 133              |
+| Medium Priority (v1.3)        | 3             | 103              |
+| Architecture & Infrastructure | 9             | 38               |
+| Security Testing & Validation | 7             | 22               |
+| **Total**                     | **25**        | **448**          |
 
 ---
 
-*Generated from MyStellarTrail_Specs.docx specifications*
+_Generated from MyStellarTrail_Specs.docx specifications_

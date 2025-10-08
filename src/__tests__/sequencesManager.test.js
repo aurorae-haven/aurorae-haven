@@ -56,7 +56,7 @@ describe('Sequences Manager', () => {
 
     test('should return all sequences', async () => {
       await createSequence({ name: 'Sequence 1', steps: [] })
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
       await createSequence({ name: 'Sequence 2', steps: [] })
 
       const sequences = await getSequences()
@@ -178,7 +178,7 @@ describe('Sequences Manager', () => {
         steps: [{ name: 'Step 1', duration: 60 }]
       })
 
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
       const newId = await cloneSequence(id, 'Cloned')
       expect(newId).not.toBe(id)
 

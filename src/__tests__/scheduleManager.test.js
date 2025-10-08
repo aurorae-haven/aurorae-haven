@@ -55,14 +55,14 @@ describe('Schedule Manager', () => {
         startTime: '09:00',
         endTime: '10:00'
       })
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
       await createEvent({
         title: 'Event 2',
         day: '2025-01-15',
         startTime: '14:00',
         endTime: '15:00'
       })
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
       await createEvent({
         title: 'Event 3',
         day: '2025-01-16',
@@ -80,13 +80,29 @@ describe('Schedule Manager', () => {
 
   describe('getEventsForRange', () => {
     test('should get events in date range', async () => {
-      await createEvent({ day: '2025-01-15', startTime: '09:00', endTime: '10:00' })
-      await new Promise(resolve => setTimeout(resolve, 10))
-      await createEvent({ day: '2025-01-16', startTime: '09:00', endTime: '10:00' })
-      await new Promise(resolve => setTimeout(resolve, 10))
-      await createEvent({ day: '2025-01-17', startTime: '09:00', endTime: '10:00' })
-      await new Promise(resolve => setTimeout(resolve, 10))
-      await createEvent({ day: '2025-01-20', startTime: '09:00', endTime: '10:00' })
+      await createEvent({
+        day: '2025-01-15',
+        startTime: '09:00',
+        endTime: '10:00'
+      })
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      await createEvent({
+        day: '2025-01-16',
+        startTime: '09:00',
+        endTime: '10:00'
+      })
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      await createEvent({
+        day: '2025-01-17',
+        startTime: '09:00',
+        endTime: '10:00'
+      })
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      await createEvent({
+        day: '2025-01-20',
+        startTime: '09:00',
+        endTime: '10:00'
+      })
 
       const events = await getEventsForRange('2025-01-15', '2025-01-17')
       expect(events).toHaveLength(3)
@@ -117,13 +133,13 @@ describe('Schedule Manager', () => {
       })
 
       const events = await getEventsForDay('2025-01-15')
-      const event = events.find(e => e.id === id)
+      const event = events.find((e) => e.id === id)
 
       event.title = 'New Title'
       await updateEvent(event)
 
       const updated = await getEventsForDay('2025-01-15')
-      const found = updated.find(e => e.id === id)
+      const found = updated.find((e) => e.id === id)
       expect(found.title).toBe('New Title')
     })
 
@@ -202,7 +218,7 @@ describe('Schedule Manager', () => {
         startTime: '09:00',
         endTime: '10:00'
       })
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
       await createEvent({
         day: '2025-01-15',
         startTime: '14:00',
@@ -211,10 +227,10 @@ describe('Schedule Manager', () => {
 
       const slots = await getAvailableSlots('2025-01-15', 60)
       expect(slots.length).toBeGreaterThan(0)
-      
+
       // Should have slot between events
-      const midDaySlot = slots.find(s => 
-        s.startTime === '10:00' && s.endTime === '14:00'
+      const midDaySlot = slots.find(
+        (s) => s.startTime === '10:00' && s.endTime === '14:00'
       )
       expect(midDaySlot).toBeDefined()
     })
@@ -229,7 +245,7 @@ describe('Schedule Manager', () => {
   describe('getTodaySummary', () => {
     test('should get summary for today', async () => {
       const today = new Date().toISOString().split('T')[0]
-      
+
       await createEvent({
         title: 'Event 1',
         type: 'task',
@@ -237,7 +253,7 @@ describe('Schedule Manager', () => {
         startTime: '09:00',
         endTime: '10:00'
       })
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
       await createEvent({
         title: 'Event 2',
         type: 'meeting',

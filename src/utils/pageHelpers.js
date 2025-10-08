@@ -9,12 +9,12 @@ import { generateSecureUUID } from './uuidGenerator'
     const data = JSON.stringify(await getDataTemplate(), null, 2)
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
-    
+
     // Generate filename: aurorae_YYYY-MM-DD_UUID.json
     const date = new Date().toISOString().split('T')[0]
     const uuid = generateSecureUUID()
     const filename = `aurorae_${date}_${uuid}.json`
-    
+
     const a = document.createElement('a')
     a.href = url
     a.download = filename
@@ -29,7 +29,7 @@ import { generateSecureUUID } from './uuidGenerator'
   async function importJSON(file) {
     try {
       const result = await importData(file)
-      
+
       if (result.success) {
         exported = true // importing counts as having current data saved
         toast('Data imported successfully. Page will reload...')

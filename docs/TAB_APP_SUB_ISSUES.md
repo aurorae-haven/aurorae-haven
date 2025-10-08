@@ -546,7 +546,7 @@ Ensure and verify data persistence indicator specifications for Aurorae Haven ta
 
 ### Using GitHub CLI
 
-```bash
+````bash
 # Example for first sub-issue
 gh issue create \
   --title "1 Navigation Bar (TAB-APP-NAV-01)" \
@@ -615,3 +615,4 @@ Track implementation status in the main TAB_APP_SPECS.md document.
 - [Brain Dump Specifications (TAB-BDP)](./BRAIN_DUMP_SPECS.md)
 - [Tasks Specifications (TAB-TSK)](./TASKS_SPECS.md)
 - [ARC-APP Compliance Report](./ARC-APP-COMPLIANCE.md)
+````

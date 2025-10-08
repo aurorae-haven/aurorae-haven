@@ -31,21 +31,21 @@ The following pages currently exist in `src/pages/`:
 
 ## Feature Mapping: Specifications → Implementation
 
-| Category | Specs | Mapped Page/Component | Implementation Status |
-|----------|-------|----------------------|----------------------|
-| TAB-BDP | 61 | BrainDump | ✅ Implemented |
-| TAB-HAB | 52 | Habits | 🔄 Partial (basic structure exists) |
-| TAB-IEX | 32 | Layout (Export/Import) | ✅ Implemented (in Layout component) |
-| TAB-LIB | 39 | N/A | ❌ Not Implemented (Library/Templates tab missing) |
-| TAB-NAV | 29 | Layout (Navigation) | ✅ Implemented (in Layout component) |
-| TAB-POP | 30 | Various (Modals/Popups) | 🔄 Partial (some popups exist) |
-| TAB-RTN | 58 | Sequences | 🔄 Partial (sequences = routines) |
-| TAB-SCH | 52 | Schedule | 🔄 Partial (basic structure exists) |
-| TAB-SEC | 42 | Settings (Security) | ❌ Not Implemented (security features missing) |
-| TAB-SET | 44 | Settings | 🔄 Partial (basic structure exists) |
-| TAB-SPG | 29 | Home (Static Pages) | 🔄 Partial (Home exists) |
-| TAB-STT | 42 | Stats | 🔄 Partial (basic structure exists) |
-| TAB-TSK | 62 | Tasks | ✅ Implemented |
+| Category | Specs | Mapped Page/Component   | Implementation Status                              |
+| -------- | ----- | ----------------------- | -------------------------------------------------- |
+| TAB-BDP  | 61    | BrainDump               | ✅ Implemented                                     |
+| TAB-HAB  | 52    | Habits                  | 🔄 Partial (basic structure exists)                |
+| TAB-IEX  | 32    | Layout (Export/Import)  | ✅ Implemented (in Layout component)               |
+| TAB-LIB  | 39    | N/A                     | ❌ Not Implemented (Library/Templates tab missing) |
+| TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)               |
+| TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                     |
+| TAB-RTN  | 58    | Sequences               | 🔄 Partial (sequences = routines)                  |
+| TAB-SCH  | 52    | Schedule                | 🔄 Partial (basic structure exists)                |
+| TAB-SEC  | 42    | Settings (Security)     | ❌ Not Implemented (security features missing)     |
+| TAB-SET  | 44    | Settings                | 🔄 Partial (basic structure exists)                |
+| TAB-SPG  | 29    | Home (Static Pages)     | 🔄 Partial (Home exists)                           |
+| TAB-STT  | 42    | Stats                   | 🔄 Partial (basic structure exists)                |
+| TAB-TSK  | 62    | Tasks                   | ✅ Implemented                                     |
 
 ## Implementation Status Details
 
@@ -142,6 +142,7 @@ These features are completely missing from the current implementation:
 **Required**: A new tab for managing task and routine templates
 
 **Missing Features**:
+
 - Template library page
 - Task template management
 - Routine template management
@@ -155,6 +156,7 @@ These features are completely missing from the current implementation:
 **Required**: Comprehensive security features
 
 **Missing Features**:
+
 - Passphrase setup and management
 - Biometric unlock
 - Session auto-lock
@@ -168,51 +170,67 @@ These features are completely missing from the current implementation:
 The following categories have specifications but no implementation:
 
 ### ARC-BCK: Back-end Architecture (5 specifications)
+
 **Description**: Optional back-end for synchronization
 
 ### ARC-FSC: Functional Scope (4 specifications)
+
 **Description**: Overall application scope definition
 
 ### ARC-ONL: Online Mode (5 specifications)
+
 **Description**: Optional cloud synchronization
 
 ### ARC-SEC: Security Architecture (5 specifications)
+
 **Description**: Security architecture patterns
 
 ### NFR-ACC: Non-Functional: Accessibility (5 specifications)
+
 **Description**: Accessibility requirements
 
 ### NFR-PER: Non-Functional: Performance (3 specifications)
+
 **Description**: Performance requirements
 
 ### NFR-SEC: Non-Functional: Security (4 specifications)
+
 **Description**: Security non-functional requirements
 
 ### STP-AST: Security Testing: Audit (4 specifications)
+
 **Description**: Security audit procedures
 
 ### STP-HDR: Security Testing: Headers (3 specifications)
+
 **Description**: HTTP header security testing
 
 ### STP-IEX: Security Testing: Import/Export (4 specifications)
+
 **Description**: Import/export security testing
 
 ### STP-IRB: Security Testing: Recovery (2 specifications)
+
 **Description**: Backup and recovery testing
 
 ### STP-SUP: Security Testing: Supply Chain (3 specifications)
+
 **Description**: Dependency security testing
 
 ### STP-SWP: Security Testing: Service Worker (3 specifications)
+
 **Description**: PWA security testing
 
 ### STP-UIA: Security Testing: UI/Accessibility (3 specifications)
+
 **Description**: UI security testing
 
 ### USR-ENV: User Environment (4 specifications)
+
 **Description**: Supported environments specification
 
 ### USR-PRF: User Profiles (3 specifications)
+
 **Description**: Target user profiles
 
 ## Implementation Priority Recommendations
@@ -270,13 +288,13 @@ The following categories have specifications but no implementation:
 
 ## Summary Statistics
 
-| Status | Categories | Specifications | Percentage |
-|--------|-----------|----------------|------------|
-| ✅ Fully Implemented | 3 | ~180 | 28% |
-| 🔄 Partially Implemented | 7 | ~350 | 55% |
-| ❌ Not Implemented | 2 | ~80 | 13% |
-| 📋 New Categories | 16 | ~30 | 5% |
-| **Total** | **28** | **640** | **100%** |
+| Status                   | Categories | Specifications | Percentage |
+| ------------------------ | ---------- | -------------- | ---------- |
+| ✅ Fully Implemented     | 3          | ~180           | 28%        |
+| 🔄 Partially Implemented | 7          | ~350           | 55%        |
+| ❌ Not Implemented       | 2          | ~80            | 13%        |
+| 📋 New Categories        | 16         | ~30            | 5%         |
+| **Total**                | **28**     | **640**        | **100%**   |
 
 ## Next Steps
 
@@ -289,4 +307,4 @@ The following categories have specifications but no implementation:
 
 ---
 
-*This analysis was generated from MyStellarTrail_Specs.docx and current codebase inspection*
+_This analysis was generated from MyStellarTrail_Specs.docx and current codebase inspection_
