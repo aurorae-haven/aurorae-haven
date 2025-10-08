@@ -204,37 +204,42 @@ function isValidFieldType(value, expectedType) {
 }
 
 /**
- * Reusable function to validate object fields against a configuration
+ * Validate object fields against a configuration object mapping field names to expected types
  * @param {object} obj - Object to validate
- * @param {object|string[]} fieldsConfig - Field configuration (object with types or array of field names)
+ * @param {object} fieldsConfig - Field configuration (object mapping field names to expected types)
  * @param {string} prefix - Prefix for error messages (e.g., 'brainDump.')
- * @param {string} defaultType - Default type if fieldsConfig is an array (default: 'array')
  * @returns {string[]} Array of error messages
  */
-function validateObjectFields(obj, fieldsConfig, prefix = '', defaultType = 'array') {
+function validateObjectFields(obj, fieldsConfig, prefix = '') {
   const errors = []
-  
-  // If fieldsConfig is an array, treat it as field names with defaultType
-  if (Array.isArray(fieldsConfig)) {
-    for (const field of fieldsConfig) {
-      if (obj[field] !== undefined && !isValidFieldType(obj[field], defaultType)) {
-        errors.push(`Invalid type for ${prefix}${field}: expected ${defaultType}`)
-      }
-    }
-  } else {
-    // fieldsConfig is an object mapping field names to expected types
-    for (const [field, expectedType] of Object.entries(fieldsConfig)) {
-      if (
-        obj[field] !== undefined &&
-        !isValidFieldType(obj[field], expectedType)
-      ) {
-        errors.push(
-          `Invalid type for ${prefix}${field}: expected ${expectedType}`
-        )
-      }
+  for (const [field, expectedType] of Object.entries(fieldsConfig)) {
+    if (
+      obj[field] !== undefined &&
+      !isValidFieldType(obj[field], expectedType)
+    ) {
+      errors.push(
+        `Invalid type for ${prefix}${field}: expected ${expectedType}`
+      )
     }
   }
-  
+  return errors
+}
+
+/**
+ * Validate object fields against an array of field names with a single expected type
+ * @param {object} obj - Object to validate
+ * @param {string[]} fieldNames - Array of field names
+ * @param {string} expectedType - Expected type for all fields
+ * @param {string} prefix - Prefix for error messages (optional)
+ * @returns {string[]} Array of error messages
+ */
+function validateArrayFields(obj, fieldNames, expectedType, prefix = '') {
+  const errors = []
+  for (const field of fieldNames) {
+    if (obj[field] !== undefined && !isValidFieldType(obj[field], expectedType)) {
+      errors.push(`Invalid type for ${prefix}${field}: expected ${expectedType}`)
+    }
+  }
   return errors
 }
 
