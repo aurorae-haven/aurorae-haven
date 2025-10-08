@@ -13,6 +13,40 @@ const BACKUP_INTERVAL = 24 * 60 * 60 * 1000 // 24 hours
 const MAX_BACKUPS = 10
 const LAST_BACKUP_KEY = 'aurorae_last_backup'
 
+// Data schema field names - centralized to prevent drift
+const DATA_FIELDS = {
+  TASKS: 'tasks',
+  SEQUENCES: 'sequences',
+  HABITS: 'habits',
+  DUMPS: 'dumps',
+  SCHEDULE: 'schedule'
+}
+
+// Array of all array fields for validation
+const ARRAY_FIELDS = Object.values(DATA_FIELDS)
+
+// Schedule event types - used for type field in schedule blocks
+export const SCHEDULE_EVENT_TYPES = {
+  TASK: 'task',
+  SEQUENCE: 'sequence',
+  BREAK: 'break',
+  MEETING: 'meeting'
+}
+
+// Validation types for field definitions
+const VALIDATION_TYPES = {
+  STRING: 'string',
+  ARRAY: 'array'
+}
+
+// BrainDump field type definitions for validation
+const BRAIN_DUMP_FIELDS = {
+  content: VALIDATION_TYPES.STRING,
+  tags: VALIDATION_TYPES.STRING,
+  versions: VALIDATION_TYPES.ARRAY,
+  entries: VALIDATION_TYPES.ARRAY
+}
+
 /**
  * ARC-DAT-03: Initialize automatic backup system
  * Should be called when the app loads
@@ -169,24 +203,178 @@ export async function getDataTemplate() {
   }
 }
 
+/**
+ * Helper function to validate field type
+ * @param {*} value - Value to validate
+ * @param {string} expectedType - Expected type (VALIDATION_TYPES.STRING or VALIDATION_TYPES.ARRAY)
+ * @returns {boolean} True if valid
+ */
+function isValidFieldType(value, expectedType) {
+  if (expectedType === VALIDATION_TYPES.STRING) {
+    return typeof value === 'string'
+  }
+  if (expectedType === VALIDATION_TYPES.ARRAY) {
+    return Array.isArray(value)
+  }
+  return false
+}
+
+/**
+ * Validate object fields against a configuration object mapping field names to expected types
+ * @param {object} obj - Object to validate
+ * @param {object} fieldsConfig - Field configuration (object mapping field names to expected types)
+ * @param {string} prefix - Prefix for error messages (e.g., 'brainDump.')
+ * @returns {string[]} Array of error messages
+ */
+function validateObjectFields(obj, fieldsConfig, prefix = '') {
+  const errors = []
+  for (const [field, expectedType] of Object.entries(fieldsConfig)) {
+    if (
+      obj[field] !== undefined &&
+      !isValidFieldType(obj[field], expectedType)
+    ) {
+      errors.push(
+        `Invalid type for ${prefix}${field}: expected ${expectedType}`
+      )
+    }
+  }
+  return errors
+}
+
+/**
+ * Validate object fields against an array of field names with a single expected type
+ * @param {object} obj - Object to validate
+ * @param {string[]} fieldNames - Array of field names
+ * @param {string} expectedType - Expected type for all fields
+ * @param {string} prefix - Prefix for error messages (optional)
+ * @returns {string[]} Array of error messages
+ */
+function validateArrayFields(obj, fieldNames, expectedType, prefix = '') {
+  const errors = []
+  for (const field of fieldNames) {
+    if (
+      obj[field] !== undefined &&
+      !isValidFieldType(obj[field], expectedType)
+    ) {
+      errors.push(
+        `Invalid type for ${prefix}${field}: expected ${expectedType}`
+      )
+    }
+  }
+  return errors
+}
+
+/**
+ * Validate export data before serialization
+ * @param {object} data - Data object to validate
+ * @returns {{valid: boolean, errors: string[], stringified: string|null}}
+ */
+function validateExportData(data) {
+  const errors = []
+
+  // Check for required fields
+  if (!data.version) {
+    errors.push('Export data missing version field')
+  }
+
+  // Check for circular references by attempting serialization
+  // Perform pretty-print serialization once - it serves both validation and export
+  let stringified = null
+  if (errors.length === 0) {
+    try {
+      stringified = JSON.stringify(data, null, 2)
+    } catch (error) {
+      console.error('Serialization error in export data:', error)
+      errors.push(
+        'Export data contains circular references or non-serializable values'
+      )
+    }
+  }
+  return {
+    valid: errors.length === 0,
+    errors,
+    stringified
+  }
+}
+
 export async function exportJSON() {
-  const data = JSON.stringify(await getDataTemplate(), null, 2)
-  const blob = new Blob([data], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
+  try {
+    const dataTemplate = await getDataTemplate()
 
-  // Generate filename: aurorae_YYYY-MM-DD_UUID.json
-  const date = new Date().toISOString().split('T')[0]
-  const uuid = generateSecureUUID()
-  const filename = `aurorae_${date}_${uuid}.json`
+    // Validate data before export (includes serialization test)
+    const validation = validateExportData(dataTemplate)
+    if (!validation.valid) {
+      throw new Error(
+        `Export validation failed: ${validation.errors.join(', ')}`
+      )
+    }
 
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
-  return true
+    // Serialize data for export (reuse validation.stringified to avoid redundant serialization)
+    const data =
+      typeof validation.stringified === 'string'
+        ? validation.stringified
+        : JSON.stringify(dataTemplate)
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+
+    // Generate filename: aurorae_YYYY-MM-DD_UUID.json
+    const date = new Date().toISOString().split('T')[0]
+    const uuid = generateSecureUUID()
+    const filename = `aurorae_${date}_${uuid}.json`
+
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    return true
+  } catch (e) {
+    console.error('Export failed:', e)
+    throw new Error('Export failed: ' + e.message)
+  }
+}
+
+/**
+ * @typedef {Object} ValidateImportResult
+ * @property {boolean} valid - Whether the import data is valid
+ * @property {string[]} errors - List of validation error messages
+ */
+/**
+ * Validate import data structure
+ * @param {object} obj - Parsed JSON object
+ * @returns {ValidateImportResult}
+ */
+function validateImportData(obj) {
+  const errors = []
+
+  // Check version
+  if (!obj.version) {
+    errors.push('Missing required field: version')
+  } else if (typeof obj.version !== 'number') {
+    errors.push('Invalid type for version: expected number')
+  }
+
+  // Validate top-level array fields using reusable helper
+  const arrayFieldErrors = validateArrayFields(obj, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY)
+  errors.push(...arrayFieldErrors)
+
+  // Validate brainDump structure if present
+  if (obj.brainDump !== undefined) {
+    if (typeof obj.brainDump !== 'object' || obj.brainDump === null) {
+      errors.push('Invalid type for brainDump: expected object')
+    } else {
+      // Validate brainDump fields using reusable helper
+      const brainDumpErrors = validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.')
+      errors.push(...brainDumpErrors)
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
 }
 
 export async function importJSON(file) {
@@ -195,8 +383,9 @@ export async function importJSON(file) {
     const obj = JSON.parse(text)
 
     // Validate schema
-    if (!obj.version) {
-      throw new Error('Invalid schema: missing version')
+    const validation = validateImportData(obj)
+    if (!validation.valid) {
+      throw new Error('Invalid schema: ' + validation.errors.join(', '))
     }
 
     // ARC-DAT-01: Use IndexedDB if available
@@ -264,7 +453,10 @@ export async function importJSON(file) {
 
     // Import tasks to aurorae_tasks (Eisenhower matrix format)
     if (obj.auroraeTasksData && typeof obj.auroraeTasksData === 'object') {
-      localStorage.setItem('aurorae_tasks', JSON.stringify(obj.auroraeTasksData))
+      localStorage.setItem(
+        'aurorae_tasks',
+        JSON.stringify(obj.auroraeTasksData)
+      )
     }
 
     return { success: true, message: 'Data imported successfully' }

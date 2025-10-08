@@ -1,5 +1,10 @@
 // Tests for data import/export functionality
-import { getDataTemplate, exportJSON, importJSON } from '../utils/dataManager'
+import {
+  getDataTemplate,
+  exportJSON,
+  importJSON,
+  SCHEDULE_EVENT_TYPES
+} from '../utils/dataManager'
 
 describe('Data Manager', () => {
   beforeEach(() => {
@@ -93,7 +98,10 @@ describe('Data Manager', () => {
 
     it('should collect schedule data from localStorage', async () => {
       const schedule = [
-        { day: '2025-01-15', blocks: [{ type: 'task', start: '09:00' }] }
+        {
+          day: '2025-01-15',
+          blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00' }]
+        }
       ]
       localStorage.setItem('sj.schedule.events', JSON.stringify(schedule))
 
@@ -161,6 +169,42 @@ describe('Data Manager', () => {
       expect(mockRemove).toHaveBeenCalled()
       expect(URL.createObjectURL).toHaveBeenCalled()
       expect(URL.revokeObjectURL).toHaveBeenCalled()
+    })
+
+    it('should validate data before export', async () => {
+      // Store some valid data
+      const testData = {
+        version: 1,
+        tasks: [{ id: 1, title: 'Test' }],
+        sequences: [],
+        habits: [],
+        dumps: [],
+        schedule: []
+      }
+      localStorage.setItem('aurorae_haven_data', JSON.stringify(testData))
+
+      const mockAppendChild = jest.fn()
+      const mockRemove = jest.fn()
+      const mockClick = jest.fn()
+
+      document.body.appendChild = mockAppendChild
+      global.document.createElement = jest.fn((tag) => {
+        if (tag === 'a') {
+          return {
+            href: '',
+            download: '',
+            click: mockClick,
+            remove: mockRemove,
+            appendChild: jest.fn(),
+            style: {}
+          }
+        }
+        return {}
+      })
+
+      // Should succeed with valid data
+      const result = await exportJSON()
+      expect(result).toBe(true)
     })
   })
 
@@ -261,7 +305,7 @@ describe('Data Manager', () => {
       const result = await importJSON(mockFile)
 
       expect(result.success).toBe(false)
-      expect(result.message).toContain('missing version')
+      expect(result.message).toContain('Missing required field: version')
     })
 
     it('should use default empty arrays for missing fields', async () => {
@@ -315,7 +359,10 @@ describe('Data Manager', () => {
 
     it('should import schedule data to separate key', async () => {
       const schedule = [
-        { day: '2025-01-15', blocks: [{ type: 'task', start: '09:00' }] }
+        {
+          day: '2025-01-15',
+          blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00' }]
+        }
       ]
       const testData = {
         version: 1,

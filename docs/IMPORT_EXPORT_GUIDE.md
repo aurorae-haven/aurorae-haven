@@ -71,6 +71,14 @@ The export includes:
 }
 ```
 
+### Export Validation
+
+The export process validates data before creating the JSON file:
+
+- ✅ Checks for required `version` field
+- ✅ Validates data is serializable (no circular references)
+- ✅ Ensures all data can be converted to valid JSON format
+
 ## How to Import Data
 
 ### Step-by-Step Instructions
@@ -94,17 +102,26 @@ The export includes:
 The import process validates:
 
 - ✅ Valid JSON format
-- ✅ Required `version` field present
+- ✅ Required `version` field present (must be a number)
 - ✅ Data structure matches expected schema
-- ✅ Arrays are properly formatted (defaults to empty arrays if missing)
+- ✅ Array fields (`tasks`, `sequences`, `habits`, `dumps`, `schedule`) must be arrays if present
+- ✅ `brainDump` object structure validation:
+  - `content` must be a string if present
+  - `tags` must be a string if present
+  - `versions` must be an array if present
+  - `entries` must be an array if present
+- ✅ Defaults to empty arrays for missing optional fields
 
 ### Error Handling
 
 If import fails, you'll see an error message:
 
 - **"Import failed: Unexpected token..."** → File is not valid JSON
-- **"Import failed: Invalid schema: missing version"** → File is missing required version field
-- **"Import failed: [specific error]"** → Check the browser console for details
+- **"Import failed: Invalid schema: Missing required field: version"** → File is missing required version field
+- **"Import failed: Invalid schema: Invalid type for [field]: expected [type]"** → A field has the wrong data type
+  - Example: `tasks` should be an array, not a string or object
+  - Example: `version` should be a number, not a string
+- **"Import failed: [specific error]"** → Check the browser console for detailed error information
 
 ## Best Practices
 
