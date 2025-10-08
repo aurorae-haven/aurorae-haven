@@ -518,6 +518,11 @@ body {
   margin: 0 auto;
   padding: 70px 18px 24px;
 }
+
+/* Expand shell for Brain Dump to utilize more horizontal space on desktop */
+.shell:has(.brain-dump-container) {
+  max-width: 1600px;
+}
 .card {
   background: linear-gradient(180deg, var(--glass-lo), rgba(18, 22, 52, 0.22));
   border: 1px solid var(--line);
@@ -896,6 +901,7 @@ body {
   gap: 14px;
   height: calc(100vh - 120px);
   min-height: 500px;
+  max-width: 100%;
 }
 
 .note-list-sidebar {
@@ -1054,6 +1060,13 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow-y: auto;
+}
+
+#preview {
+  padding: 12px;
+  flex: 1;
+  overflow-y: auto;
 }
 
 .toolbar {
