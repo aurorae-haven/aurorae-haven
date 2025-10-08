@@ -39,3 +39,6 @@ audit-report.txt
 
 # Jupyter Notebook
 .ipynb_checkpoints/
+
+# Tools and binaries
+actionlint
