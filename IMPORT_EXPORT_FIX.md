@@ -54,7 +54,7 @@ Added 6 new test cases:
 
 ## Testing
 
-All tests pass:
+Test results:
 ```
 Test Suites: 16 passed, 16 total
 Tests:       337 passed, 391 total
