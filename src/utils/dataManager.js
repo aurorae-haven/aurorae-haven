@@ -357,7 +357,7 @@ function validateImportData(obj) {
   }
 
   // Validate top-level array fields using reusable helper
-  errors.push(...validateArrayFields(obj, ARRAY_FIELDS, 'array'))
+  errors.push(...validateArrayFields(obj, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY))
 
   // Validate brainDump structure if present
   if (obj.brainDump !== undefined) {
