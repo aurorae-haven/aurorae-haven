@@ -198,6 +198,37 @@ function BrainDump() {
     }
   }, [])
 
+  // Handle keyboard navigation for preview pane
+  const handlePreviewKeyDown = useCallback((e) => {
+    const previewElement = e.currentTarget
+    const scrollAmount = previewElement.clientHeight * 0.8 // 80% of viewport for page up/down
+
+    switch (e.key) {
+      case 'PageDown':
+        e.preventDefault()
+        previewElement.scrollTop += scrollAmount
+        break
+      case 'PageUp':
+        e.preventDefault()
+        previewElement.scrollTop -= scrollAmount
+        break
+      case 'Home':
+        if (e.ctrlKey) {
+          e.preventDefault()
+          previewElement.scrollTop = 0
+        }
+        break
+      case 'End':
+        if (e.ctrlKey) {
+          e.preventDefault()
+          previewElement.scrollTop = previewElement.scrollHeight
+        }
+        break
+      default:
+        break
+    }
+  }, [])
+
   return (
     <div className='brain-dump-container'>
       {/* Note List Sidebar */}
@@ -342,10 +373,16 @@ function BrainDump() {
                 )}
               </div>
               <div className='preview-pane'>
+                {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
                 <div
                   id='preview'
+                  tabIndex={0}
+                  onKeyDown={handlePreviewKeyDown}
+                  role='document'
                   dangerouslySetInnerHTML={{ __html: preview }}
+                  aria-label='Note preview'
                 />
+                {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
               </div>
             </div>
           </div>

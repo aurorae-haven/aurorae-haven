@@ -1061,6 +1061,7 @@ body {
   flex-direction: column;
   min-height: 0;
   overflow-y: auto;
+  position: relative;
 }
 
 #preview {
@@ -1108,8 +1109,9 @@ textarea {
 .resizable-textarea {
   resize: vertical;
   min-height: 200px;
-  max-height: 80vh;
-  flex: 1;
+  max-height: none;
+  height: 100%;
+  overflow-y: auto;
 }
 
 textarea:disabled {
