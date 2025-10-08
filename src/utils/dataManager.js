@@ -367,7 +367,7 @@ function validateImportData(obj) {
     } else {
       // Validate brainDump fields using reusable helper
       const brainDumpErrors = validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.')
-      brainDumpErrors.forEach(error => errors.push(error))
+      errors.push(...brainDumpErrors)
     }
   }
 
