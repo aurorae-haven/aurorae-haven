@@ -175,7 +175,7 @@ jobs:
           fi
 
           # Create README for GitHub display
-          cat > README.md <<'READMEEOF'
+          cat > README.md <<'EOF'
           # 🌌 Aurorae Haven - Offline Packages
 
           Welcome to the offline packages branch! This branch contains the latest offline build of Aurorae Haven.
@@ -227,7 +227,7 @@ jobs:
           ---
 
           **Built with** ❤️ **by the Aurorae Haven team**
-          READMEEOF
+          EOF
 
           # Replace placeholders
           sed -i "s/PACKAGE_NAME_PLACEHOLDER/$PACKAGE_NAME/" README.md
