@@ -121,11 +121,11 @@ describe('Settings Manager', () => {
       for (const key in localStorage) {
         localStorage.removeItem(key)
       }
-      
+
       // Set some non-default values first
       const before = updateSettings({ theme: 'dark', backupEnabled: false })
       expect(before.theme).toBe('dark') // Verify it was set
-      
+
       // Reset should restore defaults
       const reset = resetSettings()
 

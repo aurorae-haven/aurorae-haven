@@ -47,7 +47,7 @@ The navbar is divided into three distinct zones:
 - No export prompts triggered (internal navigation)
 - Accessible via keyboard with proper focus indicator
 - Aria-label: "Return to Tasks"
-- Title: "Stellar-Journey"
+- Title: "Aurorae Haven"
 
 ## Center Zone (Primary Tabs)
 

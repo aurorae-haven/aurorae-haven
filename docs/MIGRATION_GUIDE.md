@@ -7,6 +7,7 @@ Aurorae Haven now uses IndexedDB for data storage, providing better performance,
 ## What's Changing?
 
 ### Before (v0.x)
+
 - Data stored in **localStorage** (multiple keys)
 - Limited to ~5-10 MB storage
 - Synchronous operations (can block UI)
@@ -14,6 +15,7 @@ Aurorae Haven now uses IndexedDB for data storage, providing better performance,
 - Basic export/import
 
 ### After (v1.0+)
+
 - Data stored in **IndexedDB** (structured database)
 - Up to **50 MB+** storage (browser-dependent)
 - Asynchronous operations (no UI blocking)
@@ -32,6 +34,7 @@ The app automatically detects and uses IndexedDB when available. Your existing l
 ### When to Manually Migrate
 
 Consider manual migration if:
+
 - You have a lot of data in localStorage
 - You want to use new IndexedDB features
 - You're experiencing performance issues
@@ -44,15 +47,18 @@ Consider manual migration if:
 **How it works**: The app uses IndexedDB for new data, localStorage for old data
 
 **Advantages**:
+
 - No user action required
 - Zero downtime
 - Safe and gradual
 
 **Disadvantages**:
+
 - Old data stays in localStorage
 - No automatic backups for old data
 
 **Steps**:
+
 1. Update to v1.0+
 2. Continue using the app normally
 3. New data automatically uses IndexedDB
@@ -62,11 +68,13 @@ Consider manual migration if:
 **How it works**: Manually trigger migration to move all data to IndexedDB
 
 **Advantages**:
+
 - All data in one place (IndexedDB)
 - Automatic backups enabled for all data
 - Better performance
 
 **Disadvantages**:
+
 - Requires browser console access
 - One-time manual process
 
@@ -82,14 +90,17 @@ Consider manual migration if:
 #### Step 2: Open Browser Console
 
 **Chrome/Edge/Brave**:
+
 - Press `F12` or `Ctrl+Shift+I` (Windows/Linux)
 - Press `Cmd+Option+I` (Mac)
 
 **Firefox**:
+
 - Press `F12` or `Ctrl+Shift+K` (Windows/Linux)
 - Press `Cmd+Option+K` (Mac)
 
 **Safari**:
+
 - Enable Developer menu: Preferences → Advanced → Show Develop menu
 - Press `Cmd+Option+C`
 
@@ -102,7 +113,7 @@ Copy and paste this code into the console:
 import { migrateFromLocalStorage } from './utils/indexedDBManager.js'
 
 // Run migration
-migrateFromLocalStorage().then(report => {
+migrateFromLocalStorage().then((report) => {
   console.log('Migration Report:', report)
   if (report.success) {
     console.log('✅ Migration successful!')
@@ -117,7 +128,7 @@ migrateFromLocalStorage().then(report => {
 
 ```javascript
 // Access migration via window object
-window.indexedDB.open('aurorae_haven_db', 1).onsuccess = function(event) {
+window.indexedDB.open('aurorae_haven_db', 1).onsuccess = function (event) {
   console.log('✅ IndexedDB is available and ready')
   console.log('Reload the page to complete migration')
   window.location.reload()
@@ -138,27 +149,32 @@ After migration completes:
 **How it works**: Export old data, clear storage, import to new system
 
 **Advantages**:
+
 - Clean slate
 - Guaranteed to use IndexedDB
 - Can skip unwanted old data
 
 **Disadvantages**:
+
 - Requires export/import steps
 - Brief downtime during process
 
 **Steps**:
 
 #### Step 1: Export Existing Data
+
 1. Click **Export** button
 2. Save JSON file
 
 #### Step 2: Clear Browser Data
+
 1. Open browser settings
 2. Navigate to Privacy/Security → Clear browsing data
 3. Select only "Cookies and site data" or "Local storage"
 4. Clear data for `aurorae-haven.github.io`
 
 #### Step 3: Reload and Import
+
 1. Reload Aurorae Haven
 2. Click **Import** button
 3. Select your exported JSON file
@@ -180,6 +196,7 @@ After migration, verify the following:
 ## What Gets Migrated?
 
 ### Automatically Migrated
+
 ✅ Tasks
 ✅ Sequences (routines)
 ✅ Habits
@@ -187,6 +204,7 @@ After migration, verify the following:
 ✅ Schedule events
 
 ### Not Migrated (Remains in localStorage)
+
 📍 Brain dump editor content (active buffer)
 📍 Brain dump tags palette (UI state)
 📍 Brain dump version history
@@ -196,19 +214,20 @@ After migration, verify the following:
 
 ## Storage Comparison
 
-| Feature | localStorage | IndexedDB |
-|---------|--------------|-----------|
-| Size limit | ~5-10 MB | ~50 MB+ |
-| Performance | Synchronous (blocking) | Asynchronous (non-blocking) |
-| Queries | Manual filtering | Indexed queries |
-| Transactions | None | ACID transactions |
-| Backups | Manual export only | Automatic + manual |
-| Offline | Yes | Yes |
-| Browser support | 100% | 97%+ |
+| Feature         | localStorage           | IndexedDB                   |
+| --------------- | ---------------------- | --------------------------- |
+| Size limit      | ~5-10 MB               | ~50 MB+                     |
+| Performance     | Synchronous (blocking) | Asynchronous (non-blocking) |
+| Queries         | Manual filtering       | Indexed queries             |
+| Transactions    | None                   | ACID transactions           |
+| Backups         | Manual export only     | Automatic + manual          |
+| Offline         | Yes                    | Yes                         |
+| Browser support | 100%                   | 97%+                        |
 
 ## Browser Compatibility
 
 ### Supported Browsers
+
 - ✅ Chrome 24+ (2012)
 - ✅ Firefox 16+ (2012)
 - ✅ Safari 10+ (2016)
@@ -216,6 +235,7 @@ After migration, verify the following:
 - ✅ Opera 15+ (2013)
 
 ### Unsupported Browsers
+
 - ❌ Internet Explorer (any version)
 - ❌ Very old mobile browsers
 
@@ -226,12 +246,14 @@ After migration, verify the following:
 ### "Migration failed" Error
 
 **Possible causes**:
+
 1. Browser storage disabled
 2. Private/Incognito mode
 3. Storage quota exceeded
 4. Browser extension blocking
 
 **Solutions**:
+
 1. Try in normal (non-private) browsing mode
 2. Check browser settings allow storage
 3. Clear some browser data to free space
@@ -240,6 +262,7 @@ After migration, verify the following:
 ### Data Missing After Migration
 
 **Solution**:
+
 1. Don't panic! Your export file is your backup
 2. Clear browser data
 3. Use Option 3 (Fresh Start with Import)
@@ -248,11 +271,13 @@ After migration, verify the following:
 ### Migration Hangs or Takes Forever
 
 **Causes**:
+
 - Very large dataset
 - Slow device
 - Browser busy with other tasks
 
 **Solutions**:
+
 1. Close other tabs/apps
 2. Wait 5-10 minutes
 3. If still hanging, force reload and try Option 3
@@ -284,9 +309,10 @@ After migration, verify the following:
 ### How do I check if I'm using IndexedDB?
 
 Open browser console and run:
+
 ```javascript
-indexedDB.databases().then(dbs => {
-  const hasDB = dbs.some(db => db.name === 'aurorae_haven_db')
+indexedDB.databases().then((dbs) => {
+  const hasDB = dbs.some((db) => db.name === 'aurorae_haven_db')
   console.log(hasDB ? '✅ Using IndexedDB' : '❌ Using localStorage')
 })
 ```
@@ -294,6 +320,7 @@ indexedDB.databases().then(dbs => {
 ### Can I migrate on mobile?
 
 **Yes**, but it's harder to access the browser console. Instead:
+
 1. Export data on mobile
 2. Open desktop browser
 3. Import data (will automatically use IndexedDB)
@@ -320,12 +347,14 @@ After migrating to IndexedDB, you should notice:
 ## Data Loss Prevention
 
 ### Best Practices
+
 1. **Export weekly** - Use the export button regularly
 2. **Multiple backups** - Keep exports from different dates
 3. **Cloud storage** - Store exports in Dropbox/Google Drive/etc.
 4. **Test imports** - Occasionally test importing to verify backup integrity
 
 ### Safety Features
+
 - Automatic backups (after migration)
 - Export button always available
 - Import validates data before clearing old data

@@ -37,19 +37,22 @@ export async function initAutoBackup() {
   }
 
   // Schedule next backup check (every hour)
-  setInterval(async () => {
-    const lastBackup = localStorage.getItem(LAST_BACKUP_KEY)
-    const lastBackupTime = lastBackup ? parseInt(lastBackup, 10) : 0
-    const now = Date.now()
+  setInterval(
+    async () => {
+      const lastBackup = localStorage.getItem(LAST_BACKUP_KEY)
+      const lastBackupTime = lastBackup ? parseInt(lastBackup, 10) : 0
+      const now = Date.now()
 
-    if (now - lastBackupTime >= BACKUP_INTERVAL) {
-      try {
-        await performAutoBackup()
-      } catch (e) {
-        console.error('Auto-backup failed:', e)
+      if (now - lastBackupTime >= BACKUP_INTERVAL) {
+        try {
+          await performAutoBackup()
+        } catch (e) {
+          console.error('Auto-backup failed:', e)
+        }
       }
-    }
-  }, 60 * 60 * 1000) // Check every hour
+    },
+    60 * 60 * 1000
+  ) // Check every hour
 }
 
 /**
@@ -92,7 +95,10 @@ export async function getDataTemplate() {
     try {
       return await exportFromIndexedDB()
     } catch (e) {
-      console.warn('Failed to export from IndexedDB, falling back to localStorage:', e)
+      console.warn(
+        'Failed to export from IndexedDB, falling back to localStorage:',
+        e
+      )
     }
   }
 
@@ -157,12 +163,12 @@ export async function exportJSON() {
   const data = JSON.stringify(await getDataTemplate(), null, 2)
   const blob = new Blob([data], { type: 'application/json' })
   const url = URL.createObjectURL(blob)
-  
+
   // Generate filename: aurorae_YYYY-MM-DD_UUID.json
   const date = new Date().toISOString().split('T')[0]
   const uuid = generateSecureUUID()
   const filename = `aurorae_${date}_${uuid}.json`
-  
+
   const a = document.createElement('a')
   a.href = url
   a.download = filename

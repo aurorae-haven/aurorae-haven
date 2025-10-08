@@ -59,14 +59,14 @@ export async function deleteHabit(id) {
 export async function completeHabit(id) {
   // TODO: Implement streak calculation and date tracking
   const habit = await getById(STORES.HABITS, id)
-  
+
   if (!habit) {
     throw new Error('Habit not found')
   }
 
   const today = new Date().toISOString().split('T')[0]
   const lastCompleted = habit.lastCompleted
-  
+
   // Simple streak logic (TODO: enhance with proper date calculations)
   let newStreak = habit.streak || 0
   if (lastCompleted !== today) {
@@ -93,7 +93,7 @@ export async function completeHabit(id) {
 export async function pauseHabit(id, paused) {
   // TODO: Implement pause functionality
   const habit = await getById(STORES.HABITS, id)
-  
+
   if (!habit) {
     throw new Error('Habit not found')
   }
@@ -116,7 +116,7 @@ export async function pauseHabit(id, paused) {
 export async function getHabitStats(id) {
   // TODO: Implement comprehensive statistics
   const habit = await getById(STORES.HABITS, id)
-  
+
   if (!habit) {
     throw new Error('Habit not found')
   }
@@ -127,7 +127,7 @@ export async function getHabitStats(id) {
     streak: habit.streak || 0,
     lastCompleted: habit.lastCompleted,
     paused: habit.paused,
-    createdAt: habit.createdAt,
+    createdAt: habit.createdAt
     // TODO: Add more stats like completion rate, longest streak, etc.
   }
 }

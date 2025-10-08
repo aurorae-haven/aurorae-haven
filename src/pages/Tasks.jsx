@@ -34,7 +34,9 @@ function Tasks() {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
     } catch (e) {
       if (e.name === 'QuotaExceededError') {
-        showError('Storage quota exceeded. Please export your tasks and clear some data.')
+        showError(
+          'Storage quota exceeded. Please export your tasks and clear some data.'
+        )
       } else {
         console.error('Failed to save tasks:', e)
       }
@@ -52,7 +54,6 @@ function Tasks() {
     setErrorMessage(message)
     setTimeout(() => setErrorMessage(''), 5000)
   }
-
 
   const addTask = (e) => {
     e.preventDefault()
@@ -151,12 +152,12 @@ function Tasks() {
       const data = JSON.stringify(tasks, null, 2)
       const blob = new Blob([data], { type: 'application/json' })
       const url = URL.createObjectURL(blob)
-      
+
       // Generate filename: tasks_YYYY-MM-DD_UUID.json
       const date = new Date().toISOString().split('T')[0]
       const uuid = generateSecureUUID()
       const filename = `tasks_${date}_${uuid}.json`
-      
+
       const a = document.createElement('a')
       a.style.display = 'none'
       a.href = url
@@ -180,7 +181,7 @@ function Tasks() {
     reader.onload = (event) => {
       try {
         const imported = JSON.parse(event.target.result)
-        
+
         // Validate imported data structure
         const requiredKeys = [
           'urgent_important',
@@ -188,21 +189,23 @@ function Tasks() {
           'urgent_not_important',
           'not_urgent_not_important'
         ]
-        
+
         // Check if all required quadrant keys exist
         const hasAllKeys = requiredKeys.every((key) => key in imported)
         if (!hasAllKeys) {
           showError('Invalid tasks file: Missing required quadrants.')
           return
         }
-        
+
         // Validate that each quadrant is an array
-        const allArrays = requiredKeys.every((key) => Array.isArray(imported[key]))
+        const allArrays = requiredKeys.every((key) =>
+          Array.isArray(imported[key])
+        )
         if (!allArrays) {
           showError('Invalid tasks file: Quadrants must be arrays.')
           return
         }
-        
+
         // Validate task structure in each quadrant and check for duplicates
         const seenIds = new Set()
         for (const key of requiredKeys) {
@@ -216,14 +219,14 @@ function Tasks() {
               showError('Invalid tasks file: Tasks have incorrect structure.')
               return
             }
-            
+
             // Check for duplicate IDs
             if (seenIds.has(task.id)) {
               showError('Invalid tasks file: Duplicate task IDs found.')
               return
             }
             seenIds.add(task.id)
-            
+
             // Sanitize text to prevent potential XSS (extra safety layer)
             if (task.text.length > 1000) {
               showError('Invalid tasks file: Task text exceeds maximum length.')
@@ -231,7 +234,7 @@ function Tasks() {
             }
           }
         }
-        
+
         setTasks(imported)
       } catch {
         showError('Invalid file format. Please select a valid tasks JSON file.')
@@ -431,9 +434,7 @@ function Tasks() {
                           <>
                             <button
                               className='btn-edit'
-                              onClick={() =>
-                                startEditTask(quadrant.key, task)
-                              }
+                              onClick={() => startEditTask(quadrant.key, task)}
                               aria-label={`Edit task "${task.text}"`}
                             >
                               <svg className='icon' viewBox='0 0 24 24'>
@@ -443,9 +444,7 @@ function Tasks() {
                             </button>
                             <button
                               className='btn-delete'
-                              onClick={() =>
-                                deleteTask(quadrant.key, task.id)
-                              }
+                              onClick={() => deleteTask(quadrant.key, task.id)}
                               aria-label={`Delete task "${task.text}"`}
                             >
                               <svg className='icon' viewBox='0 0 24 24'>

@@ -108,7 +108,7 @@ export async function removeStep(sequenceId, stepId) {
     throw new Error('Sequence not found')
   }
 
-  sequence.steps = sequence.steps.filter(s => s.id !== stepId)
+  sequence.steps = sequence.steps.filter((s) => s.id !== stepId)
   sequence.steps.forEach((step, index) => {
     step.order = index
   })
@@ -133,14 +133,14 @@ export async function reorderStep(sequenceId, stepId, newOrder) {
     throw new Error('Sequence not found')
   }
 
-  const stepIndex = sequence.steps.findIndex(s => s.id === stepId)
+  const stepIndex = sequence.steps.findIndex((s) => s.id === stepId)
   if (stepIndex === -1) {
     throw new Error('Step not found')
   }
 
   const [step] = sequence.steps.splice(stepIndex, 1)
   sequence.steps.splice(newOrder, 0, step)
-  
+
   sequence.steps.forEach((s, index) => {
     s.order = index
   })

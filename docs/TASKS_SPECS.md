@@ -190,14 +190,16 @@ The task data structure includes all fields necessary for gamification:
 const completeTask = (task) => {
   // Visual feedback
   setTaskComplete(task.id)
-  
+
   // Haptic feedback (if supported)
   if ('vibrate' in navigator) {
     navigator.vibrate([50, 100, 50]) // Pattern: short-long-short
   }
-  
+
   // Confetti animation (if motion allowed)
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const prefersReducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)'
+  ).matches
   if (!prefersReducedMotion) {
     showConfetti()
   }
@@ -360,13 +362,13 @@ const [draggedTask, setDraggedTask] = useState(null)
 ```javascript
 test('adds a new task to selected quadrant', async () => {
   render(<Tasks />)
-  
+
   const input = screen.getByPlaceholderText('Add a new task...')
   const addButton = screen.getByText('Add')
-  
+
   fireEvent.change(input, { target: { value: 'Test task' } })
   fireEvent.click(addButton)
-  
+
   await waitFor(() => {
     expect(screen.getByText('Test task')).toBeInTheDocument()
   })
@@ -501,6 +503,7 @@ test('adds a new task to selected quadrant', async () => {
 **Why**: The `autoFocus` attribute can be disorienting for screen reader users as it immediately moves focus without proper announcement of state changes.
 
 **Solution**:
+
 ```javascript
 const editInputRef = useRef(null)
 
@@ -512,6 +515,7 @@ useEffect(() => {
 ```
 
 **Benefits**:
+
 - Proper announcement of state changes to screen readers
 - More predictable focus behavior
 - Better UX for keyboard-only users
@@ -524,20 +528,24 @@ useEffect(() => {
 **Why**: `alert()` popups are not accessible, block interaction, and provide poor UX.
 
 **Solution**:
+
 ```jsx
-{errorMessage && (
-  <div
-    className='error-notification'
-    role='alert'
-    aria-live='assertive'
-    aria-atomic='true'
-  >
-    {errorMessage}
-  </div>
-)}
+{
+  errorMessage && (
+    <div
+      className='error-notification'
+      role='alert'
+      aria-live='assertive'
+      aria-atomic='true'
+    >
+      {errorMessage}
+    </div>
+  )
+}
 ```
 
 **Benefits**:
+
 - Screen reader compatible
 - Non-blocking visual feedback
 - Dismisses automatically after 5 seconds
@@ -570,32 +578,34 @@ export function generateSecureUUID() {
   if (window.crypto && window.crypto.randomUUID) {
     return window.crypto.randomUUID()
   }
-  
+
   // Secure fallback using crypto.getRandomValues
   if (window.crypto && window.crypto.getRandomValues) {
     const bytes = new Uint8Array(16)
     window.crypto.getRandomValues(bytes)
-    
+
     // Set version (4) and variant bits per RFC 4122
     bytes[6] = (bytes[6] & 0x0f) | 0x40
     bytes[8] = (bytes[8] & 0x3f) | 0x80
-    
+
     // Format as UUID: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
     return formatAsUUID(bytes)
   }
-  
+
   // Last resort fallback (should never happen)
   return Date.now().toString(36) + Math.random().toString(36).substring(2)
 }
 ```
 
 **Applied To**:
+
 - Tasks export (`src/pages/Tasks.jsx`)
 - Brain Dump export (`src/pages/BrainDump.jsx`)
 - Global data export (`src/utils/pageHelpers.js`)
 - Data manager export (`src/utils/dataManager.js`)
 
 **Benefits**:
+
 - Cryptographically secure random values
 - RFC 4122 compliant UUID v4
 - Single source of truth
@@ -603,7 +613,8 @@ export function generateSecureUUID() {
 
 ### Duplicate ID Prevention
 
-**Implementation**: 
+**Implementation**:
+
 1. Generate unique task IDs using `Date.now() + Math.random()`
 2. Validate imported data for duplicate IDs
 
@@ -622,6 +633,7 @@ for (const key of requiredKeys) {
 ```
 
 **Benefits**:
+
 - Prevents data corruption
 - Ensures task uniqueness
 - Validates imported data integrity
@@ -629,6 +641,7 @@ for (const key of requiredKeys) {
 ### Input Validation
 
 **Implemented Checks**:
+
 - Required quadrant keys exist
 - Quadrants are arrays
 - Task structure validation (id, text, completed, createdAt)
@@ -636,6 +649,7 @@ for (const key of requiredKeys) {
 - Duplicate ID detection
 
 **Error Messages**:
+
 - "Invalid tasks file: Missing required quadrants."
 - "Invalid tasks file: Quadrants must be arrays."
 - "Invalid tasks file: Tasks have incorrect structure."
@@ -651,17 +665,20 @@ for (const key of requiredKeys) {
 **Problem**: UUID generation code was duplicated in 4 files.
 
 **Before**:
+
 - `src/pages/Tasks.jsx` (~25 lines)
 - `src/pages/BrainDump.jsx` (~28 lines)
 - `src/utils/pageHelpers.js` (~16 lines)
 - `src/utils/dataManager.js` (~7 lines)
 
 **After**:
+
 - `src/utils/uuidGenerator.js` (1 centralized utility)
 
 **Savings**: ~76 lines of duplicate code removed
 
 **Benefits**:
+
 - Single source of truth
 - Easier maintenance
 - Consistent security implementation
@@ -681,6 +698,7 @@ const showError = (message) => {
 ```
 
 **Benefits**:
+
 - Consistent UX
 - Accessibility compliance
 - Easier to maintain
@@ -695,6 +713,7 @@ const showError = (message) => {
 **Problem**: Previous implementation used `auto-fit` which caused layout to collapse when adding edit buttons.
 
 **Before**:
+
 ```css
 .eisenhower-matrix {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -703,6 +722,7 @@ const showError = (message) => {
 ```
 
 **After**:
+
 ```css
 .eisenhower-matrix {
   grid-template-columns: repeat(2, 1fr);
@@ -711,12 +731,14 @@ const showError = (message) => {
 ```
 
 **Benefits**:
+
 - Consistent 2×2 layout on desktop/tablet
 - Standard Eisenhower matrix format
 - No layout shifts when adding/removing tasks
 - Proper responsive behavior maintained
 
 **Responsive Behavior**:
+
 ```css
 /* Mobile - Single column */
 @media (max-width: 768px) {

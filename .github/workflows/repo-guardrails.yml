@@ -74,7 +74,7 @@ jobs:
     name: Lint auto-detect
     runs-on: ubuntu-latest
     needs: [detect]
-    if: false  # Temporarily disabled - will be re-enabled later
+    if: false # Temporarily disabled - will be re-enabled later
     steps:
       - uses: actions/checkout@v4
         with:
@@ -114,7 +114,6 @@ jobs:
 
       - name: Prettier (check only)
         run: npx prettier --check .
-
 
   gitleaks:
     name: Secrets scan (CLI)
@@ -166,7 +165,15 @@ jobs:
   summary:
     name: Node sec and test summary
     runs-on: ubuntu-latest
-    needs: [ detect, meta-checks, markdown-links, super-linter, gitleaks, node-security ]
+    needs:
+      [
+        detect,
+        meta-checks,
+        markdown-links,
+        super-linter,
+        gitleaks,
+        node-security
+      ]
     if: always()
     steps:
       - name: Show job outcomes
