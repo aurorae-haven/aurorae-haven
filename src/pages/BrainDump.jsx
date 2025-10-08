@@ -11,6 +11,19 @@ import {
   extractTitleFromFilename
 } from '../utils/fileHelpers'
 
+// Configure marked once at module level to avoid reconfiguration on re-renders
+marked.use(
+  markedKatex({
+    throwOnError: false,
+    displayMode: false
+  })
+)
+
+marked.setOptions({
+  breaks: true,
+  gfm: true
+})
+
 function BrainDump() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
@@ -20,23 +33,10 @@ function BrainDump() {
   const [showNoteList, setShowNoteList] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const editorRef = useRef(null)
+  const previewRef = useRef(null)
 
-  // Configure marked and sanitization on mount
+  // Configure sanitization on mount
   useEffect(() => {
-    // Configure KaTeX extension for LaTeX support
-    marked.use(
-      markedKatex({
-        throwOnError: false,
-        displayMode: false
-      })
-    )
-    
-    // Configure marked to allow images
-    marked.setOptions({
-      breaks: true,
-      gfm: true
-    })
-    
     configureSanitization(DOMPurify)
   }, [])
 
@@ -430,17 +430,15 @@ function BrainDump() {
                   </span>
                 )}
               </div>
-              <div className='preview-pane'>
-                {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
-                <div
-                  id='preview'
-                  tabIndex={0}
-                  onKeyDown={handlePreviewKeyDown}
-                  role='document'
-                  dangerouslySetInnerHTML={{ __html: preview }}
-                  aria-label='Note preview'
-                />
-                {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
+              <div
+                className='preview-pane'
+                ref={previewRef}
+                tabIndex={0}
+                onKeyDown={handlePreviewKeyDown}
+                role='region'
+                aria-label='Note preview'
+              >
+                <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
               </div>
             </div>
           </div>

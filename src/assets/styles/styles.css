@@ -1097,8 +1097,7 @@ body {
   height: 100%;
 }
 
-.editor-pane,
-.preview-pane {
+.editor-pane {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -1106,10 +1105,23 @@ body {
   position: relative;
 }
 
-#preview {
-  padding: 12px;
-  flex: 1;
+.preview-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   overflow-y: auto;
+  position: relative;
+  padding: 12px;
+}
+
+.preview-pane:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: -3px;
+}
+
+#preview {
+  flex: 1;
+  min-height: 0;
 }
 
 #preview a {
