@@ -23,6 +23,8 @@ node_modules/
 # Build output
 dist/
 build/
+dist-offline/
+dist-offline-build/
 
 # Environment variables (keep .env and .env.production, ignore local overrides)
 .env.local

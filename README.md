@@ -84,6 +84,29 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 
 **Benefits**: Works offline, faster loading, native app experience
 
+### Offline Download Package
+
+**Download the full website for offline use without build tools!**
+
+1. Go to the [GitHub Actions page](https://github.com/aurorae-haven/aurorae-haven/actions/workflows/upload-pages-artifact.yml)
+2. Click on the latest successful workflow run
+3. Scroll down to "Artifacts" section
+4. Download `offline-package`
+5. Extract the `.tar.gz` file:
+
+   ```bash
+   tar -xzf aurorae-haven-offline-*.tar.gz
+   ```
+
+6. Double-click `index.html` to open in your browser - no server needed!
+
+   ```bash
+   # Optional: Serve with a local server for PWA installation
+   python3 -m http.server 8000
+   ```
+
+**What's included**: Complete static website with all assets, service worker, and PWA manifest. Built with relative paths so it works directly from your file system!
+
 ### Development Setup
 
 - **Dependencies**:
