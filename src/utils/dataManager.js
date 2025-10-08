@@ -312,8 +312,8 @@ export async function exportJSON() {
       )
     }
 
-    // Serialize data for export (independent of validation formatting)
-    const data = JSON.stringify(dataTemplate, null, 2) // Use pretty-printing for export; change as needed
+    // Serialize data for export (reuse validation.stringified to avoid redundant serialization)
+    const data = validation.stringified // Already serialized during validation
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
 
