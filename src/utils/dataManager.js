@@ -23,13 +23,7 @@ const DATA_FIELDS = {
 }
 
 // Array of all array fields for validation
-const ARRAY_FIELDS = [
-  DATA_FIELDS.TASKS,
-  DATA_FIELDS.SEQUENCES,
-  DATA_FIELDS.HABITS,
-  DATA_FIELDS.DUMPS,
-  DATA_FIELDS.SCHEDULE
-]
+const ARRAY_FIELDS = Object.values(DATA_FIELDS)
 
 // Schedule event types - used for type field in schedule blocks
 export const SCHEDULE_EVENT_TYPES = {
