@@ -36,6 +36,10 @@ jobs:
           PACKAGE_FILE=$(find dist-offline -name "*.tar.gz" -type f | head -1)
           PACKAGE_NAME=$(basename "$PACKAGE_FILE")
           VERSION=$(echo "$PACKAGE_NAME" | sed -n 's/.*-v\(.*\)\.tar\.gz/\1/p')
+          if [ -z "$VERSION" ]; then
+            echo "ERROR: Failed to extract version from package name '$PACKAGE_NAME'."
+            exit 1
+          fi
           
           {
             echo "file=$PACKAGE_FILE"
