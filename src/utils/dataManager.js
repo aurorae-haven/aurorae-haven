@@ -180,9 +180,14 @@ export async function exportJSON() {
 }
 
 /**
+ * @typedef {Object} ValidateImportResult
+ * @property {boolean} valid - Whether the import data is valid
+ * @property {string[]} errors - List of validation error messages
+ */
+/**
  * Validate import data structure
  * @param {object} obj - Parsed JSON object
- * @returns {{valid: boolean, errors: string[]}}
+ * @returns {ValidateImportResult}
  */
 function validateImportData(obj) {
   const errors = []
