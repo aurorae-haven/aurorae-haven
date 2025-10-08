@@ -163,7 +163,9 @@ jobs:
           
           # Create or checkout offline-releases branch
           git fetch origin offline-releases:offline-releases 2>/dev/null || git checkout --orphan offline-releases
-          git checkout offline-releases 2>/dev/null || true
+          if ! git checkout offline-releases 2>/dev/null; then
+            echo "⚠️ Warning: Failed to checkout offline-releases branch. Continuing..."
+          fi
           
           # Clean the branch (keep only offline packages)
           git rm -rf . 2>/dev/null || true
