@@ -1,9 +1,9 @@
 # Aurorae Haven - Complete Specifications
 
-This document contains all specifications extracted from the MyStellarTrail_Specs.docx file.
+This document contains all specifications extracted from the AuroraeHaven_Specs.docx file.
 
 **Generated**: 2025-10-08
-**Source**: docs/MyStellarTrail_Specs.docx
+**Source**: docs/AuroraeHaven_Specs.docx
 **Total Specifications**: 640
 **Categories**: 31
 
@@ -1585,7 +1585,7 @@ _Section_: Tab Appearance
 
 #### TAB-NAV-04
 
-**Requirement**: The left zone shall display the app logo (icon or wordmark “Stellar-Journey”), aligned left with padding 12–16px.
+**Requirement**: The left zone shall display the app logo (icon or wordmark “Aurorae Haven”), aligned left with padding 12–16px.
 
 _Section_: Tab Appearance
 
@@ -4167,4 +4167,4 @@ _Section_: Security Test Plan — Detailed
 
 ---
 
-This document was automatically generated from MyStellarTrail_Specs.docx
+This document was automatically generated from AuroraeHaven_Specs.docx

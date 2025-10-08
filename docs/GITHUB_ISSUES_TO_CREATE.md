@@ -1,6 +1,6 @@
 # GitHub Issues to Create
 
-This document lists all GitHub issues and sub-issues that should be created based on the MyStellarTrail specifications.
+This document lists all GitHub issues and sub-issues that should be created based on the Aurorae Haven specifications.
 
 **Generated**: 2025-10-08
 **Total Parent Issues**: 27
@@ -1186,4 +1186,4 @@ EOF
 
 ---
 
-_Generated from MyStellarTrail_Specs.docx specifications_
+_Generated from AuroraeHaven_Specs.docx specifications_
