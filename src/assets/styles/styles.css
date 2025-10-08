@@ -949,6 +949,41 @@ body {
   color: var(--ink);
 }
 
+.note-search {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.note-search-input {
+  width: 100%;
+  padding: 8px 32px 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(10, 14, 38, 0.5);
+  color: var(--ink);
+  font-size: 14px;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.note-search-input:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+  border-color: var(--mint);
+}
+
+.note-search-input::placeholder {
+  color: var(--dim);
+}
+
+.note-search-clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px;
+  min-width: auto;
+}
+
 .note-list {
   flex: 1;
   overflow-y: auto;
@@ -1113,8 +1148,9 @@ textarea {
 }
 
 .resizable-textarea {
-  resize: vertical;
+  resize: both;
   min-height: 200px;
+  min-width: 200px;
   max-height: none;
   height: 100%;
   overflow-y: auto;

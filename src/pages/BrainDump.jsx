@@ -16,6 +16,7 @@ function BrainDump() {
   const [content, setContent] = useState('')
   const [preview, setPreview] = useState('')
   const [showNoteList, setShowNoteList] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
   const editorRef = useRef(null)
 
   // Configure enhanced sanitization on mount
@@ -229,6 +230,15 @@ function BrainDump() {
     }
   }, [])
 
+  // Filter notes based on search query
+  const filteredNotes = notes.filter((note) => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase()
+    const titleMatch = (note.title || '').toLowerCase().includes(query)
+    const contentMatch = (note.content || '').toLowerCase().includes(query)
+    return titleMatch || contentMatch
+  })
+
   return (
     <div className='brain-dump-container'>
       {/* Note List Sidebar */}
@@ -249,8 +259,31 @@ function BrainDump() {
             </svg>
           </button>
         </div>
+        <div className='note-search'>
+          <input
+            type='text'
+            className='note-search-input'
+            placeholder='Search notes...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label='Search notes'
+          />
+          {searchQuery && (
+            <button
+              className='btn btn-icon note-search-clear'
+              onClick={() => setSearchQuery('')}
+              aria-label='Clear search'
+              title='Clear search'
+            >
+              <svg className='icon' viewBox='0 0 24 24'>
+                <line x1='18' y1='6' x2='6' y2='18' />
+                <line x1='6' y1='6' x2='18' y2='18' />
+              </svg>
+            </button>
+          )}
+        </div>
         <div className='note-list'>
-          {notes.map((note) => (
+          {filteredNotes.map((note) => (
             <div
               key={note.id}
               className={`note-item ${note.id === currentNoteId ? 'active' : ''}`}
@@ -264,12 +297,19 @@ function BrainDump() {
                 }
               }}
             >
-              <div className='note-item-title'>{note.title || 'Untitled'}</div>
+              <div className='note-item-title' title={note.title || 'Untitled'}>
+                {note.title || 'Untitled'}
+              </div>
               <div className='note-item-date'>
                 {new Date(note.updatedAt).toLocaleDateString()}
               </div>
             </div>
           ))}
+          {filteredNotes.length === 0 && notes.length > 0 && (
+            <div className='note-list-empty'>
+              No notes found matching &quot;{searchQuery}&quot;
+            </div>
+          )}
           {notes.length === 0 && (
             <div className='note-list-empty'>
               No notes yet. Click + to create one.
