@@ -204,6 +204,41 @@ function isValidFieldType(value, expectedType) {
 }
 
 /**
+ * Reusable function to validate object fields against a configuration
+ * @param {object} obj - Object to validate
+ * @param {object|string[]} fieldsConfig - Field configuration (object with types or array of field names)
+ * @param {string} prefix - Prefix for error messages (e.g., 'brainDump.')
+ * @param {string} defaultType - Default type if fieldsConfig is an array (default: 'array')
+ * @returns {string[]} Array of error messages
+ */
+function validateObjectFields(obj, fieldsConfig, prefix = '', defaultType = 'array') {
+  const errors = []
+  
+  // If fieldsConfig is an array, treat it as field names with defaultType
+  if (Array.isArray(fieldsConfig)) {
+    for (const field of fieldsConfig) {
+      if (obj[field] !== undefined && !isValidFieldType(obj[field], defaultType)) {
+        errors.push(`Invalid type for ${prefix}${field}: expected ${defaultType}`)
+      }
+    }
+  } else {
+    // fieldsConfig is an object mapping field names to expected types
+    for (const [field, expectedType] of Object.entries(fieldsConfig)) {
+      if (
+        obj[field] !== undefined &&
+        !isValidFieldType(obj[field], expectedType)
+      ) {
+        errors.push(
+          `Invalid type for ${prefix}${field}: expected ${expectedType}`
+        )
+      }
+    }
+  }
+  
+  return errors
+}
+
+/**
  * Validate export data before serialization
  * @param {object} data - Data object to validate
  * @returns {{valid: boolean, errors: string[], stringified: string|null}}
@@ -287,29 +322,16 @@ function validateImportData(obj) {
     errors.push('Invalid type for version: expected number')
   }
 
-  // Validate that if fields exist, they're the correct type
-  for (const field of ARRAY_FIELDS) {
-    if (obj[field] !== undefined && !Array.isArray(obj[field])) {
-      errors.push(`Invalid type for ${field}: expected array`)
-    }
-  }
+  // Validate top-level array fields using reusable helper
+  errors.push(...validateObjectFields(obj, ARRAY_FIELDS, '', 'array'))
 
   // Validate brainDump structure if present
   if (obj.brainDump !== undefined) {
     if (typeof obj.brainDump !== 'object' || obj.brainDump === null) {
       errors.push('Invalid type for brainDump: expected object')
     } else {
-      // Validate brainDump fields using configuration
-      for (const [field, expectedType] of Object.entries(BRAIN_DUMP_FIELDS)) {
-        if (
-          obj.brainDump[field] !== undefined &&
-          !isValidFieldType(obj.brainDump[field], expectedType)
-        ) {
-          errors.push(
-            `Invalid type for brainDump.${field}: expected ${expectedType}`
-          )
-        }
-      }
+      // Validate brainDump fields using reusable helper
+      errors.push(...validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.'))
     }
   }
 
