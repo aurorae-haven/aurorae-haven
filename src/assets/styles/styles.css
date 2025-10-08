@@ -944,6 +944,12 @@ body {
   color: var(--ink);
 }
 
+.note-list-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .note-search {
   position: relative;
   margin-bottom: 12px;
@@ -1165,7 +1171,7 @@ textarea {
   min-height: 200px;
   min-width: 200px;
   max-height: none;
-  /* min-height: 100%; -- removed conflicting declaration */
+  height: 100%;
   overflow-y: auto;
 }
 
