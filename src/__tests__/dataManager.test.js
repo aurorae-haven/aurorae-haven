@@ -1,5 +1,10 @@
 // Tests for data import/export functionality
-import { getDataTemplate, exportJSON, importJSON } from '../utils/dataManager'
+import {
+  getDataTemplate,
+  exportJSON,
+  importJSON,
+  SCHEDULE_EVENT_TYPES
+} from '../utils/dataManager'
 
 describe('Data Manager', () => {
   beforeEach(() => {
@@ -93,7 +98,10 @@ describe('Data Manager', () => {
 
     it('should collect schedule data from localStorage', async () => {
       const schedule = [
-        { day: '2025-01-15', blocks: [{ type: 'task', start: '09:00' }] }
+        {
+          day: '2025-01-15',
+          blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00' }]
+        }
       ]
       localStorage.setItem('sj.schedule.events', JSON.stringify(schedule))
 
@@ -321,7 +329,10 @@ describe('Data Manager', () => {
 
     it('should import schedule data to separate key', async () => {
       const schedule = [
-        { day: '2025-01-15', blocks: [{ type: 'task', start: '09:00' }] }
+        {
+          day: '2025-01-15',
+          blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00' }]
+        }
       ]
       const testData = {
         version: 1,
@@ -351,7 +362,10 @@ describe('Data Manager', () => {
         habits: [{ id: 'hab_1', name: 'Exercise', streak: 5 }],
         dumps: [{ id: 'dump_1', text: 'Note' }],
         schedule: [
-          { day: '2025-01-15', blocks: [{ type: 'task', start: '09:00' }] }
+          {
+            day: '2025-01-15',
+            blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00' }]
+          }
         ],
         brainDump: {
           content: '# Brain Dump Content',

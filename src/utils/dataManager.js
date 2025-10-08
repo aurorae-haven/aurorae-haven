@@ -13,6 +13,32 @@ const BACKUP_INTERVAL = 24 * 60 * 60 * 1000 // 24 hours
 const MAX_BACKUPS = 10
 const LAST_BACKUP_KEY = 'aurorae_last_backup'
 
+// Data schema field names - centralized to prevent drift
+const DATA_FIELDS = {
+  TASKS: 'tasks',
+  SEQUENCES: 'sequences',
+  HABITS: 'habits',
+  DUMPS: 'dumps',
+  SCHEDULE: 'schedule'
+}
+
+// Array of all array fields for validation
+const ARRAY_FIELDS = [
+  DATA_FIELDS.TASKS,
+  DATA_FIELDS.SEQUENCES,
+  DATA_FIELDS.HABITS,
+  DATA_FIELDS.DUMPS,
+  DATA_FIELDS.SCHEDULE
+]
+
+// Schedule event types - used for type field in schedule blocks
+export const SCHEDULE_EVENT_TYPES = {
+  TASK: 'task',
+  SEQUENCE: 'sequence',
+  BREAK: 'break',
+  MEETING: 'meeting'
+}
+
 /**
  * ARC-DAT-03: Initialize automatic backup system
  * Should be called when the app loads
@@ -239,8 +265,7 @@ function validateImportData(obj) {
   }
 
   // Validate that if fields exist, they're the correct type
-  const arrayFields = ['tasks', 'sequences', 'habits', 'dumps', 'schedule']
-  arrayFields.forEach((field) => {
+  ARRAY_FIELDS.forEach((field) => {
     if (obj[field] !== undefined && !Array.isArray(obj[field])) {
       errors.push(`Invalid type for ${field}: expected array`)
     }
