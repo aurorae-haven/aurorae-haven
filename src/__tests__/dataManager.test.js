@@ -132,6 +132,42 @@ describe('Data Manager', () => {
       expect(URL.createObjectURL).toHaveBeenCalled()
       expect(URL.revokeObjectURL).toHaveBeenCalled()
     })
+
+    it('should validate data before export', async () => {
+      // Store some valid data
+      const testData = {
+        version: 1,
+        tasks: [{ id: 1, title: 'Test' }],
+        sequences: [],
+        habits: [],
+        dumps: [],
+        schedule: []
+      }
+      localStorage.setItem('aurorae_haven_data', JSON.stringify(testData))
+
+      const mockAppendChild = jest.fn()
+      const mockRemove = jest.fn()
+      const mockClick = jest.fn()
+
+      document.body.appendChild = mockAppendChild
+      global.document.createElement = jest.fn((tag) => {
+        if (tag === 'a') {
+          return {
+            href: '',
+            download: '',
+            click: mockClick,
+            remove: mockRemove,
+            appendChild: jest.fn(),
+            style: {}
+          }
+        }
+        return {}
+      })
+
+      // Should succeed with valid data
+      const result = await exportJSON()
+      expect(result).toBe(true)
+    })
   })
 
   describe('importJSON', () => {

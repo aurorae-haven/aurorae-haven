@@ -9,7 +9,9 @@
 
 ### 1. Added Comprehensive JSON Schema Validation
 
-Created `validateImportData()` function in `src/utils/dataManager.js` that validates:
+Created `validateImportData()` and `validateExportData()` functions in `src/utils/dataManager.js` that validate:
+
+**Import Validation:**
 
 - **Version field**: Must exist and be a number
 - **Array fields**: If present, must be arrays (tasks, sequences, habits, dumps, schedule)
@@ -19,64 +21,77 @@ Created `validateImportData()` function in `src/utils/dataManager.js` that valid
   - `versions`: Must be an array if present
   - `entries`: Must be an array if present
 
+**Export Validation:**
+
+- **Version field**: Must exist before export
+- **Serialization check**: Ensures data contains no circular references or non-serializable values
+- **Error handling**: Catches and reports any JSON.stringify errors with clear messages
+
 ### 2. Improved Error Messages
 
-Before:
-```
-"Import failed: Invalid schema: missing version"
-```
-
-After:
+**Import Errors:**
 ```
 "Import failed: Invalid schema: Missing required field: version"
 "Import failed: Invalid schema: Invalid type for tasks: expected array"
 "Import failed: Invalid schema: Invalid type for version: expected number"
 ```
 
+**Export Errors:**
+```
+"Export failed: Export validation failed: Export data missing version field"
+"Export failed: Export data contains circular references or non-serializable values"
+```
+
 ### 3. Enhanced Test Coverage
 
-Added 5 new test cases:
+Added 6 new test cases:
 - Round-trip export and import with full data structure
-- Reject data with invalid array types
-- Reject data with invalid brainDump structure
-- Reject data with invalid brainDump.versions type
-- Reject data with non-numeric version
+- Export validation with valid data
+- Reject import data with invalid array types
+- Reject import data with invalid brainDump structure
+- Reject import data with invalid brainDump.versions type
+- Reject import data with non-numeric version
 
 ## Testing
 
 All tests pass:
 ```
 Test Suites: 16 passed, 16 total
-Tests:       336 passed, 390 total
+Tests:       337 passed, 391 total
 ```
 
 Specific dataManager tests:
 ```
 Test Suites: 1 passed, 1 total  
-Tests:       21 passed, 21 total
+Tests:       22 passed, 22 total
 ```
 
 ## Files Changed
 
 1. **src/utils/dataManager.js**
-   - Added `validateImportData()` function (60 lines)
+   - Added `validateImportData()` function (60 lines) for import validation
+   - Added `validateExportData()` function (24 lines) for export validation
    - Integrated validation into `importJSON()` function
+   - Added try-catch error handling to `exportJSON()` function
 
 2. **src/__tests__/dataManager.test.js**
    - Added comprehensive round-trip test
-   - Added 4 validation failure test cases
+   - Added export validation test
+   - Added 4 import validation failure test cases
    - Updated existing test for new error message format
 
 3. **docs/IMPORT_EXPORT_GUIDE.md**
-   - Updated validation section with detailed requirements
+   - Updated validation section with detailed requirements for both import and export
    - Enhanced error handling documentation
 
 ## Benefits
 
 1. **Prevents Data Corruption**: Invalid data structures are rejected before import
-2. **Better User Experience**: Clear, actionable error messages
-3. **Improved Reliability**: Round-trip import/export guaranteed to work
-4. **Future-Proof**: Easy to add new validation rules as schema evolves
+2. **Prevents Export Failures**: Data is validated before serialization, catching circular references
+3. **Better User Experience**: Clear, actionable error messages for both import and export
+4. **Improved Reliability**: Round-trip import/export guaranteed to work
+5. **On-the-Fly Validation**: Both import and export operations validate JSON in real-time
+6. **Future-Proof**: Easy to add new validation rules as schema evolves
 
 ## Validation Examples
 

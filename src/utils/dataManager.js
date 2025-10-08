@@ -159,24 +159,63 @@ export async function getDataTemplate() {
   }
 }
 
+/**
+ * Validate export data before serialization
+ * @param {object} data - Data object to validate
+ * @returns {{valid: boolean, errors: string[]}}
+ */
+function validateExportData(data) {
+  const errors = []
+
+  // Check for required fields
+  if (!data.version) {
+    errors.push('Export data missing version field')
+  }
+
+  // Check for circular references by attempting serialization test
+  try {
+    JSON.stringify(data)
+  } catch {
+    errors.push('Export data contains circular references or non-serializable values')
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
 export async function exportJSON() {
-  const data = JSON.stringify(await getDataTemplate(), null, 2)
-  const blob = new Blob([data], { type: 'application/json' })
-  const url = URL.createObjectURL(blob)
+  try {
+    const dataTemplate = await getDataTemplate()
 
-  // Generate filename: aurorae_YYYY-MM-DD_UUID.json
-  const date = new Date().toISOString().split('T')[0]
-  const uuid = generateSecureUUID()
-  const filename = `aurorae_${date}_${uuid}.json`
+    // Validate data before export
+    const validation = validateExportData(dataTemplate)
+    if (!validation.valid) {
+      throw new Error('Export validation failed: ' + validation.errors.join(', '))
+    }
 
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
-  return true
+    const data = JSON.stringify(dataTemplate, null, 2)
+    const blob = new Blob([data], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+
+    // Generate filename: aurorae_YYYY-MM-DD_UUID.json
+    const date = new Date().toISOString().split('T')[0]
+    const uuid = generateSecureUUID()
+    const filename = `aurorae_${date}_${uuid}.json`
+
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    return true
+  } catch (e) {
+    console.error('Export failed:', e)
+    throw new Error('Export failed: ' + e.message)
+  }
 }
 
 /**

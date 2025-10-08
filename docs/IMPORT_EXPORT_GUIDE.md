@@ -62,6 +62,14 @@ The export includes:
 }
 ```
 
+### Export Validation
+
+The export process validates data before creating the JSON file:
+
+- ✅ Checks for required `version` field
+- ✅ Validates data is serializable (no circular references)
+- ✅ Ensures all data can be converted to valid JSON format
+
 ## How to Import Data
 
 ### Step-by-Step Instructions
