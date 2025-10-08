@@ -256,16 +256,20 @@ function validateExportData(data) {
     errors.push('Export data missing version field')
   }
 
-  // Check for circular references by attempting serialization test
-  // Cache the stringified result to avoid double serialization
+  // Check for circular references by attempting compact serialization
   let stringified = null
   try {
-    stringified = JSON.stringify(data, null, 2)
+    // Use compact serialization for validation
+    JSON.stringify(data)
   } catch (error) {
     console.error('Serialization error in export data:', error)
     errors.push('Export data contains circular references or non-serializable values')
   }
 
+  // Only pretty-print if validation passes
+  if (errors.length === 0) {
+    stringified = JSON.stringify(data, null, 2)
+  }
   return {
     valid: errors.length === 0,
     errors,
