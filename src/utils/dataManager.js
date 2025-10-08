@@ -179,14 +179,77 @@ export async function exportJSON() {
   return true
 }
 
+/**
+ * Validate import data structure
+ * @param {object} obj - Parsed JSON object
+ * @returns {{valid: boolean, errors: string[]}}
+ */
+function validateImportData(obj) {
+  const errors = []
+
+  // Check version
+  if (!obj.version) {
+    errors.push('Missing required field: version')
+  } else if (typeof obj.version !== 'number') {
+    errors.push('Invalid type for version: expected number')
+  }
+
+  // Validate that if fields exist, they're the correct type
+  const arrayFields = ['tasks', 'sequences', 'habits', 'dumps', 'schedule']
+  arrayFields.forEach((field) => {
+    if (obj[field] !== undefined && !Array.isArray(obj[field])) {
+      errors.push(`Invalid type for ${field}: expected array`)
+    }
+  })
+
+  // Validate brainDump structure if present
+  if (obj.brainDump !== undefined) {
+    if (typeof obj.brainDump !== 'object' || obj.brainDump === null) {
+      errors.push('Invalid type for brainDump: expected object')
+    } else {
+      // Validate brainDump fields
+      if (
+        obj.brainDump.content !== undefined &&
+        typeof obj.brainDump.content !== 'string'
+      ) {
+        errors.push('Invalid type for brainDump.content: expected string')
+      }
+      if (
+        obj.brainDump.tags !== undefined &&
+        typeof obj.brainDump.tags !== 'string'
+      ) {
+        errors.push('Invalid type for brainDump.tags: expected string')
+      }
+      if (
+        obj.brainDump.versions !== undefined &&
+        !Array.isArray(obj.brainDump.versions)
+      ) {
+        errors.push('Invalid type for brainDump.versions: expected array')
+      }
+      if (
+        obj.brainDump.entries !== undefined &&
+        !Array.isArray(obj.brainDump.entries)
+      ) {
+        errors.push('Invalid type for brainDump.entries: expected array')
+      }
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
 export async function importJSON(file) {
   try {
     const text = await file.text()
     const obj = JSON.parse(text)
 
     // Validate schema
-    if (!obj.version) {
-      throw new Error('Invalid schema: missing version')
+    const validation = validateImportData(obj)
+    if (!validation.valid) {
+      throw new Error('Invalid schema: ' + validation.errors.join(', '))
     }
 
     // ARC-DAT-01: Use IndexedDB if available

@@ -231,7 +231,7 @@ describe('Data Manager', () => {
       const result = await importJSON(mockFile)
 
       expect(result.success).toBe(false)
-      expect(result.message).toContain('missing version')
+      expect(result.message).toContain('Missing required field: version')
     })
 
     it('should use default empty arrays for missing fields', async () => {
@@ -372,6 +372,78 @@ describe('Data Manager', () => {
       expect(reimportedData.brainDump.entries).toEqual(
         initialData.brainDump.entries
       )
+    })
+
+    it('should reject data with invalid types', async () => {
+      const invalidData = {
+        version: 1,
+        tasks: 'not an array', // Invalid!
+        sequences: []
+      }
+
+      const mockFile = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(invalidData))
+      }
+
+      const result = await importJSON(mockFile)
+
+      expect(result.success).toBe(false)
+      expect(result.message).toContain('Invalid type for tasks')
+    })
+
+    it('should reject data with invalid brainDump structure', async () => {
+      const invalidData = {
+        version: 1,
+        tasks: [],
+        brainDump: 'not an object' // Invalid!
+      }
+
+      const mockFile = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(invalidData))
+      }
+
+      const result = await importJSON(mockFile)
+
+      expect(result.success).toBe(false)
+      expect(result.message).toContain('Invalid type for brainDump')
+    })
+
+    it('should reject data with invalid brainDump.versions type', async () => {
+      const invalidData = {
+        version: 1,
+        tasks: [],
+        brainDump: {
+          content: '# Test',
+          tags: '',
+          versions: 'not an array', // Invalid!
+          entries: []
+        }
+      }
+
+      const mockFile = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(invalidData))
+      }
+
+      const result = await importJSON(mockFile)
+
+      expect(result.success).toBe(false)
+      expect(result.message).toContain('Invalid type for brainDump.versions')
+    })
+
+    it('should reject data with non-numeric version', async () => {
+      const invalidData = {
+        version: '1', // String instead of number!
+        tasks: []
+      }
+
+      const mockFile = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(invalidData))
+      }
+
+      const result = await importJSON(mockFile)
+
+      expect(result.success).toBe(false)
+      expect(result.message).toContain('Invalid type for version')
     })
   })
 })
