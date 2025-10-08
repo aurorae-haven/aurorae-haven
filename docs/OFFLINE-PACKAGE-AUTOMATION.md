@@ -337,10 +337,9 @@ Potential enhancements:
 
 1. **Package signing**: GPG-sign packages for integrity verification
 2. **Checksums file**: Generate and upload SHA256 checksums
-3. **Multiple formats**: Provide `.zip` alongside `.tar.gz`
-4. **CDN hosting**: Mirror packages on a CDN for faster downloads
-5. **Changelog automation**: Auto-generate changelogs from commits
-6. **Size tracking**: Monitor package size over time
+3. **CDN hosting**: Mirror packages on a CDN for faster downloads
+4. **Changelog automation**: Auto-generate changelogs from commits
+5. **Size tracking**: Monitor package size over time
 
 ## Related Documentation
 
