@@ -369,6 +369,184 @@ describe('IndexedDBManager', () => {
       expect(report.success).toBe(true)
       expect(localStorage.getItem('aurorae_tasks')).toBeNull()
     })
+
+    test('exportAllData and importAllData work with all data types (nominal example)', async () => {
+      // Setup nominal example data for all IndexedDB stores
+      const nominalTasks = [
+        { id: 1, title: 'Task 1', status: 'active', timestamp: 1704453600000 },
+        { id: 2, title: 'Task 2', status: 'done', timestamp: 1704453601000 }
+      ]
+
+      const nominalSequences = [
+        {
+          id: 'seq1',
+          name: 'Morning Routine',
+          steps: ['Wake up', 'Exercise'],
+          timestamp: 1704453600000
+        }
+      ]
+
+      const nominalHabits = [
+        {
+          id: 1,
+          name: 'Meditation',
+          streak: 10,
+          paused: false,
+          timestamp: 1704453600000
+        }
+      ]
+
+      const nominalDumps = [
+        {
+          id: 1,
+          content: 'Brain dump content',
+          timestamp: 1704453600000
+        }
+      ]
+
+      const nominalSchedule = [
+        {
+          id: 1,
+          day: '2025-01-15',
+          events: ['Meeting'],
+          timestamp: 1704453600000
+        }
+      ]
+
+      const nominalStats = [
+        { id: 1, type: 'productivity', value: 85, date: '2025-01-15', timestamp: 1704453600000 }
+      ]
+
+      const nominalFileRefs = [
+        {
+          id: 1,
+          fileName: 'document.pdf',
+          parentType: 'dump',
+          parentId: 1,
+          timestamp: 1704453600000
+        }
+      ]
+
+      const nominalAuroraeTasks = {
+        urgent_important: [
+          { id: 1, text: 'Urgent task', completed: false, createdAt: 1704453600000 }
+        ],
+        not_urgent_important: [],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+
+      const nominalBrainDump = {
+        content: '# Notes\nSome content',
+        tags: '<span class="tag">#important</span>',
+        versions: [{ id: 1, content: 'Old version', timestamp: '2025-01-15T10:00:00Z' }],
+        entries: [{ id: 'e1', title: 'Entry 1', content: 'Content' }]
+      }
+
+      // Populate all IndexedDB stores
+      for (const task of nominalTasks) {
+        await put(STORES.TASKS, task)
+      }
+      for (const seq of nominalSequences) {
+        await put(STORES.SEQUENCES, seq)
+      }
+      for (const habit of nominalHabits) {
+        await put(STORES.HABITS, habit)
+      }
+      for (const dump of nominalDumps) {
+        await put(STORES.DUMPS, dump)
+      }
+      for (const event of nominalSchedule) {
+        await put(STORES.SCHEDULE, event)
+      }
+      for (const stat of nominalStats) {
+        await put(STORES.STATS, stat)
+      }
+      for (const ref of nominalFileRefs) {
+        await put(STORES.FILE_REFS, ref)
+      }
+
+      // Populate localStorage data
+      localStorage.setItem('aurorae_tasks', JSON.stringify(nominalAuroraeTasks))
+      localStorage.setItem('brainDumpContent', nominalBrainDump.content)
+      localStorage.setItem('brainDumpTags', nominalBrainDump.tags)
+      localStorage.setItem('brainDumpVersions', JSON.stringify(nominalBrainDump.versions))
+      localStorage.setItem('brainDumpEntries', JSON.stringify(nominalBrainDump.entries))
+
+      // Export all data
+      const exported = await exportAllData()
+
+      // Verify all data types are in export
+      expect(exported.version).toBe(1)
+      expect(exported.exportedAt).toBeDefined()
+      expect(exported.tasks).toEqual(nominalTasks)
+      expect(exported.sequences).toEqual(nominalSequences)
+      expect(exported.habits).toEqual(nominalHabits)
+      expect(exported.dumps).toEqual(nominalDumps)
+      expect(exported.schedule).toEqual(nominalSchedule)
+      expect(exported.stats).toEqual(nominalStats)
+      expect(exported.fileRefs).toEqual(nominalFileRefs)
+      expect(exported.auroraeTasksData).toEqual(nominalAuroraeTasks)
+      expect(exported.brainDump).toEqual(nominalBrainDump)
+
+      // Clear all data
+      await clear(STORES.TASKS)
+      await clear(STORES.SEQUENCES)
+      await clear(STORES.HABITS)
+      await clear(STORES.DUMPS)
+      await clear(STORES.SCHEDULE)
+      await clear(STORES.STATS)
+      await clear(STORES.FILE_REFS)
+      localStorage.clear()
+
+      // Import data back
+      const report = await importAllData(exported)
+
+      // Verify import succeeded
+      expect(report.success).toBe(true)
+      expect(report.imported.tasks).toBe(nominalTasks.length)
+      expect(report.imported.sequences).toBe(nominalSequences.length)
+      expect(report.imported.habits).toBe(nominalHabits.length)
+      expect(report.imported.dumps).toBe(nominalDumps.length)
+      expect(report.imported.schedule).toBe(nominalSchedule.length)
+      expect(report.imported.stats).toBe(nominalStats.length)
+      expect(report.imported.fileRefs).toBe(nominalFileRefs.length)
+      expect(report.imported.auroraeTasksData).toBe(true)
+
+      // Verify all data was restored correctly
+      const restoredTasks = await getAll(STORES.TASKS)
+      expect(restoredTasks).toEqual(nominalTasks)
+
+      const restoredSequences = await getAll(STORES.SEQUENCES)
+      expect(restoredSequences).toEqual(nominalSequences)
+
+      const restoredHabits = await getAll(STORES.HABITS)
+      expect(restoredHabits).toEqual(nominalHabits)
+
+      const restoredDumps = await getAll(STORES.DUMPS)
+      expect(restoredDumps).toEqual(nominalDumps)
+
+      const restoredSchedule = await getAll(STORES.SCHEDULE)
+      expect(restoredSchedule).toEqual(nominalSchedule)
+
+      const restoredStats = await getAll(STORES.STATS)
+      expect(restoredStats).toEqual(nominalStats)
+
+      const restoredFileRefs = await getAll(STORES.FILE_REFS)
+      expect(restoredFileRefs).toEqual(nominalFileRefs)
+
+      const restoredAuroraeTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      expect(restoredAuroraeTasks).toEqual(nominalAuroraeTasks)
+
+      expect(localStorage.getItem('brainDumpContent')).toBe(nominalBrainDump.content)
+      expect(localStorage.getItem('brainDumpTags')).toBe(nominalBrainDump.tags)
+
+      const restoredVersions = JSON.parse(localStorage.getItem('brainDumpVersions'))
+      expect(restoredVersions).toEqual(nominalBrainDump.versions)
+
+      const restoredEntries = JSON.parse(localStorage.getItem('brainDumpEntries'))
+      expect(restoredEntries).toEqual(nominalBrainDump.entries)
+    })
   })
 
   describe('Utility Functions', () => {
