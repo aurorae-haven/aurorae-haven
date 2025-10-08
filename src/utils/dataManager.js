@@ -33,6 +33,14 @@ export const SCHEDULE_EVENT_TYPES = {
   MEETING: 'meeting'
 }
 
+// BrainDump field type definitions for validation
+const BRAIN_DUMP_FIELDS = {
+  content: 'string',
+  tags: 'string',
+  versions: 'array',
+  entries: 'array'
+}
+
 /**
  * ARC-DAT-03: Initialize automatic backup system
  * Should be called when the app loads
@@ -180,9 +188,25 @@ export async function getDataTemplate() {
 }
 
 /**
+ * Helper function to validate field type
+ * @param {*} value - Value to validate
+ * @param {string} expectedType - Expected type ('string' or 'array')
+ * @returns {boolean} True if valid
+ */
+function isValidFieldType(value, expectedType) {
+  if (expectedType === 'string') {
+    return typeof value === 'string'
+  }
+  if (expectedType === 'array') {
+    return Array.isArray(value)
+  }
+  return false
+}
+
+/**
  * Validate export data before serialization
  * @param {object} data - Data object to validate
- * @returns {{valid: boolean, errors: string[]}}
+ * @returns {{valid: boolean, errors: string[], stringified: string|null}}
  */
 function validateExportData(data) {
   const errors = []
@@ -193,15 +217,18 @@ function validateExportData(data) {
   }
 
   // Check for circular references by attempting serialization test
+  // Cache the stringified result to avoid double serialization
+  let stringified = null
   try {
-    JSON.stringify(data)
-  } catch (e) {
+    stringified = JSON.stringify(data, null, 2)
+  } catch {
     errors.push('Export data contains circular references or non-serializable values')
   }
 
   return {
     valid: errors.length === 0,
-    errors
+    errors,
+    stringified
   }
 }
 
@@ -209,13 +236,14 @@ export async function exportJSON() {
   try {
     const dataTemplate = await getDataTemplate()
 
-    // Validate data before export
+    // Validate data before export (includes serialization test)
     const validation = validateExportData(dataTemplate)
     if (!validation.valid) {
       throw new Error('Export validation failed: ' + validation.errors.join(', '))
     }
 
-    const data = JSON.stringify(dataTemplate, null, 2)
+    // Use cached stringified result from validation to avoid double serialization
+    const data = validation.stringified
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
 
@@ -270,30 +298,16 @@ function validateImportData(obj) {
     if (typeof obj.brainDump !== 'object' || obj.brainDump === null) {
       errors.push('Invalid type for brainDump: expected object')
     } else {
-      // Validate brainDump fields
-      if (
-        obj.brainDump.content !== undefined &&
-        typeof obj.brainDump.content !== 'string'
-      ) {
-        errors.push('Invalid type for brainDump.content: expected string')
-      }
-      if (
-        obj.brainDump.tags !== undefined &&
-        typeof obj.brainDump.tags !== 'string'
-      ) {
-        errors.push('Invalid type for brainDump.tags: expected string')
-      }
-      if (
-        obj.brainDump.versions !== undefined &&
-        !Array.isArray(obj.brainDump.versions)
-      ) {
-        errors.push('Invalid type for brainDump.versions: expected array')
-      }
-      if (
-        obj.brainDump.entries !== undefined &&
-        !Array.isArray(obj.brainDump.entries)
-      ) {
-        errors.push('Invalid type for brainDump.entries: expected array')
+      // Validate brainDump fields using configuration
+      for (const [field, expectedType] of Object.entries(BRAIN_DUMP_FIELDS)) {
+        if (
+          obj.brainDump[field] !== undefined &&
+          !isValidFieldType(obj.brainDump[field], expectedType)
+        ) {
+          errors.push(
+            `Invalid type for brainDump.${field}: expected ${expectedType}`
+          )
+        }
       }
     }
   }
