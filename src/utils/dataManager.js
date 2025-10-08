@@ -298,8 +298,8 @@ export async function exportJSON() {
       throw new Error(`Export validation failed: ${validation.errors.join(', ')}`)
     }
 
-    // Use cached stringified result from validation to avoid double serialization
-    const data = validation.stringified
+    // Serialize data for export (independent of validation formatting)
+    const data = JSON.stringify(dataTemplate, null, 2) // Use pretty-printing for export; change as needed
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
 
