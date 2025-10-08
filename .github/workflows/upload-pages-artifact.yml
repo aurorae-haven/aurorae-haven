@@ -168,7 +168,66 @@ jobs:
           # Clean the branch (keep only offline packages)
           git rm -rf . 2>/dev/null || true
           
-          # Create a simple index
+          # Create README for GitHub display
+          cat > README.md <<'READMEEOF'
+          # 🌌 Aurorae Haven - Offline Packages
+          
+          Welcome to the offline packages branch! This branch contains the latest offline build of Aurorae Haven.
+          
+          ## 📦 Download
+          
+          Click on the `.tar.gz` file above to download the latest offline package.
+          
+          **Latest Package**: `PACKAGE_NAME_PLACEHOLDER`
+          
+          ## 🚀 Quick Start
+          
+          1. **Download** the `.tar.gz` file
+          2. **Extract**: `tar -xzf aurorae-haven-offline-v*.tar.gz`
+          3. **Open**: Double-click `index.html` in your browser
+          
+          No server needed! The app works directly from your file system.
+          
+          ## ✨ What's Included
+          
+          - ✅ Full React PWA application
+          - ✅ Service worker for offline functionality
+          - ✅ PWA manifest for installation
+          - ✅ All assets optimized and minified
+          - ✅ Total size: ~105 KB compressed
+          
+          ## 📚 Full Documentation
+          
+          For detailed installation instructions, troubleshooting, and more:
+          
+          👉 [**Offline Download Guide**](https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md)
+          
+          ## 🏠 Main Repository
+          
+          Back to the main repository:
+          
+          👉 [**Aurorae Haven**](https://github.com/aurorae-haven/aurorae-haven)
+          
+          ## 🔄 Updates
+          
+          This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
+          
+          **Last Updated**: BUILD_DATE_PLACEHOLDER
+          **Source Branch**: BUILD_BRANCH_PLACEHOLDER
+          **Source Commit**: BUILD_COMMIT_PLACEHOLDER
+          
+          ---
+          
+          **Built with** ❤️ **by the Aurorae Haven team**
+          READMEEOF
+          
+          # Replace placeholders
+          sed -i "s/PACKAGE_NAME_PLACEHOLDER/$PACKAGE_NAME/" README.md
+          sed -i "s/BUILD_DATE_PLACEHOLDER/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/" README.md
+          sed -i "s/BUILD_BRANCH_PLACEHOLDER/${GITHUB_REF##*/}/" README.md
+          sed -i "s/BUILD_COMMIT_PLACEHOLDER/${GITHUB_SHA:0:7}/" README.md
+          
+          # Create a simple index.html for direct browsing
           cat > index.html <<EOF
           <!DOCTYPE html>
           <html lang="en">
@@ -212,7 +271,7 @@ jobs:
           cp "$PACKAGE_FILE" .
           
           # Add and commit
-          git add index.html "$PACKAGE_NAME"
+          git add README.md index.html "$PACKAGE_NAME"
           git commit -m "Update offline package: $PACKAGE_NAME" || echo "No changes to commit"
           
           # Push to the branch
