@@ -523,6 +523,12 @@ body {
 .shell:has(.brain-dump-container) {
   max-width: 1600px;
 }
+
+/* Fallback for browsers that do not support :has() selector.
+   Use JS to add the .shell-brain-dump class to .shell when it contains .brain-dump-container. */
+.shell.shell-brain-dump {
+  max-width: 1600px;
+}
 .card {
   background: linear-gradient(180deg, var(--glass-lo), rgba(18, 22, 52, 0.22));
   border: 1px solid var(--line);
