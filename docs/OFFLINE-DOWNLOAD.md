@@ -4,12 +4,15 @@ This document explains how to download and use the offline package of Aurorae Ha
 
 ## Overview
 
-The offline download package allows you to run Aurorae Haven on your computer without internet access and without needing to install Node.js or any build tools. This is ideal for:
+The offline download package allows you to run Aurorae Haven on your computer **without internet access, without any installation, and without needing a web server**. Simply download, extract, and open `index.html` in your browser!
+
+This is ideal for:
 
 - **Limited connectivity environments**: Use the app where internet is unavailable or unreliable
 - **Archiving**: Keep a snapshot of a specific version
 - **Distribution**: Share the app with others who don't have development tools
 - **Privacy**: Run completely offline with no external connections
+- **No installation required**: Just extract and open in your browser
 
 ## Download Instructions
 
@@ -63,17 +66,19 @@ The package will be created in `dist-offline/` directory.
 
 The offline package comes as a `.tar.gz` archive. Extract it:
 
+**On Windows 10/11:** ✅ **Built-in support!**
+
+- Right-click the `.tar.gz` file → **Extract All...**
+- Or use File Explorer: Double-click the file, then extract the inner folder
+- Alternative: Use 7-Zip, WinRAR, or PeaZip
+
 **On Linux/macOS:**
 
 ```bash
 tar -xzf aurorae-haven-offline-*.tar.gz
 ```
 
-**On Windows:**
-
-- Use 7-Zip, WinRAR, or Windows built-in extraction
-- Right-click the file → Extract All...
-- Or use WSL/Git Bash: `tar -xzf aurorae-haven-offline-*.tar.gz`
+**Note**: Windows 10 and later have native `.tar.gz` support built into File Explorer!
 
 ### Step 2: Open the Application
 
@@ -83,7 +88,9 @@ tar -xzf aurorae-haven-offline-*.tar.gz
 2. Double-click `index.html` to open in your default browser
 3. The app will load and work immediately
 
-**No server needed!** The offline package is built with relative paths so it works directly from your file system.
+**✨ No server needed! No installation required! No internet required!** 
+
+The offline package is built with relative paths so it works directly from your file system. Just double-click and go!
 
 #### Optional: Using a Local Web Server
 

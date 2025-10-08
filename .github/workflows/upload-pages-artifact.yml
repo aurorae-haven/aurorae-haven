@@ -187,11 +187,13 @@ jobs:
           
           ## 🚀 Quick Start
           
-          1. **Download** the `.tar.gz` file
-          2. **Extract**: `tar -xzf aurorae-haven-offline-v*.tar.gz`
-          3. **Open**: Double-click `index.html` in your browser
+          1. **Download** the `.tar.gz` file above
+          2. **Extract** it (Windows 10+: Right-click → Extract All)
+          3. **Open** `index.html` in your browser
           
-          No server needed! The app works directly from your file system.
+          ✨ **No installation! No server! No internet required!**
+          
+          The app works directly from your file system - just download, extract, and double-click!
           
           ## ✨ What's Included
           
