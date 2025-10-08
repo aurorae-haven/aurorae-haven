@@ -201,7 +201,7 @@ function validateExportData(data) {
   // Check for circular references by attempting serialization test
   try {
     JSON.stringify(data)
-  } catch {
+  } catch (e) {
     errors.push('Export data contains circular references or non-serializable values')
   }
 
