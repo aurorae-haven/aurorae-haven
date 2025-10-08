@@ -17,13 +17,17 @@ describe('fileHelpers', () => {
     })
 
     test('limits length to maxLength parameter', () => {
-      const longText = 'This is a very long title that exceeds the maximum length'
+      const longText =
+        'This is a very long title that exceeds the maximum length'
       expect(sanitizeFilename(longText, 30)).toHaveLength(30)
-      expect(sanitizeFilename(longText, 30)).toBe('this_is_a_very_long_title_that')
+      expect(sanitizeFilename(longText, 30)).toBe(
+        'this_is_a_very_long_title_that'
+      )
     })
 
     test('uses default maxLength of 30 when not specified', () => {
-      const longText = 'This is a very long title that exceeds thirty characters'
+      const longText =
+        'This is a very long title that exceeds thirty characters'
       expect(sanitizeFilename(longText)).toHaveLength(30)
     })
 
@@ -71,7 +75,9 @@ describe('fileHelpers', () => {
 
   describe('extractTitleFromFilename', () => {
     test('extracts title from standard Brain Dump filename', () => {
-      const title = extractTitleFromFilename('braindump_project_ideas_20250107_1430.md')
+      const title = extractTitleFromFilename(
+        'braindump_project_ideas_20250107_1430.md'
+      )
       expect(title).toBe('project ideas')
     })
 

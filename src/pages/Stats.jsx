@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  getStatsByType,
-  isIndexedDBAvailable
-} from '../utils/indexedDBManager'
+import { getStatsByType, isIndexedDBAvailable } from '../utils/indexedDBManager'
 
 function Stats() {
   const [stats, setStats] = useState({
@@ -73,8 +70,8 @@ function Stats() {
             support this feature, or it may be disabled.
           </p>
           <p className='small'>
-            Statistics will be automatically tracked as you use the app. This page
-            will show aggregated metrics including task completions, habit
+            Statistics will be automatically tracked as you use the app. This
+            page will show aggregated metrics including task completions, habit
             streaks, and routine times.
           </p>
         </div>

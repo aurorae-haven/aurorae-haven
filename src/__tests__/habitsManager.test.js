@@ -52,7 +52,7 @@ describe('Habits Manager', () => {
     test('should return all habits', async () => {
       await createHabit({ name: 'Habit 1' })
       // Add small delay to ensure different IDs
-      await new Promise(resolve => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10))
       await createHabit({ name: 'Habit 2' })
 
       const habits = await getHabits()
@@ -70,13 +70,13 @@ describe('Habits Manager', () => {
     test('should update existing habit', async () => {
       const id = await createHabit({ name: 'Old Name' })
       const habits = await getHabits()
-      const habit = habits.find(h => h.id === id)
+      const habit = habits.find((h) => h.id === id)
 
       const updatedHabit = { ...habit, name: 'New Name' }
       await updateHabit(updatedHabit)
 
       const updatedHabits = await getHabits()
-      const found = updatedHabits.find(h => h.id === id)
+      const found = updatedHabits.find((h) => h.id === id)
       expect(found.name).toBe('New Name')
     })
 

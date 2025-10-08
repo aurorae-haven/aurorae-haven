@@ -25,18 +25,19 @@
 
 **Object Stores**:
 
-| Store Name | Key Path | Indexes | Auto-Increment |
-|------------|----------|---------|----------------|
-| tasks | id | timestamp, status | Yes |
-| sequences | id | timestamp | No |
-| habits | id | timestamp, paused | Yes |
-| dumps | id | timestamp | Yes |
-| schedule | id | day, timestamp | Yes |
-| stats | id | type, date, timestamp | Yes |
-| file_refs | id | fileName, parentType, parentId, timestamp | Yes |
-| backups | id | timestamp | Yes |
+| Store Name | Key Path | Indexes                                   | Auto-Increment |
+| ---------- | -------- | ----------------------------------------- | -------------- |
+| tasks      | id       | timestamp, status                         | Yes            |
+| sequences  | id       | timestamp                                 | No             |
+| habits     | id       | timestamp, paused                         | Yes            |
+| dumps      | id       | timestamp                                 | Yes            |
+| schedule   | id       | day, timestamp                            | Yes            |
+| stats      | id       | type, date, timestamp                     | Yes            |
+| file_refs  | id       | fileName, parentType, parentId, timestamp | Yes            |
+| backups    | id       | timestamp                                 | Yes            |
 
 **API Functions**:
+
 - `openDB()` - Open database connection
 - `getAll(storeName)` - Get all items from store
 - `getById(storeName, id)` - Get single item by ID
@@ -75,12 +76,14 @@
   ```
 
 **OPFS Integration**:
+
 - Existing implementation in `src/utils/braindump-enhanced.js`
 - `FileAttachments` class handles file operations
 - Browser support: Chrome 86+, Edge 86+, Opera 72+
 - Graceful fallback for unsupported browsers
 
 **API Functions**:
+
 - `addFileReference(fileName, parentType, parentId, metadata)` - Add file reference
 - `getFileReferences(parentType, parentId)` - Get references for parent
 - `deleteFileReference(fileName)` - Delete file reference
@@ -89,7 +92,10 @@
 
 ```javascript
 // Example usage
-await addFileReference('photo.jpg', 'dump', 123, { size: 1024, type: 'image/jpeg' })
+await addFileReference('photo.jpg', 'dump', 123, {
+  size: 1024,
+  type: 'image/jpeg'
+})
 const refs = await getFileReferences('dump', 123)
 // Returns: [{ fileName: 'photo.jpg', parentType: 'dump', parentId: 123, ... }]
 ```
@@ -105,6 +111,7 @@ const refs = await getFileReferences('dump', 123)
 **Implementation Details**:
 
 **Automatic Backup System**:
+
 - **Frequency**: Every 24 hours
 - **Rotation**: Keeps last 10 backups
 - **Storage**: IndexedDB `backups` store
@@ -112,6 +119,7 @@ const refs = await getFileReferences('dump', 123)
 - **Check Interval**: Hourly verification
 
 **Backup Schema**:
+
 ```javascript
 {
   id: number,              // Auto-generated
@@ -122,19 +130,22 @@ const refs = await getFileReferences('dump', 123)
 ```
 
 **Configuration**:
+
 ```javascript
-const BACKUP_INTERVAL = 24 * 60 * 60 * 1000  // 24 hours
-const MAX_BACKUPS = 10                        // Keep last 10
+const BACKUP_INTERVAL = 24 * 60 * 60 * 1000 // 24 hours
+const MAX_BACKUPS = 10 // Keep last 10
 const LAST_BACKUP_KEY = 'aurorae_last_backup'
 ```
 
 **Export Functionality**:
+
 - **Format**: JSON with timestamp and UUID in filename
 - **Naming**: `aurorae_YYYY-MM-DD_UUID.json`
 - **Content**: All data from IndexedDB + localStorage
 - **Trigger**: User-initiated via Export button
 
 **API Functions**:
+
 - `initAutoBackup()` - Initialize auto-backup system
 - `triggerManualBackup()` - Manually trigger backup
 - `saveBackup(data)` - Save backup to IndexedDB
@@ -154,8 +165,10 @@ console.log(success ? 'Backup saved' : 'Backup failed')
 
 // Get recent backups
 const backups = await getRecentBackups(5)
-backups.forEach(b => {
-  console.log(`Backup from ${new Date(b.timestamp).toISOString()}, size: ${b.size} bytes`)
+backups.forEach((b) => {
+  console.log(
+    `Backup from ${new Date(b.timestamp).toISOString()}, size: ${b.size} bytes`
+  )
 })
 ```
 
@@ -170,6 +183,7 @@ backups.forEach(b => {
 **Implementation Details**:
 
 **Statistics Store**:
+
 - **Store Name**: `stats`
 - **Indexes**: `type`, `date`, `timestamp`
 - **Aggregated**: Data pre-aggregated for fast queries
@@ -179,6 +193,7 @@ backups.forEach(b => {
   - `routine_time` - Routine completion times
 
 **Statistics Schema**:
+
 ```javascript
 {
   id: number,              // Auto-generated
@@ -190,11 +205,13 @@ backups.forEach(b => {
 ```
 
 **API Functions**:
+
 - `saveStats(type, data)` - Save statistics
 - `getStatsByType(type)` - Get all stats of a type
 - `getStatsByDateRange(startDate, endDate)` - Get stats in date range
 
 **Stats Page**:
+
 - Enhanced Stats.jsx to display statistics
 - Shows task completions, habit streaks, routine times
 - Ready for v2.0 dashboard visualizations
@@ -225,12 +242,14 @@ console.log(`January stats: ${jan2025.length}`)
 **Implementation Details**:
 
 **Offline Capabilities**:
+
 - **IndexedDB**: Works offline by design (local storage API)
 - **Service Worker**: Caches app resources for offline access
 - **No Network Required**: All data operations are local
 - **PWA**: Installable for native app experience
 
 **Service Worker**:
+
 - File: `public/service-worker.js`
 - Cache Strategy: Cache-first for app resources
 - Fallback: Serves cached `index.html` when offline
@@ -245,6 +264,7 @@ console.log(`January stats: ${jan2025.length}`)
 5. Go back online - app continues working seamlessly
 
 **Browser Support**:
+
 - Service Worker: Chrome 40+, Firefox 44+, Safari 11.1+, Edge 17+
 - IndexedDB: Chrome 24+, Firefox 16+, Safari 10+, Edge 12+
 
@@ -267,12 +287,14 @@ console.log(`January stats: ${jan2025.length}`)
   - Ready for v2.0 dashboard enhancements
 
 **Current Display**:
+
 - Total recorded statistics by type
 - Message when no data available
 - IndexedDB availability check
 - Loading state handling
 
 **Future Enhancements (v2.0)**:
+
 - Charts and graphs
 - XP tracking
 - Achievement display
@@ -285,12 +307,14 @@ console.log(`January stats: ${jan2025.length}`)
 ### Test Coverage
 
 **IndexedDB Manager**:
+
 ```
 File                    | % Stmts | % Branch | % Funcs | % Lines
 indexedDBManager.js     |   90.58 |    63.09 |   86.53 |   93.03
 ```
 
 **Data Manager**:
+
 ```
 File                    | % Stmts | % Branch | % Funcs | % Lines
 dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
@@ -303,6 +327,7 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 ### Test Categories
 
 **Basic Operations** (5 tests):
+
 - ✅ Database creation with all stores
 - ✅ Put and getAll operations
 - ✅ GetById retrieval
@@ -310,30 +335,36 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 - ✅ Clear all items
 
 **File References** (3 tests):
+
 - ✅ Add file reference
 - ✅ Get references by parent
 - ✅ Delete file reference
 
 **Statistics** (3 tests):
+
 - ✅ Save statistics
 - ✅ Get statistics by type
 - ✅ Get statistics by date range
 
 **Backups** (3 tests):
+
 - ✅ Save backup
 - ✅ Get recent backups with limit
 - ✅ Clean old backups
 
 **Migration** (2 tests):
+
 - ✅ Migrate from localStorage
 - ✅ Handle missing data gracefully
 
 **Export/Import** (3 tests):
+
 - ✅ Export all data
 - ✅ Import all data
 - ✅ Clear and import (replace)
 
 **Utility Functions** (2 tests):
+
 - ✅ Check IndexedDB availability
 - ✅ Get items by index
 
@@ -344,6 +375,7 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 ### Technical Documentation
 
 **DATA_MANAGEMENT.md** (13KB):
+
 - Architecture overview
 - Complete API reference
 - Database schema documentation
@@ -353,6 +385,7 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 - Testing documentation
 
 **MIGRATION_GUIDE.md** (9.4KB):
+
 - Three migration options
 - Step-by-step instructions
 - Browser compatibility matrix
@@ -361,6 +394,7 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 - Best practices
 
 **IMPORT_EXPORT_GUIDE.md** (existing):
+
 - Export procedures
 - Import procedures
 - Data format documentation
@@ -369,6 +403,7 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 ### User Documentation
 
 **README.md** (updated):
+
 - Data management section
 - Storage architecture overview
 - Feature highlights
@@ -377,6 +412,7 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 ### Code Documentation
 
 **Inline Comments**:
+
 - JSDoc comments on all public functions
 - Schema definitions documented
 - Complex logic explained
@@ -387,24 +423,24 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 
 ### IndexedDB Support
 
-| Browser | Version | Support |
-|---------|---------|---------|
-| Chrome | 24+ (2012) | ✅ Full |
-| Firefox | 16+ (2012) | ✅ Full |
-| Safari | 10+ (2016) | ✅ Full |
-| Edge | 12+ (2015) | ✅ Full |
-| Opera | 15+ (2013) | ✅ Full |
-| IE | Any | ❌ Not supported |
+| Browser | Version    | Support          |
+| ------- | ---------- | ---------------- |
+| Chrome  | 24+ (2012) | ✅ Full          |
+| Firefox | 16+ (2012) | ✅ Full          |
+| Safari  | 10+ (2016) | ✅ Full          |
+| Edge    | 12+ (2015) | ✅ Full          |
+| Opera   | 15+ (2013) | ✅ Full          |
+| IE      | Any        | ❌ Not supported |
 
 ### OPFS Support
 
-| Browser | Version | Support |
-|---------|---------|---------|
-| Chrome | 86+ (2020) | ✅ Full |
-| Edge | 86+ (2020) | ✅ Full |
-| Opera | 72+ (2020) | ✅ Full |
-| Firefox | Limited | ⚠️ Flag required |
-| Safari | Not yet | ❌ Not supported |
+| Browser | Version    | Support          |
+| ------- | ---------- | ---------------- |
+| Chrome  | 86+ (2020) | ✅ Full          |
+| Edge    | 86+ (2020) | ✅ Full          |
+| Opera   | 72+ (2020) | ✅ Full          |
+| Firefox | Limited    | ⚠️ Flag required |
+| Safari  | Not yet    | ❌ Not supported |
 
 ### Fallback Strategy
 
@@ -418,25 +454,27 @@ dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 
 ### Storage Capacity
 
-| Storage Type | Capacity | Use Case |
-|--------------|----------|----------|
-| localStorage | ~5-10 MB | Fallback, UI state |
-| IndexedDB | ~50 MB+ | Primary structured data |
-| OPFS | Disk space | File attachments |
+| Storage Type | Capacity   | Use Case                |
+| ------------ | ---------- | ----------------------- |
+| localStorage | ~5-10 MB   | Fallback, UI state      |
+| IndexedDB    | ~50 MB+    | Primary structured data |
+| OPFS         | Disk space | File attachments        |
 
 ### Query Performance
 
 **Indexed Queries** (fast):
+
 ```javascript
 // O(log n) - uses index
 await getByIndex(STORES.TASKS, 'status', 'pending')
 ```
 
 **Full Table Scans** (slower):
+
 ```javascript
 // O(n) - filters in JavaScript
 const all = await getAll(STORES.TASKS)
-const filtered = all.filter(t => t.status === 'pending')
+const filtered = all.filter((t) => t.status === 'pending')
 ```
 
 ### Transaction Overhead
@@ -477,18 +515,21 @@ const filtered = all.filter(t => t.status === 'pending')
 ### For Existing Users
 
 **Option 1: Automatic (Default)**
+
 - No action required
 - New data uses IndexedDB
 - Old data stays in localStorage
 - Both work seamlessly together
 
 **Option 2: Manual Migration**
+
 - Run `migrateFromLocalStorage()` in console
 - All data moved to IndexedDB
 - Automatic backups enabled
 - Better performance
 
 **Option 3: Fresh Start**
+
 - Export current data
 - Clear browser storage
 - Import data (goes to IndexedDB)
@@ -505,6 +546,7 @@ const filtered = all.filter(t => t.status === 'pending')
 ## Future Enhancements (v2.0+)
 
 ### Planned Features
+
 - [ ] Cloud sync (optional, user-controlled)
 - [ ] Encryption at rest
 - [ ] Selective export/import
@@ -514,6 +556,7 @@ const filtered = all.filter(t => t.status === 'pending')
 - [ ] Real-time statistics updates
 
 ### Under Consideration
+
 - [ ] WebSQL fallback (deprecated)
 - [ ] SQLite WASM for advanced queries
 - [ ] Data sharding for large datasets

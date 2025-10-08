@@ -82,9 +82,11 @@ describe('BrainDump Component', () => {
         'Start typing your thoughts...'
       )
       expect(textarea).toHaveValue('Old content')
-      
+
       // Check that migration created brainDumpEntries
-      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      const entries = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
       expect(entries.length).toBe(1)
       expect(entries[0].content).toBe('Old content')
       expect(entries[0].title).toBe('Migrated Note')
@@ -101,7 +103,7 @@ describe('BrainDump Component', () => {
         }
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
-      
+
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -109,10 +111,15 @@ describe('BrainDump Component', () => {
       fireEvent.change(textarea, { target: { value: 'New content' } })
 
       // Wait for debounced autosave (500ms + buffer)
-      await waitFor(() => {
-        const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
-        expect(entries[0].content).toBe('New content')
-      }, { timeout: 1000 })
+      await waitFor(
+        () => {
+          const entries = JSON.parse(
+            localStorage.getItem('brainDumpEntries') || '[]'
+          )
+          expect(entries[0].content).toBe('New content')
+        },
+        { timeout: 1000 }
+      )
     })
 
     test('renders markdown preview', async () => {
@@ -126,7 +133,7 @@ describe('BrainDump Component', () => {
         }
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
-      
+
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -154,7 +161,7 @@ describe('BrainDump Component', () => {
         }
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
-      
+
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
         'Start typing your thoughts...'
@@ -392,7 +399,9 @@ describe('BrainDump Component', () => {
       fireEvent.click(deleteButton)
 
       expect(textarea).toBeDisabled()
-      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      const entries = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
       expect(entries.length).toBe(0)
     })
 
@@ -419,7 +428,9 @@ describe('BrainDump Component', () => {
       fireEvent.click(deleteButton)
 
       expect(textarea).toHaveValue('Some content')
-      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      const entries = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
       expect(entries.length).toBe(1)
     })
   })
@@ -431,7 +442,9 @@ describe('BrainDump Component', () => {
       const newButton = screen.getByRole('button', { name: /new note/i })
       fireEvent.click(newButton)
 
-      const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      const entries = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
       expect(entries.length).toBe(1)
       expect(entries[0].title).toBe('Untitled Note')
     })
@@ -516,9 +529,11 @@ describe('BrainDump Component', () => {
 
       expect(mockClick).toHaveBeenCalled()
       expect(global.URL.createObjectURL).toHaveBeenCalled()
-      
+
       // Check filename format: braindump_title_YYYYMMDD_HHmm.md
-      expect(downloadFilename).toMatch(/^braindump_my_test_note_\d{8}_\d{4}\.md$/)
+      expect(downloadFilename).toMatch(
+        /^braindump_my_test_note_\d{8}_\d{4}\.md$/
+      )
 
       // Restore mocks
       document.createElement = originalCreateElement
@@ -537,11 +552,15 @@ describe('BrainDump Component', () => {
       render(<BrainDump />)
 
       const importInput = screen.getByLabelText('Import markdown file')
-      
+
       const fileContent = '# Imported Note\n\nThis is imported content.'
-      const file = new File([fileContent], 'braindump_my_note_20250115_1430.md', {
-        type: 'text/markdown'
-      })
+      const file = new File(
+        [fileContent],
+        'braindump_my_note_20250115_1430.md',
+        {
+          type: 'text/markdown'
+        }
+      )
 
       // Mock FileReader
       const mockFileReader = {
@@ -549,7 +568,7 @@ describe('BrainDump Component', () => {
         onload: null,
         result: fileContent
       }
-      
+
       global.FileReader = jest.fn(() => mockFileReader)
 
       fireEvent.change(importInput, { target: { files: [file] } })
@@ -558,7 +577,9 @@ describe('BrainDump Component', () => {
       mockFileReader.onload({ target: { result: fileContent } })
 
       await waitFor(() => {
-        const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+        const entries = JSON.parse(
+          localStorage.getItem('brainDumpEntries') || '[]'
+        )
         expect(entries.length).toBe(1)
         expect(entries[0].title).toBe('my note')
         expect(entries[0].content).toBe(fileContent)
@@ -569,7 +590,7 @@ describe('BrainDump Component', () => {
       render(<BrainDump />)
 
       const importInput = screen.getByLabelText('Import markdown file')
-      
+
       const fileContent = 'Content'
       const file = new File([fileContent], 'test_note_name.md', {
         type: 'text/markdown'
@@ -580,14 +601,16 @@ describe('BrainDump Component', () => {
         onload: null,
         result: fileContent
       }
-      
+
       global.FileReader = jest.fn(() => mockFileReader)
 
       fireEvent.change(importInput, { target: { files: [file] } })
       mockFileReader.onload({ target: { result: fileContent } })
 
       await waitFor(() => {
-        const entries = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+        const entries = JSON.parse(
+          localStorage.getItem('brainDumpEntries') || '[]'
+        )
         expect(entries[0].title).toBe('test note name')
       })
     })

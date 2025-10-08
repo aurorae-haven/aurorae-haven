@@ -138,11 +138,15 @@ export function resetSettings() {
 export function exportSettings() {
   // TODO: Implement settings export with metadata
   const settings = getSettings()
-  return JSON.stringify({
-    version: 1,
-    exportedAt: new Date().toISOString(),
-    settings
-  }, null, 2)
+  return JSON.stringify(
+    {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      settings
+    },
+    null,
+    2
+  )
 }
 
 /**
@@ -207,7 +211,10 @@ export function validateSettings(settings) {
     return false
   }
 
-  if (typeof settings.backupEnabled !== 'undefined' && typeof settings.backupEnabled !== 'boolean') {
+  if (
+    typeof settings.backupEnabled !== 'undefined' &&
+    typeof settings.backupEnabled !== 'boolean'
+  ) {
     return false
   }
 
@@ -248,7 +255,9 @@ function applyTheme(theme) {
     root.classList.remove('dark-theme')
   } else {
     // Auto - use system preference
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const prefersDark = window.matchMedia(
+      '(prefers-color-scheme: dark)'
+    ).matches
     if (prefersDark) {
       root.classList.add('dark-theme')
     } else {

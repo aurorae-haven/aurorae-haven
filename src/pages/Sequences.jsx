@@ -138,7 +138,10 @@ function Sequences() {
                       <path d='M5 9l7-7 7 7M5 15l7 7 7-7M9 5l-7 7 7 7M15 5l7 7-7 7' />
                     </svg>
                   </button>
-                  <button className='btn' aria-label='Move Stretch step to later'>
+                  <button
+                    className='btn'
+                    aria-label='Move Stretch step to later'
+                  >
                     <svg className='icon' viewBox='0 0 24 24'>
                       <polygon points='5 4 15 12 5 20 5 4' />
                       <rect x='17' y='4' width='2' height='16' />
@@ -160,15 +163,25 @@ function Sequences() {
           <div className='card-b'>
             <div className='routine-library-empty'>
               <div className='empty-state'>
-                <svg className='icon' viewBox='0 0 24 24' style={{ width: '48px', height: '48px', opacity: 0.5 }}>
+                <svg
+                  className='icon'
+                  viewBox='0 0 24 24'
+                  style={{ width: '48px', height: '48px', opacity: 0.5 }}
+                >
                   <circle cx='12' cy='12' r='10' />
                   <path d='M12 6v12M6 12h12' />
                 </svg>
                 <p className='empty-state-text'>No routines yet</p>
-                <p className='small' style={{ marginTop: '8px', marginBottom: '16px' }}>
+                <p
+                  className='small'
+                  style={{ marginTop: '8px', marginBottom: '16px' }}
+                >
                   Create your first routine to get started
                 </p>
-                <button className='btn btn-primary' aria-label='Create your first routine'>
+                <button
+                  className='btn btn-primary'
+                  aria-label='Create your first routine'
+                >
                   <svg className='icon' viewBox='0 0 24 24'>
                     <path d='M12 5v14M5 12h14' />
                   </svg>

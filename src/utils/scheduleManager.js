@@ -19,7 +19,8 @@ export async function createEvent(event) {
     day: event.day || new Date().toISOString().split('T')[0],
     startTime: event.startTime,
     endTime: event.endTime,
-    duration: event.duration || calculateDuration(event.startTime, event.endTime)
+    duration:
+      event.duration || calculateDuration(event.startTime, event.endTime)
   }
   return await put(STORES.SCHEDULE, newEvent)
 }
@@ -44,7 +45,7 @@ export async function getEventsForRange(startDate, endDate) {
   // TODO: Implement efficient date range query
   const allEvents = await getAll(STORES.SCHEDULE)
   return allEvents.filter(
-    event => event.day >= startDate && event.day <= endDate
+    (event) => event.day >= startDate && event.day <= endDate
   )
 }
 
@@ -76,7 +77,8 @@ export async function updateEvent(event) {
   const updated = {
     ...event,
     timestamp: Date.now(),
-    duration: event.duration || calculateDuration(event.startTime, event.endTime)
+    duration:
+      event.duration || calculateDuration(event.startTime, event.endTime)
   }
   return await put(STORES.SCHEDULE, updated)
 }
@@ -101,7 +103,7 @@ export async function deleteEvent(id) {
 export async function moveEvent(id, newDay, newStartTime) {
   // TODO: Implement drag-and-drop logic with conflict detection
   const events = await getAll(STORES.SCHEDULE)
-  const event = events.find(e => e.id === id)
+  const event = events.find((e) => e.id === id)
 
   if (!event) {
     throw new Error('Event not found')
@@ -130,11 +132,16 @@ export async function moveEvent(id, newDay, newStartTime) {
  * @param {number} excludeEventId - Event ID to exclude from check
  * @returns {Promise<Array>} Array of conflicting events
  */
-export async function checkConflicts(day, startTime, endTime, excludeEventId = null) {
+export async function checkConflicts(
+  day,
+  startTime,
+  endTime,
+  excludeEventId = null
+) {
   // TODO: Implement comprehensive conflict detection
   const events = await getEventsForDay(day)
-  
-  return events.filter(event => {
+
+  return events.filter((event) => {
     if (excludeEventId && event.id === excludeEventId) {
       return false
     }
@@ -160,7 +167,7 @@ export async function getAvailableSlots(day, duration = 60) {
   const slots = []
 
   // Simple implementation: find gaps between events
-  const sortedEvents = events.sort((a, b) => 
+  const sortedEvents = events.sort((a, b) =>
     a.startTime.localeCompare(b.startTime)
   )
 
@@ -239,7 +246,10 @@ export async function getTodaySummary() {
   const today = new Date().toISOString().split('T')[0]
   const events = await getEventsForDay(today)
 
-  const totalDuration = events.reduce((sum, event) => sum + (event.duration || 0), 0)
+  const totalDuration = events.reduce(
+    (sum, event) => sum + (event.duration || 0),
+    0
+  )
   const byType = events.reduce((acc, event) => {
     acc[event.type] = (acc[event.type] || 0) + 1
     return acc
