@@ -31,7 +31,8 @@ The export includes:
 - ✅ **Tags**: All tags from your tag palette
 - ✅ **Version History**: Up to 50 previous versions of your brain dump
 - ✅ **Brain Dump Entries**: All saved entries
-- ✅ **Tasks**: Your task list with completion status
+- ✅ **Tasks (Eisenhower Matrix)**: All tasks organized in four quadrants (urgent/important matrix)
+- ✅ **Tasks (IndexedDB)**: Legacy task list with completion status (if using IndexedDB)
 - ✅ **Sequences**: Routines with steps and timings
 - ✅ **Habits**: Habit tracking data and streaks
 - ✅ **Schedule**: Your daily schedule and time blocks
@@ -58,7 +59,15 @@ The export includes:
   "tasks": [],
   "sequences": [],
   "habits": [],
-  "schedule": []
+  "schedule": [],
+  "auroraeTasksData": {
+    "urgent_important": [
+      { "id": 1, "text": "Do this now", "completed": false, "createdAt": 1704453600000 }
+    ],
+    "not_urgent_important": [],
+    "urgent_not_important": [],
+    "not_urgent_not_important": []
+  }
 }
 ```
 
@@ -170,6 +179,7 @@ If import fails, you'll see an error message:
 Aurorae Haven uses these localStorage keys:
 
 - `aurorae_haven_data` - Main data store
+- `aurorae_tasks` - Tasks in Eisenhower matrix format (4 quadrants)
 - `brainDumpContent` - Current brain dump markdown content
 - `brainDumpTags` - HTML string of tag palette
 - `brainDumpVersions` - Array of version history objects

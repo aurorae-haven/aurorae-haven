@@ -142,6 +142,15 @@ export async function getDataTemplate() {
     console.warn('Failed to parse main data:', e)
   }
 
+  // Parse tasks from aurorae_tasks (Eisenhower matrix format)
+  let auroraeTasksData = null
+  try {
+    const tasksStr = localStorage.getItem('aurorae_tasks')
+    auroraeTasksData = tasksStr ? JSON.parse(tasksStr) : null
+  } catch (e) {
+    console.warn('Failed to parse aurorae_tasks:', e)
+  }
+
   return {
     version: 1,
     exportedAt: new Date().toISOString(),
@@ -150,6 +159,7 @@ export async function getDataTemplate() {
     habits: mainData.habits || [],
     dumps: mainData.dumps || [],
     schedule: schedule.length > 0 ? schedule : mainData.schedule || [],
+    auroraeTasksData: auroraeTasksData,
     brainDump: {
       content: brainDumpContent,
       tags: brainDumpTags,
@@ -250,6 +260,11 @@ export async function importJSON(file) {
     // Import schedule data to separate key if available
     if (schedule.length > 0) {
       localStorage.setItem('sj.schedule.events', JSON.stringify(schedule))
+    }
+
+    // Import tasks to aurorae_tasks (Eisenhower matrix format)
+    if (obj.auroraeTasksData && typeof obj.auroraeTasksData === 'object') {
+      localStorage.setItem('aurorae_tasks', JSON.stringify(obj.auroraeTasksData))
     }
 
     return { success: true, message: 'Data imported successfully' }
