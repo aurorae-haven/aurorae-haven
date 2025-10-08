@@ -305,5 +305,73 @@ describe('Data Manager', () => {
       )
       expect(storedSchedule).toEqual(schedule)
     })
+
+    it('should support round-trip export and import', async () => {
+      // Setup initial data
+      const initialData = {
+        version: 1,
+        tasks: [{ id: 1, title: 'Test Task', done: false }],
+        sequences: [{ id: 'seq_1', name: 'Morning Routine', steps: [] }],
+        habits: [{ id: 'hab_1', name: 'Exercise', streak: 5 }],
+        dumps: [{ id: 'dump_1', text: 'Note' }],
+        schedule: [
+          { day: '2025-01-15', blocks: [{ type: 'task', start: '09:00' }] }
+        ],
+        brainDump: {
+          content: '# Brain Dump Content',
+          tags: '<span class="tag">#idea</span>',
+          versions: [
+            {
+              id: 1,
+              content: 'Version 1',
+              timestamp: '2025-01-01T00:00:00Z'
+            }
+          ],
+          entries: [
+            {
+              id: 'entry_1',
+              content: 'Entry 1',
+              timestamp: '2025-01-01T00:00:00Z'
+            }
+          ]
+        }
+      }
+
+      // Import initial data
+      const mockFile1 = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(initialData))
+      }
+      await importJSON(mockFile1)
+
+      // Export the data
+      const exportedData = await getDataTemplate()
+
+      // Re-import the exported data
+      const mockFile2 = {
+        text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
+      }
+      const result = await importJSON(mockFile2)
+
+      // Verify import succeeded
+      expect(result.success).toBe(true)
+
+      // Verify data integrity
+      const reimportedData = await getDataTemplate()
+      expect(reimportedData.tasks).toEqual(initialData.tasks)
+      expect(reimportedData.sequences).toEqual(initialData.sequences)
+      expect(reimportedData.habits).toEqual(initialData.habits)
+      expect(reimportedData.dumps).toEqual(initialData.dumps)
+      expect(reimportedData.schedule).toEqual(initialData.schedule)
+      expect(reimportedData.brainDump.content).toEqual(
+        initialData.brainDump.content
+      )
+      expect(reimportedData.brainDump.tags).toEqual(initialData.brainDump.tags)
+      expect(reimportedData.brainDump.versions).toEqual(
+        initialData.brainDump.versions
+      )
+      expect(reimportedData.brainDump.entries).toEqual(
+        initialData.brainDump.entries
+      )
+    })
   })
 })
