@@ -88,7 +88,7 @@ tar -xzf aurorae-haven-offline-*.tar.gz
 2. Double-click `index.html` to open in your default browser
 3. The app will load and work immediately
 
-**✨ No server needed! No installation required! No internet required!** 
+**✨ No server needed! No installation required! No internet required!**
 
 The offline package is built with relative paths so it works directly from your file system. Just double-click and go!
 

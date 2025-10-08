@@ -17,6 +17,7 @@ The offline package is automatically generated and uploaded to multiple location
 **Trigger**: Every push to `main`, `feature-*`, or `hotfix-*` branches
 
 **Process**:
+
 1. Build the offline package with relative paths
 2. Create/update the `offline-releases` orphan branch
 3. Upload the `.tar.gz` package
@@ -24,10 +25,12 @@ The offline package is automatically generated and uploaded to multiple location
 5. Push to the branch
 
 **Access**:
+
 - Branch: https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases
 - Direct download: https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz
 
 **Benefits**:
+
 - Always available (no expiration)
 - Latest build from main branch
 - Easy to access and download
@@ -42,6 +45,7 @@ The offline package is automatically generated and uploaded to multiple location
 **Trigger**: Version tags (e.g., `v1.0.0`, `v1.1.0`)
 
 **Process**:
+
 1. Build the offline package
 2. Extract version from package name
 3. Create GitHub Release with tag
@@ -49,9 +53,11 @@ The offline package is automatically generated and uploaded to multiple location
 5. Generate release notes with installation instructions
 
 **Access**:
+
 - Releases page: https://github.com/aurorae-haven/aurorae-haven/releases
 
 **Benefits**:
+
 - Versioned and tagged
 - Includes changelog
 - Professional release presentation
@@ -66,14 +72,17 @@ The offline package is automatically generated and uploaded to multiple location
 **Trigger**: Every workflow run
 
 **Process**:
+
 1. Build the offline package
 2. Upload as workflow artifact
 3. Retain for 90 days
 
 **Access**:
+
 - Actions page → Workflow run → Artifacts section
 
 **Benefits**:
+
 - Includes all development builds
 - Useful for testing
 - Automatic cleanup after 90 days
@@ -89,6 +98,7 @@ npm run build:offline
 ```
 
 **Build Process**:
+
 1. Clean previous builds
 2. Build with Vite using relative paths (`VITE_BASE_URL='./'`)
 3. Generate PWA assets (service worker, manifest)
@@ -96,6 +106,7 @@ npm run build:offline
 5. Output to `dist-offline/` directory
 
 **Package Contents**:
+
 - `index.html` - Main entry point
 - `assets/` - JavaScript bundles and CSS
 - `sw.js` - Service worker
@@ -130,6 +141,7 @@ git push -f origin offline-releases
 ```
 
 **Why orphan branch?**
+
 - No history from main branch
 - Keeps repository size small
 - Clear separation of concerns
@@ -156,6 +168,7 @@ The release workflow uses `softprops/action-gh-release@v2`:
 ### For End Users
 
 **Download latest build:**
+
 ```bash
 # From offline-releases branch
 wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz
@@ -170,6 +183,7 @@ start index.html  # Windows
 ```
 
 **Download stable release:**
+
 1. Visit https://github.com/aurorae-haven/aurorae-haven/releases
 2. Click on the latest release
 3. Download the `.tar.gz` file under "Assets"
@@ -177,6 +191,7 @@ start index.html  # Windows
 ### For Developers
 
 **Create a new release:**
+
 ```bash
 # Tag a new version
 git tag v1.1.0
@@ -189,6 +204,7 @@ git push origin v1.1.0
 ```
 
 **Test locally:**
+
 ```bash
 # Build offline package
 npm run build:offline
@@ -204,11 +220,13 @@ ls -lh dist-offline/
 **Symptom**: Workflow fails at "Upload offline package to repository branch"
 
 **Possible causes**:
+
 - Insufficient permissions (needs `contents: write`)
 - Branch protection rules blocking force push
 - Git configuration issues
 
 **Solution**:
+
 - Check workflow permissions in `.github/workflows/upload-pages-artifact.yml`
 - Ensure `GITHUB_TOKEN` has write access
 - Verify no branch protection on `offline-releases`
@@ -218,11 +236,13 @@ ls -lh dist-offline/
 **Symptom**: Tag pushed but no release created
 
 **Possible causes**:
+
 - Tag name doesn't match pattern (`v*.*.*`)
 - Workflow permissions insufficient
 - Build failed
 
 **Solution**:
+
 - Verify tag format: `v1.0.0`, `v1.2.3`, etc.
 - Check workflow run logs
 - Ensure `contents: write` permission
@@ -232,11 +252,13 @@ ls -lh dist-offline/
 **Symptom**: "No offline package found!" error
 
 **Possible causes**:
+
 - Build failed before package creation
 - `dist-offline/` directory empty
 - Package script error
 
 **Solution**:
+
 - Check build logs
 - Verify `npm run build:offline` works locally
 - Review `scripts/create-offline-package.js` for errors
@@ -248,16 +270,19 @@ ls -lh dist-offline/
 When modifying the workflows:
 
 1. **Test locally first**:
+
    ```bash
    npm run build:offline
    ```
 
 2. **Validate YAML syntax**:
+
    ```bash
    npx yaml-lint .github/workflows/*.yml
    ```
 
 3. **Validate with actionlint**:
+
    ```bash
    actionlint .github/workflows/*.yml
    ```
@@ -267,14 +292,17 @@ When modifying the workflows:
 ### Monitoring
 
 **Check upload success**:
+
 - Visit https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases
 - Verify package exists and timestamp is recent
 
 **Check releases**:
+
 - Visit https://github.com/aurorae-haven/aurorae-haven/releases
 - Verify releases have attached assets
 
 **Check artifacts**:
+
 - Visit https://github.com/aurorae-haven/aurorae-haven/actions
 - Click on recent workflow run
 - Verify "offline-package" artifact exists
@@ -284,6 +312,7 @@ When modifying the workflows:
 ### Branch Protection
 
 The `offline-releases` branch:
+
 - Uses orphan branch (no shared history)
 - Force push is required (updates replace entire branch)
 - No sensitive data should be committed

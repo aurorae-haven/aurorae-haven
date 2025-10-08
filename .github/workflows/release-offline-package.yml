@@ -40,13 +40,13 @@ jobs:
             echo "ERROR: Failed to extract version from package name '$PACKAGE_NAME'."
             exit 1
           fi
-          
+
           {
             echo "file=$PACKAGE_FILE"
             echo "name=$PACKAGE_NAME"
             echo "version=$VERSION"
           } >> "$GITHUB_OUTPUT"
-          
+
           echo "Package: $PACKAGE_NAME"
           echo "Version: $VERSION"
 
@@ -58,44 +58,44 @@ jobs:
           name: Aurorae Haven v${{ steps.package.outputs.version }}
           body: |
             # 🌌 Aurorae Haven - Offline Package
-            
+
             ## Download
-            
+
             Download the offline package below to run Aurorae Haven without internet access.
-            
+
             **Package**: `${{ steps.package.outputs.name }}`
-            
+
             ## Installation Instructions
-            
+
             1. **Download** the `.tar.gz` file below (Assets section)
             2. **Extract** it (Windows 10+: Right-click → Extract All)
             3. **Open** `index.html` in your browser
-            
+
             ✨ **No installation! No server! No internet required!**
-            
+
             Just download, extract, and double-click `index.html` - the app works directly from your file system!
-            
+
             ## What's Included
-            
+
             - ✅ Full React PWA application
             - ✅ Service worker for offline functionality
             - ✅ PWA manifest for installation
             - ✅ All assets optimized and minified
             - ✅ Total size: ~105 KB compressed
-            
+
             ## Documentation
-            
+
             For detailed installation instructions and troubleshooting, see:
             - [Offline Download Guide](https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md)
-            
+
             ## System Requirements
-            
+
             - Any modern browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
             - No internet connection required after download
             - No build tools or Node.js needed
-            
+
             ---
-            
+
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.ref_name }}
           draft: false
           prerelease: false

@@ -145,93 +145,93 @@ jobs:
       - name: Upload offline package to repository branch
         run: |
           echo "📦 Uploading offline package to offline-releases branch..."
-          
+
           # Get the package file
           PACKAGE_FILE=$(find dist-offline -name "*.tar.gz" -type f | head -1)
           PACKAGE_NAME=$(basename "$PACKAGE_FILE")
-          
+
           if [ -z "$PACKAGE_FILE" ]; then
             echo "❌ No offline package found!"
             exit 1
           fi
-          
+
           echo "  → Package: $PACKAGE_NAME"
-          
+
           # Configure git
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Create or checkout offline-releases branch
           git fetch origin offline-releases:offline-releases 2>/dev/null || git checkout --orphan offline-releases
           if ! git checkout offline-releases 2>/dev/null; then
             echo "⚠️ Warning: Failed to checkout offline-releases branch. Continuing..."
           fi
-          
+
           # Clean the branch (keep only offline packages)
           # Remove all tracked files except .git (if any)
           git rm -rf . || { echo "❌ Failed to remove files from branch!"; exit 1; }
-          
+
           # Create README for GitHub display
           cat > README.md <<'READMEEOF'
           # 🌌 Aurorae Haven - Offline Packages
-          
+
           Welcome to the offline packages branch! This branch contains the latest offline build of Aurorae Haven.
-          
+
           ## 📦 Download
-          
+
           Click on the `.tar.gz` file above to download the latest offline package.
-          
+
           **Latest Package**: `PACKAGE_NAME_PLACEHOLDER`
-          
+
           ## 🚀 Quick Start
-          
+
           1. **Download** the `.tar.gz` file above
           2. **Extract** it (Windows 10+: Right-click → Extract All)
           3. **Open** `index.html` in your browser
-          
+
           ✨ **No installation! No server! No internet required!**
-          
+
           The app works directly from your file system - just download, extract, and double-click!
-          
+
           ## ✨ What's Included
-          
+
           - ✅ Full React PWA application
           - ✅ Service worker for offline functionality
           - ✅ PWA manifest for installation
           - ✅ All assets optimized and minified
           - ✅ Total size: ~105 KB compressed
-          
+
           ## 📚 Full Documentation
-          
+
           For detailed installation instructions, troubleshooting, and more:
-          
+
           👉 [**Offline Download Guide**](https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md)
-          
+
           ## 🏠 Main Repository
-          
+
           Back to the main repository:
-          
+
           👉 [**Aurorae Haven**](https://github.com/aurorae-haven/aurorae-haven)
-          
+
           ## 🔄 Updates
-          
+
           This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
-          
+
           **Last Updated**: BUILD_DATE_PLACEHOLDER
           **Source Branch**: BUILD_BRANCH_PLACEHOLDER
           **Source Commit**: BUILD_COMMIT_PLACEHOLDER
-          
+
           ---
-          
+
           **Built with** ❤️ **by the Aurorae Haven team**
           READMEEOF
-          
+
           # Replace placeholders
           sed -i "s/PACKAGE_NAME_PLACEHOLDER/$PACKAGE_NAME/" README.md
           sed -i "s/BUILD_DATE_PLACEHOLDER/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/" README.md
           sed -i "s/BUILD_BRANCH_PLACEHOLDER/${GITHUB_REF##*/}/" README.md
           sed -i "s/BUILD_COMMIT_PLACEHOLDER/${GITHUB_SHA:0:7}/" README.md
-          
+
           # Create a simple index.html for direct browsing
           cat > index.html <<EOF
           <!DOCTYPE html>
@@ -271,17 +271,17 @@ jobs:
           </body>
           </html>
           EOF
-          
+
           # Copy the package
           cp "$PACKAGE_FILE" .
-          
+
           # Add and commit
           git add README.md index.html "$PACKAGE_NAME"
           git commit -m "Update offline package: $PACKAGE_NAME" || echo "No changes to commit"
-          
+
           # Push to the branch
           git push -f origin offline-releases
-          
+
           echo "✓ Offline package uploaded to offline-releases branch"
           echo "  → Access at: https://github.com/${GITHUB_REPOSITORY}/tree/offline-releases"
 
