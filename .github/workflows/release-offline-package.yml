@@ -1,0 +1,111 @@
+name: Release Offline Package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release with Offline Package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Create offline package
+        run: npm run build:offline
+        env:
+          CI: true
+
+      - name: Get package details
+        id: package
+        run: |
+          PACKAGE_FILE=$(find dist-offline -name "*.tar.gz" -type f | head -1)
+          PACKAGE_NAME=$(basename "$PACKAGE_FILE")
+          VERSION=$(echo "$PACKAGE_NAME" | sed -n 's/.*-v\(.*\)\.tar\.gz/\1/p')
+          if [ -z "$VERSION" ]; then
+            echo "ERROR: Failed to extract version from package name '$PACKAGE_NAME'."
+            exit 1
+          fi
+
+          {
+            echo "file=$PACKAGE_FILE"
+            echo "name=$PACKAGE_NAME"
+            echo "version=$VERSION"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Package: $PACKAGE_NAME"
+          echo "Version: $VERSION"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.package.outputs.file }}
+          tag_name: ${{ github.ref_name }}
+          name: Aurorae Haven v${{ steps.package.outputs.version }}
+          body: |
+            # 🌌 Aurorae Haven - Offline Package
+
+            ## Download
+
+            Download the offline package below to run Aurorae Haven without internet access.
+
+            **Package**: `${{ steps.package.outputs.name }}`
+
+            ## Installation Instructions
+
+            1. **Download** the `.tar.gz` file below (Assets section)
+            2. **Extract** it (Windows 10+: Right-click → Extract All)
+            3. **Open** `index.html` in your browser
+
+            ✨ **No installation! No server! No internet required!**
+
+            Just download, extract, and double-click `index.html` - the app works directly from your file system!
+
+            ## What's Included
+
+            - ✅ Full React PWA application
+            - ✅ Service worker for offline functionality
+            - ✅ PWA manifest for installation
+            - ✅ All assets optimized and minified
+            - ✅ Total size: ~105 KB compressed
+
+            ## Documentation
+
+            For detailed installation instructions and troubleshooting, see:
+            - [Offline Download Guide](https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md)
+
+            ## System Requirements
+
+            - Any modern browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
+            - No internet connection required after download
+            - No build tools or Node.js needed
+
+            ---
+
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ github.event.before }}...${{ github.ref_name }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release summary
+        run: |
+          echo "✓ Release created successfully!"
+          echo "  → Version: ${{ steps.package.outputs.version }}"
+          echo "  → Package: ${{ steps.package.outputs.name }}"
+          echo "  → Tag: ${{ github.ref_name }}"
+          echo "  → URL: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"

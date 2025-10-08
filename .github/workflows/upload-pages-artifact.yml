@@ -142,6 +142,164 @@ jobs:
           retention-days: 90
           if-no-files-found: warn
 
+      - name: Upload offline package to repository branch
+        run: |
+          echo "📦 Uploading offline package to offline-releases branch..."
+
+          # Get the package file
+          PACKAGE_FILE=$(find dist-offline -name "*.tar.gz" -type f | head -1)
+          PACKAGE_NAME=$(basename "$PACKAGE_FILE")
+
+          if [ -z "$PACKAGE_FILE" ]; then
+            echo "❌ No offline package found!"
+            exit 1
+          fi
+
+          # Get package size in KB
+          PACKAGE_SIZE_BYTES=$(stat -f%z "$PACKAGE_FILE" 2>/dev/null || stat -c%s "$PACKAGE_FILE")
+          PACKAGE_SIZE_KB=$((PACKAGE_SIZE_BYTES / 1024))
+
+          echo "  → Package: $PACKAGE_NAME"
+          echo "  → Size: ${PACKAGE_SIZE_KB} KB"
+
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create or checkout offline-releases branch
+          git fetch origin offline-releases:offline-releases 2>/dev/null || git checkout --orphan offline-releases
+          if ! git checkout offline-releases 2>/dev/null; then
+            echo "⚠️ Warning: Failed to checkout offline-releases branch. Continuing..."
+          fi
+
+          # Clean the branch (keep only offline packages)
+          # Remove all tracked files except .git (if any)
+          if ! git rm -rf .; then
+            echo "❌ Failed to remove files from branch!"
+            exit 1
+          fi
+
+          # Create README for GitHub display
+          cat > README.md <<'EOF'
+          # 🌌 Aurorae Haven - Offline Packages
+
+          Welcome to the offline packages branch! This branch contains the latest offline build of Aurorae Haven.
+
+          ## 📦 Download
+
+          Click on the `.tar.gz` file above to download the latest offline package.
+
+          **Latest Package**: `PACKAGE_NAME_PLACEHOLDER`
+
+          ## 🚀 Quick Start
+
+          1. **Download** the `.tar.gz` file above
+          2. **Extract** it (Windows 10+: Right-click → Extract All)
+          3. **Open** `index.html` in your browser
+
+          ✨ **No installation! No server! No internet required!**
+
+          The app works directly from your file system - just download, extract, and double-click!
+
+          ## ✨ What's Included
+
+          - ✅ Full React PWA application
+          - ✅ Service worker for offline functionality
+          - ✅ PWA manifest for installation
+          - ✅ All assets optimized and minified
+          - ✅ Total size: PACKAGE_SIZE_PLACEHOLDER KB compressed
+
+          ## 📚 Full Documentation
+
+          For detailed installation instructions, troubleshooting, and more:
+
+          👉 [**Offline Download Guide**](https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md)
+
+          ## 🏠 Main Repository
+
+          Back to the main repository:
+
+          👉 [**Aurorae Haven**](https://github.com/aurorae-haven/aurorae-haven)
+
+          ## 🔄 Updates
+
+          This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
+
+          **Last Updated**: BUILD_DATE_PLACEHOLDER
+          **Source Branch**: BUILD_BRANCH_PLACEHOLDER
+          **Source Commit**: BUILD_COMMIT_PLACEHOLDER
+
+          ---
+
+          **Built with** ❤️ **by the Aurorae Haven team**
+          EOF
+
+          # Replace placeholders
+          sed -i "s/PACKAGE_NAME_PLACEHOLDER/$PACKAGE_NAME/" README.md
+          sed -i "s/PACKAGE_SIZE_PLACEHOLDER/$PACKAGE_SIZE_KB/" README.md
+          sed -i "s/BUILD_DATE_PLACEHOLDER/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/" README.md
+          sed -i "s/BUILD_BRANCH_PLACEHOLDER/${GITHUB_REF##*/}/" README.md
+          sed -i "s/BUILD_COMMIT_PLACEHOLDER/${GITHUB_SHA:0:7}/" README.md
+
+          # Create a simple index.html for direct browsing
+          cat > index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Aurorae Haven - Offline Packages</title>
+            <style>
+              body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+              h1 { color: #5B21B6; }
+              .package { background: #F3F4F6; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
+              .package a { color: #5B21B6; text-decoration: none; font-weight: 600; }
+              .package a:hover { text-decoration: underline; }
+              .info { color: #6B7280; font-size: 0.9rem; }
+            </style>
+          </head>
+          <body>
+            <h1>🌌 Aurorae Haven - Offline Packages</h1>
+            <p>Download the latest offline package to run Aurorae Haven without internet access.</p>
+            
+            <div class="package">
+              <a href="PACKAGE_NAME_PLACEHOLDER" download>📦 PACKAGE_NAME_PLACEHOLDER</a>
+              <p class="info">Built: BUILD_DATE_PLACEHOLDER</p>
+              <p class="info">Branch: BUILD_BRANCH_PLACEHOLDER | Commit: BUILD_COMMIT_PLACEHOLDER</p>
+            </div>
+            
+            <h2>Installation Instructions</h2>
+            <ol>
+              <li>Download the package above</li>
+              <li>Extract: <code>tar -xzf PACKAGE_NAME_PLACEHOLDER</code></li>
+              <li>Open <code>index.html</code> in your browser</li>
+            </ol>
+            
+            <p>📚 <a href="https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md">Full Documentation</a></p>
+            <p>🏠 <a href="https://github.com/aurorae-haven/aurorae-haven">Repository</a></p>
+          </body>
+          </html>
+          EOF
+
+          # Replace placeholders in index.html
+          sed -i "s/PACKAGE_NAME_PLACEHOLDER/$PACKAGE_NAME/g" index.html
+          sed -i "s/BUILD_DATE_PLACEHOLDER/$(date -u +"%Y-%m-%d %H:%M:%S UTC")/" index.html
+          sed -i "s/BUILD_BRANCH_PLACEHOLDER/${GITHUB_REF##*/}/" index.html
+          sed -i "s/BUILD_COMMIT_PLACEHOLDER/${GITHUB_SHA:0:7}/" index.html
+
+          # Copy the package
+          cp "$PACKAGE_FILE" .
+
+          # Add and commit
+          git add README.md index.html "$PACKAGE_NAME"
+          if git commit -m "Update offline package: $PACKAGE_NAME"; then
+            # Push to the branch
+            git push -f origin offline-releases
+            echo "✓ Offline package uploaded to offline-releases branch"
+            echo "  → Access at: https://github.com/${GITHUB_REPOSITORY}/tree/offline-releases"
+          else
+            echo "No changes to commit. Skipping push to offline-releases branch."
+          fi
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
