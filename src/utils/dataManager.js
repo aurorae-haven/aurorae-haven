@@ -33,12 +33,18 @@ export const SCHEDULE_EVENT_TYPES = {
   MEETING: 'meeting'
 }
 
+// Validation types for field definitions
+const VALIDATION_TYPES = {
+  STRING: 'string',
+  ARRAY: 'array'
+}
+
 // BrainDump field type definitions for validation
 const BRAIN_DUMP_FIELDS = {
-  content: 'string',
-  tags: 'string',
-  versions: 'array',
-  entries: 'array'
+  content: VALIDATION_TYPES.STRING,
+  tags: VALIDATION_TYPES.STRING,
+  versions: VALIDATION_TYPES.ARRAY,
+  entries: VALIDATION_TYPES.ARRAY
 }
 
 /**
