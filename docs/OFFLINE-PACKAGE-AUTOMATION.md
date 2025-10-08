@@ -20,7 +20,7 @@ The offline package is automatically generated and uploaded to multiple location
 
 1. Build the offline package with relative paths
 2. Create/update the `offline-releases` orphan branch
-3. Upload the `.tar.gz` package
+3. Upload the `.tar.gz` and `.zip` packages
 4. Generate an `index.html` for easy browsing
 5. Push to the branch
 
@@ -28,6 +28,7 @@ The offline package is automatically generated and uploaded to multiple location
 
 - Branch: https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases
 - Direct download: https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz
+- Direct download: https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip
 
 **Benefits**:
 
@@ -102,7 +103,7 @@ npm run build:offline
 1. Clean previous builds
 2. Build with Vite using relative paths (`VITE_BASE_URL='./'`)
 3. Generate PWA assets (service worker, manifest)
-4. Create `.tar.gz` archive
+4. Create `.tar.gz` and '.zip` archive
 5. Output to `dist-offline/` directory
 
 **Package Contents**:
@@ -130,6 +131,7 @@ git checkout offline-releases
 # Clean and upload new package
 git rm -rf .
 cp package.tar.gz .
+cp package.zip .
 cat > index.html <<EOF
 <!DOCTYPE html>
 <html lang="en">
@@ -140,7 +142,9 @@ cat > index.html <<EOF
 <body>
   <h1>Download Offline Package</h1>
   <p>
-    <a href="package.tar.gz" download>Click here to download the latest offline package</a>
+    <a href="package.tar.gz" download>Click here to download the latest offline package (tarball)</a>
+    <a href="package.zip" download>Click here to download the latest offline package (zip)</a>
+
   </p>
 </body>
 </html>
@@ -166,7 +170,9 @@ The release workflow uses `softprops/action-gh-release@v2`:
 - name: Create Release
   uses: softprops/action-gh-release@v2
   with:
-    files: dist-offline/*.tar.gz
+    files:
+    - dist-offline/*.tar.gz
+    - dist-offline/*.zip
     tag_name: ${{ github.ref_name }}
     name: Aurorae Haven v${{ steps.package.outputs.version }}
     body: |
@@ -184,9 +190,11 @@ The release workflow uses `softprops/action-gh-release@v2`:
 ```bash
 # From offline-releases branch
 wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz
+wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip
 
 # Extract
 tar -xzf aurorae-haven-offline-v1.0.0.tar.gz
+unzip aurorae-haven-offline-v1.0.0.tar.gz
 
 # Open in browser
 open index.html  # macOS
@@ -199,6 +207,7 @@ start index.html  # Windows
 1. Visit https://github.com/aurorae-haven/aurorae-haven/releases
 2. Click on the latest release
 3. Download the `.tar.gz` file under "Assets"
+4. Download the `.zip` file under "Assets"
 
 ### For Developers
 
