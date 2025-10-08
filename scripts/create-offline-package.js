@@ -56,24 +56,25 @@ async function buildForOffline() {
       )
     }
 
-    // Move the dist directory to our offline build directory
+    // Copy the dist directory to our offline build directory
+    // Note: We copy instead of move to preserve dist/ for GitHub Pages deployment
     try {
-      execSync(`mv "${DIST_DIR}" "${DIST_OFFLINE_DIR}"`, {
+      execSync(`cp -r "${DIST_DIR}" "${DIST_OFFLINE_DIR}"`, {
         stdio: 'pipe',
         encoding: 'utf-8'
       })
-    } catch (mvError) {
+    } catch (cpError) {
       throw new Error(
-        `Failed to move build directory: ${mvError.message}\n` +
+        `Failed to copy build directory: ${cpError.message}\n` +
           `  From: ${DIST_DIR}\n` +
           `  To: ${DIST_OFFLINE_DIR}`
       )
     }
 
-    // Verify the move was successful
+    // Verify the copy was successful
     if (!existsSync(DIST_OFFLINE_DIR)) {
       throw new Error(
-        `Build directory was not moved to expected location: ${DIST_OFFLINE_DIR}`
+        `Build directory was not copied to expected location: ${DIST_OFFLINE_DIR}`
       )
     }
 
