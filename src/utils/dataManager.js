@@ -310,7 +310,10 @@ export async function exportJSON() {
     }
 
     // Serialize data for export (reuse validation.stringified to avoid redundant serialization)
-    const data = validation.stringified // Already serialized during validation
+    const data =
+      typeof validation.stringified === 'string'
+        ? validation.stringified
+        : JSON.stringify(dataTemplate)
     const blob = new Blob([data], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
 
