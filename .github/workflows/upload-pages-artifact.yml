@@ -280,14 +280,14 @@ jobs:
 
           # Add and commit
           git add README.md index.html "$PACKAGE_NAME"
-          git commit -m "Update offline package: $PACKAGE_NAME" || echo "No changes to commit"
-
-          # Push to the branch
-          git push -f origin offline-releases
-
-          echo "✓ Offline package uploaded to offline-releases branch"
-          echo "  → Access at: https://github.com/${GITHUB_REPOSITORY}/tree/offline-releases"
-
+          if git commit -m "Update offline package: $PACKAGE_NAME"; then
+            # Push to the branch
+            git push -f origin offline-releases
+            echo "✓ Offline package uploaded to offline-releases branch"
+            echo "  → Access at: https://github.com/${GITHUB_REPOSITORY}/tree/offline-releases"
+          else
+            echo "No changes to commit. Skipping push to offline-releases branch."
+          fi
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
