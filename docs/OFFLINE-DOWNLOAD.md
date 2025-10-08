@@ -13,15 +13,37 @@ The offline download package allows you to run Aurorae Haven on your computer wi
 
 ## Download Instructions
 
-### Option 1: Download from GitHub Actions (Latest Build)
+### Option 1: Download from Repository Branch (Recommended)
+
+The latest offline package is always available on the `offline-releases` branch:
+
+1. Visit the [offline-releases branch](https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases)
+2. Click on the `.tar.gz` file to view it
+3. Click the "Download" button to download the package
+4. The file will be named something like `aurorae-haven-offline-v1.0.0.tar.gz`
+
+**Direct Download Link**: [Latest Offline Package](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz)
+
+### Option 2: Download from GitHub Releases (Stable Versions)
+
+For stable, tagged releases:
+
+1. Visit the [Releases page](https://github.com/aurorae-haven/aurorae-haven/releases)
+2. Find the latest release (or the version you want)
+3. Download the `.tar.gz` file under "Assets"
+4. Tagged releases are versioned and include changelogs
+
+### Option 3: Download from GitHub Actions (Development Builds)
+
+For the absolute latest build from CI/CD:
 
 1. Visit the [GitHub Actions workflows page](https://github.com/aurorae-haven/aurorae-haven/actions/workflows/upload-pages-artifact.yml)
 2. Click on the most recent successful workflow run (look for a green checkmark ✓)
 3. Scroll down to the **Artifacts** section at the bottom of the page
 4. Click on `offline-package` to download the `.zip` file
-5. The downloaded file will be named something like `offline-package.zip`
+5. Note: Artifacts expire after 90 days
 
-### Option 2: Build Locally (Requires Node.js)
+### Option 4: Build Locally (Requires Node.js)
 
 If you have the repository cloned and Node.js installed:
 
@@ -136,7 +158,10 @@ The offline package is automatically generated during the CI/CD pipeline:
 2. PWA assets are generated automatically (service worker, manifest)
 3. All files are bundled and optimized
 4. A `.tar.gz` archive is created containing everything
-5. The archive is uploaded as a GitHub Actions artifact (retained for 90 days)
+5. The archive is uploaded to multiple locations:
+   - **Repository Branch**: Pushed to `offline-releases` branch (always available)
+   - **GitHub Releases**: Attached to tagged releases (stable versions)
+   - **GitHub Actions Artifacts**: Available for 90 days (development builds)
 
 ### Browser Compatibility
 

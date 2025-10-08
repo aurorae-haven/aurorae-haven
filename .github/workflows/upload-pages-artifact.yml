@@ -142,6 +142,85 @@ jobs:
           retention-days: 90
           if-no-files-found: warn
 
+      - name: Upload offline package to repository branch
+        run: |
+          echo "📦 Uploading offline package to offline-releases branch..."
+          
+          # Get the package file
+          PACKAGE_FILE=$(find dist-offline -name "*.tar.gz" -type f | head -1)
+          PACKAGE_NAME=$(basename "$PACKAGE_FILE")
+          
+          if [ -z "$PACKAGE_FILE" ]; then
+            echo "❌ No offline package found!"
+            exit 1
+          fi
+          
+          echo "  → Package: $PACKAGE_NAME"
+          
+          # Configure git
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create or checkout offline-releases branch
+          git fetch origin offline-releases:offline-releases 2>/dev/null || git checkout --orphan offline-releases
+          git checkout offline-releases 2>/dev/null || true
+          
+          # Clean the branch (keep only offline packages)
+          git rm -rf . 2>/dev/null || true
+          
+          # Create a simple index
+          cat > index.html <<EOF
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Aurorae Haven - Offline Packages</title>
+            <style>
+              body { font-family: system-ui, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+              h1 { color: #5B21B6; }
+              .package { background: #F3F4F6; padding: 1rem; margin: 1rem 0; border-radius: 8px; }
+              .package a { color: #5B21B6; text-decoration: none; font-weight: 600; }
+              .package a:hover { text-decoration: underline; }
+              .info { color: #6B7280; font-size: 0.9rem; }
+            </style>
+          </head>
+          <body>
+            <h1>🌌 Aurorae Haven - Offline Packages</h1>
+            <p>Download the latest offline package to run Aurorae Haven without internet access.</p>
+            
+            <div class="package">
+              <a href="$PACKAGE_NAME" download>📦 $PACKAGE_NAME</a>
+              <p class="info">Built: $(date -u +"%Y-%m-%d %H:%M:%S UTC")</p>
+              <p class="info">Branch: ${GITHUB_REF##*/} | Commit: ${GITHUB_SHA:0:7}</p>
+            </div>
+            
+            <h2>Installation Instructions</h2>
+            <ol>
+              <li>Download the package above</li>
+              <li>Extract: <code>tar -xzf $PACKAGE_NAME</code></li>
+              <li>Open <code>index.html</code> in your browser</li>
+            </ol>
+            
+            <p>📚 <a href="https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md">Full Documentation</a></p>
+            <p>🏠 <a href="https://github.com/aurorae-haven/aurorae-haven">Repository</a></p>
+          </body>
+          </html>
+          EOF
+          
+          # Copy the package
+          cp "$PACKAGE_FILE" .
+          
+          # Add and commit
+          git add index.html "$PACKAGE_NAME"
+          git commit -m "Update offline package: $PACKAGE_NAME" || echo "No changes to commit"
+          
+          # Push to the branch
+          git push -f origin offline-releases
+          
+          echo "✓ Offline package uploaded to offline-releases branch"
+          echo "  → Access at: https://github.com/${GITHUB_REPOSITORY}/tree/offline-releases"
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
