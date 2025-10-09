@@ -20,6 +20,10 @@ import mimetypes
 PORT = 8765
 HOST = '127.0.0.1'
 
+# errno constants for address already in use
+EADDRINUSE_MACOS = 48   # macOS
+EADDRINUSE_LINUX = 98   # Linux
+
 # Add additional MIME types
 mimetypes.add_type('application/javascript', '.js')
 mimetypes.add_type('application/javascript', '.mjs')
@@ -67,7 +71,7 @@ def main():
             httpd.serve_forever()
             
     except OSError as e:
-        if e.errno == 48 or e.errno == 98:  # Address already in use
+        if e.errno in (EADDRINUSE_MACOS, EADDRINUSE_LINUX):
             print(f"\n❌ Port {PORT} is already in use.")
             print(f"Please close the other application or use a different port.\n")
             sys.exit(1)
