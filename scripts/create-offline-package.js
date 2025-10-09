@@ -240,7 +240,7 @@ async function createTarGz() {
     try {
       const { spawnSync } = await import('child_process')
       const result = spawnSync('tar', ['-czf', outputFile, '-C', DIST_OFFLINE_DIR, '.'], {
-        encoding: 'utf-8'
+        stdio: 'inherit'
       })
       
       if (result.error) {
