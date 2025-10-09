@@ -1,100 +1,38 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react'
 import { generateSecureUUID } from '../utils/uuidGenerator'
+import { useTasksState } from '../hooks/useTasksState'
+import { useDragAndDrop } from '../hooks/useDragAndDrop'
+import TaskForm from '../components/Tasks/TaskForm'
+import TaskQuadrant from '../components/Tasks/TaskQuadrant'
 
 function Tasks() {
-  const [tasks, setTasks] = useState({
-    urgent_important: [],
-    not_urgent_important: [],
-    urgent_not_important: [],
-    not_urgent_not_important: []
-  })
+  const { tasks, setTasks, addTask, toggleTask, deleteTask, editTask, moveTask } = useTasksState()
+  
+  // Form state
   const [newTask, setNewTask] = useState('')
   const [selectedQuadrant, setSelectedQuadrant] = useState('urgent_important')
-  const [draggedTask, setDraggedTask] = useState(null)
+  
+  // Editing state
   const [editingTask, setEditingTask] = useState(null)
   const [editText, setEditText] = useState('')
+  
+  // Error state
   const [errorMessage, setErrorMessage] = useState('')
-  const editInputRef = useRef(null)
 
-  // Load tasks from localStorage on mount
-  useEffect(() => {
-    const savedTasks = localStorage.getItem('aurorae_tasks')
-    if (savedTasks) {
-      try {
-        setTasks(JSON.parse(savedTasks))
-      } catch (e) {
-        console.error('Failed to parse saved tasks:', e)
-      }
-    }
-  }, [])
-
-  // Save tasks to localStorage whenever they change
-  useEffect(() => {
-    try {
-      localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
-    } catch (e) {
-      if (e.name === 'QuotaExceededError') {
-        showError(
-          'Storage quota exceeded. Please export your tasks and clear some data.'
-        )
-      } else {
-        console.error('Failed to save tasks:', e)
-      }
-    }
-  }, [tasks])
-
-  // Focus edit input when editing starts
-  useEffect(() => {
-    if (editingTask && editInputRef.current) {
-      editInputRef.current.focus()
-    }
-  }, [editingTask])
+  // Drag and drop
+  const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(moveTask)
 
   const showError = (message) => {
     setErrorMessage(message)
     setTimeout(() => setErrorMessage(''), 5000)
   }
 
-  const addTask = (e) => {
+  const handleAddTask = (e) => {
     e.preventDefault()
     if (!newTask.trim()) return
 
-    const task = {
-      id: generateSecureUUID(),
-      text: newTask.trim(),
-      completed: false,
-      createdAt: Date.now(),
-      dueDate: null,
-      completedAt: null
-    }
-
-    setTasks((prev) => ({
-      ...prev,
-      [selectedQuadrant]: [...prev[selectedQuadrant], task]
-    }))
+    addTask(selectedQuadrant, newTask)
     setNewTask('')
-  }
-
-  const toggleTask = (quadrant, taskId) => {
-    setTasks((prev) => ({
-      ...prev,
-      [quadrant]: prev[quadrant].map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              completed: !task.completed,
-              completedAt: !task.completed ? Date.now() : null
-            }
-          : task
-      )
-    }))
-  }
-
-  const deleteTask = (quadrant, taskId) => {
-    setTasks((prev) => ({
-      ...prev,
-      [quadrant]: prev[quadrant].filter((task) => task.id !== taskId)
-    }))
   }
 
   const startEditTask = (quadrant, task) => {
@@ -102,18 +40,13 @@ function Tasks() {
     setEditText(task.text)
   }
 
-  const saveEditTask = (quadrant, taskId) => {
+  const saveEditTask = () => {
     if (!editText.trim()) {
       cancelEditTask()
       return
     }
 
-    setTasks((prev) => ({
-      ...prev,
-      [quadrant]: prev[quadrant].map((task) =>
-        task.id === taskId ? { ...task, text: editText.trim() } : task
-      )
-    }))
+    editTask(editingTask.quadrant, editingTask.taskId, editText)
     setEditingTask(null)
     setEditText('')
   }
@@ -121,30 +54,6 @@ function Tasks() {
   const cancelEditTask = () => {
     setEditingTask(null)
     setEditText('')
-  }
-
-  const handleDragStart = (quadrant, task) => {
-    setDraggedTask({ quadrant, task })
-  }
-
-  const handleDragOver = (e) => {
-    e.preventDefault()
-  }
-
-  const handleDrop = (targetQuadrant) => {
-    if (!draggedTask) return
-
-    if (draggedTask.quadrant !== targetQuadrant) {
-      // Move task to new quadrant
-      setTasks((prev) => ({
-        ...prev,
-        [draggedTask.quadrant]: prev[draggedTask.quadrant].filter(
-          (t) => t.id !== draggedTask.task.id
-        ),
-        [targetQuadrant]: [...prev[targetQuadrant], draggedTask.task]
-      }))
-    }
-    setDraggedTask(null)
   }
 
   const exportTasks = () => {
@@ -301,6 +210,7 @@ function Tasks() {
                 <polyline points='7 10 12 15 17 10' />
                 <line x1='12' y1='15' x2='12' y2='3' />
               </svg>
+              Export
             </button>
             <label className='btn' aria-label='Import tasks'>
               <svg className='icon' viewBox='0 0 24 24'>
@@ -308,164 +218,46 @@ function Tasks() {
                 <polyline points='17 8 12 3 7 8' />
                 <line x1='12' y1='3' x2='12' y2='15' />
               </svg>
+              Import
               <input
                 type='file'
                 accept='.json'
                 onChange={importTasks}
-                className='hidden-file-input'
+                style={{ display: 'none' }}
+                aria-label='Import tasks from JSON file'
               />
             </label>
           </div>
         </div>
         <div className='card-b'>
-          <form onSubmit={addTask} className='task-input-form'>
-            <select
-              value={selectedQuadrant}
-              onChange={(e) => setSelectedQuadrant(e.target.value)}
-              className='quadrant-select'
-              aria-label='Select quadrant'
-            >
-              {quadrants.map((q) => (
-                <option key={q.key} value={q.key}>
-                  {q.title}
-                </option>
-              ))}
-            </select>
-            <input
-              type='text'
-              value={newTask}
-              onChange={(e) => setNewTask(e.target.value)}
-              placeholder='Add a new task...'
-              className='task-input'
-              aria-label='New task text'
-            />
-            <button type='submit' className='btn btn-primary'>
-              Add
-            </button>
-          </form>
+          <TaskForm
+            newTask={newTask}
+            selectedQuadrant={selectedQuadrant}
+            onTaskChange={setNewTask}
+            onQuadrantChange={setSelectedQuadrant}
+            onSubmit={handleAddTask}
+          />
         </div>
       </div>
 
       <div className='eisenhower-matrix'>
         {quadrants.map((quadrant) => (
-          <div
+          <TaskQuadrant
             key={quadrant.key}
-            className={`matrix-quadrant ${quadrant.colorClass}`}
+            quadrant={quadrant}
+            tasks={tasks[quadrant.key]}
+            editingTask={editingTask}
+            editText={editText}
+            onToggle={toggleTask}
+            onEdit={startEditTask}
+            onEditTextChange={setEditText}
+            onSaveEdit={saveEditTask}
+            onCancelEdit={cancelEditTask}
+            onDelete={deleteTask}
+            onDragStart={handleDragStart}
             onDragOver={handleDragOver}
-            onDrop={() => handleDrop(quadrant.key)}
-          >
-            <div className='quadrant-header'>
-              <h3>{quadrant.title}</h3>
-              <span className='subtitle'>{quadrant.subtitle}</span>
-            </div>
-            <div className='task-list'>
-              {tasks[quadrant.key].length === 0 ? (
-                <p className='empty-state'>No tasks yet</p>
-              ) : (
-                tasks[quadrant.key].map((task) => {
-                  const isEditing =
-                    editingTask &&
-                    editingTask.quadrant === quadrant.key &&
-                    editingTask.taskId === task.id
-
-                  return (
-                    <div
-                      key={task.id}
-                      className={`task-item ${task.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`}
-                      draggable={!isEditing}
-                      onDragStart={() =>
-                        !isEditing && handleDragStart(quadrant.key, task)
-                      }
-                    >
-                      <input
-                        type='checkbox'
-                        checked={task.completed}
-                        onChange={() => toggleTask(quadrant.key, task.id)}
-                        disabled={isEditing}
-                        aria-label={`Mark "${task.text}" as ${task.completed ? 'incomplete' : 'complete'}`}
-                      />
-                      {isEditing ? (
-                        <input
-                          ref={editInputRef}
-                          type='text'
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              saveEditTask(quadrant.key, task.id)
-                            } else if (e.key === 'Escape') {
-                              cancelEditTask()
-                            }
-                          }}
-                          className='task-edit-input'
-                          aria-label='Edit task text'
-                        />
-                      ) : (
-                        <span
-                          className='task-text'
-                          onDoubleClick={() =>
-                            startEditTask(quadrant.key, task)
-                          }
-                        >
-                          {task.text}
-                        </span>
-                      )}
-                      <div className='task-actions'>
-                        {isEditing ? (
-                          <>
-                            <button
-                              className='btn-save'
-                              onClick={() =>
-                                saveEditTask(quadrant.key, task.id)
-                              }
-                              aria-label='Save task'
-                            >
-                              <svg className='icon' viewBox='0 0 24 24'>
-                                <polyline points='20 6 9 17 4 12' />
-                              </svg>
-                            </button>
-                            <button
-                              className='btn-cancel'
-                              onClick={cancelEditTask}
-                              aria-label='Cancel editing'
-                            >
-                              <svg className='icon' viewBox='0 0 24 24'>
-                                <line x1='18' y1='6' x2='6' y2='18' />
-                                <line x1='6' y1='6' x2='18' y2='18' />
-                              </svg>
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            <button
-                              className='btn-edit'
-                              onClick={() => startEditTask(quadrant.key, task)}
-                              aria-label={`Edit task "${task.text}"`}
-                            >
-                              <svg className='icon' viewBox='0 0 24 24'>
-                                <path d='M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7' />
-                                <path d='M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z' />
-                              </svg>
-                            </button>
-                            <button
-                              className='btn-delete'
-                              onClick={() => deleteTask(quadrant.key, task.id)}
-                              aria-label={`Delete task "${task.text}"`}
-                            >
-                              <svg className='icon' viewBox='0 0 24 24'>
-                                <polyline points='3 6 5 6 21 6' />
-                                <path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
-                              </svg>
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })
-              )}
-            </div>
-          </div>
+            onDrop={handleDrop}
+          />
         ))}
       </div>
 
