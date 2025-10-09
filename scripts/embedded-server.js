@@ -12,7 +12,7 @@ import { createServer } from 'http'
 import { readFile, stat } from 'fs/promises'
 import { join, extname, dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { exec } from 'child_process'
+import { spawn } from 'child_process'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -49,24 +49,33 @@ const MIME_TYPES = {
 function openBrowser(url) {
   const platform = process.platform
   let command
+  let args
 
   switch (platform) {
     case 'darwin':
-      command = `open "${url}"`
+      command = 'open'
+      args = [url]
       break
     case 'win32':
-      command = `start "" "${url}"`
+      command = 'cmd'
+      args = ['/c', 'start', '', url]
       break
     default:
-      command = `xdg-open "${url}"`
+      command = 'xdg-open'
+      args = [url]
   }
 
-  exec(command, (error) => {
-    if (error) {
-      console.error('Failed to open browser automatically.')
-      console.log(`Please open your browser and navigate to: ${url}`)
-    }
+  const child = spawn(command, args, {
+    detached: true,
+    stdio: 'ignore'
   })
+  
+  child.on('error', (error) => {
+    console.error('Failed to open browser automatically.')
+    console.log(`Please open your browser and navigate to: ${url}`)
+  })
+  
+  child.unref()
 }
 
 /**
