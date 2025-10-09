@@ -2,7 +2,7 @@
 
 ## Summary
 
-As part of PR #[number], all npm package overrides have been removed from `package.json` after thorough analysis confirmed they were unnecessary.
+As part of PR #123, all npm package overrides have been removed from `package.json` after thorough analysis confirmed they were unnecessary.
 
 ## Background
 
