@@ -1054,6 +1054,8 @@ body {
 .brain-dump-main .card-b {
   flex: 1;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .title-input-wrapper {
@@ -1097,6 +1099,8 @@ body {
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .editor-pane {
@@ -1124,6 +1128,7 @@ body {
 #preview {
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
 }
 
 #preview a {
