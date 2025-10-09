@@ -69,12 +69,12 @@ export default [
         version: 'detect'
       }
     },
-    linterOptions: { reportUnusedDisableDirectives: true },
+    linterOptions: { reportUnusedDisableDirectives: 'error' },
     rules: {
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...a11y.configs.recommended.rules,
-      'no-unused-vars': 'warn',
+      'no-unused-vars': 'error', // Changed from 'warn' to 'error'
       'no-console': 'off',
       'react/react-in-jsx-scope': 'off' // Not needed in React 17+
     }

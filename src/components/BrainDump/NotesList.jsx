@@ -15,7 +15,8 @@ function NotesList({
   onToggleNoteList,
   onFilterClick,
   onNoteClick,
-  onNoteContextMenu
+  onNoteContextMenu,
+  onNewNote
 }) {
   if (!showNoteList) return null
 
@@ -47,6 +48,16 @@ function NotesList({
             </svg>
           </button>
         </div>
+        <button
+          className='btn btn-icon'
+          onClick={onNewNote}
+          aria-label='New Note'
+          title='New Note'
+        >
+          <svg className='icon' viewBox='0 0 24 24'>
+            <path d='M12 5v14M5 12h14' />
+          </svg>
+        </button>
       </div>
       <div className='note-search'>
         <input
@@ -136,7 +147,8 @@ NotesList.propTypes = {
   onToggleNoteList: PropTypes.func.isRequired,
   onFilterClick: PropTypes.func.isRequired,
   onNoteClick: PropTypes.func.isRequired,
-  onNoteContextMenu: PropTypes.func.isRequired
+  onNoteContextMenu: PropTypes.func.isRequired,
+  onNewNote: PropTypes.func.isRequired
 }
 
 export default NotesList

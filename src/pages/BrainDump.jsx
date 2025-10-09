@@ -202,29 +202,34 @@ function BrainDump() {
         onFilterClick={() => setShowFilterModal(true)}
         onNoteClick={loadNote}
         onNoteContextMenu={handleNoteContextMenu}
+        onNewNote={createNote}
       />
 
       {/* Main Editor Area */}
-      <NoteEditor
-        currentNote={currentNote}
-        currentNoteId={currentNoteId}
-        title={title}
-        category={category}
-        content={content}
-        preview={preview}
-        notes={notes}
-        showNoteList={showNoteList}
-        onTitleChange={setTitle}
-        onCategoryChange={setCategory}
-        onContentChange={setContent}
-        onToggleNoteList={() => setShowNoteList(!showNoteList)}
-        onNewNote={createNote}
-        onImport={handleImport}
-        onExport={handleExport}
-        onDelete={handleDelete}
-        onLockToggle={handleToggleLock}
-        onShowDetails={() => setShowDetailsModal(true)}
-      />
+      <div className='brain-dump-main'>
+        <div className='card'>
+          <NoteEditor
+            currentNote={currentNote}
+            currentNoteId={currentNoteId}
+            title={title}
+            category={category}
+            content={content}
+            preview={preview}
+            notes={notes}
+            showNoteList={showNoteList}
+            onTitleChange={setTitle}
+            onCategoryChange={setCategory}
+            onContentChange={setContent}
+            onToggleNoteList={() => setShowNoteList(!showNoteList)}
+            onNewNote={createNote}
+            onImport={handleImport}
+            onExport={handleExport}
+            onDelete={handleDelete}
+            onLockToggle={handleToggleLock}
+            onShowDetails={() => setShowDetailsModal(true)}
+          />
+        </div>
+      </div>
 
       {/* Context Menu */}
       <ContextMenu

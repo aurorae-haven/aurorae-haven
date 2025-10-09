@@ -46,10 +46,9 @@ function NoteEditor({
   }, [])
 
   return (
-    <div className='brain-dump-main'>
-      <div className='card'>
-        <div className='card-h'>
-          <div className='title-input-wrapper'>
+    <>
+      <div className='card-h'>
+        <div className='title-input-wrapper'>
             {!showNoteList && (
               <button
                 className='btn btn-icon toggle-notes-btn'
@@ -191,9 +190,21 @@ function NoteEditor({
               value={content}
               onChange={(e) => onContentChange(e.target.value)}
               onKeyDown={(e) => {
-                const cursorPosition = e.target.selectionStart;
-                const handled = handleEnterKey(content, cursorPosition);
-                if (!handled && e.ctrlKey && e.key === 's') {
+                if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                  const cursorPos = e.target.selectionStart
+                  const result = handleEnterKey(content, cursorPos)
+                  
+                  if (result) {
+                    e.preventDefault()
+                    onContentChange(result.newValue)
+                    // Set cursor position after state update
+                    setTimeout(() => {
+                      if (editorRef.current) {
+                        editorRef.current.selectionStart = editorRef.current.selectionEnd = result.newCursorPos
+                      }
+                    }, 0)
+                  }
+                } else if (e.ctrlKey && e.key === 's') {
                   e.preventDefault()
                 }
               }}
@@ -209,7 +220,7 @@ function NoteEditor({
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
