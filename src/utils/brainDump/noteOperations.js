@@ -95,20 +95,25 @@ export function migrateNotes(notes) {
 
 /**
  * Export note to markdown file
+ * Security: Uses Blob API and programmatic download to export user content safely
  * @param {string} title - Note title
  * @param {string} content - Note content
  */
 export function exportNoteToFile(title, content) {
   if (!content) return
 
+  // Create blob from user content (plain text markdown)
   const blob = new Blob([content], { type: 'text/markdown' })
   const url = URL.createObjectURL(blob)
   const filename = generateBrainDumpFilename(title)
 
+  // Use temporary anchor element for download (standard browser pattern)
   const a = document.createElement('a')
   a.href = url
   a.download = filename
   a.click()
+
+  // Clean up object URL to prevent memory leaks
   URL.revokeObjectURL(url)
 }
 
@@ -122,11 +127,13 @@ export function saveNotesToStorage(notes) {
 
 /**
  * Load notes from localStorage
+ * Security: Uses try-catch to handle JSON.parse safely, returns empty array on error
  * @returns {Array} - Array of notes
  */
 export function loadNotesFromStorage() {
   try {
     const entriesData = localStorage.getItem('brainDumpEntries')
+    // JSON.parse with error handling to prevent injection attacks
     return entriesData ? JSON.parse(entriesData) : []
   } catch (e) {
     console.warn('Failed to parse brainDumpEntries:', e)

@@ -129,10 +129,12 @@ function BrainDump() {
   )
 
   // Render preview whenever content changes
+  // Security: Content is sanitized with DOMPurify before rendering
   useEffect(() => {
     const renderPreview = () => {
-      // Use enhanced sanitization configuration
+      // Use enhanced sanitization configuration to prevent XSS
       const sanitizeConfig = configureSanitization(DOMPurify)
+      // Parse markdown and sanitize HTML to remove any malicious content
       const html = DOMPurify.sanitize(marked.parse(content), sanitizeConfig)
       setPreview(html)
     }
@@ -565,6 +567,7 @@ function BrainDump() {
                 role='region'
                 aria-label='Note preview'
               >
+                {/* Security: HTML is sanitized with DOMPurify before rendering to prevent XSS attacks */}
                 <div
                   id='preview'
                   dangerouslySetInnerHTML={{ __html: preview }}
