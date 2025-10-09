@@ -23,10 +23,10 @@ describe('Offline Package - Build Process', () => {
 
   test('has offline build script configured in package.json', () => {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
-    expect(packageJson.scripts['build:offline']).toBeDefined()
-    expect(packageJson.scripts['build:offline']).toContain(
-      'create-offline-package'
-    )
+    const buildScript = packageJson.scripts['build:offline']
+    
+    expect(buildScript).toBeDefined()
+    expect(buildScript).toMatch(/create-offline-package/)
   })
 
   test('offline build script file exists', () => {
@@ -37,7 +37,9 @@ describe('Offline Package - Build Process', () => {
   test('offline build script has correct shebang', () => {
     const scriptPath = 'scripts/create-offline-package.js'
     const content = readFileSync(scriptPath, 'utf-8')
-    expect(content.startsWith('#!/usr/bin/env node')).toBe(true)
+    const firstLine = content.split('\n')[0]
+    
+    expect(firstLine).toBe('#!/usr/bin/env node')
   })
 
   test('offline build script validates dist directory exists', () => {
@@ -45,8 +47,9 @@ describe('Offline Package - Build Process', () => {
       'scripts/create-offline-package.js',
       'utf-8'
     )
-    expect(scriptContent).toContain("existsSync(DIST_DIR)")
-    expect(scriptContent).toContain('dist')
+    // Verify the script checks for dist directory existence
+    expect(scriptContent).toMatch(/existsSync\s*\(\s*DIST_DIR\s*\)/)
+    expect(scriptContent).toMatch(/DIST_DIR\s*=\s*['"]dist['"]/)
   })
 
   test('offline build uses relative base path', () => {
@@ -54,7 +57,8 @@ describe('Offline Package - Build Process', () => {
       'scripts/create-offline-package.js',
       'utf-8'
     )
-    expect(scriptContent).toContain("VITE_BASE_URL: './'")
+    // Verify VITE_BASE_URL is set to './' for offline builds
+    expect(scriptContent).toMatch(/VITE_BASE_URL\s*:\s*['"]\.\/['"]/)
   })
 
   test('offline build creates tar.gz archive', () => {
@@ -62,8 +66,9 @@ describe('Offline Package - Build Process', () => {
       'scripts/create-offline-package.js',
       'utf-8'
     )
-    expect(scriptContent).toContain('.tar.gz')
-    expect(scriptContent).toContain('tar -czf')
+    // Verify tar.gz archive creation with compression
+    expect(scriptContent).toMatch(/\.tar\.gz/)
+    expect(scriptContent).toMatch(/tar\s+-czf/)
   })
 
   test('offline package includes version in filename', () => {
@@ -71,8 +76,8 @@ describe('Offline Package - Build Process', () => {
       'scripts/create-offline-package.js',
       'utf-8'
     )
-    expect(scriptContent).toContain('aurorae-haven-offline-v')
-    expect(scriptContent).toContain('VERSION')
+    // Verify filename pattern includes version variable
+    expect(scriptContent).toMatch(/aurorae-haven-offline-v.*VERSION/)
   })
 
   test('offline build cleans up temporary directories', () => {
@@ -80,8 +85,8 @@ describe('Offline Package - Build Process', () => {
       'scripts/create-offline-package.js',
       'utf-8'
     )
-    expect(scriptContent).toContain('rmSync')
-    expect(scriptContent).toContain('recursive: true')
+    // Verify recursive directory cleanup using rmSync
+    expect(scriptContent).toMatch(/rmSync\s*\([^)]*recursive\s*:\s*true/)
   })
 })
 
@@ -123,16 +128,16 @@ describe('Offline Package - Relative Paths', () => {
   test('validates relative path configuration in vite config', () => {
     const viteConfig = readFileSync('vite.config.js', 'utf-8')
 
-    // Vite config should handle BASE_URL environment variable
-    expect(viteConfig).toContain('base')
-    expect(viteConfig).toContain('VITE_BASE_URL')
+    // Vite config should use VITE_BASE_URL env variable for base path
+    expect(viteConfig).toMatch(/base\s*[:=]/)
+    expect(viteConfig).toMatch(/VITE_BASE_URL/)
   })
 
   test('validates basename normalization for React Router', () => {
     const indexFile = readFileSync('src/index.jsx', 'utf-8')
 
-    // Should normalize './' to '/' for React Router
-    expect(indexFile).toContain('basename')
+    // Should normalize './' to '/' for React Router compatibility
+    expect(indexFile).toMatch(/basename\s*[=:]/)
   })
 
   test('relative paths work for assets', () => {
