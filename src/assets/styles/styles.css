@@ -1938,8 +1938,15 @@ textarea:focus {
 
 .detail-row span {
   color: var(--ink);
-  font-size: 14px;
-  text-align: right;
+}
+
+/* Modal Footer */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid var(--line);
 }
 
 /* Filter Sections */

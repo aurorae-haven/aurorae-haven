@@ -67,6 +67,8 @@ function BrainDump() {
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [contextMenu, setContextMenu] = useState(null)
+  const [toastMessage, setToastMessage] = useState('')
+  const [showToast, setShowToast] = useState(false)
   const [filterOptions, setFilterOptions] = useState({
     category: '',
     dateFilter: 'all',
@@ -170,21 +172,34 @@ function BrainDump() {
     loadNote(newNote)
   }
 
+  // Show toast notification
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+    }, 3000)
+  }
+
   // Delete note (can be called from context menu or toolbar)
   const handleDelete = (noteId = currentNoteId) => {
     if (!noteId) return
 
     const noteToDelete = notes.find((n) => n.id === noteId)
 
-    // Check if note is locked
+    // Check if note is locked - show toast instead of alert
     if (noteToDelete?.locked) {
-      alert('This note is locked. Please unlock it before deleting.')
+      showToastNotification(
+        '🔒 This note is locked. Unlock it before deleting.'
+      )
       return
     }
 
+    // Use window.confirm for compatibility with tests
     if (!window.confirm(`Delete "${noteToDelete?.title || 'this note'}"?`))
       return
 
+    // Execute delete
     const updatedNotes = deleteNoteUtil(notes, noteId)
     setNotes(updatedNotes)
     saveNotesToStorage(updatedNotes)
@@ -203,6 +218,7 @@ function BrainDump() {
 
     // Close context menu if open
     setContextMenu(null)
+    showToastNotification('✓ Note deleted successfully')
   }
 
   // Toggle lock status of a note
@@ -789,6 +805,13 @@ function BrainDump() {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className='toast' style={{ display: 'block' }}>
+          {toastMessage}
         </div>
       )}
     </div>
