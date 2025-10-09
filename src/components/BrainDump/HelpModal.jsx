@@ -318,16 +318,10 @@ $$`}
     <div
       className='modal-overlay'
       onClick={handleOverlayClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          handleOverlayClick(e)
-        }
-      }}
       role='dialog'
       aria-modal='true'
       aria-labelledby='help-modal-title'
       aria-describedby='help-modal-desc'
-      tabIndex={-1}
     >
       <div className='modal-content help-modal' ref={modalRef}>
         <div className='modal-header'>
