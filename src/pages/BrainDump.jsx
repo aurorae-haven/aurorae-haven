@@ -5,11 +5,22 @@ import DOMPurify from 'dompurify'
 import 'katex/dist/katex.min.css'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
-import { generateSecureUUID } from '../utils/uuidGenerator'
 import {
-  generateBrainDumpFilename,
-  extractTitleFromFilename
-} from '../utils/fileHelpers'
+  createNewNote,
+  createNoteFromImport,
+  toggleNoteLock,
+  updateNote,
+  deleteNote as deleteNoteUtil,
+  migrateNotes,
+  exportNoteToFile,
+  saveNotesToStorage,
+  loadNotesFromStorage
+} from '../utils/brainDump/noteOperations'
+import {
+  getUniqueCategories as getUniqueCategoriesUtil,
+  filterNotes as filterNotesUtil
+} from '../utils/brainDump/noteFilters'
+import NoteDetailsModal from '../components/BrainDump/NoteDetailsModal'
 
 // Configure marked once at module level to avoid reconfiguration on re-renders
 // Error handling for KaTeX extension to gracefully handle load failures
@@ -72,52 +83,34 @@ function BrainDump() {
 
   // Load saved notes on mount (migrate old single note if needed)
   useEffect(() => {
-    const entriesData = localStorage.getItem('brainDumpEntries')
-    let loadedNotes = []
-
-    try {
-      loadedNotes = entriesData ? JSON.parse(entriesData) : []
-    } catch (e) {
-      console.warn('Failed to parse brainDumpEntries:', e)
-    }
+    let loadedNotes = loadNotesFromStorage()
 
     // Migration: if no entries exist, migrate old single-note content
     if (loadedNotes.length === 0) {
       const oldContent = localStorage.getItem('brainDumpContent')
       if (oldContent && oldContent.trim()) {
         const migratedNote = {
-          id: generateSecureUUID(),
+          ...createNewNote(),
           title: 'Migrated Note',
-          content: oldContent,
-          category: '',
-          locked: false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          content: oldContent
         }
         loadedNotes = [migratedNote]
-        localStorage.setItem('brainDumpEntries', JSON.stringify(loadedNotes))
+        saveNotesToStorage(loadedNotes)
       }
     }
 
-    // Migrate existing notes to add category and locked fields if missing
-    const needsMigration = loadedNotes.some(
-      (note) => note.category === undefined || note.locked === undefined
-    )
-    const migratedNotes = loadedNotes.map((note) => ({
-      ...note,
-      category: note.category || '',
-      locked: note.locked || false
-    }))
+    // Migrate existing notes to add missing fields
+    const { migratedNotes, needsMigration } = migrateNotes(loadedNotes)
 
     if (needsMigration && migratedNotes.length > 0) {
-      localStorage.setItem('brainDumpEntries', JSON.stringify(migratedNotes))
+      saveNotesToStorage(migratedNotes)
     }
 
     setNotes(migratedNotes)
 
     // Load first note if available
-    if (loadedNotes.length > 0) {
-      loadNote(loadedNotes[0])
+    if (migratedNotes.length > 0) {
+      loadNote(migratedNotes[0])
     }
   }, [])
 
@@ -128,6 +121,12 @@ function BrainDump() {
     setContent(note.content)
     setCategory(note.category || '')
   }
+
+  // Memoize current note to avoid redundant array searches
+  const currentNote = useMemo(
+    () => notes.find((n) => n.id === currentNoteId),
+    [notes, currentNoteId]
+  )
 
   // Render preview whenever content changes
   useEffect(() => {
@@ -144,43 +143,28 @@ function BrainDump() {
   useEffect(() => {
     if (!currentNoteId) return
 
-    const currentNote = notes.find((n) => n.id === currentNoteId)
     // Don't save if note is locked
     if (currentNote?.locked) return
 
     const saveTimeout = setTimeout(() => {
-      const updatedNotes = notes.map((note) =>
-        note.id === currentNoteId
-          ? {
-              ...note,
-              title,
-              content,
-              category,
-              updatedAt: new Date().toISOString()
-            }
-          : note
-      )
+      const updatedNotes = updateNote(notes, currentNoteId, {
+        title,
+        content,
+        category
+      })
       setNotes(updatedNotes)
-      localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+      saveNotesToStorage(updatedNotes)
     }, 500) // Debounce autosave
 
     return () => clearTimeout(saveTimeout)
-  }, [currentNoteId, title, content, category, notes])
+  }, [currentNoteId, title, content, category, notes, currentNote])
 
   // Create new note
   const handleNewNote = () => {
-    const newNote = {
-      id: generateSecureUUID(),
-      title: 'Untitled Note',
-      content: '',
-      category: '',
-      locked: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+    const newNote = createNewNote()
     const updatedNotes = [...notes, newNote]
     setNotes(updatedNotes)
-    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    saveNotesToStorage(updatedNotes)
     loadNote(newNote)
   }
 
@@ -199,9 +183,9 @@ function BrainDump() {
     if (!window.confirm(`Delete "${noteToDelete?.title || 'this note'}"?`))
       return
 
-    const updatedNotes = notes.filter((n) => n.id !== noteId)
+    const updatedNotes = deleteNoteUtil(notes, noteId)
     setNotes(updatedNotes)
-    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    saveNotesToStorage(updatedNotes)
 
     // Load next note or create new one if the deleted note was current
     if (noteId === currentNoteId) {
@@ -221,29 +205,15 @@ function BrainDump() {
 
   // Toggle lock status of a note
   const handleToggleLock = (noteId) => {
-    const updatedNotes = notes.map((note) =>
-      note.id === noteId ? { ...note, locked: !note.locked } : note
-    )
+    const updatedNotes = toggleNoteLock(notes, noteId)
     setNotes(updatedNotes)
-    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    saveNotesToStorage(updatedNotes)
     setContextMenu(null)
   }
 
   // Export current note with new filename format
   const handleExport = () => {
-    if (!content) return
-
-    const blob = new Blob([content], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-
-    // Generate filename using utility function
-    const filename = generateBrainDumpFilename(title)
-
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
+    exportNoteToFile(title, content)
   }
 
   // Import note from markdown file
@@ -256,22 +226,11 @@ function BrainDump() {
       const fileContent = event.target?.result
       if (typeof fileContent !== 'string') return
 
-      // Extract title from filename using utility function
-      const noteTitle = extractTitleFromFilename(file.name)
-
-      const importedNote = {
-        id: generateSecureUUID(),
-        title: noteTitle,
-        content: fileContent,
-        category: '',
-        locked: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+      const importedNote = createNoteFromImport(file.name, fileContent)
 
       const updatedNotes = [...notes, importedNote]
       setNotes(updatedNotes)
-      localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+      saveNotesToStorage(updatedNotes)
       loadNote(importedNote)
     }
 
@@ -298,12 +257,6 @@ function BrainDump() {
       }
     }
   }, [])
-
-  // Memoize current note to avoid redundant array searches
-  const currentNote = useMemo(
-    () => notes.find((n) => n.id === currentNoteId),
-    [notes, currentNoteId]
-  )
 
   // Handle keyboard navigation for preview pane
   const handlePreviewKeyDown = useCallback((e) => {
@@ -365,86 +318,8 @@ function BrainDump() {
     setContextMenu(null)
   }
 
-  // Get unique categories from all notes
-  const getUniqueCategories = () => {
-    const categories = notes
-      .map((note) => note.category)
-      .filter((cat) => cat && cat.trim())
-    return [...new Set(categories)].sort()
-  }
-
-  // Apply date filter
-  const applyDateFilter = (note) => {
-    const { dateFilter, customStart, customEnd } = filterOptions
-    if (dateFilter === 'all') return true
-
-    const noteDate = new Date(note.updatedAt)
-    const now = new Date()
-
-    switch (dateFilter) {
-      case 'latest': {
-        // Last 7 days
-        const sevenDaysAgo = new Date(now)
-        sevenDaysAgo.setDate(now.getDate() - 7)
-        return noteDate >= sevenDaysAgo
-      }
-      case 'oldest': {
-        // Older than 30 days
-        const thirtyDaysAgo = new Date(now)
-        thirtyDaysAgo.setDate(now.getDate() - 30)
-        return noteDate < thirtyDaysAgo
-      }
-      case 'year': {
-        const startOfYear = new Date(now.getFullYear(), 0, 1)
-        return noteDate >= startOfYear
-      }
-      case 'month': {
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-        return noteDate >= startOfMonth
-      }
-      case 'day': {
-        const startOfDay = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate()
-        )
-        return noteDate >= startOfDay
-      }
-      case 'custom': {
-        if (!customStart && !customEnd) return true
-        const start = customStart ? new Date(customStart) : new Date(0)
-        const end = customEnd
-          ? new Date(new Date(customEnd).setHours(23, 59, 59, 999))
-          : new Date()
-        return noteDate >= start && noteDate <= end
-      }
-      default:
-        return true
-    }
-  }
-
-  // Filter notes based on search query, category, and date
-  const filteredNotes = notes.filter((note) => {
-    // Search query filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase()
-      const titleMatch = (note.title || '').toLowerCase().includes(query)
-      const contentMatch = (note.content || '').toLowerCase().includes(query)
-      if (!titleMatch && !contentMatch) return false
-    }
-
-    // Category filter
-    if (filterOptions.category && note.category !== filterOptions.category) {
-      return false
-    }
-
-    // Date filter
-    if (!applyDateFilter(note)) {
-      return false
-    }
-
-    return true
-  })
+  // Filter notes using utility function
+  const filteredNotes = filterNotesUtil(notes, searchQuery, filterOptions)
 
   return (
     <div className='brain-dump-container'>
@@ -609,7 +484,7 @@ function BrainDump() {
                 list='category-suggestions'
               />
               <datalist id='category-suggestions'>
-                {getUniqueCategories().map((cat) => (
+                {getUniqueCategoriesUtil(notes).map((cat) => (
                   <option key={cat} value={cat} />
                 ))}
               </datalist>
@@ -761,69 +636,13 @@ function BrainDump() {
 
       {/* Details Modal */}
       {showDetailsModal && (
-        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-        <div
-          className='modal-overlay'
-          onClick={() => setShowDetailsModal(false)}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') setShowDetailsModal(false)
-          }}
-          role='dialog'
-          aria-modal='true'
-          aria-labelledby='details-modal-title'
-        >
-          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-          <div
-            className='modal-content'
-            onClick={(e) => e.stopPropagation()}
-            onKeyDown={(e) => e.stopPropagation()}
-            role='document'
-          >
-            <div className='modal-header'>
-              <h2 id='details-modal-title'>Note Details</h2>
-              <button
-                className='btn btn-icon'
-                onClick={() => setShowDetailsModal(false)}
-                aria-label='Close'
-              >
-                <svg className='icon' viewBox='0 0 24 24'>
-                  <line x1='18' y1='6' x2='6' y2='18' />
-                  <line x1='6' y1='6' x2='18' y2='18' />
-                </svg>
-              </button>
-            </div>
-            <div className='modal-body'>
-              <div className='detail-row'>
-                <strong>Title:</strong>
-                <span>{title || 'Untitled'}</span>
-              </div>
-              <div className='detail-row'>
-                <strong>Category:</strong>
-                <span>{category || 'None'}</span>
-              </div>
-              <div className='detail-row'>
-                <strong>Created:</strong>
-                <span>
-                  {currentNote?.createdAt
-                    ? new Date(currentNote.createdAt).toLocaleString()
-                    : 'N/A'}
-                </span>
-              </div>
-              <div className='detail-row'>
-                <strong>Last Updated:</strong>
-                <span>
-                  {currentNote?.updatedAt
-                    ? new Date(currentNote.updatedAt).toLocaleString()
-                    : 'N/A'}
-                </span>
-              </div>
-              <div className='detail-row'>
-                <strong>Content Length:</strong>
-                <span>{content.length} characters</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <NoteDetailsModal
+          note={currentNote}
+          title={title}
+          category={category}
+          content={content}
+          onClose={() => setShowDetailsModal(false)}
+        />
       )}
 
       {/* Filter Modal */}
@@ -876,7 +695,7 @@ function BrainDump() {
                   className='filter-select'
                 >
                   <option value=''>All Categories</option>
-                  {getUniqueCategories().map((cat) => (
+                  {getUniqueCategoriesUtil(notes).map((cat) => (
                     <option key={cat} value={cat}>
                       {cat}
                     </option>
