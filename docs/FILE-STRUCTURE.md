@@ -113,11 +113,11 @@ The repository contains a **fully React-based Progressive Web App** built with V
 
 ## Security & Testing
 
-- **Security Utilities** (`src/utils/braindump-enhanced.js`):
+- **Security Utilities** (`src/utils/sanitization.js`):
   - XSS prevention via DOMPurify configuration
   - GDPR-compliant data management
   - Version history and backlinks support
-  - Comprehensive test coverage in `src/__tests__/braindump-enhanced.test.js`
+  - Comprehensive test coverage in `src/__tests__/sanitization.test.js`
 
 - **Test Coverage**: Security tests verify:
   - Sanitization of dangerous HTML/JS

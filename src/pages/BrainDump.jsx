@@ -3,7 +3,7 @@ import { marked } from 'marked'
 import markedKatex from 'marked-katex-extension'
 import DOMPurify from 'dompurify'
 import 'katex/dist/katex.min.css'
-import { configureSanitization } from '../utils/braindump-enhanced'
+import { configureSanitization } from '../utils/sanitization'
 import {
   createNoteFromImport,
   toggleNoteLock,
