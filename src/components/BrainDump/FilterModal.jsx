@@ -5,7 +5,7 @@ import { getUniqueCategories } from '../../utils/brainDump/noteFilters'
 /**
  * Modal for filtering notes by category and date
  */
-function FilterModal({ notes, filterOptions, onFilterChange, onClose}) {
+function FilterModal({ notes, filterOptions, onFilterChange, onClose }) {
   const handleClearFilters = () => {
     onFilterChange({
       category: '',
