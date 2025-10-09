@@ -15,11 +15,13 @@ After thorough investigation and testing, the import/export functionality **is w
 ### 1. Code Review
 
 **Export Path** (`src/utils/dataManager.js`):
+
 - Line 153-159: Reads `brainDumpEntries` from localStorage
 - Line 201: Includes `entries: brainDumpEntries` in the export object
 - Result: ✅ All notes are included in the export
 
 **Import Path** (`src/utils/dataManager.js`):
+
 - Line 449-454: Restores `brainDumpEntries` to localStorage from imported data
 - Result: ✅ All notes are restored from import, including previously deleted ones
 
@@ -78,6 +80,7 @@ Time:        5.479 s
 ```
 
 **All tests pass**, including:
+
 - ✅ 2 new BrainDump export-delete-import tests
 - ✅ 6 new DataManager export-delete-import tests
 - ✅ All existing tests still pass (no regressions)
@@ -108,11 +111,13 @@ The import/export functionality is **working as expected**. The code properly:
 ## How to Use
 
 ### Export Data
+
 1. Navigate to any page with import/export functionality
 2. Click the export button
 3. Data is saved to `aurorae_YYYY-MM-DD_UUID.json`
 
 ### Import Data
+
 1. Click the import button
 2. Select a previously exported JSON file
 3. Page will reload with all data restored

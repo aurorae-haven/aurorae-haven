@@ -1,15 +1,26 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { marked } from 'marked'
 import markedKatex from 'marked-katex-extension'
 import DOMPurify from 'dompurify'
 import 'katex/dist/katex.min.css'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
-import { generateSecureUUID } from '../utils/uuidGenerator'
 import {
-  generateBrainDumpFilename,
-  extractTitleFromFilename
-} from '../utils/fileHelpers'
+  createNewNote,
+  createNoteFromImport,
+  toggleNoteLock,
+  updateNote,
+  deleteNote as deleteNoteUtil,
+  migrateNotes,
+  exportNoteToFile,
+  saveNotesToStorage,
+  loadNotesFromStorage
+} from '../utils/brainDump/noteOperations'
+import {
+  getUniqueCategories as getUniqueCategoriesUtil,
+  filterNotes as filterNotesUtil
+} from '../utils/brainDump/noteFilters'
+import NoteDetailsModal from '../components/BrainDump/NoteDetailsModal'
 
 // Configure marked once at module level to avoid reconfiguration on re-renders
 // Error handling for KaTeX extension to gracefully handle load failures
@@ -49,9 +60,21 @@ function BrainDump() {
   const [currentNoteId, setCurrentNoteId] = useState(null)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [category, setCategory] = useState('')
   const [preview, setPreview] = useState('')
   const [showNoteList, setShowNoteList] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [showFilterModal, setShowFilterModal] = useState(false)
+  const [contextMenu, setContextMenu] = useState(null)
+  const [toastMessage, setToastMessage] = useState('')
+  const [showToast, setShowToast] = useState(false)
+  const [filterOptions, setFilterOptions] = useState({
+    category: '',
+    dateFilter: 'all',
+    customStart: '',
+    customEnd: ''
+  })
   const editorRef = useRef(null)
   const previewRef = useRef(null)
 
@@ -62,36 +85,34 @@ function BrainDump() {
 
   // Load saved notes on mount (migrate old single note if needed)
   useEffect(() => {
-    const entriesData = localStorage.getItem('brainDumpEntries')
-    let loadedNotes = []
-
-    try {
-      loadedNotes = entriesData ? JSON.parse(entriesData) : []
-    } catch (e) {
-      console.warn('Failed to parse brainDumpEntries:', e)
-    }
+    let loadedNotes = loadNotesFromStorage()
 
     // Migration: if no entries exist, migrate old single-note content
     if (loadedNotes.length === 0) {
       const oldContent = localStorage.getItem('brainDumpContent')
       if (oldContent && oldContent.trim()) {
         const migratedNote = {
-          id: generateSecureUUID(),
+          ...createNewNote(),
           title: 'Migrated Note',
-          content: oldContent,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          content: oldContent
         }
         loadedNotes = [migratedNote]
-        localStorage.setItem('brainDumpEntries', JSON.stringify(loadedNotes))
+        saveNotesToStorage(loadedNotes)
       }
     }
 
-    setNotes(loadedNotes)
+    // Migrate existing notes to add missing fields
+    const { migratedNotes, needsMigration } = migrateNotes(loadedNotes)
+
+    if (needsMigration && migratedNotes.length > 0) {
+      saveNotesToStorage(migratedNotes)
+    }
+
+    setNotes(migratedNotes)
 
     // Load first note if available
-    if (loadedNotes.length > 0) {
-      loadNote(loadedNotes[0])
+    if (migratedNotes.length > 0) {
+      loadNote(migratedNotes[0])
     }
   }, [])
 
@@ -100,13 +121,22 @@ function BrainDump() {
     setCurrentNoteId(note.id)
     setTitle(note.title)
     setContent(note.content)
+    setCategory(note.category || '')
   }
 
+  // Memoize current note to avoid redundant array searches
+  const currentNote = useMemo(
+    () => notes.find((n) => n.id === currentNoteId),
+    [notes, currentNoteId]
+  )
+
   // Render preview whenever content changes
+  // Security: Content is sanitized with DOMPurify before rendering
   useEffect(() => {
     const renderPreview = () => {
-      // Use enhanced sanitization configuration
+      // Use enhanced sanitization configuration to prevent XSS
       const sanitizeConfig = configureSanitization(DOMPurify)
+      // Parse markdown and sanitize HTML to remove any malicious content
       const html = DOMPurify.sanitize(marked.parse(content), sanitizeConfig)
       setPreview(html)
     }
@@ -117,71 +147,91 @@ function BrainDump() {
   useEffect(() => {
     if (!currentNoteId) return
 
+    // Don't save if note is locked
+    if (currentNote?.locked) return
+
     const saveTimeout = setTimeout(() => {
-      const updatedNotes = notes.map((note) =>
-        note.id === currentNoteId
-          ? { ...note, title, content, updatedAt: new Date().toISOString() }
-          : note
-      )
+      const updatedNotes = updateNote(notes, currentNoteId, {
+        title,
+        content,
+        category
+      })
       setNotes(updatedNotes)
-      localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+      saveNotesToStorage(updatedNotes)
     }, 500) // Debounce autosave
 
     return () => clearTimeout(saveTimeout)
-  }, [currentNoteId, title, content, notes])
+  }, [currentNoteId, title, content, category, notes, currentNote])
 
   // Create new note
   const handleNewNote = () => {
-    const newNote = {
-      id: generateSecureUUID(),
-      title: 'Untitled Note',
-      content: '',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    }
+    const newNote = createNewNote()
     const updatedNotes = [...notes, newNote]
     setNotes(updatedNotes)
-    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    saveNotesToStorage(updatedNotes)
     loadNote(newNote)
   }
 
-  // Delete current note
-  const handleDelete = () => {
-    if (!currentNoteId) return
+  // Show toast notification
+  const showToastNotification = (message) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => {
+      setShowToast(false)
+    }, 3000)
+  }
 
-    const currentNote = notes.find((n) => n.id === currentNoteId)
-    if (!window.confirm(`Delete "${currentNote?.title || 'this note'}"?`))
+  // Delete note (can be called from context menu or toolbar)
+  const handleDelete = (noteId = currentNoteId) => {
+    if (!noteId) return
+
+    const noteToDelete = notes.find((n) => n.id === noteId)
+
+    // Check if note is locked - show toast instead of alert
+    if (noteToDelete?.locked) {
+      showToastNotification(
+        '🔒 This note is locked. Unlock it before deleting.'
+      )
+      return
+    }
+
+    // Use window.confirm for compatibility with tests
+    if (!window.confirm(`Delete "${noteToDelete?.title || 'this note'}"?`))
       return
 
-    const updatedNotes = notes.filter((n) => n.id !== currentNoteId)
+    // Execute delete
+    const updatedNotes = deleteNoteUtil(notes, noteId)
     setNotes(updatedNotes)
-    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    saveNotesToStorage(updatedNotes)
 
-    // Load next note or create new one
-    if (updatedNotes.length > 0) {
-      loadNote(updatedNotes[0])
-    } else {
-      setCurrentNoteId(null)
-      setTitle('')
-      setContent('')
+    // Load next note or create new one if the deleted note was current
+    if (noteId === currentNoteId) {
+      if (updatedNotes.length > 0) {
+        loadNote(updatedNotes[0])
+      } else {
+        setCurrentNoteId(null)
+        setTitle('')
+        setContent('')
+        setCategory('')
+      }
     }
+
+    // Close context menu if open
+    setContextMenu(null)
+    showToastNotification('✓ Note deleted successfully')
+  }
+
+  // Toggle lock status of a note
+  const handleToggleLock = (noteId) => {
+    const updatedNotes = toggleNoteLock(notes, noteId)
+    setNotes(updatedNotes)
+    saveNotesToStorage(updatedNotes)
+    setContextMenu(null)
   }
 
   // Export current note with new filename format
   const handleExport = () => {
-    if (!content) return
-
-    const blob = new Blob([content], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-
-    // Generate filename using utility function
-    const filename = generateBrainDumpFilename(title)
-
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    a.click()
-    URL.revokeObjectURL(url)
+    exportNoteToFile(title, content)
   }
 
   // Import note from markdown file
@@ -194,20 +244,11 @@ function BrainDump() {
       const fileContent = event.target?.result
       if (typeof fileContent !== 'string') return
 
-      // Extract title from filename using utility function
-      const noteTitle = extractTitleFromFilename(file.name)
-
-      const importedNote = {
-        id: generateSecureUUID(),
-        title: noteTitle,
-        content: fileContent,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
+      const importedNote = createNoteFromImport(file.name, fileContent)
 
       const updatedNotes = [...notes, importedNote]
       setNotes(updatedNotes)
-      localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+      saveNotesToStorage(updatedNotes)
       loadNote(importedNote)
     }
 
@@ -266,14 +307,37 @@ function BrainDump() {
     }
   }, [])
 
-  // Filter notes based on search query
-  const filteredNotes = notes.filter((note) => {
-    if (!searchQuery.trim()) return true
-    const query = searchQuery.toLowerCase()
-    const titleMatch = (note.title || '').toLowerCase().includes(query)
-    const contentMatch = (note.content || '').toLowerCase().includes(query)
-    return titleMatch || contentMatch
-  })
+  // Close context menu on click outside
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null)
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [contextMenu])
+
+  // Handle right-click on note
+  const handleNoteContextMenu = (e, note) => {
+    e.preventDefault()
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      note
+    })
+  }
+
+  // Show details modal
+  const handleShowDetails = (note) => {
+    setCurrentNoteId(note.id)
+    setTitle(note.title)
+    setContent(note.content)
+    setCategory(note.category || '')
+    setShowDetailsModal(true)
+    setContextMenu(null)
+  }
+
+  // Filter notes using utility function
+  const filteredNotes = filterNotesUtil(notes, searchQuery, filterOptions)
 
   return (
     <div className='brain-dump-container'>
@@ -294,6 +358,16 @@ function BrainDump() {
                 <line x1='3' y1='12' x2='21' y2='12' />
                 <line x1='3' y1='6' x2='21' y2='6' />
                 <line x1='3' y1='18' x2='21' y2='18' />
+              </svg>
+            </button>
+            <button
+              className='btn btn-icon'
+              onClick={() => setShowFilterModal(true)}
+              aria-label='Filter Notes'
+              title='Filter Notes'
+            >
+              <svg className='icon' viewBox='0 0 24 24'>
+                <polygon points='22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3' />
               </svg>
             </button>
           </div>
@@ -338,6 +412,7 @@ function BrainDump() {
               key={note.id}
               className={`note-item ${note.id === currentNoteId ? 'active' : ''}`}
               onClick={() => loadNote(note)}
+              onContextMenu={(e) => handleNoteContextMenu(e, note)}
               role='button'
               tabIndex={0}
               onKeyDown={(e) => {
@@ -348,10 +423,25 @@ function BrainDump() {
               }}
             >
               <div className='note-item-title' title={note.title || 'Untitled'}>
+                {note.locked && (
+                  <svg
+                    className='icon note-item-lock-icon'
+                    viewBox='0 0 24 24'
+                    aria-label='Locked'
+                  >
+                    <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                    <path d='M7 11V7a5 5 0 0 1 10 0v4' />
+                  </svg>
+                )}
                 {note.title || 'Untitled'}
               </div>
-              <div className='note-item-date'>
-                {new Date(note.updatedAt).toLocaleDateString()}
+              <div className='note-item-metadata'>
+                <div className='note-item-date'>
+                  {new Date(note.updatedAt).toLocaleDateString()}
+                </div>
+                {note.category && (
+                  <div className='note-item-category'>{note.category}</div>
+                )}
               </div>
             </div>
           ))}
@@ -398,8 +488,24 @@ function BrainDump() {
                 placeholder='Note title...'
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                disabled={!currentNoteId || currentNote?.locked}
                 aria-label='Note title'
               />
+              <input
+                type='text'
+                className='note-category-input'
+                placeholder='Category...'
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                disabled={!currentNoteId || currentNote?.locked}
+                aria-label='Note category'
+                list='category-suggestions'
+              />
+              <datalist id='category-suggestions'>
+                {getUniqueCategoriesUtil(notes).map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
             </div>
             <div className='toolbar'>
               <label className='btn' aria-label='Import' title='Import'>
@@ -431,10 +537,10 @@ function BrainDump() {
               </button>
               <button
                 className='btn btn-delete'
-                onClick={handleDelete}
+                onClick={() => handleDelete()}
                 aria-label='Delete'
                 title='Delete'
-                disabled={!currentNoteId}
+                disabled={!currentNoteId || currentNote?.locked}
               >
                 <svg className='icon' viewBox='0 0 24 24'>
                   <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
@@ -454,7 +560,7 @@ function BrainDump() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  disabled={!currentNoteId}
+                  disabled={!currentNoteId || currentNote?.locked}
                   aria-label='Note content'
                   aria-describedby={
                     !currentNoteId ? 'editor-disabled-message' : undefined
@@ -477,6 +583,7 @@ function BrainDump() {
                 role='region'
                 aria-label='Note preview'
               >
+                {/* Security: HTML is sanitized with DOMPurify before rendering to prevent XSS attacks */}
                 <div
                   id='preview'
                   dangerouslySetInnerHTML={{ __html: preview }}
@@ -487,6 +594,226 @@ function BrainDump() {
           </div>
         </div>
       </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          className='context-menu'
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          role='menu'
+          aria-label='Note context menu'
+        >
+          <button
+            className='context-menu-item'
+            onClick={() => handleShowDetails(contextMenu.note)}
+            role='menuitem'
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <circle cx='12' cy='12' r='10' />
+              <line x1='12' y1='16' x2='12' y2='12' />
+              <line x1='12' y1='8' x2='12.01' y2='8' />
+            </svg>
+            See More Details
+          </button>
+          <button
+            className='context-menu-item'
+            onClick={() => handleToggleLock(contextMenu.note.id)}
+            role='menuitem'
+          >
+            {contextMenu.note.locked ? (
+              <>
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                  <path d='M7 11V7a5 5 0 0 1 9.9-1' />
+                </svg>
+                Unlock Note
+              </>
+            ) : (
+              <>
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                  <path d='M7 11V7a5 5 0 0 1 10 0v4' />
+                </svg>
+                Lock Note
+              </>
+            )}
+          </button>
+          <button
+            className='context-menu-item context-menu-item-danger'
+            onClick={() => handleDelete(contextMenu.note.id)}
+            role='menuitem'
+            disabled={contextMenu.note.locked}
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+              <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+            </svg>
+            Delete Note
+          </button>
+        </div>
+      )}
+
+      {/* Details Modal */}
+      {showDetailsModal && (
+        <NoteDetailsModal
+          note={currentNote}
+          title={title}
+          category={category}
+          content={content}
+          onClose={() => setShowDetailsModal(false)}
+        />
+      )}
+
+      {/* Filter Modal */}
+      {showFilterModal && (
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+        <div
+          className='modal-overlay'
+          onClick={() => setShowFilterModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setShowFilterModal(false)
+          }}
+          role='dialog'
+          aria-modal='true'
+          aria-labelledby='filter-modal-title'
+        >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+          <div
+            className='modal-content'
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            role='document'
+          >
+            <div className='modal-header'>
+              <h2 id='filter-modal-title'>Filter Notes</h2>
+              <button
+                className='btn btn-icon'
+                onClick={() => setShowFilterModal(false)}
+                aria-label='Close'
+              >
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <line x1='18' y1='6' x2='6' y2='18' />
+                  <line x1='6' y1='6' x2='18' y2='18' />
+                </svg>
+              </button>
+            </div>
+            <div className='modal-body'>
+              <div className='filter-section'>
+                <label htmlFor='category-filter'>
+                  <strong>Category:</strong>
+                </label>
+                <select
+                  id='category-filter'
+                  value={filterOptions.category}
+                  onChange={(e) =>
+                    setFilterOptions({
+                      ...filterOptions,
+                      category: e.target.value
+                    })
+                  }
+                  className='filter-select'
+                >
+                  <option value=''>All Categories</option>
+                  {getUniqueCategoriesUtil(notes).map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className='filter-section'>
+                <label htmlFor='date-filter'>
+                  <strong>Date Filter:</strong>
+                </label>
+                <select
+                  id='date-filter'
+                  value={filterOptions.dateFilter}
+                  onChange={(e) =>
+                    setFilterOptions({
+                      ...filterOptions,
+                      dateFilter: e.target.value
+                    })
+                  }
+                  className='filter-select'
+                >
+                  <option value='all'>All Time</option>
+                  <option value='latest'>Latest (Last 7 days)</option>
+                  <option value='day'>Today</option>
+                  <option value='month'>This Month</option>
+                  <option value='year'>This Year</option>
+                  <option value='oldest'>Oldest (Over 30 days)</option>
+                  <option value='custom'>Custom Range</option>
+                </select>
+              </div>
+
+              {filterOptions.dateFilter === 'custom' && (
+                <div className='filter-section'>
+                  <label htmlFor='custom-start'>
+                    <strong>Start Date:</strong>
+                  </label>
+                  <input
+                    id='custom-start'
+                    type='date'
+                    value={filterOptions.customStart}
+                    onChange={(e) =>
+                      setFilterOptions({
+                        ...filterOptions,
+                        customStart: e.target.value
+                      })
+                    }
+                    className='filter-input'
+                  />
+                  <label htmlFor='custom-end'>
+                    <strong>End Date:</strong>
+                  </label>
+                  <input
+                    id='custom-end'
+                    type='date'
+                    value={filterOptions.customEnd}
+                    onChange={(e) =>
+                      setFilterOptions({
+                        ...filterOptions,
+                        customEnd: e.target.value
+                      })
+                    }
+                    className='filter-input'
+                  />
+                </div>
+              )}
+
+              <div className='filter-actions'>
+                <button
+                  className='btn'
+                  onClick={() => {
+                    setFilterOptions({
+                      category: '',
+                      dateFilter: 'all',
+                      customStart: '',
+                      customEnd: ''
+                    })
+                  }}
+                >
+                  Clear Filters
+                </button>
+                <button
+                  className='btn'
+                  onClick={() => setShowFilterModal(false)}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && (
+        <div className='toast' style={{ display: 'block' }}>
+          {toastMessage}
+        </div>
+      )}
     </div>
   )
 }

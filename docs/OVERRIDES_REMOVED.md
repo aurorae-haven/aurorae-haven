@@ -71,6 +71,7 @@ After removing all three overrides, comprehensive testing confirmed:
    - When it can be removed (e.g., after a dependency update)
 
 3. **Regular review**: Periodically review overrides to see if they're still necessary:
+
    ```bash
    npm ls <package-name>
    npm audit

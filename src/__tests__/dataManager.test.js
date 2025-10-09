@@ -901,9 +901,7 @@ describe('Data Manager', () => {
         await importJSON(mockFile)
 
         // Verify restoration
-        const restored = JSON.parse(
-          localStorage.getItem('sj.schedule.events')
-        )
+        const restored = JSON.parse(localStorage.getItem('sj.schedule.events'))
         expect(restored.length).toBe(2)
         expect(restored.find((s) => s.id === 1)).toEqual(initialSchedule[0])
       })

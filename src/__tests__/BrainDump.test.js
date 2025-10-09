@@ -655,7 +655,7 @@ describe('BrainDump Component', () => {
 
       // Step 2: Delete the second note
       window.confirm = jest.fn(() => true)
-      
+
       // Click on second note to select it
       const secondNoteItem = screen.getByText('Second Note')
       fireEvent.click(secondNoteItem)
@@ -684,12 +684,12 @@ describe('BrainDump Component', () => {
           localStorage.getItem('brainDumpEntries') || '[]'
         )
         expect(restoredNotes.length).toBe(3)
-        
+
         // Verify all original notes are present
         expect(restoredNotes.find((n) => n.id === 'note-1')).toBeDefined()
         expect(restoredNotes.find((n) => n.id === 'note-2')).toBeDefined()
         expect(restoredNotes.find((n) => n.id === 'note-3')).toBeDefined()
-        
+
         // Verify content is preserved
         const secondNote = restoredNotes.find((n) => n.id === 'note-2')
         expect(secondNote.title).toBe('Second Note')
@@ -773,6 +773,98 @@ describe('BrainDump Component', () => {
         'note-3',
         'note-4'
       ])
+    })
+  })
+
+  describe('Category and filtering functionality', () => {
+    test('creates new note with category field', () => {
+      render(<BrainDump />)
+
+      const newButton = screen.getByRole('button', { name: /new note/i })
+      fireEvent.click(newButton)
+
+      const entries = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
+      expect(entries.length).toBe(1)
+      expect(entries[0].category).toBeDefined()
+      expect(entries[0].category).toBe('')
+    })
+
+    test('migrates notes without category field', () => {
+      const oldNotes = [
+        {
+          id: 'note-1',
+          title: 'Old Note',
+          content: 'Content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(oldNotes))
+
+      render(<BrainDump />)
+
+      const entries = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
+      expect(entries[0].category).toBe('')
+    })
+
+    test('saves category when editing note', async () => {
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: 'Content',
+          category: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+
+      render(<BrainDump />)
+
+      const categoryInput = screen.getByPlaceholderText('Category...')
+      fireEvent.change(categoryInput, { target: { value: 'Work' } })
+
+      await waitFor(
+        () => {
+          const entries = JSON.parse(
+            localStorage.getItem('brainDumpEntries') || '[]'
+          )
+          expect(entries[0].category).toBe('Work')
+        },
+        { timeout: 1000 }
+      )
+    })
+
+    test('opens filter modal when filter button is clicked', () => {
+      render(<BrainDump />)
+
+      const filterButton = screen.getByRole('button', { name: /filter notes/i })
+      fireEvent.click(filterButton)
+
+      expect(screen.getByText('Filter Notes')).toBeInTheDocument()
+    })
+
+    test('displays category in note list item', () => {
+      const mockEntries = [
+        {
+          id: 'test-id',
+          title: 'Test Note',
+          content: 'Content',
+          category: 'Personal',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
+
+      render(<BrainDump />)
+
+      expect(screen.getByText('Personal')).toBeInTheDocument()
     })
   })
 })
