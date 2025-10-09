@@ -58,7 +58,7 @@ function TaskItem({
       onDragStart={() => onDragStart(quadrant, task)}
       onKeyDown={handleKeyDown}
       tabIndex={isEditing ? -1 : 0}
-      role="button"
+      
       aria-label={`Task: ${task.text}. Press Alt + Arrow keys to move between quadrants.`}
     >
       <input
