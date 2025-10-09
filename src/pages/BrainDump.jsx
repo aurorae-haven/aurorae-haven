@@ -430,6 +430,8 @@ function BrainDump() {
                   </span>
                 )}
               </div>
+              {/* Preview pane with keyboard navigation support */}
+              {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
               <div
                 className='preview-pane'
                 ref={previewRef}
@@ -440,6 +442,7 @@ function BrainDump() {
               >
                 <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
               </div>
+              {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
             </div>
           </div>
         </div>
