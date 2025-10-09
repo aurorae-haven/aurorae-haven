@@ -32,7 +32,7 @@ function TaskQuadrant({
     >
       <div className='quadrant-header'>
         <h3>{quadrant.title}</h3>
-        <span className='small'>{quadrant.subtitle}</span>
+        <span className='subtitle'>{quadrant.subtitle}</span>
       </div>
       <div className='task-list'>
         {tasks.length === 0 ? (
