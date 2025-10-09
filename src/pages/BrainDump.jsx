@@ -129,6 +129,11 @@ function BrainDump() {
     if (noteId === currentNoteId) {
       if (updatedNotes.length > 0) {
         loadNote(updatedNotes[0])
+      } else {
+        setCurrentNoteId(null)
+        setTitle('')
+        setContent('')
+        setCategory('')
       }
     }
 

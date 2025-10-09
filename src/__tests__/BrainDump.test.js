@@ -439,8 +439,9 @@ describe('BrainDump Component', () => {
     test('creates new note on new button click', () => {
       render(<BrainDump />)
 
-      const newButton = screen.getByRole('button', { name: /new note/i })
-      fireEvent.click(newButton)
+      // Get all new note buttons (one in toolbar, one in notes list) and click the first one
+      const newButtons = screen.getAllByRole('button', { name: /new note/i })
+      fireEvent.click(newButtons[0])
 
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
@@ -780,8 +781,9 @@ describe('BrainDump Component', () => {
     test('creates new note with category field', () => {
       render(<BrainDump />)
 
-      const newButton = screen.getByRole('button', { name: /new note/i })
-      fireEvent.click(newButton)
+      // Get all new note buttons (one in toolbar, one in notes list) and click the first one
+      const newButtons = screen.getAllByRole('button', { name: /new note/i })
+      fireEvent.click(newButtons[0])
 
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'

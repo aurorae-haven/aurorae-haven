@@ -212,6 +212,7 @@ function NoteEditor({
               aria-label='Markdown editor'
             />
             <div
+              id='preview'
               ref={previewRef}
               className='preview'
               dangerouslySetInnerHTML={{ __html: preview }}
