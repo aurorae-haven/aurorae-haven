@@ -198,7 +198,7 @@ async function createTarGz() {
     console.log('  → Added README.md to package')
 
     // Create tar.gz using shell command (more reliable and compatible)
-    // Note: Using execSync with array args to prevent command injection
+    // Note: Using spawnSync with array args to prevent command injection
     try {
       const { spawnSync } = await import('child_process')
       const result = spawnSync('tar', ['-czf', outputFile, '-C', DIST_OFFLINE_DIR, '.'], {
