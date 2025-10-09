@@ -8,7 +8,14 @@
  * open index.html directly without needing a web server.
  */
 
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'fs'
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync
+} from 'fs'
 import { join } from 'path'
 
 const DIST_DIR = 'dist'
