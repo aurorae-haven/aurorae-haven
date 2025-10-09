@@ -12,12 +12,18 @@ import {
 } from '../utils/fileHelpers'
 
 // Configure marked once at module level to avoid reconfiguration on re-renders
-marked.use(
-  markedKatex({
-    throwOnError: false,
-    displayMode: false
-  })
-)
+// Error handling for KaTeX extension to gracefully handle load failures
+try {
+  marked.use(
+    markedKatex({
+      throwOnError: false,
+      displayMode: false
+    })
+  )
+} catch (error) {
+  console.warn('KaTeX extension failed to load. LaTeX rendering will be disabled.', error)
+  // Marked will continue to work without KaTeX, falling back to plain markdown
+}
 
 marked.setOptions({
   breaks: true,
