@@ -150,6 +150,8 @@ function BrainDump() {
       const note = notes.find((n) => n.id === noteId)
       if (note) {
         exportNoteToFile(note.title, note.content)
+      } else {
+        showToastNotification('⚠️ Note not found. Cannot export.')
       }
     } else {
       exportNoteToFile(title, content)
