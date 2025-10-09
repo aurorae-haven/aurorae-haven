@@ -17,7 +17,7 @@ const __dirname = dirname(__filename)
 
 const TEST_DIR = 'test-offline-package'
 const PACKAGE_DIR = join(__dirname, '..', 'dist-offline')
-const TEST_PORT = 8766
+const TEST_PORT = parseInt(process.env.TEST_PORT || '8766', 10)
 
 // Find the offline package
 function findOfflinePackage() {
@@ -46,12 +46,21 @@ async function extractPackage(packagePath) {
   }
   mkdirSync(TEST_DIR, { recursive: true })
 
-  // Extract the package
-  const { execSync } = await import('child_process')
+  // Extract the package using spawnSync to prevent command injection
+  const { spawnSync } = await import('child_process')
   try {
-    execSync(`tar -xzf "${packagePath}" -C "${TEST_DIR}"`, {
+    const result = spawnSync('tar', ['-xzf', packagePath, '-C', TEST_DIR], {
       stdio: 'inherit'
     })
+    
+    if (result.error) {
+      throw result.error
+    }
+    
+    if (result.status !== 0) {
+      throw new Error(`tar command failed with exit code ${result.status}`)
+    }
+    
     console.log('✓ Package extracted successfully')
   } catch (error) {
     throw new Error(`Failed to extract package: ${error.message}`)

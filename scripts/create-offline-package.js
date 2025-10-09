@@ -129,11 +129,20 @@ async function createTarGz() {
     console.log('  → Added README.md to package')
 
     // Create tar.gz using shell command (more reliable and compatible)
+    // Note: Using execSync with array args to prevent command injection
     try {
-      execSync(`tar -czf "${outputFile}" -C "${DIST_OFFLINE_DIR}" .`, {
-        stdio: 'pipe',
+      const { spawnSync } = await import('child_process')
+      const result = spawnSync('tar', ['-czf', outputFile, '-C', DIST_OFFLINE_DIR, '.'], {
         encoding: 'utf-8'
       })
+      
+      if (result.error) {
+        throw result.error
+      }
+      
+      if (result.status !== 0) {
+        throw new Error(`tar command failed with exit code ${result.status}: ${result.stderr}`)
+      }
     } catch (tarError) {
       // Provide detailed error information based on error type
       if (tarError.code === 127 || tarError.message.includes('not found')) {
@@ -198,12 +207,6 @@ async function createTarGz() {
     console.log('  4. Open http://localhost:8000 in your browser')
     console.log('')
     console.log('⚠️  Important: A local web server is required (see README.md)')
-
-    // Clean up the temporary offline build directory
-    if (existsSync(DIST_OFFLINE_DIR)) {
-      rmSync(DIST_OFFLINE_DIR, { recursive: true, force: true })
-      console.log('  ✓ Cleaned up temporary build directory')
-    }
 
     return true
   } catch (error) {
@@ -334,6 +337,50 @@ async function createZipWithArchiver(outputFile, readmeContent) {
   })
 }
 
+/**
+ * Create ZIP archive using archiver
+ */
+async function createZip() {
+  console.log('📦 Creating ZIP archive...')
+
+  if (!existsSync(DIST_OFFLINE_DIR)) {
+    console.error('❌ Error: offline build directory not found. Build failed.')
+    return false
+  }
+
+  // Create output directory
+  if (!existsSync(OUTPUT_DIR)) {
+    mkdirSync(OUTPUT_DIR, { recursive: true })
+  }
+
+  const outputFile = join(OUTPUT_DIR, `aurorae-haven-offline-v${VERSION}.zip`)
+
+  try {
+    const readmeContent = await generateReadme()
+    const { writeFileSync } = await import('fs')
+
+    // Add README to the offline build directory
+    const readmePath = join(DIST_OFFLINE_DIR, 'README.md')
+    writeFileSync(readmePath, readmeContent)
+    console.log('  → Added README.md to package')
+
+    // Try to create ZIP with archiver
+    const archiver = await import('archiver').catch(() => null)
+
+    if (!archiver) {
+      console.warn('⚠️  archiver package not available, skipping ZIP creation')
+      return false
+    }
+
+    await createZipWithArchiver(outputFile, readmeContent)
+    return true
+  } catch (error) {
+    console.error('❌ Error creating ZIP:')
+    console.error(error.message)
+    return false
+  }
+}
+
 // Main execution
 ;(async () => {
   console.log('🌌 Aurorae Haven - Offline Package Creator\n')
@@ -345,24 +392,38 @@ async function createZipWithArchiver(outputFile, readmeContent) {
     process.exit(1)
   }
 
-  // Step 2: Create the archive
+  let tarGzSuccess = false
+  let zipSuccess = false
+
+  // Step 2: Create tar.gz archive
   try {
-    const success = await createTarGz()
-    if (success) {
-      process.exit(0)
-    }
+    tarGzSuccess = await createTarGz()
   } catch (error) {
-    console.warn(
-      '⚠️  tar command not available, trying alternative method...\n'
-    )
+    console.warn('⚠️  tar.gz creation failed:', error.message)
   }
 
-  // Fallback to simple archive (shouldn't normally be needed)
+  // Step 3: Create ZIP archive
   try {
-    const success = await createSimpleArchive()
-    process.exit(success ? 0 : 1)
+    zipSuccess = await createZip()
   } catch (error) {
-    console.error('❌ Failed to create offline package:', error)
+    console.warn('⚠️  ZIP creation failed:', error.message)
+  }
+
+  // Clean up the temporary offline build directory
+  if (existsSync(DIST_OFFLINE_DIR)) {
+    rmSync(DIST_OFFLINE_DIR, { recursive: true, force: true })
+    console.log('  ✓ Cleaned up temporary build directory')
+  }
+
+  // Report results
+  console.log('\n' + '='.repeat(70))
+  if (tarGzSuccess || zipSuccess) {
+    console.log('✅ Offline package creation complete!')
+    if (tarGzSuccess) console.log('  ✓ tar.gz created')
+    if (zipSuccess) console.log('  ✓ ZIP created')
+    process.exit(0)
+  } else {
+    console.error('❌ Failed to create offline packages')
     process.exit(1)
   }
 })()

@@ -45,8 +45,8 @@ php -S localhost:8000
 
 - **index.html**: Main application entry point
 - **assets/**: JavaScript bundles and CSS stylesheets
-  - React application code (~175 KB)
-  - Markdown parser and sanitizer (~328 KB)
+  - React application code
+  - Markdown parser and sanitizer
   - Calendar components
   - Optimized and minified
 - **sw.js**: Service worker for offline functionality
@@ -54,7 +54,7 @@ php -S localhost:8000
 - **icons**: App icons for PWA installation
 - **404.html**: Fallback page for routing
 
-**Total Size**: ~1 MB compressed, ~1.8 MB extracted
+The package is optimized and compressed for efficient downloading.
 
 ## Progressive Web App (PWA)
 
