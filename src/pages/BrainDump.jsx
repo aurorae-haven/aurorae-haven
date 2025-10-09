@@ -34,21 +34,16 @@ const markedOptions = {
   gfm: true
 }
 
-// Utility function to configure marked options, handling both old and new API
-function configureMarkedOptions() {
-  try {
-    if (typeof marked.use === 'function') {
-      marked.use(markedOptions)
-    } else if (typeof marked.setOptions === 'function') {
-      marked.setOptions(markedOptions)
-    }
-  } catch (error) {
-    console.warn('Failed to configure marked options:', error)
+// Configure marked options at module level, handling both old and new API
+try {
+  if (typeof marked.use === 'function') {
+    marked.use(markedOptions)
+  } else if (typeof marked.setOptions === 'function') {
+    marked.setOptions(markedOptions)
   }
+} catch (error) {
+  console.warn('Failed to configure marked options:', error)
 }
-
-// Configure marked options at module level
-configureMarkedOptions()
 function BrainDump() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
