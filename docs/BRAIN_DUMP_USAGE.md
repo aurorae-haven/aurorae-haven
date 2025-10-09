@@ -54,6 +54,72 @@ When you press Enter on a list item:
 - Task lists create a new unchecked item
 - Empty list items are removed (press Enter twice to exit list)
 
+### LaTeX Mathematical Equations
+
+Brain Dump supports LaTeX equations using KaTeX for professional mathematical notation.
+
+**Inline Math:**
+
+Use single dollar signs for inline equations:
+
+```markdown
+The quadratic formula is $x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}$ in standard form.
+Einstein's equation: $E = mc^2$
+```
+
+**Display Math:**
+
+Use double dollar signs for centered block equations:
+
+```markdown
+$$
+\int_{a}^{b} f(x) \, dx = F(b) - F(a)
+$$
+```
+
+**Common Examples:**
+
+- Greek letters: `$\alpha, \beta, \gamma, \Delta, \Sigma$`
+- Fractions: `$\frac{a}{b}$`
+- Square roots: `$\sqrt{x}$ or $\sqrt[n]{x}$`
+- Summations: `$\sum_{i=1}^{n} x_i$`
+- Integrals: `$\int_{0}^{\infty} e^{-x} dx$`
+
+**Tips:**
+
+- Preview your equations to ensure they render correctly
+- For literal dollar signs, escape them: `\$10.00`
+- See [USER_MANUAL.md](../USER_MANUAL.md) for complete LaTeX reference
+
+### Embedding Images
+
+Display images in your notes using markdown syntax:
+
+**Basic syntax:**
+
+```markdown
+![Alt text description](image-url-or-path)
+```
+
+**Using File Attachments:**
+
+1. Click "📎 Attach" button
+2. Select your image file
+3. Reference is inserted automatically
+
+**External images:**
+
+```markdown
+![Mountain landscape](https://example.com/images/mountain.jpg)
+```
+
+**Best practices:**
+
+- Always include descriptive alt text for accessibility
+- Use local file attachments for privacy and offline access
+- Optimize image sizes for better performance
+- See [USER_MANUAL.md](../USER_MANUAL.md) for detailed image guide
+
 ## Advanced Features
 
 ### 🔗 Backlinks (TAB-BDP-BLK-01)
