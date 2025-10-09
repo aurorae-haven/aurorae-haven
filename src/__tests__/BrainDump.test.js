@@ -53,7 +53,7 @@ describe('BrainDump Component', () => {
     test('renders BrainDump component', () => {
       render(<BrainDump />)
       expect(
-        screen.getByPlaceholderText('Start typing your thoughts...')
+        screen.getByPlaceholderText('Start writing your note in Markdown...')
       ).toBeInTheDocument()
     })
 
@@ -70,7 +70,7 @@ describe('BrainDump Component', () => {
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       expect(textarea).toHaveValue('Test content')
     })
@@ -79,7 +79,7 @@ describe('BrainDump Component', () => {
       localStorage.setItem('brainDumpContent', 'Old content')
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       expect(textarea).toHaveValue('Old content')
 
@@ -106,7 +106,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       fireEvent.change(textarea, { target: { value: 'New content' } })
 
@@ -136,7 +136,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       fireEvent.change(textarea, { target: { value: '# Heading' } })
 
@@ -164,7 +164,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       // Type task list item
@@ -199,7 +199,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       // Set content with empty task list item
@@ -222,7 +222,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- First item' } })
@@ -239,7 +239,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- First item\n- ' } })
@@ -256,7 +256,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '1. First item' } })
@@ -273,7 +273,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '1. First item\n2. ' } })
@@ -290,7 +290,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, {
@@ -309,7 +309,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '  - Indented item' } })
@@ -326,7 +326,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- Item' } })
@@ -343,7 +343,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- Item' } })
@@ -360,7 +360,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: 'Regular text' } })
@@ -390,7 +390,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       expect(textarea).toHaveValue('Some content')
 
@@ -421,7 +421,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       const deleteButton = screen.getByRole('button', { name: /delete/i })
@@ -470,7 +470,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       // Should load first note by default
