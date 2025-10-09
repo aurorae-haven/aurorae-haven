@@ -131,8 +131,23 @@ async function handleRequest(req, res) {
     return
   }
   
-  const filePath = join(ROOT_DIR, pathname)
-  await serveFile(filePath, res)
+  let filePath = join(ROOT_DIR, pathname)
+  
+  // Check if file exists
+  try {
+    const stats = await stat(filePath)
+    if (stats.isFile()) {
+      await serveFile(filePath, res)
+      return
+    }
+  } catch (error) {
+    // File doesn't exist, continue to SPA fallback
+  }
+  
+  // SPA fallback: serve index.html for routes that don't match files
+  // This allows React Router to handle client-side routing
+  const indexPath = join(ROOT_DIR, 'index.html')
+  await serveFile(indexPath, res)
 }
 
 /**
