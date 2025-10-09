@@ -21,15 +21,29 @@ try {
     })
   )
 } catch (error) {
-  console.warn('KaTeX extension failed to load. LaTeX rendering will be disabled.', error)
+  console.warn(
+    'KaTeX extension failed to load. LaTeX rendering will be disabled.',
+    error
+  )
   // Marked will continue to work without KaTeX, falling back to plain markdown
 }
 
-marked.setOptions({
+// Common marked configuration options
+const markedOptions = {
   breaks: true,
   gfm: true
-})
+}
 
+// Configure marked options at module level, handling both old and new API
+try {
+  if (typeof marked.use === 'function') {
+    marked.use(markedOptions)
+  } else if (typeof marked.setOptions === 'function') {
+    marked.setOptions(markedOptions)
+  }
+} catch (error) {
+  console.warn('Failed to configure marked options:', error)
+}
 function BrainDump() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
@@ -273,9 +287,7 @@ function BrainDump() {
             <button
               className='btn btn-icon toggle-notes-btn'
               onClick={() => setShowNoteList(!showNoteList)}
-              aria-label={
-                showNoteList ? 'Hide notes list' : 'Show notes list'
-              }
+              aria-label={showNoteList ? 'Hide notes list' : 'Show notes list'}
               title={showNoteList ? 'Hide notes list' : 'Show notes list'}
             >
               <svg className='icon' viewBox='0 0 24 24'>
@@ -446,7 +458,10 @@ function BrainDump() {
                 role='region'
                 aria-label='Note preview'
               >
-                <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
+                <div
+                  id='preview'
+                  dangerouslySetInnerHTML={{ __html: preview }}
+                />
               </div>
               {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
             </div>

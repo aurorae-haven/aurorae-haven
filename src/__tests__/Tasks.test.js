@@ -154,7 +154,7 @@ describe('Tasks Component', () => {
     const mockTasks = {
       urgent_important: [
         {
-          id: 1,
+          id: 'test-uuid-1',
           text: 'Loaded task',
           completed: false,
           createdAt: Date.now()
@@ -274,7 +274,7 @@ describe('Tasks Component', () => {
     const mockTasks = {
       urgent_important: [
         {
-          id: 1,
+          id: 'imported-uuid-1',
           text: 'Imported task',
           completed: false,
           createdAt: Date.now()
@@ -480,10 +480,20 @@ describe('Tasks Component', () => {
 
     const duplicateTasks = {
       urgent_important: [
-        { id: 1, text: 'Task 1', completed: false, createdAt: Date.now() }
+        {
+          id: 'dup-id',
+          text: 'Task 1',
+          completed: false,
+          createdAt: Date.now()
+        }
       ],
       not_urgent_important: [
-        { id: 1, text: 'Task 2', completed: false, createdAt: Date.now() } // Duplicate ID
+        {
+          id: 'dup-id',
+          text: 'Task 2',
+          completed: false,
+          createdAt: Date.now()
+        } // Duplicate ID
       ],
       urgent_not_important: [],
       not_urgent_not_important: []
@@ -512,7 +522,7 @@ describe('Tasks Component', () => {
     const longTextTask = {
       urgent_important: [
         {
-          id: 1,
+          id: 'long-text-id',
           text: 'x'.repeat(1001), // Exceeds 1000 char limit
           completed: false,
           createdAt: Date.now()
@@ -545,7 +555,7 @@ describe('Tasks Component', () => {
 
     const invalidTasks = {
       urgent_important: [
-        { id: 'string-id', text: 123, completed: 'yes' } // Invalid types
+        { id: { invalid: 'object' }, text: 123, completed: 'yes' } // Invalid types
       ],
       not_urgent_important: [],
       urgent_not_important: [],
@@ -566,6 +576,40 @@ describe('Tasks Component', () => {
 
     await waitFor(() => {
       expect(screen.getByText(/incorrect structure/i)).toBeInTheDocument()
+    })
+  })
+
+  test('accepts import with numeric IDs (backward compatibility)', async () => {
+    const { container } = render(<Tasks />)
+
+    const legacyTasks = {
+      urgent_important: [
+        {
+          id: 1,
+          text: 'Legacy task',
+          completed: false,
+          createdAt: Date.now()
+        }
+      ],
+      not_urgent_important: [],
+      urgent_not_important: [],
+      not_urgent_not_important: []
+    }
+
+    const file = new File([JSON.stringify(legacyTasks)], 'tasks.json', {
+      type: 'application/json'
+    })
+
+    const importInput = container.querySelector('input[type="file"]')
+    Object.defineProperty(importInput, 'files', {
+      value: [file],
+      writable: false
+    })
+
+    fireEvent.change(importInput)
+
+    await waitFor(() => {
+      expect(screen.getByText('Legacy task')).toBeInTheDocument()
     })
   })
 
@@ -762,6 +806,48 @@ describe('Tasks Component', () => {
       expect(screen.getByText('Delete all text')).toBeInTheDocument()
       // Edit mode should be cancelled
       expect(screen.queryByLabelText('Save task')).not.toBeInTheDocument()
+    })
+  })
+
+  test('exports and re-imports tasks with string UUIDs', async () => {
+    const { container } = render(<Tasks />)
+
+    // Add a task (which will have a UUID string ID)
+    const input = screen.getByPlaceholderText('Add a new task...')
+    const addButton = screen.getByText('Add')
+
+    fireEvent.change(input, { target: { value: 'Round-trip test' } })
+    fireEvent.click(addButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('Round-trip test')).toBeInTheDocument()
+    })
+
+    // Get the exported data from localStorage
+    const exportedData = localStorage.getItem('aurorae_tasks')
+    const parsedData = JSON.parse(exportedData)
+
+    // Verify the ID is a string (UUID)
+    expect(parsedData.urgent_important.length).toBe(1)
+    expect(typeof parsedData.urgent_important[0].id).toBe('string')
+    expect(parsedData.urgent_important[0].text).toBe('Round-trip test')
+
+    // Clear and re-import
+    localStorage.clear()
+    const file = new File([exportedData], 'tasks.json', {
+      type: 'application/json'
+    })
+
+    const importInput = container.querySelector('input[type="file"]')
+    Object.defineProperty(importInput, 'files', {
+      value: [file],
+      writable: false
+    })
+
+    fireEvent.change(importInput)
+
+    await waitFor(() => {
+      expect(screen.getByText('Round-trip test')).toBeInTheDocument()
     })
   })
 })

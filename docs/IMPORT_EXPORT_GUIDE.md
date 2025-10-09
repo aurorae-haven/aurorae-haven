@@ -62,7 +62,12 @@ The export includes:
   "schedule": [],
   "auroraeTasksData": {
     "urgent_important": [
-      { "id": 1, "text": "Do this now", "completed": false, "createdAt": 1704453600000 }
+      {
+        "id": 1,
+        "text": "Do this now",
+        "completed": false,
+        "createdAt": 1704453600000
+      }
     ],
     "not_urgent_important": [],
     "urgent_not_important": [],

@@ -206,12 +206,17 @@ function Tasks() {
           return
         }
 
+        // Helper function to validate task ID (supports both string UUIDs and legacy numeric IDs)
+        const isValidTaskId = (id) => {
+          return typeof id === 'number' || typeof id === 'string'
+        }
+
         // Validate task structure in each quadrant and check for duplicates
         const seenIds = new Set()
         for (const key of requiredKeys) {
           for (const task of imported[key]) {
             if (
-              typeof task.id !== 'number' ||
+              !isValidTaskId(task.id) ||
               typeof task.text !== 'string' ||
               typeof task.completed !== 'boolean' ||
               typeof task.createdAt !== 'number'

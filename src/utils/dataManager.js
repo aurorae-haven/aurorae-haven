@@ -357,7 +357,11 @@ function validateImportData(obj) {
   }
 
   // Validate top-level array fields using reusable helper
-  const arrayFieldErrors = validateArrayFields(obj, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY)
+  const arrayFieldErrors = validateArrayFields(
+    obj,
+    ARRAY_FIELDS,
+    VALIDATION_TYPES.ARRAY
+  )
   errors.push(...arrayFieldErrors)
 
   // Validate brainDump structure if present
@@ -366,7 +370,11 @@ function validateImportData(obj) {
       errors.push('Invalid type for brainDump: expected object')
     } else {
       // Validate brainDump fields using reusable helper
-      const brainDumpErrors = validateObjectFields(obj.brainDump, BRAIN_DUMP_FIELDS, 'brainDump.')
+      const brainDumpErrors = validateObjectFields(
+        obj.brainDump,
+        BRAIN_DUMP_FIELDS,
+        'brainDump.'
+      )
       errors.push(...brainDumpErrors)
     }
   }

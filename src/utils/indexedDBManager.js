@@ -575,7 +575,10 @@ export async function importAllData(data) {
 
     // Import tasks to aurorae_tasks (Eisenhower matrix format)
     if (data.auroraeTasksData && typeof data.auroraeTasksData === 'object') {
-      localStorage.setItem('aurorae_tasks', JSON.stringify(data.auroraeTasksData))
+      localStorage.setItem(
+        'aurorae_tasks',
+        JSON.stringify(data.auroraeTasksData)
+      )
       importReport.imported.auroraeTasksData = true
     }
 

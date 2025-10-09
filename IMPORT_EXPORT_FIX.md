@@ -30,6 +30,7 @@ Created `validateImportData()` and `validateExportData()` functions in `src/util
 ### 2. Improved Error Messages
 
 **Import Errors:**
+
 ```
 "Import failed: Invalid schema: Missing required field: version"
 "Import failed: Invalid schema: Invalid type for tasks: expected array"
@@ -37,6 +38,7 @@ Created `validateImportData()` and `validateExportData()` functions in `src/util
 ```
 
 **Export Errors:**
+
 ```
 "Export failed: Export validation failed: Export data missing version field"
 "Export failed: Export data contains circular references or non-serializable values"
@@ -45,6 +47,7 @@ Created `validateImportData()` and `validateExportData()` functions in `src/util
 ### 3. Enhanced Test Coverage
 
 Added 6 new test cases:
+
 - Round-trip export and import with full data structure
 - Export validation with valid data
 - Reject import data with invalid array types
@@ -55,14 +58,16 @@ Added 6 new test cases:
 ## Testing
 
 Test results:
+
 ```
 Test Suites: 16 passed, 16 total
 Tests:       337 passed, 391 total
 ```
 
 Specific dataManager tests:
+
 ```
-Test Suites: 1 passed, 1 total  
+Test Suites: 1 passed, 1 total
 Tests:       22 passed, 22 total
 ```
 
@@ -74,7 +79,7 @@ Tests:       22 passed, 22 total
    - Integrated validation into `importJSON()` function
    - Added try-catch error handling to `exportJSON()` function
 
-2. **src/__tests__/dataManager.test.js**
+2. **src/**tests**/dataManager.test.js**
    - Added comprehensive round-trip test
    - Added export validation test
    - Added 4 import validation failure test cases
@@ -96,6 +101,7 @@ Tests:       22 passed, 22 total
 ## Validation Examples
 
 ### Valid Import (Passes)
+
 ```json
 {
   "version": 1,
@@ -111,11 +117,12 @@ Tests:       22 passed, 22 total
 ```
 
 ### Invalid Import (Fails)
+
 ```json
 {
-  "version": "1",  // ❌ String instead of number
-  "tasks": "not an array",  // ❌ String instead of array
-  "brainDump": "invalid"  // ❌ String instead of object
+  "version": "1", // ❌ String instead of number
+  "tasks": "not an array", // ❌ String instead of array
+  "brainDump": "invalid" // ❌ String instead of object
 }
 ```
 

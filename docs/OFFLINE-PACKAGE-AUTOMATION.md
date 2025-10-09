@@ -176,8 +176,8 @@ The release workflow uses `softprops/action-gh-release@v2`:
   uses: softprops/action-gh-release@v2
   with:
     files:
-    - dist-offline/*.tar.gz
-    - dist-offline/*.zip
+      - dist-offline/*.tar.gz
+      - dist-offline/*.zip
     tag_name: ${{ github.ref_name }}
     name: Aurorae Haven v${{ steps.package.outputs.version }}
     body: |
