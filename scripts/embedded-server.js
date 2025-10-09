@@ -144,10 +144,10 @@ async function handleRequest(req, res) {
     if (error.code === 'ENOENT') {
       // File doesn't exist, continue to SPA fallback
     } else {
-      console.error('Error accessing file:', error);
-      res.writeHead(500);
-      res.end('Internal Server Error');
-      return;
+      console.error('Error accessing file:', error)
+      res.writeHead(500)
+      res.end('Internal Server Error')
+      return
     }
   }
 

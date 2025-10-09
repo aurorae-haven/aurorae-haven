@@ -49,9 +49,19 @@ function BrainDump() {
   const [currentNoteId, setCurrentNoteId] = useState(null)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [category, setCategory] = useState('')
   const [preview, setPreview] = useState('')
   const [showNoteList, setShowNoteList] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
+  const [showDetailsModal, setShowDetailsModal] = useState(false)
+  const [showFilterModal, setShowFilterModal] = useState(false)
+  const [contextMenu, setContextMenu] = useState(null)
+  const [filterOptions, setFilterOptions] = useState({
+    category: '',
+    dateFilter: 'all',
+    customStart: '',
+    customEnd: ''
+  })
   const editorRef = useRef(null)
   const previewRef = useRef(null)
 
@@ -79,6 +89,7 @@ function BrainDump() {
           id: generateSecureUUID(),
           title: 'Migrated Note',
           content: oldContent,
+          category: '',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }
@@ -87,7 +98,20 @@ function BrainDump() {
       }
     }
 
-    setNotes(loadedNotes)
+    // Migrate existing notes to add category field if missing
+    const needsMigration = loadedNotes.some(
+      (note) => note.category === undefined
+    )
+    const migratedNotes = loadedNotes.map((note) => ({
+      ...note,
+      category: note.category || ''
+    }))
+
+    if (needsMigration && migratedNotes.length > 0) {
+      localStorage.setItem('brainDumpEntries', JSON.stringify(migratedNotes))
+    }
+
+    setNotes(migratedNotes)
 
     // Load first note if available
     if (loadedNotes.length > 0) {
@@ -100,6 +124,7 @@ function BrainDump() {
     setCurrentNoteId(note.id)
     setTitle(note.title)
     setContent(note.content)
+    setCategory(note.category || '')
   }
 
   // Render preview whenever content changes
@@ -120,7 +145,13 @@ function BrainDump() {
     const saveTimeout = setTimeout(() => {
       const updatedNotes = notes.map((note) =>
         note.id === currentNoteId
-          ? { ...note, title, content, updatedAt: new Date().toISOString() }
+          ? {
+              ...note,
+              title,
+              content,
+              category,
+              updatedAt: new Date().toISOString()
+            }
           : note
       )
       setNotes(updatedNotes)
@@ -128,7 +159,7 @@ function BrainDump() {
     }, 500) // Debounce autosave
 
     return () => clearTimeout(saveTimeout)
-  }, [currentNoteId, title, content, notes])
+  }, [currentNoteId, title, content, category, notes])
 
   // Create new note
   const handleNewNote = () => {
@@ -136,6 +167,7 @@ function BrainDump() {
       id: generateSecureUUID(),
       title: 'Untitled Note',
       content: '',
+      category: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
@@ -164,6 +196,7 @@ function BrainDump() {
       setCurrentNoteId(null)
       setTitle('')
       setContent('')
+      setCategory('')
     }
   }
 
@@ -201,6 +234,7 @@ function BrainDump() {
         id: generateSecureUUID(),
         title: noteTitle,
         content: fileContent,
+        category: '',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }
@@ -266,13 +300,114 @@ function BrainDump() {
     }
   }, [])
 
-  // Filter notes based on search query
+  // Close context menu on click outside
+  useEffect(() => {
+    const handleClickOutside = () => setContextMenu(null)
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside)
+      return () => document.removeEventListener('click', handleClickOutside)
+    }
+  }, [contextMenu])
+
+  // Handle right-click on note
+  const handleNoteContextMenu = (e, note) => {
+    e.preventDefault()
+    setContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      note
+    })
+  }
+
+  // Show details modal
+  const handleShowDetails = (note) => {
+    setCurrentNoteId(note.id)
+    setTitle(note.title)
+    setContent(note.content)
+    setCategory(note.category || '')
+    setShowDetailsModal(true)
+    setContextMenu(null)
+  }
+
+  // Get unique categories from all notes
+  const getUniqueCategories = () => {
+    const categories = notes
+      .map((note) => note.category)
+      .filter((cat) => cat && cat.trim())
+    return [...new Set(categories)].sort()
+  }
+
+  // Apply date filter
+  const applyDateFilter = (note) => {
+    const { dateFilter, customStart, customEnd } = filterOptions
+    if (dateFilter === 'all') return true
+
+    const noteDate = new Date(note.updatedAt)
+    const now = new Date()
+
+    switch (dateFilter) {
+      case 'latest': {
+        // Last 7 days
+        const sevenDaysAgo = new Date(now)
+        sevenDaysAgo.setDate(now.getDate() - 7)
+        return noteDate >= sevenDaysAgo
+      }
+      case 'oldest': {
+        // Older than 30 days
+        const thirtyDaysAgo = new Date(now)
+        thirtyDaysAgo.setDate(now.getDate() - 30)
+        return noteDate < thirtyDaysAgo
+      }
+      case 'year': {
+        const startOfYear = new Date(now.getFullYear(), 0, 1)
+        return noteDate >= startOfYear
+      }
+      case 'month': {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+        return noteDate >= startOfMonth
+      }
+      case 'day': {
+        const startOfDay = new Date(
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDate()
+        )
+        return noteDate >= startOfDay
+      }
+      case 'custom': {
+        if (!customStart && !customEnd) return true
+        const start = customStart ? new Date(customStart) : new Date(0)
+        const end = customEnd
+          ? new Date(new Date(customEnd).setHours(23, 59, 59, 999))
+          : new Date()
+        return noteDate >= start && noteDate <= end
+      }
+      default:
+        return true
+    }
+  }
+
+  // Filter notes based on search query, category, and date
   const filteredNotes = notes.filter((note) => {
-    if (!searchQuery.trim()) return true
-    const query = searchQuery.toLowerCase()
-    const titleMatch = (note.title || '').toLowerCase().includes(query)
-    const contentMatch = (note.content || '').toLowerCase().includes(query)
-    return titleMatch || contentMatch
+    // Search query filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      const titleMatch = (note.title || '').toLowerCase().includes(query)
+      const contentMatch = (note.content || '').toLowerCase().includes(query)
+      if (!titleMatch && !contentMatch) return false
+    }
+
+    // Category filter
+    if (filterOptions.category && note.category !== filterOptions.category) {
+      return false
+    }
+
+    // Date filter
+    if (!applyDateFilter(note)) {
+      return false
+    }
+
+    return true
   })
 
   return (
@@ -294,6 +429,16 @@ function BrainDump() {
                 <line x1='3' y1='12' x2='21' y2='12' />
                 <line x1='3' y1='6' x2='21' y2='6' />
                 <line x1='3' y1='18' x2='21' y2='18' />
+              </svg>
+            </button>
+            <button
+              className='btn btn-icon'
+              onClick={() => setShowFilterModal(true)}
+              aria-label='Filter Notes'
+              title='Filter Notes'
+            >
+              <svg className='icon' viewBox='0 0 24 24'>
+                <polygon points='22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3' />
               </svg>
             </button>
           </div>
@@ -338,6 +483,7 @@ function BrainDump() {
               key={note.id}
               className={`note-item ${note.id === currentNoteId ? 'active' : ''}`}
               onClick={() => loadNote(note)}
+              onContextMenu={(e) => handleNoteContextMenu(e, note)}
               role='button'
               tabIndex={0}
               onKeyDown={(e) => {
@@ -350,8 +496,13 @@ function BrainDump() {
               <div className='note-item-title' title={note.title || 'Untitled'}>
                 {note.title || 'Untitled'}
               </div>
-              <div className='note-item-date'>
-                {new Date(note.updatedAt).toLocaleDateString()}
+              <div className='note-item-metadata'>
+                <div className='note-item-date'>
+                  {new Date(note.updatedAt).toLocaleDateString()}
+                </div>
+                {note.category && (
+                  <div className='note-item-category'>{note.category}</div>
+                )}
               </div>
             </div>
           ))}
@@ -400,6 +551,21 @@ function BrainDump() {
                 onChange={(e) => setTitle(e.target.value)}
                 aria-label='Note title'
               />
+              <input
+                type='text'
+                className='note-category-input'
+                placeholder='Category...'
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                disabled={!currentNoteId}
+                aria-label='Note category'
+                list='category-suggestions'
+              />
+              <datalist id='category-suggestions'>
+                {getUniqueCategories().map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
             </div>
             <div className='toolbar'>
               <label className='btn' aria-label='Import' title='Import'>
@@ -487,6 +653,239 @@ function BrainDump() {
           </div>
         </div>
       </div>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          className='context-menu'
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          role='menu'
+          aria-label='Note context menu'
+        >
+          <button
+            className='context-menu-item'
+            onClick={() => handleShowDetails(contextMenu.note)}
+            role='menuitem'
+          >
+            See More Details
+          </button>
+        </div>
+      )}
+
+      {/* Details Modal */}
+      {showDetailsModal && (
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+        <div
+          className='modal-overlay'
+          onClick={() => setShowDetailsModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setShowDetailsModal(false)
+          }}
+          role='dialog'
+          aria-modal='true'
+          aria-labelledby='details-modal-title'
+        >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+          <div
+            className='modal-content'
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            role='document'
+          >
+            <div className='modal-header'>
+              <h2 id='details-modal-title'>Note Details</h2>
+              <button
+                className='btn btn-icon'
+                onClick={() => setShowDetailsModal(false)}
+                aria-label='Close'
+              >
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <line x1='18' y1='6' x2='6' y2='18' />
+                  <line x1='6' y1='6' x2='18' y2='18' />
+                </svg>
+              </button>
+            </div>
+            <div className='modal-body'>
+              <div className='detail-row'>
+                <strong>Title:</strong>
+                <span>{title || 'Untitled'}</span>
+              </div>
+              <div className='detail-row'>
+                <strong>Category:</strong>
+                <span>{category || 'None'}</span>
+              </div>
+              <div className='detail-row'>
+                <strong>Created:</strong>
+                <span>
+                  {notes.find((n) => n.id === currentNoteId)?.createdAt
+                    ? new Date(
+                        notes.find((n) => n.id === currentNoteId).createdAt
+                      ).toLocaleString()
+                    : 'N/A'}
+                </span>
+              </div>
+              <div className='detail-row'>
+                <strong>Last Updated:</strong>
+                <span>
+                  {notes.find((n) => n.id === currentNoteId)?.updatedAt
+                    ? new Date(
+                        notes.find((n) => n.id === currentNoteId).updatedAt
+                      ).toLocaleString()
+                    : 'N/A'}
+                </span>
+              </div>
+              <div className='detail-row'>
+                <strong>Content Length:</strong>
+                <span>{content.length} characters</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Filter Modal */}
+      {showFilterModal && (
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+        <div
+          className='modal-overlay'
+          onClick={() => setShowFilterModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setShowFilterModal(false)
+          }}
+          role='dialog'
+          aria-modal='true'
+          aria-labelledby='filter-modal-title'
+        >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+          <div
+            className='modal-content'
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            role='document'
+          >
+            <div className='modal-header'>
+              <h2 id='filter-modal-title'>Filter Notes</h2>
+              <button
+                className='btn btn-icon'
+                onClick={() => setShowFilterModal(false)}
+                aria-label='Close'
+              >
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <line x1='18' y1='6' x2='6' y2='18' />
+                  <line x1='6' y1='6' x2='18' y2='18' />
+                </svg>
+              </button>
+            </div>
+            <div className='modal-body'>
+              <div className='filter-section'>
+                <label htmlFor='category-filter'>
+                  <strong>Category:</strong>
+                </label>
+                <select
+                  id='category-filter'
+                  value={filterOptions.category}
+                  onChange={(e) =>
+                    setFilterOptions({
+                      ...filterOptions,
+                      category: e.target.value
+                    })
+                  }
+                  className='filter-select'
+                >
+                  <option value=''>All Categories</option>
+                  {getUniqueCategories().map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className='filter-section'>
+                <label htmlFor='date-filter'>
+                  <strong>Date Filter:</strong>
+                </label>
+                <select
+                  id='date-filter'
+                  value={filterOptions.dateFilter}
+                  onChange={(e) =>
+                    setFilterOptions({
+                      ...filterOptions,
+                      dateFilter: e.target.value
+                    })
+                  }
+                  className='filter-select'
+                >
+                  <option value='all'>All Time</option>
+                  <option value='latest'>Latest (Last 7 days)</option>
+                  <option value='day'>Today</option>
+                  <option value='month'>This Month</option>
+                  <option value='year'>This Year</option>
+                  <option value='oldest'>Oldest (Over 30 days)</option>
+                  <option value='custom'>Custom Range</option>
+                </select>
+              </div>
+
+              {filterOptions.dateFilter === 'custom' && (
+                <div className='filter-section'>
+                  <label htmlFor='custom-start'>
+                    <strong>Start Date:</strong>
+                  </label>
+                  <input
+                    id='custom-start'
+                    type='date'
+                    value={filterOptions.customStart}
+                    onChange={(e) =>
+                      setFilterOptions({
+                        ...filterOptions,
+                        customStart: e.target.value
+                      })
+                    }
+                    className='filter-input'
+                  />
+                  <label htmlFor='custom-end'>
+                    <strong>End Date:</strong>
+                  </label>
+                  <input
+                    id='custom-end'
+                    type='date'
+                    value={filterOptions.customEnd}
+                    onChange={(e) =>
+                      setFilterOptions({
+                        ...filterOptions,
+                        customEnd: e.target.value
+                      })
+                    }
+                    className='filter-input'
+                  />
+                </div>
+              )}
+
+              <div className='filter-actions'>
+                <button
+                  className='btn'
+                  onClick={() => {
+                    setFilterOptions({
+                      category: '',
+                      dateFilter: 'all',
+                      customStart: '',
+                      customEnd: ''
+                    })
+                  }}
+                >
+                  Clear Filters
+                </button>
+                <button
+                  className='btn'
+                  onClick={() => setShowFilterModal(false)}
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
