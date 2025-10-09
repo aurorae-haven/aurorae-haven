@@ -1,5 +1,5 @@
 /* Aurorae Haven - Main Styles (Modular)
- * Refactored for maintainability - each module < 600 lines
+ * Refactored for maintainability - each module < 400 lines (target) / 700 lines (max)
  */
 
 /* Base styles: variables, reset, body, backgrounds */
