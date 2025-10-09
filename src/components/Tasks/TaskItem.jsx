@@ -58,8 +58,14 @@ function TaskItem({
       onDragStart={() => onDragStart(quadrant, task)}
       onKeyDown={handleKeyDown}
       tabIndex={isEditing ? -1 : 0}
-      
+      role='button'
       aria-label={`Task: ${task.text}. Press Alt + Arrow keys to move between quadrants.`}
+      onClick={(e) => {
+        // Allow click to propagate to child elements (checkbox, edit, delete)
+        if (e.target.classList.contains('task-item')) {
+          // Handle task item click if needed
+        }
+      }}
     >
       <input
         type='checkbox'

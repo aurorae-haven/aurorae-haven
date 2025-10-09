@@ -28,8 +28,8 @@ function TaskForm({ newTask, selectedQuadrant, onTaskChange, onQuadrantChange, o
           Not Urgent & Not Important
         </option>
       </select>
-      <button type='submit' className='btn btn-primary' aria-label='Add task'>
-        <svg className='icon' viewBox='0 0 24 24'>
+      <button type='submit' className='btn btn-primary'>
+        <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
           <path d='M12 5v14M5 12h14' />
         </svg>
         Add Task
