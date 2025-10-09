@@ -28,19 +28,19 @@ try {
   // Marked will continue to work without KaTeX, falling back to plain markdown
 }
 
+// Common marked configuration options
+const markedOptions = {
+  breaks: true,
+  gfm: true
+}
+
 // Utility function to configure marked options, handling both old and new API
 function configureMarkedOptions() {
   try {
     if (typeof marked.use === 'function') {
-      marked.use({
-        breaks: true,
-        gfm: true
-      })
+      marked.use(markedOptions)
     } else if (typeof marked.setOptions === 'function') {
-      marked.setOptions({
-        breaks: true,
-        gfm: true
-      })
+      marked.setOptions(markedOptions)
     }
   } catch (error) {
     console.warn('Failed to configure marked options:', error)
