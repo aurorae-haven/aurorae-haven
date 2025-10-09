@@ -223,7 +223,7 @@ function Tasks() {
                 type='file'
                 accept='.json'
                 onChange={importTasks}
-                style={{ display: 'none' }}
+                className='hidden-file-input'
                 aria-label='Import tasks from JSON file'
               />
             </label>
