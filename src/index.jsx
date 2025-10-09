@@ -74,7 +74,15 @@ function RouterApp() {
       const file = e.target.files?.[0]
       if (file) {
         const result = await importJSON(file)
-        showToast(result.message)
+        if (result.success) {
+          showToast('Data imported successfully. Page will reload...')
+          // Reload page after a short delay to show the toast and ensure UI reflects imported data
+          setTimeout(() => {
+            window.location.reload()
+          }, 1500)
+        } else {
+          showToast(result.message)
+        }
         // allow re-selecting the same file next time
         e.target.value = ''
       }
