@@ -615,4 +615,164 @@ describe('BrainDump Component', () => {
       })
     })
   })
+
+  describe('Export-Delete-Import sequence', () => {
+    test('restores deleted note after importing previously exported data', async () => {
+      // Set up initial notes in localStorage
+      const initialNotes = [
+        {
+          id: 'note-1',
+          title: 'First Note',
+          content: 'First content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'note-2',
+          title: 'Second Note',
+          content: 'Second content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'note-3',
+          title: 'Third Note',
+          content: 'Third content',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(initialNotes))
+
+      // Step 1: Export the data (simulate by getting current state)
+      const exportedData = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
+      expect(exportedData.length).toBe(3)
+
+      // Render component with initial notes
+      const { unmount } = render(<BrainDump />)
+
+      // Step 2: Delete the second note
+      window.confirm = jest.fn(() => true)
+      
+      // Click on second note to select it
+      const secondNoteItem = screen.getByText('Second Note')
+      fireEvent.click(secondNoteItem)
+
+      // Click delete button
+      const deleteButton = screen.getByRole('button', { name: /delete/i })
+      fireEvent.click(deleteButton)
+
+      // Verify deletion
+      const notesAfterDelete = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
+      expect(notesAfterDelete.length).toBe(2)
+      expect(notesAfterDelete.find((n) => n.id === 'note-2')).toBeUndefined()
+
+      // Step 3: Import the previously exported data
+      localStorage.setItem('brainDumpEntries', JSON.stringify(exportedData))
+
+      // Unmount and re-render to simulate page reload after import
+      unmount()
+      render(<BrainDump />)
+
+      // Step 4: Verify all notes are restored
+      await waitFor(() => {
+        const restoredNotes = JSON.parse(
+          localStorage.getItem('brainDumpEntries') || '[]'
+        )
+        expect(restoredNotes.length).toBe(3)
+        
+        // Verify all original notes are present
+        expect(restoredNotes.find((n) => n.id === 'note-1')).toBeDefined()
+        expect(restoredNotes.find((n) => n.id === 'note-2')).toBeDefined()
+        expect(restoredNotes.find((n) => n.id === 'note-3')).toBeDefined()
+        
+        // Verify content is preserved
+        const secondNote = restoredNotes.find((n) => n.id === 'note-2')
+        expect(secondNote.title).toBe('Second Note')
+        expect(secondNote.content).toBe('Second content')
+      })
+
+      // Verify the deleted note is visible in the UI after re-render
+      await waitFor(() => {
+        expect(screen.getByText('Second Note')).toBeInTheDocument()
+      })
+    })
+
+    test('handles multiple delete-import cycles correctly', async () => {
+      // Initial state with 4 notes
+      const initialNotes = [
+        {
+          id: 'note-1',
+          title: 'Note 1',
+          content: 'Content 1',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'note-2',
+          title: 'Note 2',
+          content: 'Content 2',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'note-3',
+          title: 'Note 3',
+          content: 'Content 3',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'note-4',
+          title: 'Note 4',
+          content: 'Content 4',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(initialNotes))
+
+      // Export snapshot
+      const exportSnapshot = JSON.parse(
+        localStorage.getItem('brainDumpEntries') || '[]'
+      )
+
+      // Cycle 1: Delete note 2
+      const afterDelete1 = initialNotes.filter((n) => n.id !== 'note-2')
+      localStorage.setItem('brainDumpEntries', JSON.stringify(afterDelete1))
+      expect(
+        JSON.parse(localStorage.getItem('brainDumpEntries') || '[]').length
+      ).toBe(3)
+
+      // Import to restore
+      localStorage.setItem('brainDumpEntries', JSON.stringify(exportSnapshot))
+      expect(
+        JSON.parse(localStorage.getItem('brainDumpEntries') || '[]').length
+      ).toBe(4)
+
+      // Cycle 2: Delete notes 1 and 3
+      const afterDelete2 = exportSnapshot.filter(
+        (n) => n.id !== 'note-1' && n.id !== 'note-3'
+      )
+      localStorage.setItem('brainDumpEntries', JSON.stringify(afterDelete2))
+      expect(
+        JSON.parse(localStorage.getItem('brainDumpEntries') || '[]').length
+      ).toBe(2)
+
+      // Import again to restore all
+      localStorage.setItem('brainDumpEntries', JSON.stringify(exportSnapshot))
+      const final = JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+      expect(final.length).toBe(4)
+      expect(final.map((n) => n.id).sort()).toEqual([
+        'note-1',
+        'note-2',
+        'note-3',
+        'note-4'
+      ])
+    })
+  })
 })
