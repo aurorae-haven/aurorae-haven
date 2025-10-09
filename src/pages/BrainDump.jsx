@@ -28,23 +28,27 @@ try {
   // Marked will continue to work without KaTeX, falling back to plain markdown
 }
 
-// Configure marked options, handling both old and new API
-try {
-  if (typeof marked.use === 'function') {
-    marked.use({
-      breaks: true,
-      gfm: true
-    })
-  } else if (typeof marked.setOptions === 'function') {
-    marked.setOptions({
-      breaks: true,
-      gfm: true
-    })
+// Utility function to configure marked options, handling both old and new API
+function configureMarkedOptions() {
+  try {
+    if (typeof marked.use === 'function') {
+      marked.use({
+        breaks: true,
+        gfm: true
+      })
+    } else if (typeof marked.setOptions === 'function') {
+      marked.setOptions({
+        breaks: true,
+        gfm: true
+      })
+    }
+  } catch (error) {
+    console.warn('Failed to configure marked options:', error)
   }
-} catch (error) {
-  console.warn('Failed to configure marked options:', error)
 }
 
+// Configure marked options at module level
+configureMarkedOptions();
 function BrainDump() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
