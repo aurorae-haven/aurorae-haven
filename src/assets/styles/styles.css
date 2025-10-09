@@ -2194,8 +2194,8 @@ textarea:focus {
   line-height: 1.6;
 }
 
-.btn-primary,
-.btn-secondary {
+.help-btn-primary,
+.help-btn-secondary {
   display: inline-block;
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
@@ -2207,23 +2207,23 @@ textarea:focus {
   font-size: 0.95rem;
 }
 
-.btn-primary {
+.help-btn-primary {
   background: linear-gradient(135deg, var(--mint), #5ac7ff);
   color: #0a0f24;
 }
 
-.btn-primary:hover {
+.help-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(134, 245, 224, 0.3);
 }
 
-.btn-secondary {
+.help-btn-secondary {
   background: var(--glass-hi);
   color: var(--ink);
   border: 1px solid var(--line);
 }
 
-.btn-secondary:hover {
+.help-btn-secondary:hover {
   background: var(--glass-lo);
   border-color: var(--mint);
 }
@@ -2271,8 +2271,8 @@ textarea:focus {
     padding: 0.5rem;
   }
 
-  .btn-primary,
-  .btn-secondary {
+  .help-btn-primary,
+  .help-btn-secondary {
     padding: 0.6rem 1rem;
     font-size: 0.9rem;
   }

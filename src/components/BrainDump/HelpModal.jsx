@@ -101,7 +101,7 @@ $$`}
           href='https://github.com/aurorae-haven/aurorae-haven/blob/main/USER_MANUAL.md'
           target='_blank'
           rel='noopener noreferrer'
-          className='btn btn-primary'
+          className='btn help-btn-primary'
         >
           📖 View Full Manual
         </a>
@@ -140,7 +140,7 @@ $$`}
             </tr>
             <tr>
               <td>
-                <code>{'$\\frac{a}{b}$'}</code>
+                <code>$\frac&#123;a&#125;&#123;b&#125;$</code>
               </td>
               <td>
                 <em>a/b (fraction)</em>
@@ -148,7 +148,7 @@ $$`}
             </tr>
             <tr>
               <td>
-                <code>{'$\\sqrt{x}$'}</code>
+                <code>$\sqrt&#123;x&#125;$</code>
               </td>
               <td>
                 <em>√x</em>
@@ -195,7 +195,7 @@ $$`}
           href='https://katex.org/docs/supported.html'
           target='_blank'
           rel='noopener noreferrer'
-          className='btn btn-secondary'
+          className='btn help-btn-secondary'
         >
           KaTeX Documentation
         </a>
@@ -273,7 +273,7 @@ $$`}
             href='https://github.com/aurorae-haven/aurorae-haven/blob/main/USER_MANUAL.md'
             target='_blank'
             rel='noopener noreferrer'
-            className='btn btn-primary'
+            className='btn help-btn-primary'
             style={{ display: 'inline-block', marginRight: '1rem' }}
           >
             📖 User Manual
@@ -282,7 +282,7 @@ $$`}
             href='https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/BRAIN_DUMP_USAGE.md'
             target='_blank'
             rel='noopener noreferrer'
-            className='btn btn-secondary'
+            className='btn help-btn-secondary'
             style={{ display: 'inline-block' }}
           >
             📚 Brain Dump Guide
@@ -318,6 +318,7 @@ $$`}
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       className='modal-overlay'
       onClick={handleOverlayClick}
@@ -326,13 +327,16 @@ $$`}
           handleOverlayClick(e)
         }
       }}
-      role='dialog'
-      aria-modal='true'
-      aria-labelledby='help-modal-title'
-      aria-describedby='help-modal-desc'
       tabIndex={-1}
     >
-      <div className='modal-content help-modal' ref={modalRef}>
+      <div 
+        className='modal-content help-modal' 
+        ref={modalRef}
+        role='dialog'
+        aria-modal='true'
+        aria-labelledby='help-modal-title'
+        aria-describedby='help-modal-desc'
+      >
         <div className='modal-header'>
           <h2 id='help-modal-title'>Brain Dump Help</h2>
           <button
