@@ -87,8 +87,8 @@ export function migrateNotes(notes) {
   )
   const migratedNotes = notes.map((note) => ({
     ...note,
-    category: note.category || '',
-    locked: note.locked || false
+    category: note.category ?? '',
+    locked: note.locked ?? false
   }))
   return { migratedNotes, needsMigration }
 }
