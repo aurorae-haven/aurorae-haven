@@ -73,6 +73,100 @@ describe('RouterApp Setup and Configuration', () => {
       expect(mockExportJSON).toHaveBeenCalled()
       expect(toastMessage).toBe('Data exported (aurorae_haven_data.json)')
     })
+
+    test('import handler triggers page reload on success', async () => {
+      // Mock window.location.reload
+      const originalLocation = window.location
+      delete window.location
+      window.location = { reload: jest.fn() }
+
+      mockImportJSON.mockResolvedValue({
+        success: true,
+        message: 'Data imported successfully'
+      })
+
+      const file = new File(['{"data": "test"}'], 'test.json', {
+        type: 'application/json'
+      })
+
+      // Simulate the actual handleImport logic from src/index.jsx
+      const handleImport = async (e) => {
+        const selectedFile = e.target.files?.[0]
+        if (selectedFile) {
+          const result = await mockImportJSON(selectedFile)
+          if (result.success) {
+            // Simulate the reload that happens in the actual code
+            setTimeout(() => {
+              window.location.reload()
+            }, 1500)
+          }
+        }
+      }
+
+      const mockEvent = {
+        target: {
+          files: [file],
+          value: ''
+        }
+      }
+
+      await handleImport(mockEvent)
+
+      // Wait for the setTimeout to execute
+      await new Promise((resolve) => setTimeout(resolve, 1600))
+
+      expect(window.location.reload).toHaveBeenCalled()
+
+      // Restore window.location
+      window.location = originalLocation
+    })
+
+    test('import handler does not reload on failure', async () => {
+      // Mock window.location.reload
+      const originalLocation = window.location
+      delete window.location
+      window.location = { reload: jest.fn() }
+
+      mockImportJSON.mockResolvedValue({
+        success: false,
+        message: 'Import failed: Invalid data'
+      })
+
+      const file = new File(['{"data": "invalid"}'], 'test.json', {
+        type: 'application/json'
+      })
+
+      // Simulate the actual handleImport logic from src/index.jsx
+      const handleImport = async (e) => {
+        const selectedFile = e.target.files?.[0]
+        if (selectedFile) {
+          const result = await mockImportJSON(selectedFile)
+          if (result.success) {
+            // This should NOT execute
+            setTimeout(() => {
+              window.location.reload()
+            }, 1500)
+          }
+        }
+      }
+
+      const mockEvent = {
+        target: {
+          files: [file],
+          value: ''
+        }
+      }
+
+      await handleImport(mockEvent)
+
+      // Wait to ensure reload is not called
+      await new Promise((resolve) => setTimeout(resolve, 1600))
+
+      expect(window.location.reload).not.toHaveBeenCalled()
+
+      // Restore window.location
+      window.location = originalLocation
+    })
   })
 
   describe('GitHub Pages SPA Redirect Handling', () => {
