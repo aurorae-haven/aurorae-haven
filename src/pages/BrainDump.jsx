@@ -21,6 +21,7 @@ import {
   filterNotes as filterNotesUtil
 } from '../utils/brainDump/noteFilters'
 import NoteDetailsModal from '../components/BrainDump/NoteDetailsModal'
+import HelpModal from '../components/BrainDump/HelpModal'
 
 // Configure marked once at module level to avoid reconfiguration on re-renders
 // Error handling for KaTeX extension to gracefully handle load failures
@@ -66,6 +67,7 @@ function BrainDump() {
   const [searchQuery, setSearchQuery] = useState('')
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
+  const [showHelpModal, setShowHelpModal] = useState(false)
   const [contextMenu, setContextMenu] = useState(null)
   const [toastMessage, setToastMessage] = useState('')
   const [showToast, setShowToast] = useState(false)
@@ -547,6 +549,37 @@ function BrainDump() {
                   <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
                 </svg>
               </button>
+              <button
+                className='btn btn-help'
+                onClick={() => setShowHelpModal(true)}
+                aria-label='Open user manual and formatting help'
+                title='Help: LaTeX, Images & Markdown'
+              >
+                <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
+                  <circle
+                    cx='12'
+                    cy='12'
+                    r='10'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                  />
+                  <path
+                    d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                  />
+                  <line
+                    x1='12'
+                    y1='17'
+                    x2='12.01'
+                    y2='17'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                  />
+                </svg>
+              </button>
             </div>
           </div>
           <div className='card-b'>
@@ -814,6 +847,9 @@ function BrainDump() {
           {toastMessage}
         </div>
       )}
+
+      {/* Help Modal */}
+      {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
     </div>
   )
 }

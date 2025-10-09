@@ -206,6 +206,11 @@ The deployment workflow:
 
 ## 📚 Documentation
 
+### User Guides
+
+- **[User Manual](./USER_MANUAL.md)**: Complete guide to LaTeX equations, images, and markdown formatting
+- **[Brain Dump Usage Guide](./docs/BRAIN_DUMP_USAGE.md)**: Feature walkthrough and examples
+
 ### Data Management
 
 - **[Data Management Architecture](./docs/DATA_MANAGEMENT.md)**: Technical documentation on IndexedDB, OPFS, and backups
