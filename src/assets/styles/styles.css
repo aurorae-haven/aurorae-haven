@@ -1189,6 +1189,13 @@ textarea {
   overflow-y: auto;
 }
 
+/* Responsive fix: restrict horizontal resizing on small screens */
+@media (max-width: 600px) {
+  .resizable-textarea {
+    resize: vertical;
+    max-width: 100%;
+  }
+}
 textarea:disabled {
   opacity: 0.5;
   cursor: not-allowed;
