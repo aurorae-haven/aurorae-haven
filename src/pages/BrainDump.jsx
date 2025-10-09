@@ -90,6 +90,7 @@ function BrainDump() {
           title: 'Migrated Note',
           content: oldContent,
           category: '',
+          locked: false,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         }
@@ -98,13 +99,14 @@ function BrainDump() {
       }
     }
 
-    // Migrate existing notes to add category field if missing
+    // Migrate existing notes to add category and locked fields if missing
     const needsMigration = loadedNotes.some(
-      (note) => note.category === undefined
+      (note) => note.category === undefined || note.locked === undefined
     )
     const migratedNotes = loadedNotes.map((note) => ({
       ...note,
-      category: note.category || ''
+      category: note.category || '',
+      locked: note.locked || false
     }))
 
     if (needsMigration && migratedNotes.length > 0) {
@@ -142,6 +144,10 @@ function BrainDump() {
   useEffect(() => {
     if (!currentNoteId) return
 
+    const currentNote = notes.find((n) => n.id === currentNoteId)
+    // Don't save if note is locked
+    if (currentNote?.locked) return
+
     const saveTimeout = setTimeout(() => {
       const updatedNotes = notes.map((note) =>
         note.id === currentNoteId
@@ -168,6 +174,7 @@ function BrainDump() {
       title: 'Untitled Note',
       content: '',
       category: '',
+      locked: false,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
@@ -177,27 +184,49 @@ function BrainDump() {
     loadNote(newNote)
   }
 
-  // Delete current note
-  const handleDelete = () => {
-    if (!currentNoteId) return
+  // Delete note (can be called from context menu or toolbar)
+  const handleDelete = (noteId = currentNoteId) => {
+    if (!noteId) return
 
-    const currentNote = notes.find((n) => n.id === currentNoteId)
-    if (!window.confirm(`Delete "${currentNote?.title || 'this note'}"?`))
+    const noteToDelete = notes.find((n) => n.id === noteId)
+
+    // Check if note is locked
+    if (noteToDelete?.locked) {
+      alert('This note is locked. Please unlock it before deleting.')
+      return
+    }
+
+    if (!window.confirm(`Delete "${noteToDelete?.title || 'this note'}"?`))
       return
 
-    const updatedNotes = notes.filter((n) => n.id !== currentNoteId)
+    const updatedNotes = notes.filter((n) => n.id !== noteId)
     setNotes(updatedNotes)
     localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
 
-    // Load next note or create new one
-    if (updatedNotes.length > 0) {
-      loadNote(updatedNotes[0])
-    } else {
-      setCurrentNoteId(null)
-      setTitle('')
-      setContent('')
-      setCategory('')
+    // Load next note or create new one if the deleted note was current
+    if (noteId === currentNoteId) {
+      if (updatedNotes.length > 0) {
+        loadNote(updatedNotes[0])
+      } else {
+        setCurrentNoteId(null)
+        setTitle('')
+        setContent('')
+        setCategory('')
+      }
     }
+
+    // Close context menu if open
+    setContextMenu(null)
+  }
+
+  // Toggle lock status of a note
+  const handleToggleLock = (noteId) => {
+    const updatedNotes = notes.map((note) =>
+      note.id === noteId ? { ...note, locked: !note.locked } : note
+    )
+    setNotes(updatedNotes)
+    localStorage.setItem('brainDumpEntries', JSON.stringify(updatedNotes))
+    setContextMenu(null)
   }
 
   // Export current note with new filename format
@@ -235,6 +264,7 @@ function BrainDump() {
         title: noteTitle,
         content: fileContent,
         category: '',
+        locked: false,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }
@@ -494,6 +524,16 @@ function BrainDump() {
               }}
             >
               <div className='note-item-title' title={note.title || 'Untitled'}>
+                {note.locked && (
+                  <svg
+                    className='icon note-item-lock-icon'
+                    viewBox='0 0 24 24'
+                    aria-label='Locked'
+                  >
+                    <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                    <path d='M7 11V7a5 5 0 0 1 10 0v4' />
+                  </svg>
+                )}
                 {note.title || 'Untitled'}
               </div>
               <div className='note-item-metadata'>
@@ -549,6 +589,10 @@ function BrainDump() {
                 placeholder='Note title...'
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                disabled={
+                  !currentNoteId ||
+                  notes.find((n) => n.id === currentNoteId)?.locked
+                }
                 aria-label='Note title'
               />
               <input
@@ -557,7 +601,10 @@ function BrainDump() {
                 placeholder='Category...'
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                disabled={!currentNoteId}
+                disabled={
+                  !currentNoteId ||
+                  notes.find((n) => n.id === currentNoteId)?.locked
+                }
                 aria-label='Note category'
                 list='category-suggestions'
               />
@@ -597,10 +644,13 @@ function BrainDump() {
               </button>
               <button
                 className='btn btn-delete'
-                onClick={handleDelete}
+                onClick={() => handleDelete()}
                 aria-label='Delete'
                 title='Delete'
-                disabled={!currentNoteId}
+                disabled={
+                  !currentNoteId ||
+                  notes.find((n) => n.id === currentNoteId)?.locked
+                }
               >
                 <svg className='icon' viewBox='0 0 24 24'>
                   <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
@@ -620,7 +670,10 @@ function BrainDump() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  disabled={!currentNoteId}
+                  disabled={
+                    !currentNoteId ||
+                    notes.find((n) => n.id === currentNoteId)?.locked
+                  }
                   aria-label='Note content'
                   aria-describedby={
                     !currentNoteId ? 'editor-disabled-message' : undefined
@@ -667,7 +720,47 @@ function BrainDump() {
             onClick={() => handleShowDetails(contextMenu.note)}
             role='menuitem'
           >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <circle cx='12' cy='12' r='10' />
+              <line x1='12' y1='16' x2='12' y2='12' />
+              <line x1='12' y1='8' x2='12.01' y2='8' />
+            </svg>
             See More Details
+          </button>
+          <button
+            className='context-menu-item'
+            onClick={() => handleToggleLock(contextMenu.note.id)}
+            role='menuitem'
+          >
+            {contextMenu.note.locked ? (
+              <>
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                  <path d='M7 11V7a5 5 0 0 1 9.9-1' />
+                </svg>
+                Unlock Note
+              </>
+            ) : (
+              <>
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                  <path d='M7 11V7a5 5 0 0 1 10 0v4' />
+                </svg>
+                Lock Note
+              </>
+            )}
+          </button>
+          <button
+            className='context-menu-item context-menu-item-danger'
+            onClick={() => handleDelete(contextMenu.note.id)}
+            role='menuitem'
+            disabled={contextMenu.note.locked}
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+              <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+            </svg>
+            Delete Note
           </button>
         </div>
       )}

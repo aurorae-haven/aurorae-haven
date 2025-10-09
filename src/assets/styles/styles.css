@@ -1018,12 +1018,26 @@ body {
 }
 
 .note-item-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 600;
   color: var(--ink);
   margin-bottom: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.note-item-lock-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  stroke: var(--mint);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .note-item-metadata {
@@ -1816,7 +1830,9 @@ textarea:focus {
 }
 
 .context-menu-item {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   padding: 8px 16px;
   background: transparent;
@@ -1829,8 +1845,31 @@ textarea:focus {
   font-size: 14px;
 }
 
+.context-menu-item .icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 .context-menu-item:hover {
   background: rgba(99, 102, 241, 0.15);
+}
+
+.context-menu-item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.context-menu-item:disabled:hover {
+  background: transparent;
+}
+
+.context-menu-item-danger {
+  color: #ff6b6b;
+}
+
+.context-menu-item-danger:hover {
+  background: rgba(255, 107, 107, 0.15);
 }
 
 /* Modal Overlay */
