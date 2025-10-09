@@ -1,7 +1,13 @@
 // src/index.js
 import React, { useState, useCallback, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate
+} from 'react-router-dom'
 import * as serviceWorkerRegistration from './serviceWorkerRegistration'
 
 // Styles
@@ -24,19 +30,27 @@ import Settings from './pages/Settings.jsx'
 // Utils
 import { exportJSON, importJSON } from './utils/dataManager'
 
-function RouterApp() {
-  const [toast, setToast] = useState({ visible: false, message: '' })
+// Component to handle GitHub Pages 404 redirect
+function RedirectHandler() {
+  const navigate = useNavigate()
 
-  // Handle GitHub Pages SPA redirect from 404.html (if you store a redirectPath there)
   useEffect(() => {
     const redirectPath = sessionStorage.getItem('redirectPath')
     if (redirectPath) {
       sessionStorage.removeItem('redirectPath')
       const basename = import.meta.env.BASE_URL || '/'
-      const path = redirectPath.replace(basename, '')
-      window.history.replaceState(null, '', basename + path)
+      // Remove the basename from the redirectPath to get the route
+      const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
+      // Navigate to the correct route
+      navigate(path, { replace: true })
     }
-  }, [])
+  }, [navigate])
+
+  return null
+}
+
+function RouterApp() {
+  const [toast, setToast] = useState({ visible: false, message: '' })
 
   const showToast = useCallback((message) => {
     setToast({ visible: true, message })
@@ -71,6 +85,7 @@ function RouterApp() {
 
   return (
     <BrowserRouter basename={basename}>
+      <RedirectHandler />
       <Layout onExport={handleExport} onImport={handleImport}>
         <Routes>
           {/* Show Home page at root */}
