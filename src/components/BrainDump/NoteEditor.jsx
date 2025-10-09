@@ -219,7 +219,6 @@ function NoteEditor({
             />
           </div>
         </div>
-      </div>
     </>
   )
 }
