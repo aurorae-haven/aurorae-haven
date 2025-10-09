@@ -2241,6 +2241,7 @@ textarea:focus {
 }
 
 /* Mobile adjustments for help modal */
+/* Breakpoint: 768px (tablet/mobile - consistent with other components) */
 @media (max-width: 768px) {
   .help-modal {
     width: 95vw;
