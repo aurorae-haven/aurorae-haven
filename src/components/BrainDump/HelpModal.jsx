@@ -72,7 +72,7 @@ function HelpModal({ onClose }) {
       <h3>LaTeX Equations</h3>
       <div className='help-section'>
         <p>
-          <strong>Inline:</strong> <code>$E = mc^2$</code> → $E = mc^2$
+          <strong>Inline:</strong> <code>$E = mc^2$</code> → E = mc²
         </p>
         <p>
           <strong>Display:</strong>
