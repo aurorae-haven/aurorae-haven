@@ -2,7 +2,7 @@
 
 /**
  * Embedded Server for Aurorae Haven Offline Package
- * 
+ *
  * This is a lightweight static file server that automatically opens
  * the application in the default browser. It's designed to provide
  * a double-click experience for offline users.
@@ -69,12 +69,12 @@ function openBrowser(url) {
     detached: true,
     stdio: 'ignore'
   })
-  
+
   child.on('error', (error) => {
     console.error('Failed to open browser automatically.')
     console.log(`Please open your browser and navigate to: ${url}`)
   })
-  
+
   child.unref()
 }
 
@@ -84,7 +84,7 @@ function openBrowser(url) {
 async function serveFile(filePath, res) {
   try {
     const stats = await stat(filePath)
-    
+
     if (!stats.isFile()) {
       res.writeHead(404)
       res.end('Not Found')
@@ -93,9 +93,9 @@ async function serveFile(filePath, res) {
 
     const ext = extname(filePath).toLowerCase()
     const mimeType = MIME_TYPES[ext] || 'application/octet-stream'
-    
+
     const content = await readFile(filePath)
-    
+
     res.writeHead(200, {
       'Content-Type': mimeType,
       'Content-Length': stats.size,
@@ -118,21 +118,43 @@ async function serveFile(filePath, res) {
  */
 async function handleRequest(req, res) {
   let pathname = new URL(req.url, `http://${req.headers.host}`).pathname
-  
+
   // Normalize path
   if (pathname === '/') {
     pathname = '/index.html'
   }
-  
+
   // Security: prevent directory traversal
   if (pathname.includes('..')) {
     res.writeHead(403)
     res.end('Forbidden')
     return
   }
-  
-  const filePath = join(ROOT_DIR, pathname)
-  await serveFile(filePath, res)
+
+  let filePath = join(ROOT_DIR, pathname)
+
+  // Check if file exists
+  try {
+    const stats = await stat(filePath)
+    if (stats.isFile()) {
+      await serveFile(filePath, res)
+      return
+    }
+  } catch (error) {
+    if (error.code === 'ENOENT') {
+      // File doesn't exist, continue to SPA fallback
+    } else {
+      console.error('Error accessing file:', error);
+      res.writeHead(500);
+      res.end('Internal Server Error');
+      return;
+    }
+  }
+
+  // SPA fallback: serve index.html for routes that don't match files
+  // This allows React Router to handle client-side routing
+  const indexPath = join(ROOT_DIR, 'index.html')
+  await serveFile(indexPath, res)
 }
 
 /**
@@ -140,32 +162,34 @@ async function handleRequest(req, res) {
  */
 function startServer() {
   const server = createServer(handleRequest)
-  
+
   server.listen(PORT, HOST, () => {
     const url = `http://${HOST}:${PORT}`
-    
+
     console.log('━'.repeat(60))
     console.log('🌌 Aurorae Haven - Offline Server')
     console.log('━'.repeat(60))
     console.log(`\n✓ Server running at: ${url}`)
     console.log(`✓ Opening in your default browser...`)
     console.log(`\nPress Ctrl+C to stop the server\n`)
-    
+
     // Open browser after short delay
     setTimeout(() => openBrowser(url), 1000)
   })
-  
+
   server.on('error', (error) => {
     if (error.code === 'EADDRINUSE') {
       console.error(`\n❌ Port ${PORT} is already in use.`)
-      console.error(`Please close the other application or use a different port.\n`)
+      console.error(
+        `Please close the other application or use a different port.\n`
+      )
       process.exit(1)
     } else {
       console.error('Server error:', error)
       process.exit(1)
     }
   })
-  
+
   // Handle graceful shutdown
   process.on('SIGINT', () => {
     console.log('\n\n👋 Shutting down server...')

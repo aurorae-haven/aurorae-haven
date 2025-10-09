@@ -52,15 +52,15 @@ async function extractPackage(packagePath) {
     const result = spawnSync('tar', ['-xzf', packagePath, '-C', TEST_DIR], {
       stdio: 'inherit'
     })
-    
+
     if (result.error) {
       throw result.error
     }
-    
+
     if (result.status !== 0) {
       throw new Error(`tar command failed with exit code ${result.status}`)
     }
-    
+
     console.log('✓ Package extracted successfully')
   } catch (error) {
     throw new Error(`Failed to extract package: ${error.message}`)

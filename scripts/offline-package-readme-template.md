@@ -21,11 +21,13 @@ Choose the launcher based on what you have installed:
 - **Linux**: Run `./start-aurorae-haven.sh` in Terminal
 
 The launcher will automatically:
+
 1. Start a local web server
 2. Open Aurorae Haven in your default browser
 3. Keep running until you close the window (press Ctrl+C to stop)
 
 **Don't have Python or Node.js?**
+
 - Python: Download from [python.org](https://www.python.org/) (free and open source)
 - Node.js: Download from [nodejs.org](https://nodejs.org/) (free and open source)
 
@@ -129,6 +131,7 @@ All your data is stored locally in your browser:
 **Problem**: Double-clicking the launcher does nothing or shows an error.
 
 **Solutions**:
+
 1. **Try the Python launcher** if you have Python installed: Use `start-aurorae-haven-python.*` files
 2. **Try the Node.js launcher** if you have Node.js installed: Use `start-aurorae-haven.*` files (without -python)
 3. Install Python from https://www.python.org/ or Node.js from https://nodejs.org/
@@ -140,6 +143,7 @@ All your data is stored locally in your browser:
 **Problem**: Error message says port 8765 is already in use.
 
 **Solutions**:
+
 1. Close any other applications using that port
 2. The embedded server uses port 8765 by default - if you have another Aurorae Haven instance running, close it first
 3. Use an alternative server (see Manual Server Setup above)
