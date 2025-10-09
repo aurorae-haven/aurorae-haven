@@ -518,6 +518,14 @@ body {
   margin: 0 auto;
   padding: 70px 18px 24px;
 }
+
+/* Expand shell for Brain Dump to utilize more horizontal space on desktop */
+/* NOTE: The :has() selector is only supported in modern browsers (Chrome 105+, Safari 15.4+, Firefox 121+).
+   Users on older browsers may not see this style applied. Consider providing a fallback if broader compatibility is needed. */
+.shell:has(.brain-dump-container) {
+  max-width: 1600px;
+}
+
 .card {
   background: linear-gradient(180deg, var(--glass-lo), rgba(18, 22, 52, 0.22));
   border: 1px solid var(--line);
@@ -896,6 +904,7 @@ body {
   gap: 14px;
   height: calc(100vh - 120px);
   min-height: 500px;
+  max-width: 100%;
 }
 
 .note-list-sidebar {
@@ -935,6 +944,47 @@ body {
 .note-list-header strong {
   font-size: 16px;
   color: var(--ink);
+}
+
+.note-list-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.note-search {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.note-search-input {
+  width: 100%;
+  padding: 8px 32px 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: rgba(10, 14, 38, 0.5);
+  color: var(--ink);
+  font-size: 14px;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.note-search-input:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+  border-color: var(--mint);
+}
+
+.note-search-input::placeholder {
+  color: var(--dim);
+}
+
+.note-search-clear {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 4px;
+  min-width: auto;
 }
 
 .note-list {
@@ -1049,11 +1099,59 @@ body {
   height: 100%;
 }
 
-.editor-pane,
+.editor-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+}
+
 .preview-pane {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow-y: auto;
+  position: relative;
+  padding: 12px;
+}
+
+.preview-pane:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: -3px;
+}
+
+#preview {
+  flex: 1;
+  min-height: 0;
+}
+
+#preview a {
+  color: var(--mint);
+  text-decoration: underline;
+}
+
+#preview a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+#preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 12px 0;
+  display: block;
+}
+
+#preview .katex {
+  font-size: 1.1em;
+}
+
+#preview .katex-display {
+  margin: 16px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .toolbar {
@@ -1083,12 +1181,21 @@ textarea {
 }
 
 .resizable-textarea {
-  resize: vertical;
+  resize: both;
   min-height: 200px;
-  max-height: 80vh;
-  flex: 1;
+  min-width: 200px;
+  max-height: none;
+  height: 100%;
+  overflow-y: auto;
 }
 
+/* Responsive fix: restrict horizontal resizing on small screens */
+@media (max-width: 600px) {
+  .resizable-textarea {
+    resize: vertical;
+    max-width: 100%;
+  }
+}
 textarea:disabled {
   opacity: 0.5;
   cursor: not-allowed;

@@ -46,7 +46,24 @@ export function configureSanitization(DOMPurifyInstance) {
       'tr',
       'th',
       'td',
-      'input' // for checkboxes
+      'input', // for checkboxes
+      // KaTeX tags
+      'span',
+      'div',
+      'annotation',
+      'semantics',
+      'mrow',
+      'mi',
+      'mo',
+      'mn',
+      'ms',
+      'mtext',
+      'math',
+      'svg',
+      'path',
+      'g',
+      'use',
+      'defs'
     ],
     ALLOWED_ATTR: [
       'href',
@@ -58,7 +75,20 @@ export function configureSanitization(DOMPurifyInstance) {
       'disabled',
       'class',
       'id',
-      'data-backlink' // for backlinks
+      'data-backlink', // for backlinks
+      // KaTeX attributes
+      'style',
+      'aria-hidden',
+      'focusable',
+      'role',
+      'xmlns',
+      'width',
+      'height',
+      'viewBox',
+      'd',
+      'transform',
+      'fill',
+      'stroke'
     ],
     ALLOWED_URI_REGEXP:
       /^(?:(?:(?:f|ht)tps?|mailto|tel):|#|[^a-z]|[a-z+.-]+(?:[^a-z+.-]|$))/i,

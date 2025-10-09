@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { marked } from 'marked'
+import markedKatex from 'marked-katex-extension'
 import DOMPurify from 'dompurify'
+import 'katex/dist/katex.min.css'
 import { handleEnterKey } from '../utils/listContinuation'
 import { configureSanitization } from '../utils/braindump-enhanced'
 import { generateSecureUUID } from '../utils/uuidGenerator'
@@ -9,6 +11,25 @@ import {
   extractTitleFromFilename
 } from '../utils/fileHelpers'
 
+// Configure marked once at module level to avoid reconfiguration on re-renders
+// Error handling for KaTeX extension to gracefully handle load failures
+try {
+  marked.use(
+    markedKatex({
+      throwOnError: false,
+      displayMode: false
+    })
+  )
+} catch (error) {
+  console.warn('KaTeX extension failed to load. LaTeX rendering will be disabled.', error)
+  // Marked will continue to work without KaTeX, falling back to plain markdown
+}
+
+marked.setOptions({
+  breaks: true,
+  gfm: true
+})
+
 function BrainDump() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
@@ -16,9 +37,11 @@ function BrainDump() {
   const [content, setContent] = useState('')
   const [preview, setPreview] = useState('')
   const [showNoteList, setShowNoteList] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
   const editorRef = useRef(null)
+  const previewRef = useRef(null)
 
-  // Configure enhanced sanitization on mount
+  // Configure sanitization on mount
   useEffect(() => {
     configureSanitization(DOMPurify)
   }, [])
@@ -198,6 +221,46 @@ function BrainDump() {
     }
   }, [])
 
+  // Handle keyboard navigation for preview pane
+  const handlePreviewKeyDown = useCallback((e) => {
+    const previewElement = e.currentTarget
+    const scrollAmount = previewElement.clientHeight * 0.8 // 80% of viewport for page up/down
+
+    switch (e.key) {
+      case 'PageDown':
+        e.preventDefault()
+        previewElement.scrollTop += scrollAmount
+        break
+      case 'PageUp':
+        e.preventDefault()
+        previewElement.scrollTop -= scrollAmount
+        break
+      case 'Home':
+        if (e.ctrlKey) {
+          e.preventDefault()
+          previewElement.scrollTop = 0
+        }
+        break
+      case 'End':
+        if (e.ctrlKey) {
+          e.preventDefault()
+          previewElement.scrollTop = previewElement.scrollHeight
+        }
+        break
+      default:
+        break
+    }
+  }, [])
+
+  // Filter notes based on search query
+  const filteredNotes = notes.filter((note) => {
+    if (!searchQuery.trim()) return true
+    const query = searchQuery.toLowerCase()
+    const titleMatch = (note.title || '').toLowerCase().includes(query)
+    const contentMatch = (note.content || '').toLowerCase().includes(query)
+    return titleMatch || contentMatch
+  })
+
   return (
     <div className='brain-dump-container'>
       {/* Note List Sidebar */}
@@ -205,7 +268,23 @@ function BrainDump() {
         className={`note-list-sidebar ${showNoteList ? 'visible' : 'hidden'}`}
       >
         <div className='note-list-header'>
-          <strong>Notes</strong>
+          <div className='note-list-header-left'>
+            <strong>Notes</strong>
+            <button
+              className='btn btn-icon toggle-notes-btn'
+              onClick={() => setShowNoteList(!showNoteList)}
+              aria-label={
+                showNoteList ? 'Hide notes list' : 'Show notes list'
+              }
+              title={showNoteList ? 'Hide notes list' : 'Show notes list'}
+            >
+              <svg className='icon' viewBox='0 0 24 24'>
+                <line x1='3' y1='12' x2='21' y2='12' />
+                <line x1='3' y1='6' x2='21' y2='6' />
+                <line x1='3' y1='18' x2='21' y2='18' />
+              </svg>
+            </button>
+          </div>
           <button
             className='btn btn-icon'
             onClick={handleNewNote}
@@ -218,8 +297,31 @@ function BrainDump() {
             </svg>
           </button>
         </div>
+        <div className='note-search'>
+          <input
+            type='text'
+            className='note-search-input'
+            placeholder='Search notes...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label='Search notes'
+          />
+          {searchQuery && (
+            <button
+              className='btn btn-icon note-search-clear'
+              onClick={() => setSearchQuery('')}
+              aria-label='Clear search'
+              title='Clear search'
+            >
+              <svg className='icon' viewBox='0 0 24 24'>
+                <line x1='18' y1='6' x2='6' y2='18' />
+                <line x1='6' y1='6' x2='18' y2='18' />
+              </svg>
+            </button>
+          )}
+        </div>
         <div className='note-list'>
-          {notes.map((note) => (
+          {filteredNotes.map((note) => (
             <div
               key={note.id}
               className={`note-item ${note.id === currentNoteId ? 'active' : ''}`}
@@ -233,12 +335,19 @@ function BrainDump() {
                 }
               }}
             >
-              <div className='note-item-title'>{note.title || 'Untitled'}</div>
+              <div className='note-item-title' title={note.title || 'Untitled'}>
+                {note.title || 'Untitled'}
+              </div>
               <div className='note-item-date'>
                 {new Date(note.updatedAt).toLocaleDateString()}
               </div>
             </div>
           ))}
+          {filteredNotes.length === 0 && notes.length > 0 && (
+            <div className='note-list-empty'>
+              No notes found matching &quot;{searchQuery}&quot;
+            </div>
+          )}
           {notes.length === 0 && (
             <div className='note-list-empty'>
               No notes yet. Click + to create one.
@@ -252,20 +361,6 @@ function BrainDump() {
         <div className='card'>
           <div className='card-h'>
             <div className='title-input-wrapper'>
-              <button
-                className='btn btn-icon toggle-notes-btn'
-                onClick={() => setShowNoteList(!showNoteList)}
-                aria-label={
-                  showNoteList ? 'Hide notes list' : 'Show notes list'
-                }
-                title={showNoteList ? 'Hide notes list' : 'Show notes list'}
-              >
-                <svg className='icon' viewBox='0 0 24 24'>
-                  <line x1='3' y1='12' x2='21' y2='12' />
-                  <line x1='3' y1='6' x2='21' y2='6' />
-                  <line x1='3' y1='18' x2='21' y2='18' />
-                </svg>
-              </button>
               <input
                 type='text'
                 className='note-title-input'
@@ -341,12 +436,19 @@ function BrainDump() {
                   </span>
                 )}
               </div>
-              <div className='preview-pane'>
-                <div
-                  id='preview'
-                  dangerouslySetInnerHTML={{ __html: preview }}
-                />
+              {/* Preview pane with keyboard navigation support */}
+              {/* eslint-disable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
+              <div
+                className='preview-pane'
+                ref={previewRef}
+                tabIndex={0}
+                onKeyDown={handlePreviewKeyDown}
+                role='region'
+                aria-label='Note preview'
+              >
+                <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
               </div>
+              {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
             </div>
           </div>
         </div>
