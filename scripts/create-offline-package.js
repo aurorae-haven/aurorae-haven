@@ -219,7 +219,6 @@ async function createTarGz() {
   try {
     // For simplicity, we'll use a shell command to create tar.gz
     const { execSync } = await import('child_process')
-    const { writeFileSync } = await import('fs')
 
     console.log(`  → Archiving ${DIST_OFFLINE_DIR}/ to ${outputFile}`)
 
