@@ -71,11 +71,6 @@
       "last 1 safari version"
     ]
   },
-  "overrides": {
-    "nth-check": "^2.1.1",
-    "postcss": "^8.4.31",
-    "typescript": "^5.9.3"
-  },
   "standard": {
     "env": [],
     "globals": [],
