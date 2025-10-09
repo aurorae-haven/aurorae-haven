@@ -49,7 +49,7 @@ describe('Offline Package - Build Process', () => {
     )
     // Verify the script checks for dist directory existence
     expect(scriptContent).toMatch(/existsSync\s*\(\s*DIST_DIR\s*\)/)
-    expect(scriptContent).toMatch(/DIST_DIR\s*=\s*['"]dist['"]/)
+    expect(scriptContent).toMatch(/DIST_DIR\s*=\s*(['"])\s*dist\s*\1/)
   })
 
   test('offline build uses relative base path', () => {
