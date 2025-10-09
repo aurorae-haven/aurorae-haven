@@ -692,13 +692,11 @@ function BrainDump() {
             onKeyDown={(e) => e.stopPropagation()}
             role='document'
           >
-            {/*
-              Store the found note in a variable to avoid redundant array searches
-            */}
             {(() => {
-              const currentNote = notes.find((n) => n.id === currentNoteId);
+              // Store the found note in a variable to avoid redundant array searches
+              const currentNote = notes.find((n) => n.id === currentNoteId)
               return (
-                <div>
+                <>
                   <div className='modal-header'>
                     <h2 id='details-modal-title'>Note Details</h2>
                     <button
@@ -742,9 +740,10 @@ function BrainDump() {
                       <span>{content.length} characters</span>
                     </div>
                   </div>
-                </div>
-              );
+                </>
+              )
             })()}
+          </div>
         </div>
       )}
 
