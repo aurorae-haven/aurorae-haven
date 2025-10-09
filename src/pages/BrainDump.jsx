@@ -48,7 +48,7 @@ function configureMarkedOptions() {
 }
 
 // Configure marked options at module level
-configureMarkedOptions();
+configureMarkedOptions()
 function BrainDump() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
