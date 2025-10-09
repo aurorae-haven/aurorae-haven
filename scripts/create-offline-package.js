@@ -40,7 +40,7 @@ async function copyEmbeddedServer() {
   const pythonServerSrc = join(__dirname, 'embedded-server.py')
   const pythonServerDest = join(DIST_OFFLINE_DIR, 'embedded-server.py')
   copyFileSync(pythonServerSrc, pythonServerDest)
-  
+
   // Copy Node.js embedded server
   const nodeServerSrc = join(__dirname, 'embedded-server.js')
   const nodeServerDest = join(DIST_OFFLINE_DIR, 'embedded-server.js')
@@ -63,7 +63,11 @@ async function copyEmbeddedServer() {
       copyFileSync(src, dest)
 
       // Make shell scripts executable on Unix-like systems
-      if (launcher.endsWith('.sh') || launcher.endsWith('.command') || launcher.endsWith('.py')) {
+      if (
+        launcher.endsWith('.sh') ||
+        launcher.endsWith('.command') ||
+        launcher.endsWith('.py')
+      ) {
         try {
           chmodSync(dest, 0o755)
         } catch (err) {
@@ -148,7 +152,7 @@ async function buildForOffline() {
 
     // Copy embedded server and launchers
     await copyEmbeddedServer()
-    
+
     console.log('✓ Offline build completed with relative paths')
     return true
   } catch (error) {
@@ -202,16 +206,22 @@ async function createTarGz() {
     // Note: Using spawnSync with array args to prevent command injection
     try {
       const { spawnSync } = await import('child_process')
-      const result = spawnSync('tar', ['-czf', outputFile, '-C', DIST_OFFLINE_DIR, '.'], {
-        stdio: 'inherit'
-      })
-      
+      const result = spawnSync(
+        'tar',
+        ['-czf', outputFile, '-C', DIST_OFFLINE_DIR, '.'],
+        {
+          stdio: 'inherit'
+        }
+      )
+
       if (result.error) {
         throw result.error
       }
-      
+
       if (result.status !== 0) {
-        throw new Error(`tar command failed with exit code ${result.status}: ${result.stderr}`)
+        throw new Error(
+          `tar command failed with exit code ${result.status}: ${result.stderr}`
+        )
       }
     } catch (tarError) {
       // Provide detailed error information based on error type

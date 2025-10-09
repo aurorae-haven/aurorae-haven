@@ -299,66 +299,66 @@ describe('404.html Redirect Logic', () => {
     test('removes basename from redirectPath correctly', () => {
       const redirectPath = '/aurorae-haven/schedule'
       const basename = '/aurorae-haven/'
-      
+
       // Simulate the logic in RedirectHandler
       const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
-      
+
       expect(path).toBe('/schedule')
     })
 
     test('handles redirectPath without trailing slash', () => {
       const redirectPath = '/aurorae-haven/tasks'
       const basename = '/aurorae-haven/'
-      
+
       const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
-      
+
       expect(path).toBe('/tasks')
     })
 
     test('handles redirectPath with query params', () => {
       const redirectPath = '/aurorae-haven/tasks?filter=urgent'
       const basename = '/aurorae-haven/'
-      
+
       const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
-      
+
       expect(path).toBe('/tasks?filter=urgent')
     })
 
     test('handles redirectPath with hash', () => {
       const redirectPath = '/aurorae-haven/braindump#notes'
       const basename = '/aurorae-haven/'
-      
+
       const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
-      
+
       expect(path).toBe('/braindump#notes')
     })
 
     test('handles redirectPath with both query and hash', () => {
       const redirectPath = '/aurorae-haven/tasks?filter=urgent#list'
       const basename = '/aurorae-haven/'
-      
+
       const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
-      
+
       expect(path).toBe('/tasks?filter=urgent#list')
     })
 
     test('handles root path correctly', () => {
       const redirectPath = '/aurorae-haven/'
       const basename = '/aurorae-haven/'
-      
+
       const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
-      
+
       expect(path).toBe('/')
     })
 
     test('normalizes multiple leading slashes', () => {
       const redirectPath = '/aurorae-haven/schedule'
       const basename = '/aurorae-haven/'
-      
+
       // If replace creates multiple slashes, they should be normalized
       const pathWithSlashes = redirectPath.replace(basename, '////')
       const normalized = pathWithSlashes.replace(/^\/+/, '/')
-      
+
       expect(normalized).toBe('/schedule')
     })
   })
