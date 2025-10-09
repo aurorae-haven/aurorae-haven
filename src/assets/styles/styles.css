@@ -520,6 +520,8 @@ body {
 }
 
 /* Expand shell for Brain Dump to utilize more horizontal space on desktop */
+/* NOTE: The :has() selector is only supported in modern browsers (Chrome 105+, Safari 15.4+, Firefox 121+).
+   Users on older browsers may not see this style applied. Consider providing a fallback if broader compatibility is needed. */
 .shell:has(.brain-dump-container) {
   max-width: 1600px;
 }
