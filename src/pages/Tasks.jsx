@@ -211,7 +211,7 @@ function Tasks() {
         for (const key of requiredKeys) {
           for (const task of imported[key]) {
             if (
-              typeof task.id !== 'number' ||
+              (typeof task.id !== 'number' && typeof task.id !== 'string') ||
               typeof task.text !== 'string' ||
               typeof task.completed !== 'boolean' ||
               typeof task.createdAt !== 'number'
