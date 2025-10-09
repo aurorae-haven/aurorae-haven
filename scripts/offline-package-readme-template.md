@@ -6,7 +6,15 @@ Welcome to the offline version of Aurorae Haven! This package contains everythin
 
 ### 🚀 Easy Start (Recommended)
 
-**If you have Node.js installed**, simply double-click the launcher for your platform:
+Choose the launcher based on what you have installed:
+
+#### Option A: Python Launchers (Python 3 required)
+
+- **Windows**: Double-click `start-aurorae-haven-python.bat`
+- **macOS**: Double-click `start-aurorae-haven-python.command` (or run `start-aurorae-haven-python.sh` in Terminal)
+- **Linux**: Run `./start-aurorae-haven-python.sh` in Terminal
+
+#### Option B: Node.js Launchers (Node.js required)
 
 - **Windows**: Double-click `start-aurorae-haven.bat`
 - **macOS**: Double-click `start-aurorae-haven.command` (or run `start-aurorae-haven.sh` in Terminal)
@@ -17,13 +25,25 @@ The launcher will automatically:
 2. Open Aurorae Haven in your default browser
 3. Keep running until you close the window (press Ctrl+C to stop)
 
-**Don't have Node.js?** Download it from [nodejs.org](https://nodejs.org/) (free and open source)
+**Don't have Python or Node.js?**
+- Python: Download from [python.org](https://www.python.org/) (free and open source)
+- Node.js: Download from [nodejs.org](https://nodejs.org/) (free and open source)
 
 ### 📌 Alternative: Manual Server Setup
 
 If you prefer manual control or have issues with the launcher:
 
-#### Option 1: Using the Embedded Server
+#### Option 1: Using the Python Embedded Server
+
+If you have Python 3 installed:
+
+```bash
+python3 embedded-server.py
+```
+
+This will start a server and open your browser automatically.
+
+#### Option 2: Using the Node.js Embedded Server
 
 If you have Node.js installed:
 
@@ -33,23 +53,21 @@ node embedded-server.js
 
 This will start a server and open your browser automatically.
 
-#### Option 2: Using Python
-
-If you have Python 3 installed:
+#### Option 3: Using Python's Built-in Server
 
 ```bash
 python3 -m http.server 8000
 # Then open: http://localhost:8000
 ```
 
-#### Option 3: Using Node.js Serve
+#### Option 4: Using Node.js Serve
 
 ```bash
 npx serve -p 8000
 # Then open: http://localhost:8000
 ```
 
-#### Option 4: Using PHP
+#### Option 5: Using PHP
 
 ```bash
 php -S localhost:8000
@@ -111,9 +129,11 @@ All your data is stored locally in your browser:
 **Problem**: Double-clicking the launcher does nothing or shows an error.
 
 **Solutions**:
-1. Make sure Node.js is installed: https://nodejs.org/
-2. On Linux/macOS, make the script executable: `chmod +x start-aurorae-haven.sh`
-3. Try running manually: `node embedded-server.js`
+1. **Try the Python launcher** if you have Python installed: Use `start-aurorae-haven-python.*` files
+2. **Try the Node.js launcher** if you have Node.js installed: Use `start-aurorae-haven.*` files (without -python)
+3. Install Python from https://www.python.org/ or Node.js from https://nodejs.org/
+4. On Linux/macOS, make the script executable: `chmod +x start-aurorae-haven-python.sh`
+5. Try running manually: `python3 embedded-server.py` or `node embedded-server.js`
 
 ### Port already in use
 

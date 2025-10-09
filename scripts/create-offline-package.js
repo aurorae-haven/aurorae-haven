@@ -104,7 +104,7 @@ async function copyEmbeddedServer() {
   console.log('  → Adding embedded server and launchers')
   
   try {
-    // Copy embedded server
+    // Copy Node.js embedded server
     const serverSrc = join(__dirname, 'embedded-server.js')
     const serverDst = join(DIST_OFFLINE_DIR, 'embedded-server.js')
     copyFileSync(serverSrc, serverDst)
@@ -116,17 +116,28 @@ async function copyEmbeddedServer() {
       // Ignore chmod errors on Windows
     }
     
+    // Copy Python embedded server
+    const pythonServerSrc = join(__dirname, 'embedded-server.py')
+    const pythonServerDst = join(DIST_OFFLINE_DIR, 'embedded-server.py')
+    if (existsSync(pythonServerSrc)) {
+      copyFileSync(pythonServerSrc, pythonServerDst)
+      try {
+        chmodSync(pythonServerDst, 0o755)
+      } catch (chmodError) {
+        // Ignore chmod errors
+      }
+    }
+    
     // Copy launcher scripts
     const launcherTemplates = join(__dirname, 'launcher-templates')
     
-    // Windows launcher
+    // Node.js launchers
     const batSrc = join(launcherTemplates, 'start-aurorae-haven.bat')
     const batDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven.bat')
     if (existsSync(batSrc)) {
       copyFileSync(batSrc, batDst)
     }
     
-    // Linux/macOS launcher
     const shSrc = join(launcherTemplates, 'start-aurorae-haven.sh')
     const shDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven.sh')
     if (existsSync(shSrc)) {
@@ -138,7 +149,6 @@ async function copyEmbeddedServer() {
       }
     }
     
-    // macOS .command launcher
     const commandSrc = join(launcherTemplates, 'start-aurorae-haven.command')
     const commandDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven.command')
     if (existsSync(commandSrc)) {
@@ -150,7 +160,36 @@ async function copyEmbeddedServer() {
       }
     }
     
-    console.log('  ✓ Embedded server and launchers added')
+    // Python launchers
+    const pythonBatSrc = join(launcherTemplates, 'start-aurorae-haven-python.bat')
+    const pythonBatDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven-python.bat')
+    if (existsSync(pythonBatSrc)) {
+      copyFileSync(pythonBatSrc, pythonBatDst)
+    }
+    
+    const pythonShSrc = join(launcherTemplates, 'start-aurorae-haven-python.sh')
+    const pythonShDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven-python.sh')
+    if (existsSync(pythonShSrc)) {
+      copyFileSync(pythonShSrc, pythonShDst)
+      try {
+        chmodSync(pythonShDst, 0o755)
+      } catch (chmodError) {
+        // Ignore chmod errors
+      }
+    }
+    
+    const pythonCommandSrc = join(launcherTemplates, 'start-aurorae-haven-python.command')
+    const pythonCommandDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven-python.command')
+    if (existsSync(pythonCommandSrc)) {
+      copyFileSync(pythonCommandSrc, pythonCommandDst)
+      try {
+        chmodSync(pythonCommandDst, 0o755)
+      } catch (chmodError) {
+        // Ignore chmod errors
+      }
+    }
+    
+    console.log('  ✓ Embedded servers (Node.js + Python) and launchers added')
   } catch (error) {
     console.warn('  ⚠ Warning: Failed to copy embedded server:', error.message)
   }
