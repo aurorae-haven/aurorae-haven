@@ -1,5 +1,10 @@
 // Export/Import + beforeunload only on real exit (suppress for internal nav)
-import { getDataTemplate, importJSON as importData } from './dataManager'
+import {
+  getDataTemplate,
+  importJSON as importData,
+  reloadPageAfterDelay,
+  IMPORT_SUCCESS_MESSAGE
+} from './dataManager'
 import { generateSecureUUID } from './uuidGenerator'
 ;(function () {
   let exported = false
@@ -32,12 +37,10 @@ import { generateSecureUUID } from './uuidGenerator'
 
       if (result.success) {
         exported = true // importing counts as having current data saved
-        toast('Data imported successfully. Page will reload...')
+        toast(IMPORT_SUCCESS_MESSAGE)
 
-        // Reload page after a short delay to show the updated data
-        setTimeout(() => {
-          window.location.reload()
-        }, 1500)
+        // Use shared utility function for page reload
+        reloadPageAfterDelay(1500)
       } else {
         toast('Import failed: ' + result.message)
       }

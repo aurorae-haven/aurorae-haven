@@ -28,7 +28,12 @@ import Stats from './pages/Stats.jsx'
 import Settings from './pages/Settings.jsx'
 
 // Utils
-import { exportJSON, importJSON } from './utils/dataManager'
+import {
+  exportJSON,
+  importJSON,
+  reloadPageAfterDelay,
+  IMPORT_SUCCESS_MESSAGE
+} from './utils/dataManager'
 
 // Component to handle GitHub Pages 404 redirect
 function RedirectHandler() {
@@ -74,7 +79,13 @@ function RouterApp() {
       const file = e.target.files?.[0]
       if (file) {
         const result = await importJSON(file)
-        showToast(result.message)
+        if (result.success) {
+          showToast(IMPORT_SUCCESS_MESSAGE)
+          // Use shared utility function for page reload
+          reloadPageAfterDelay(1500)
+        } else {
+          showToast(result.message)
+        }
         // allow re-selecting the same file next time
         e.target.value = ''
       }
