@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { marked } from 'marked'
 import markedKatex from 'marked-katex-extension'
 import DOMPurify from 'dompurify'
@@ -299,6 +299,12 @@ function BrainDump() {
     }
   }, [])
 
+  // Memoize current note to avoid redundant array searches
+  const currentNote = useMemo(
+    () => notes.find((n) => n.id === currentNoteId),
+    [notes, currentNoteId]
+  )
+
   // Handle keyboard navigation for preview pane
   const handlePreviewKeyDown = useCallback((e) => {
     const previewElement = e.currentTarget
@@ -589,10 +595,7 @@ function BrainDump() {
                 placeholder='Note title...'
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                disabled={
-                  !currentNoteId ||
-                  notes.find((n) => n.id === currentNoteId)?.locked
-                }
+                disabled={!currentNoteId || currentNote?.locked}
                 aria-label='Note title'
               />
               <input
@@ -601,10 +604,7 @@ function BrainDump() {
                 placeholder='Category...'
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                disabled={
-                  !currentNoteId ||
-                  notes.find((n) => n.id === currentNoteId)?.locked
-                }
+                disabled={!currentNoteId || currentNote?.locked}
                 aria-label='Note category'
                 list='category-suggestions'
               />
@@ -647,10 +647,7 @@ function BrainDump() {
                 onClick={() => handleDelete()}
                 aria-label='Delete'
                 title='Delete'
-                disabled={
-                  !currentNoteId ||
-                  notes.find((n) => n.id === currentNoteId)?.locked
-                }
+                disabled={!currentNoteId || currentNote?.locked}
               >
                 <svg className='icon' viewBox='0 0 24 24'>
                   <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
@@ -670,10 +667,7 @@ function BrainDump() {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  disabled={
-                    !currentNoteId ||
-                    notes.find((n) => n.id === currentNoteId)?.locked
-                  }
+                  disabled={!currentNoteId || currentNote?.locked}
                   aria-label='Note content'
                   aria-describedby={
                     !currentNoteId ? 'editor-disabled-message' : undefined
@@ -766,77 +760,71 @@ function BrainDump() {
       )}
 
       {/* Details Modal */}
-      {showDetailsModal && (() => {
-        // Store the found note in a variable to avoid redundant array searches
-        const currentNote = notes.find((n) => n.id === currentNoteId);
+      {showDetailsModal && (
         // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-        return (
+        <div
+          className='modal-overlay'
+          onClick={() => setShowDetailsModal(false)}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setShowDetailsModal(false)
+          }}
+          role='dialog'
+          aria-modal='true'
+          aria-labelledby='details-modal-title'
+        >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
           <div
-            className='modal-overlay'
-            onClick={() => setShowDetailsModal(false)}
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') setShowDetailsModal(false)
-            }}
-            role='dialog'
-            aria-modal='true'
-            aria-labelledby='details-modal-title'
+            className='modal-content'
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            role='document'
           >
-            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-            <div
-              className='modal-content'
-              onClick={(e) => e.stopPropagation()}
-              onKeyDown={(e) => e.stopPropagation()}
-              role='document'
-            >
-              <>
-                <div className='modal-header'>
-                  <h2 id='details-modal-title'>Note Details</h2>
-                  <button
-                    className='btn btn-icon'
-                    onClick={() => setShowDetailsModal(false)}
-                    aria-label='Close'
-                  >
-                    <svg className='icon' viewBox='0 0 24 24'>
-                      <line x1='18' y1='6' x2='6' y2='18' />
-                      <line x1='6' y1='6' x2='18' y2='18' />
-                    </svg>
-                  </button>
-                </div>
-                <div className='modal-body'>
-                  <div className='detail-row'>
-                    <strong>Title:</strong>
-                    <span>{title || 'Untitled'}</span>
-                  </div>
-                  <div className='detail-row'>
-                    <strong>Category:</strong>
-                    <span>{category || 'None'}</span>
-                  </div>
-                  <div className='detail-row'>
-                    <strong>Created:</strong>
-                    <span>
-                      {currentNote?.createdAt
-                        ? new Date(currentNote.createdAt).toLocaleString()
-                        : 'N/A'}
-                    </span>
-                  </div>
-                  <div className='detail-row'>
-                    <strong>Last Updated:</strong>
-                    <span>
-                      {currentNote?.updatedAt
-                        ? new Date(currentNote.updatedAt).toLocaleString()
-                        : 'N/A'}
-                    </span>
-                  </div>
-                  <div className='detail-row'>
-                    <strong>Content Length:</strong>
-                    <span>{content.length} characters</span>
-                  </div>
-                </div>
-              </>
+            <div className='modal-header'>
+              <h2 id='details-modal-title'>Note Details</h2>
+              <button
+                className='btn btn-icon'
+                onClick={() => setShowDetailsModal(false)}
+                aria-label='Close'
+              >
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <line x1='18' y1='6' x2='6' y2='18' />
+                  <line x1='6' y1='6' x2='18' y2='18' />
+                </svg>
+              </button>
+            </div>
+            <div className='modal-body'>
+              <div className='detail-row'>
+                <strong>Title:</strong>
+                <span>{title || 'Untitled'}</span>
+              </div>
+              <div className='detail-row'>
+                <strong>Category:</strong>
+                <span>{category || 'None'}</span>
+              </div>
+              <div className='detail-row'>
+                <strong>Created:</strong>
+                <span>
+                  {currentNote?.createdAt
+                    ? new Date(currentNote.createdAt).toLocaleString()
+                    : 'N/A'}
+                </span>
+              </div>
+              <div className='detail-row'>
+                <strong>Last Updated:</strong>
+                <span>
+                  {currentNote?.updatedAt
+                    ? new Date(currentNote.updatedAt).toLocaleString()
+                    : 'N/A'}
+                </span>
+              </div>
+              <div className='detail-row'>
+                <strong>Content Length:</strong>
+                <span>{content.length} characters</span>
+              </div>
             </div>
           </div>
-        );
-      })()}
+        </div>
+      )}
 
       {/* Filter Modal */}
       {showFilterModal && (
