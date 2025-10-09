@@ -78,12 +78,81 @@ async function buildForOffline() {
       )
     }
 
+    // Copy embedded server and launchers
+    await copyEmbeddedServer()
+    
     console.log('✓ Offline build completed with relative paths')
     return true
   } catch (error) {
     console.error('❌ Build failed:')
     console.error(error.message)
     return false
+  }
+}
+
+/**
+ * Copy embedded server and launcher scripts to offline build
+ */
+async function copyEmbeddedServer() {
+  const { copyFileSync, chmodSync } = await import('fs')
+  const { fileURLToPath } = await import('url')
+  const { dirname } = await import('path')
+  
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = dirname(__filename)
+  
+  console.log('  → Adding embedded server and launchers')
+  
+  try {
+    // Copy embedded server
+    const serverSrc = join(__dirname, 'embedded-server.js')
+    const serverDst = join(DIST_OFFLINE_DIR, 'embedded-server.js')
+    copyFileSync(serverSrc, serverDst)
+    
+    // Make server executable on Unix-like systems
+    try {
+      chmodSync(serverDst, 0o755)
+    } catch (chmodError) {
+      // Ignore chmod errors on Windows
+    }
+    
+    // Copy launcher scripts
+    const launcherTemplates = join(__dirname, 'launcher-templates')
+    
+    // Windows launcher
+    const batSrc = join(launcherTemplates, 'start-aurorae-haven.bat')
+    const batDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven.bat')
+    if (existsSync(batSrc)) {
+      copyFileSync(batSrc, batDst)
+    }
+    
+    // Linux/macOS launcher
+    const shSrc = join(launcherTemplates, 'start-aurorae-haven.sh')
+    const shDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven.sh')
+    if (existsSync(shSrc)) {
+      copyFileSync(shSrc, shDst)
+      try {
+        chmodSync(shDst, 0o755)
+      } catch (chmodError) {
+        // Ignore chmod errors
+      }
+    }
+    
+    // macOS .command launcher
+    const commandSrc = join(launcherTemplates, 'start-aurorae-haven.command')
+    const commandDst = join(DIST_OFFLINE_DIR, 'start-aurorae-haven.command')
+    if (existsSync(commandSrc)) {
+      copyFileSync(commandSrc, commandDst)
+      try {
+        chmodSync(commandDst, 0o755)
+      } catch (chmodError) {
+        // Ignore chmod errors
+      }
+    }
+    
+    console.log('  ✓ Embedded server and launchers added')
+  } catch (error) {
+    console.warn('  ⚠ Warning: Failed to copy embedded server:', error.message)
   }
 }
 

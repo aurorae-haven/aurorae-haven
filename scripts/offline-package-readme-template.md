@@ -4,41 +4,56 @@ Welcome to the offline version of Aurorae Haven! This package contains everythin
 
 ## Quick Start
 
-### ⚠️ Important: A Local Web Server is Required
+### 🚀 Easy Start (Recommended)
 
-Due to browser security restrictions with ES modules, you **cannot** simply double-click `index.html`. Instead, you must serve the files through a local web server.
+**If you have Node.js installed**, simply double-click the launcher for your platform:
 
-### Option 1: Using Python (Recommended)
+- **Windows**: Double-click `start-aurorae-haven.bat`
+- **macOS**: Double-click `start-aurorae-haven.command` (or run `start-aurorae-haven.sh` in Terminal)
+- **Linux**: Run `./start-aurorae-haven.sh` in Terminal
 
-If you have Python 3 installed:
+The launcher will automatically:
+1. Start a local web server
+2. Open Aurorae Haven in your default browser
+3. Keep running until you close the window (press Ctrl+C to stop)
 
-```bash
-# Navigate to this directory, then run:
-python3 -m http.server 8000
+**Don't have Node.js?** Download it from [nodejs.org](https://nodejs.org/) (free and open source)
 
-# Open your browser to: http://localhost:8000
-```
+### 📌 Alternative: Manual Server Setup
 
-### Option 2: Using Node.js
+If you prefer manual control or have issues with the launcher:
+
+#### Option 1: Using the Embedded Server
 
 If you have Node.js installed:
 
 ```bash
-# Navigate to this directory, then run:
-npx serve -p 8000
-
-# Open your browser to: http://localhost:8000
+node embedded-server.js
 ```
 
-### Option 3: Using PHP
+This will start a server and open your browser automatically.
 
-If you have PHP installed:
+#### Option 2: Using Python
+
+If you have Python 3 installed:
 
 ```bash
-# Navigate to this directory, then run:
-php -S localhost:8000
+python3 -m http.server 8000
+# Then open: http://localhost:8000
+```
 
-# Open your browser to: http://localhost:8000
+#### Option 3: Using Node.js Serve
+
+```bash
+npx serve -p 8000
+# Then open: http://localhost:8000
+```
+
+#### Option 4: Using PHP
+
+```bash
+php -S localhost:8000
+# Then open: http://localhost:8000
 ```
 
 ## What's Included
@@ -91,9 +106,29 @@ All your data is stored locally in your browser:
 
 ## Troubleshooting
 
-### Blank page when opening
+### Launcher doesn't work
 
-**Solution**: Make sure you're using a local web server (see Quick Start above). Opening `index.html` directly will not work due to browser security restrictions.
+**Problem**: Double-clicking the launcher does nothing or shows an error.
+
+**Solutions**:
+1. Make sure Node.js is installed: https://nodejs.org/
+2. On Linux/macOS, make the script executable: `chmod +x start-aurorae-haven.sh`
+3. Try running manually: `node embedded-server.js`
+
+### Port already in use
+
+**Problem**: Error message says port 8765 is already in use.
+
+**Solutions**:
+1. Close any other applications using that port
+2. The embedded server uses port 8765 by default - if you have another Aurorae Haven instance running, close it first
+3. Use an alternative server (see Manual Server Setup above)
+
+### Blank page when opening index.html directly
+
+**Problem**: Double-clicking `index.html` shows a blank page.
+
+**Solution**: You cannot open `index.html` directly due to browser security restrictions with ES modules. You must use one of the server methods described in Quick Start.
 
 ### Service worker errors
 
