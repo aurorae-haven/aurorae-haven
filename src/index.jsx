@@ -31,7 +31,8 @@ import Settings from './pages/Settings.jsx'
 import {
   exportJSON,
   importJSON,
-  reloadPageAfterDelay
+  reloadPageAfterDelay,
+  IMPORT_SUCCESS_MESSAGE
 } from './utils/dataManager'
 
 // Component to handle GitHub Pages 404 redirect
@@ -79,7 +80,7 @@ function RouterApp() {
       if (file) {
         const result = await importJSON(file)
         if (result.success) {
-          showToast('Data imported successfully. Page will reload...')
+          showToast(IMPORT_SUCCESS_MESSAGE)
           // Use shared utility function for page reload
           reloadPageAfterDelay(1500)
         } else {

@@ -2,7 +2,8 @@
 import {
   getDataTemplate,
   importJSON as importData,
-  reloadPageAfterDelay
+  reloadPageAfterDelay,
+  IMPORT_SUCCESS_MESSAGE
 } from './dataManager'
 import { generateSecureUUID } from './uuidGenerator'
 ;(function () {
@@ -36,7 +37,7 @@ import { generateSecureUUID } from './uuidGenerator'
 
       if (result.success) {
         exported = true // importing counts as having current data saved
-        toast('Data imported successfully. Page will reload...')
+        toast(IMPORT_SUCCESS_MESSAGE)
 
         // Use shared utility function for page reload
         reloadPageAfterDelay(1500)

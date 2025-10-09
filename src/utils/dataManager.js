@@ -386,6 +386,11 @@ function validateImportData(obj) {
 }
 
 /**
+ * Success message shown when data is imported successfully
+ */
+export const IMPORT_SUCCESS_MESSAGE = 'Data imported successfully. Page will reload...'
+
+/**
  * Reload the page after a delay to allow UI updates to be visible
  * @param {number} delay - Delay in milliseconds before reloading (default: 1500)
  */
