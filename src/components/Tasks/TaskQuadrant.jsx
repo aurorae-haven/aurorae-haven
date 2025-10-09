@@ -31,7 +31,7 @@ function TaskQuadrant({
       onDrop={() => onDrop(quadrant.key)}
     >
       <div className='quadrant-header'>
-        <strong>{quadrant.title}</strong>
+        <h3>{quadrant.title}</h3>
         <span className='small'>{quadrant.subtitle}</span>
       </div>
       <div className='task-list'>

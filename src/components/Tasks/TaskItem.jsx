@@ -26,11 +26,40 @@ function TaskItem({
     }
   }, [isEditing])
 
+  const handleKeyDown = (e) => {
+    // Keyboard shortcuts for moving tasks between quadrants
+    if (e.altKey && !isEditing) {
+      e.preventDefault()
+      switch (e.key) {
+        case 'ArrowUp':
+          // Move to previous quadrant
+          onDragStart(quadrant, task)
+          // Trigger drop in previous quadrant - handled by parent
+          break
+        case 'ArrowDown':
+          // Move to next quadrant
+          onDragStart(quadrant, task)
+          break
+        case 'ArrowLeft':
+        case 'ArrowRight':
+          // Move to adjacent quadrant
+          onDragStart(quadrant, task)
+          break
+        default:
+          break
+      }
+    }
+  }
+
   return (
     <div
       className={`task-item ${task.completed ? 'completed' : ''}`}
       draggable={!isEditing}
       onDragStart={() => onDragStart(quadrant, task)}
+      onKeyDown={handleKeyDown}
+      tabIndex={isEditing ? -1 : 0}
+      role="button"
+      aria-label={`Task: ${task.text}. Press Alt + Arrow keys to move between quadrants.`}
     >
       <input
         type='checkbox'

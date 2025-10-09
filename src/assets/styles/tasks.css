@@ -4,7 +4,7 @@
   gap: 16px;
 }
 
-.task-input-form {
+.add-task-form {
   display: grid;
   grid-template-columns: 200px 1fr auto;
   gap: 10px;
