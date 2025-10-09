@@ -113,7 +113,12 @@ describe('Data Manager', () => {
     it('should collect tasks from aurorae_tasks localStorage key', async () => {
       const tasksData = {
         urgent_important: [
-          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+          {
+            id: 1,
+            text: 'Important task',
+            completed: false,
+            createdAt: Date.now()
+          }
         ],
         not_urgent_important: [],
         urgent_not_important: [],
@@ -386,7 +391,12 @@ describe('Data Manager', () => {
     it('should import tasks to aurorae_tasks', async () => {
       const tasksData = {
         urgent_important: [
-          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+          {
+            id: 1,
+            text: 'Important task',
+            completed: false,
+            createdAt: Date.now()
+          }
         ],
         not_urgent_important: [],
         urgent_not_important: [],
@@ -428,7 +438,12 @@ describe('Data Manager', () => {
     it('should roundtrip export and import tasks correctly', async () => {
       const tasksData = {
         urgent_important: [
-          { id: 1, text: 'Do this now', completed: false, createdAt: 1234567890 }
+          {
+            id: 1,
+            text: 'Do this now',
+            completed: false,
+            createdAt: 1234567890
+          }
         ],
         not_urgent_important: [
           { id: 2, text: 'Plan this', completed: false, createdAt: 1234567891 }
@@ -461,8 +476,18 @@ describe('Data Manager', () => {
       const nominalData = {
         // Tasks (IndexedDB)
         tasks: [
-          { id: 1, title: 'Sample task', done: false, timestamp: 1704453600000 },
-          { id: 2, title: 'Completed task', done: true, timestamp: 1704453601000 }
+          {
+            id: 1,
+            title: 'Sample task',
+            done: false,
+            timestamp: 1704453600000
+          },
+          {
+            id: 2,
+            title: 'Completed task',
+            done: true,
+            timestamp: 1704453601000
+          }
         ],
         // Sequences
         sequences: [
@@ -596,7 +621,9 @@ describe('Data Manager', () => {
       expect(exportedData.habits).toEqual(nominalData.habits)
       expect(exportedData.dumps).toEqual(nominalData.dumps)
       expect(exportedData.schedule).toEqual(nominalData.schedule)
-      expect(exportedData.auroraeTasksData).toEqual(nominalData.auroraeTasksData)
+      expect(exportedData.auroraeTasksData).toEqual(
+        nominalData.auroraeTasksData
+      )
       expect(exportedData.brainDump).toEqual(nominalData.brainDump)
 
       // Clear all localStorage

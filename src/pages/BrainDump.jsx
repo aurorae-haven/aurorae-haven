@@ -21,7 +21,10 @@ try {
     })
   )
 } catch (error) {
-  console.warn('KaTeX extension failed to load. LaTeX rendering will be disabled.', error)
+  console.warn(
+    'KaTeX extension failed to load. LaTeX rendering will be disabled.',
+    error
+  )
   // Marked will continue to work without KaTeX, falling back to plain markdown
 }
 
@@ -285,9 +288,7 @@ function BrainDump() {
             <button
               className='btn btn-icon toggle-notes-btn'
               onClick={() => setShowNoteList(!showNoteList)}
-              aria-label={
-                showNoteList ? 'Hide notes list' : 'Show notes list'
-              }
+              aria-label={showNoteList ? 'Hide notes list' : 'Show notes list'}
               title={showNoteList ? 'Hide notes list' : 'Show notes list'}
             >
               <svg className='icon' viewBox='0 0 24 24'>
@@ -458,7 +459,10 @@ function BrainDump() {
                 role='region'
                 aria-label='Note preview'
               >
-                <div id='preview' dangerouslySetInnerHTML={{ __html: preview }} />
+                <div
+                  id='preview'
+                  dangerouslySetInnerHTML={{ __html: preview }}
+                />
               </div>
               {/* eslint-enable jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/no-noninteractive-tabindex */}
             </div>

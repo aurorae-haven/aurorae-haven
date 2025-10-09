@@ -246,7 +246,12 @@ describe('IndexedDBManager', () => {
     test('exportAllData exports aurorae_tasks from localStorage', async () => {
       const tasksData = {
         urgent_important: [
-          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+          {
+            id: 1,
+            text: 'Important task',
+            completed: false,
+            createdAt: Date.now()
+          }
         ],
         not_urgent_important: [],
         urgent_not_important: [],
@@ -322,7 +327,12 @@ describe('IndexedDBManager', () => {
     test('importAllData imports auroraeTasksData to localStorage', async () => {
       const tasksData = {
         urgent_important: [
-          { id: 1, text: 'Important task', completed: false, createdAt: Date.now() }
+          {
+            id: 1,
+            text: 'Important task',
+            completed: false,
+            createdAt: Date.now()
+          }
         ],
         not_urgent_important: [],
         urgent_not_important: [],
@@ -414,7 +424,13 @@ describe('IndexedDBManager', () => {
       ]
 
       const nominalStats = [
-        { id: 1, type: 'productivity', value: 85, date: '2025-01-15', timestamp: 1704453600000 }
+        {
+          id: 1,
+          type: 'productivity',
+          value: 85,
+          date: '2025-01-15',
+          timestamp: 1704453600000
+        }
       ]
 
       const nominalFileRefs = [
@@ -429,7 +445,12 @@ describe('IndexedDBManager', () => {
 
       const nominalAuroraeTasks = {
         urgent_important: [
-          { id: 1, text: 'Urgent task', completed: false, createdAt: 1704453600000 }
+          {
+            id: 1,
+            text: 'Urgent task',
+            completed: false,
+            createdAt: 1704453600000
+          }
         ],
         not_urgent_important: [],
         urgent_not_important: [],
@@ -439,7 +460,9 @@ describe('IndexedDBManager', () => {
       const nominalBrainDump = {
         content: '# Notes\nSome content',
         tags: '<span class="tag">#important</span>',
-        versions: [{ id: 1, content: 'Old version', timestamp: '2025-01-15T10:00:00Z' }],
+        versions: [
+          { id: 1, content: 'Old version', timestamp: '2025-01-15T10:00:00Z' }
+        ],
         entries: [{ id: 'e1', title: 'Entry 1', content: 'Content' }]
       }
 
@@ -470,8 +493,14 @@ describe('IndexedDBManager', () => {
       localStorage.setItem('aurorae_tasks', JSON.stringify(nominalAuroraeTasks))
       localStorage.setItem('brainDumpContent', nominalBrainDump.content)
       localStorage.setItem('brainDumpTags', nominalBrainDump.tags)
-      localStorage.setItem('brainDumpVersions', JSON.stringify(nominalBrainDump.versions))
-      localStorage.setItem('brainDumpEntries', JSON.stringify(nominalBrainDump.entries))
+      localStorage.setItem(
+        'brainDumpVersions',
+        JSON.stringify(nominalBrainDump.versions)
+      )
+      localStorage.setItem(
+        'brainDumpEntries',
+        JSON.stringify(nominalBrainDump.entries)
+      )
 
       // Export all data
       const exported = await exportAllData()
@@ -535,16 +564,24 @@ describe('IndexedDBManager', () => {
       const restoredFileRefs = await getAll(STORES.FILE_REFS)
       expect(restoredFileRefs).toEqual(nominalFileRefs)
 
-      const restoredAuroraeTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      const restoredAuroraeTasks = JSON.parse(
+        localStorage.getItem('aurorae_tasks')
+      )
       expect(restoredAuroraeTasks).toEqual(nominalAuroraeTasks)
 
-      expect(localStorage.getItem('brainDumpContent')).toBe(nominalBrainDump.content)
+      expect(localStorage.getItem('brainDumpContent')).toBe(
+        nominalBrainDump.content
+      )
       expect(localStorage.getItem('brainDumpTags')).toBe(nominalBrainDump.tags)
 
-      const restoredVersions = JSON.parse(localStorage.getItem('brainDumpVersions'))
+      const restoredVersions = JSON.parse(
+        localStorage.getItem('brainDumpVersions')
+      )
       expect(restoredVersions).toEqual(nominalBrainDump.versions)
 
-      const restoredEntries = JSON.parse(localStorage.getItem('brainDumpEntries'))
+      const restoredEntries = JSON.parse(
+        localStorage.getItem('brainDumpEntries')
+      )
       expect(restoredEntries).toEqual(nominalBrainDump.entries)
     })
   })

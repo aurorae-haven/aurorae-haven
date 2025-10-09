@@ -480,10 +480,20 @@ describe('Tasks Component', () => {
 
     const duplicateTasks = {
       urgent_important: [
-        { id: 'dup-id', text: 'Task 1', completed: false, createdAt: Date.now() }
+        {
+          id: 'dup-id',
+          text: 'Task 1',
+          completed: false,
+          createdAt: Date.now()
+        }
       ],
       not_urgent_important: [
-        { id: 'dup-id', text: 'Task 2', completed: false, createdAt: Date.now() } // Duplicate ID
+        {
+          id: 'dup-id',
+          text: 'Task 2',
+          completed: false,
+          createdAt: Date.now()
+        } // Duplicate ID
       ],
       urgent_not_important: [],
       not_urgent_not_important: []
