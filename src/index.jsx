@@ -28,7 +28,11 @@ import Stats from './pages/Stats.jsx'
 import Settings from './pages/Settings.jsx'
 
 // Utils
-import { exportJSON, importJSON } from './utils/dataManager'
+import {
+  exportJSON,
+  importJSON,
+  reloadPageAfterDelay
+} from './utils/dataManager'
 
 // Component to handle GitHub Pages 404 redirect
 function RedirectHandler() {
@@ -76,10 +80,8 @@ function RouterApp() {
         const result = await importJSON(file)
         if (result.success) {
           showToast('Data imported successfully. Page will reload...')
-          // Reload page after a short delay to show the toast and ensure UI reflects imported data
-          setTimeout(() => {
-            window.location.reload()
-          }, 1500)
+          // Use shared utility function for page reload
+          reloadPageAfterDelay(1500)
         } else {
           showToast(result.message)
         }

@@ -385,6 +385,16 @@ function validateImportData(obj) {
   }
 }
 
+/**
+ * Reload the page after a delay to allow UI updates to be visible
+ * @param {number} delay - Delay in milliseconds before reloading (default: 1500)
+ */
+export function reloadPageAfterDelay(delay = 1500) {
+  setTimeout(() => {
+    window.location.reload()
+  }, delay)
+}
+
 export async function importJSON(file) {
   try {
     const text = await file.text()
