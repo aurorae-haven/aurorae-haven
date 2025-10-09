@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
+import '../../assets/styles/help-modal.css'
 
 /**
  * Help Modal Component for Brain Dump
