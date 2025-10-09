@@ -36,7 +36,7 @@ function TaskQuadrant({
       </div>
       <div className='task-list'>
         {tasks.length === 0 ? (
-          <p className='small' style={{ opacity: 0.6, textAlign: 'center' }}>
+          <p className='empty-state'>
             No tasks in this quadrant
           </p>
         ) : (
