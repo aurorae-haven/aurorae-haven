@@ -191,7 +191,8 @@ function NoteEditor({
               value={content}
               onChange={(e) => onContentChange(e.target.value)}
               onKeyDown={(e) => {
-                const handled = handleEnterKey(e)
+                const cursorPosition = e.target.selectionStart;
+                const handled = handleEnterKey(content, cursorPosition);
                 if (!handled && e.ctrlKey && e.key === 's') {
                   e.preventDefault()
                 }
