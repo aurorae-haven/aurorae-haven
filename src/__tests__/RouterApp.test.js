@@ -91,7 +91,7 @@ describe('RouterApp Setup and Configuration', () => {
       expect(mockImportJSON).toHaveBeenCalledWith(file)
       
       // Note: The actual page reload is handled by reloadPageAfterDelay utility
-      // which is tested separately in dataManager.test.js
+      // which is tested separately in reloadPageAfterDelay.test.js
     })
 
     test('failed import does not trigger page reload', async () => {
