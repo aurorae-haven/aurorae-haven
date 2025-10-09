@@ -25,6 +25,7 @@ dist/
 build/
 dist-offline/
 dist-offline-build/
+test-offline-package/
 
 # Environment variables (keep .env and .env.production, ignore local overrides)
 .env.local

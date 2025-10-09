@@ -24,7 +24,7 @@ describe('Offline Package - Build Process', () => {
   test('has offline build script configured in package.json', () => {
     const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'))
     const buildScript = packageJson.scripts['build:offline']
-    
+
     expect(buildScript).toBeDefined()
     expect(buildScript).toMatch(/create-offline-package/)
   })
@@ -38,7 +38,7 @@ describe('Offline Package - Build Process', () => {
     const scriptPath = 'scripts/create-offline-package.js'
     const content = readFileSync(scriptPath, 'utf-8')
     const firstLine = content.split('\n')[0]
-    
+
     expect(firstLine).toBe('#!/usr/bin/env node')
   })
 
@@ -253,7 +253,7 @@ describe('Offline Package - Installation Instructions', () => {
 
     // Should generate README with instructions
     expect(scriptContent).toContain('README')
-    expect(scriptContent).toContain('Installation Instructions')
+    expect(scriptContent).toContain('generateReadme')
   })
 
   test('documents extraction process', () => {

@@ -4,7 +4,7 @@ This document explains how to download and use the offline package of Aurorae Ha
 
 ## Overview
 
-The offline download package allows you to run Aurorae Haven on your computer **without internet access, without any installation, and without needing a web server**. Simply download, extract, and open `index.html` in your browser!
+The offline download package allows you to run Aurorae Haven on your computer **without internet access and without any installation**. After downloading and extracting, you'll need to serve the files with a simple local web server (instructions provided).
 
 This is ideal for:
 
@@ -12,7 +12,7 @@ This is ideal for:
 - **Archiving**: Keep a snapshot of a specific version
 - **Distribution**: Share the app with others who don't have development tools
 - **Privacy**: Run completely offline with no external connections
-- **No installation required**: Just extract and open in your browser
+- **No cloud dependencies**: Everything runs on your device
 
 ## Download Instructions
 
@@ -80,48 +80,39 @@ tar -xzf aurorae-haven-offline-*.tar.gz
 
 **Note**: Windows 10 and later have native `.tar.gz` support built into File Explorer!
 
-### Step 2: Open the Application
+### Step 2: Start a Local Web Server
 
-**Simply double-click `index.html` to open in your browser!**
+⚠️ **Important**: Due to modern browser security restrictions with ES modules, you **cannot** simply double-click `index.html`. You must serve the files through a local web server.
 
-1. Navigate to the extracted folder
-2. Double-click `index.html` to open in your default browser
-3. The app will load and work immediately
+Choose one of the following options (all are simple and require no installation beyond the tool itself):
 
-**✨ No server needed! No installation required! No internet required!**
-
-The offline package is built with relative paths so it works directly from your file system. Just double-click and go!
-
-#### Optional: Using a Local Web Server
-
-While not required, serving through a local web server can provide additional benefits like proper PWA installation:
-
-**Using Python:**
+**Option A: Using Python** (Recommended - usually pre-installed)
 
 ```bash
 cd path/to/extracted/folder
 python3 -m http.server 8000
+# Then open your browser to: http://localhost:8000
 ```
 
-Then open your browser to: `http://localhost:8000`
-
-**Using Node.js:**
+**Option B: Using Node.js**
 
 ```bash
 cd path/to/extracted/folder
 npx serve -p 8000
+# Then open your browser to: http://localhost:8000
 ```
 
-Then open your browser to: `http://localhost:8000`
-
-**Using PHP:**
+**Option C: Using PHP**
 
 ```bash
 cd path/to/extracted/folder
 php -S localhost:8000
+# Then open your browser to: http://localhost:8000
 ```
 
-Then open your browser to: `http://localhost:8000`
+**💡 Why is a server needed?**
+
+Modern browsers block ES modules (which this app uses) from the `file://` protocol for security reasons. A local web server serves the files via `http://localhost`, which browsers allow. This is a simple, one-command process that doesn't require any complex setup.
 
 ### Step 3: Install as PWA (Optional but Recommended)
 
@@ -200,20 +191,17 @@ All user data is stored locally in your browser:
 
 ## Troubleshooting
 
-### App doesn't load when opening index.html directly
+### Blank page or app doesn't load
 
-**Solution**: The offline package is built with relative paths and should work directly. If you experience issues:
+**Cause**: Trying to open `index.html` directly without a web server.
 
-1. Make sure you extracted all files properly
-2. Try a different browser (Chrome, Firefox, Edge, Safari)
-3. Check browser console for specific errors (F12 → Console)
-4. As a last resort, use a local web server (see Step 2)
+**Solution**: You must use a local web server. See Step 2 above for simple one-command options. Opening the file directly (`file://` protocol) will not work due to browser security restrictions with ES modules.
 
 ### Service worker not registering
 
-**Solution**: Ensure you're accessing via `http://` or `https://`, not `file://`
+**Solution**: Ensure you're accessing via `http://localhost` or `http://127.0.0.1`, not `file://`
 
-**Why**: Service workers require a secure context or localhost.
+**Why**: Service workers require a secure context (HTTPS) or localhost.
 
 ### PWA install button doesn't appear
 

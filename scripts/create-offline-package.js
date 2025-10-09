@@ -111,6 +111,7 @@ async function createTarGz() {
   try {
     // For simplicity, we'll use a shell command to create tar.gz
     const { execSync } = await import('child_process')
+    const { writeFileSync } = await import('fs')
 
     console.log(`  → Archiving ${DIST_OFFLINE_DIR}/ to ${outputFile}`)
 
@@ -120,6 +121,12 @@ async function createTarGz() {
         `Source directory not found: ${DIST_OFFLINE_DIR}. Build may have failed.`
       )
     }
+
+    // Add README to the offline build directory
+    const readmeContent = await generateReadme()
+    const readmePath = join(DIST_OFFLINE_DIR, 'README.md')
+    writeFileSync(readmePath, readmeContent)
+    console.log('  → Added README.md to package')
 
     // Create tar.gz using shell command (more reliable and compatible)
     try {
@@ -183,10 +190,14 @@ async function createTarGz() {
     console.log(`  → Size: ${sizeKB} KB`)
     console.log('')
     console.log('📝 Usage Instructions:')
-    console.log('  1. Download the .tar.gz file')
-    console.log('  2. Extract: tar -xzf aurorae-haven-offline-*.tar.gz')
-    console.log('  3. Double-click index.html to open in your browser')
-    console.log('  4. No server needed! Works directly from the file system')
+    console.log('  1. Extract: tar -xzf aurorae-haven-offline-*.tar.gz')
+    console.log('  2. Read README.md in the extracted folder')
+    console.log(
+      '  3. Start a local web server (e.g., python3 -m http.server 8000)'
+    )
+    console.log('  4. Open http://localhost:8000 in your browser')
+    console.log('')
+    console.log('⚠️  Important: A local web server is required (see README.md)')
 
     // Clean up the temporary offline build directory
     if (existsSync(DIST_OFFLINE_DIR)) {
@@ -225,58 +236,7 @@ async function createSimpleArchive() {
   console.log('  ℹ️  Note: Compression not available, using uncompressed tar')
 
   // Create README for the offline package
-  const readmeContent = `# Aurorae Haven - Offline Package v${VERSION}
-
-This is a standalone offline package of Aurorae Haven.
-
-## Installation Instructions
-
-1. Extract this archive to a folder of your choice
-2. Open \`index.html\` in a modern web browser (Chrome, Firefox, Edge, Safari)
-
-## Recommended Usage
-
-For best experience, serve the files with a local web server:
-
-### Using Python (if installed):
-\`\`\`bash
-python3 -m http.server 8000
-# Then open: http://localhost:8000
-\`\`\`
-
-### Using Node.js (if installed):
-\`\`\`bash
-npx serve -p 8000
-# Then open: http://localhost:8000
-\`\`\`
-
-### Using PHP (if installed):
-\`\`\`bash
-php -S localhost:8000
-# Then open: http://localhost:8000
-\`\`\`
-
-## Direct File Access
-
-You can also open \`index.html\` directly in your browser, but some features
-may be limited due to browser security restrictions.
-
-## PWA Installation
-
-Once you open the app, you can install it as a Progressive Web App for:
-- Offline functionality
-- Native app experience
-- Faster loading
-
-## Support
-
-For issues or questions, visit: https://github.com/aurorae-haven/aurorae-haven
-
----
-
-**Version:** ${VERSION}
-**Built:** ${new Date().toISOString()}
-`
+  const readmeContent = await generateReadme()
 
   // Try to use the archiver package if available
   try {
@@ -319,6 +279,26 @@ For issues or questions, visit: https://github.com/aurorae-haven/aurorae-haven
 }
 
 /**
+ * Generate README content for offline package
+ */
+async function generateReadme() {
+  const { fileURLToPath } = await import('url')
+  const { dirname } = await import('path')
+
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = dirname(__filename)
+
+  const templatePath = join(__dirname, 'offline-package-readme-template.md')
+  let content = readFileSync(templatePath, 'utf-8')
+
+  // Replace placeholders
+  content = content.replace(/{{VERSION}}/g, VERSION)
+  content = content.replace(/{{BUILD_DATE}}/g, new Date().toISOString())
+
+  return content
+}
+
+/**
  * Create ZIP using archiver package
  */
 async function createZipWithArchiver(outputFile, readmeContent) {
@@ -345,7 +325,7 @@ async function createZipWithArchiver(outputFile, readmeContent) {
     archive.pipe(output)
 
     // Add README
-    archive.append(readmeContent, { name: 'README-OFFLINE.md' })
+    archive.append(readmeContent, { name: 'README.md' })
 
     // Add all files from offline build directory
     archive.directory(DIST_OFFLINE_DIR, false)
