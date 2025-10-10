@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import BrainDump from '../pages/BrainDump.jsx'
 
 // Mock marked and DOMPurify
@@ -374,7 +374,7 @@ describe('BrainDump Component', () => {
   })
 
   describe('Delete functionality', () => {
-    test('deletes note on delete button click with confirmation', () => {
+    test('deletes note on delete button click with confirmation', async () => {
       window.confirm = jest.fn(() => true)
 
       const mockEntries = [
@@ -398,11 +398,18 @@ describe('BrainDump Component', () => {
       const deleteButton = screen.getByRole('button', { name: /delete/i })
       fireEvent.click(deleteButton)
 
-      expect(textarea).toBeDisabled()
+      // After deleting the last note, a new empty note is automatically created
+      await waitFor(() => {
+        const textarea = screen.getByPlaceholderText('Start writing your note in Markdown...')
+        expect(textarea).toHaveValue('')
+      })
+      
+      // Verify a new note was created (not empty list)
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
       )
-      expect(entries.length).toBe(0)
+      expect(entries.length).toBe(1)
+      expect(entries[0].content).toBe('')
     })
 
     test('does not delete note if user cancels confirmation', () => {
@@ -487,7 +494,7 @@ describe('BrainDump Component', () => {
   })
 
   describe('Export functionality', () => {
-    test('exports content as markdown file with new filename format', () => {
+    test('exports content as markdown file with new filename format', async () => {
       // Mock URL.createObjectURL and revokeObjectURL
       global.URL.createObjectURL = jest.fn(() => 'blob:mock')
       global.URL.revokeObjectURL = jest.fn()
@@ -524,11 +531,22 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
 
+      // Wait for note to be loaded
+      await waitFor(() => {
+        const textarea = screen.getByPlaceholderText(
+          'Start writing your note in Markdown...'
+        )
+        expect(textarea).toHaveValue('Export this content')
+      })
+
       // Find and click export button
       const exportButton = screen.getByRole('button', { name: /export/i })
       fireEvent.click(exportButton)
 
-      expect(mockClick).toHaveBeenCalled()
+      // Wait for export to complete
+      await waitFor(() => {
+        expect(mockClick).toHaveBeenCalled()
+      })
       expect(global.URL.createObjectURL).toHaveBeenCalled()
 
       // Check filename format: braindump_title_YYYYMMDD_HHmm.md
@@ -654,6 +672,11 @@ describe('BrainDump Component', () => {
       // Render component with initial notes
       const { unmount } = render(<BrainDump />)
 
+      // Wait for notes to load
+      await waitFor(() => {
+        expect(screen.getByText('Second Note')).toBeInTheDocument()
+      })
+
       // Step 2: Delete the second note
       window.confirm = jest.fn(() => true)
 
@@ -661,11 +684,31 @@ describe('BrainDump Component', () => {
       const secondNoteItem = screen.getByText('Second Note')
       fireEvent.click(secondNoteItem)
 
+      // Wait for note content to load
+      await waitFor(() => {
+        const textarea = screen.getByPlaceholderText(
+          'Start writing your note in Markdown...'
+        )
+        expect(textarea).toHaveValue('Second content')
+      })
+
       // Click delete button
       const deleteButton = screen.getByRole('button', { name: /delete/i })
       fireEvent.click(deleteButton)
 
-      // Verify deletion
+      // Wait for toast to appear (indicates delete completed)
+      await waitFor(() => {
+        expect(
+          screen.getByText('✓ Note deleted successfully')
+        ).toBeInTheDocument()
+      })
+
+      // Wait for any pending auto-save (500ms debounce + buffer)
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 600))
+      })
+
+      // Verify deletion in localStorage
       const notesAfterDelete = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
       )

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import {
   createNewNote,
   migrateNotes,
@@ -25,13 +25,22 @@ export function useBrainDumpState() {
     customStart: '',
     customEnd: ''
   })
+  
+  // Track if we're currently loading a note (not editing)
+  // This prevents auto-save from triggering during programmatic note loads
+  const isLoadingRef = useRef(false)
 
   // Load a note
   const loadNote = useCallback((note) => {
+    isLoadingRef.current = true
     setCurrentNoteId(note.id)
     setTitle(note.title)
     setContent(note.content)
     setCategory(note.category || '')
+    // Reset loading flag after state updates
+    setTimeout(() => {
+      isLoadingRef.current = false
+    }, 0)
   }, [])
 
   // Load saved notes on mount (migrate old single note if needed)
@@ -82,22 +91,31 @@ export function useBrainDumpState() {
   // Autosave current note
   useEffect(() => {
     if (!currentNoteId) return
+    
+    // Don't save if note doesn't exist yet (e.g., during delete operations)
+    if (!currentNote) return
 
     // Don't save if note is locked
-    if (currentNote?.locked) return
+    if (currentNote.locked) return
+    
+    // Don't save if we're currently loading a note (not editing)
+    if (isLoadingRef.current) return
 
     const saveTimeout = setTimeout(() => {
-      const updatedNotes = updateNote(notes, currentNoteId, {
-        title,
-        content,
-        category
+      // Use functional update to get latest notes state
+      setNotes((latestNotes) => {
+        const updatedNotes = updateNote(latestNotes, currentNoteId, {
+          title,
+          content,
+          category
+        })
+        saveNotesToStorage(updatedNotes)
+        return updatedNotes
       })
-      setNotes(updatedNotes)
-      saveNotesToStorage(updatedNotes)
     }, 500) // Debounce autosave
 
     return () => clearTimeout(saveTimeout)
-  }, [currentNoteId, title, content, category, notes, currentNote])
+  }, [currentNoteId, title, content, category, currentNote])
 
   // Create new note
   const createNote = () => {

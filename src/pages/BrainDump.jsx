@@ -5,6 +5,7 @@ import DOMPurify from 'dompurify'
 import 'katex/dist/katex.min.css'
 import { configureSanitization } from '../utils/sanitization'
 import {
+  createNewNote,
   createNoteFromImport,
   toggleNoteLock,
   deleteNote as deleteNoteUtil,
@@ -123,18 +124,28 @@ function BrainDump() {
 
     // Execute delete
     const updatedNotes = deleteNoteUtil(notes, noteId)
-    updateNotes(updatedNotes)
 
-    // Load next note or clear if the deleted note was current
+    // Load next note or create new empty note if the deleted note was current
     if (noteId === currentNoteId) {
       if (updatedNotes.length > 0) {
+        updateNotes(updatedNotes)
         loadNote(updatedNotes[0])
       } else {
-        setCurrentNoteId(null)
-        setTitle('')
-        setContent('')
-        setCategory('')
+        // Auto-create new empty note when deleting the last note
+        const newNote = createNewNote()
+        
+        // Update notes array first
+        const notesWithNew = [newNote]
+        updateNotes(notesWithNew)
+        
+        // Then load the new note to update UI state
+        // This order ensures currentNote exists in the notes array
+        // when autosave effect evaluates
+        loadNote(newNote)
       }
+    } else {
+      // Just update notes if deleted note wasn't current
+      updateNotes(updatedNotes)
     }
 
     // Close context menu if open
@@ -151,7 +162,9 @@ function BrainDump() {
 
   // Export current note with new filename format
   const handleExport = (noteId) => {
-    if (noteId) {
+    // If noteId is provided as a string (from context menu), use that note
+    // Otherwise (button click passes event or nothing), use current note
+    if (noteId && typeof noteId === 'string') {
       const note = notes.find((n) => n.id === noteId)
       if (note) {
         exportNoteToFile(note.title, note.content)
