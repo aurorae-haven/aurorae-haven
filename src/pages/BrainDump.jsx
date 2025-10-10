@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { flushSync } from 'react-dom'
 import { marked } from 'marked'
 import markedKatex from 'marked-katex-extension'
 import DOMPurify from 'dompurify'
@@ -73,7 +74,8 @@ function BrainDump() {
     setFilterOptions,
     loadNote,
     createNote,
-    updateNotes
+    updateNotes,
+    clearAutosaveTimeout
   } = useBrainDumpState()
 
   const { toastMessage, showToast, showToastNotification } = useToast()
@@ -122,6 +124,9 @@ function BrainDump() {
     if (!window.confirm(`Delete "${noteToDelete?.title || 'this note'}"?`))
       return
 
+    // Clear any pending autosave to prevent it from restoring the deleted note
+    clearAutosaveTimeout()
+
     // Execute delete
     const updatedNotes = deleteNoteUtil(notes, noteId)
 
@@ -136,7 +141,12 @@ function BrainDump() {
         // Auto-create new empty note when deleting the last note
         const newNote = createNewNote()
         const notesWithNew = [newNote]
-        updateNotes(notesWithNew)
+        
+        // Use flushSync to ensure state updates complete synchronously
+        // This prevents UI not updating issue when deleting the last note
+        flushSync(() => {
+          updateNotes(notesWithNew)
+        })
         loadNote(newNote)
       }
     }

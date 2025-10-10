@@ -30,6 +30,7 @@ export function useBrainDumpState() {
   // This helps prevent auto-save from triggering during programmatic note loads
   const prevNoteIdRef = useRef(null)
   const skipNextSaveRef = useRef(false)
+  const autosaveTimeoutRef = useRef(null)
 
   // Load a note
   const loadNote = useCallback((note) => {
@@ -128,7 +129,13 @@ export function useBrainDumpState() {
       })
     }, 500) // Debounce autosave
 
-    return () => clearTimeout(saveTimeout)
+    // Store timeout ID so it can be cleared externally (e.g., during delete)
+    autosaveTimeoutRef.current = saveTimeout
+
+    return () => {
+      clearTimeout(saveTimeout)
+      autosaveTimeoutRef.current = null
+    }
   }, [currentNoteId, title, content, category, currentNote])
 
   // Create new note
@@ -145,6 +152,14 @@ export function useBrainDumpState() {
   const updateNotes = (updatedNotes) => {
     setNotes(updatedNotes)
     saveNotesToStorage(updatedNotes)
+  }
+
+  // Clear pending autosave timeout (useful when deleting notes)
+  const clearAutosaveTimeout = () => {
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current)
+      autosaveTimeoutRef.current = null
+    }
   }
 
   return {
@@ -168,6 +183,7 @@ export function useBrainDumpState() {
     // Actions
     loadNote,
     createNote,
-    updateNotes
+    updateNotes,
+    clearAutosaveTimeout
   }
 }
