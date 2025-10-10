@@ -9,6 +9,10 @@ import { validateTemplateData } from './validation'
 
 const TEMPLATES_STORE = 'templates'
 
+// Supported template export versions
+const SUPPORTED_VERSIONS = ['1.0']
+const CURRENT_VERSION = '1.0'
+
 /**
  * Initialize templates in IndexedDB
  * @returns {Promise<void>}
@@ -321,10 +325,6 @@ export async function exportTemplates(templateIds = []) {
     templates: templatesToExport
   }
 }
-
-// Supported template export versions
-const SUPPORTED_VERSIONS = ['1.0']
-const CURRENT_VERSION = '1.0'
 
 /**
  * Check if import version is compatible
