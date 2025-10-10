@@ -141,7 +141,7 @@ describe('BrainDump Component', () => {
       fireEvent.change(textarea, { target: { value: '# Heading' } })
 
       await waitFor(() => {
-        const preview = document.getElementById('preview')
+        const preview = screen.getByLabelText('Markdown preview')
         // With our mock, marked.parse wraps content in <p> tags
         expect(preview.innerHTML).toContain('<p>')
         expect(preview.innerHTML).toContain('# Heading')

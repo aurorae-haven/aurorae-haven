@@ -26,8 +26,8 @@ import { useToast } from '../hooks/useToast'
 try {
   marked.use(
     markedKatex({
-      throwOnError: false,
-      displayMode: false
+      throwOnError: false
+      // displayMode is auto-detected: $...$ for inline, $$...$$ for display
     })
   )
 } catch (error) {

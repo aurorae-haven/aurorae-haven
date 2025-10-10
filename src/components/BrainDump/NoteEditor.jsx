@@ -273,7 +273,6 @@ function NoteEditor({
           />
           <div className='preview-pane'>
             <div
-              id='preview'
               ref={previewRef}
               className='preview'
               dangerouslySetInnerHTML={{ __html: preview }}
