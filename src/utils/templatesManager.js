@@ -9,6 +9,10 @@ import { validateTemplateData } from './validation'
 
 const TEMPLATES_STORE = 'templates'
 
+// Supported template export versions
+const SUPPORTED_VERSIONS = ['1.0']
+const CURRENT_VERSION = '1.0'
+
 /**
  * Initialize templates in IndexedDB
  * @returns {Promise<void>}
@@ -316,10 +320,19 @@ export async function exportTemplates(templateIds = []) {
       : allTemplates
 
   return {
-    version: '1.0',
+    version: CURRENT_VERSION,
     exportDate: new Date().toISOString(),
     templates: templatesToExport
   }
+}
+
+/**
+ * Check if import version is compatible
+ * @param {string} version - Version string from import data
+ * @returns {boolean} True if version is supported
+ */
+function isVersionCompatible(version) {
+  return SUPPORTED_VERSIONS.includes(version)
 }
 
 /**
@@ -328,6 +341,24 @@ export async function exportTemplates(templateIds = []) {
  * @returns {Promise<Object>} Import results
  */
 export async function importTemplates(data) {
+  // Validate data structure
+  if (!data || typeof data !== 'object') {
+    throw new Error('Invalid import data: data must be an object')
+  }
+
+  // Validate version field
+  if (!data.version) {
+    throw new Error('Invalid import data: missing version field')
+  }
+
+  // Check version compatibility
+  if (!isVersionCompatible(data.version)) {
+    throw new Error(
+      `Incompatible version: ${data.version}. Supported versions: ${SUPPORTED_VERSIONS.join(', ')}`
+    )
+  }
+
+  // Validate templates array
   if (!data.templates || !Array.isArray(data.templates)) {
     throw new Error('Invalid import data: missing templates array')
   }
@@ -340,6 +371,12 @@ export async function importTemplates(data) {
 
   for (const template of data.templates) {
     try {
+      // Validate template structure before import
+      const validation = validateTemplateData(template)
+      if (!validation.valid) {
+        throw new Error(validation.errors.join('; '))
+      }
+
       // Re-ID on collision
       const existing = await getTemplate(template.id)
       if (existing) {
@@ -350,7 +387,7 @@ export async function importTemplates(data) {
       results.imported++
     } catch (error) {
       results.errors.push({
-        template: template.title,
+        template: template.title || 'Unknown',
         error: error.message
       })
       results.skipped++
