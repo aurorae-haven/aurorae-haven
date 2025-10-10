@@ -132,16 +132,9 @@ function BrainDump() {
         loadNote(updatedNotes[0])
       } else {
         // Auto-create new empty note when deleting the last note
-        const newNote = createNewNote()
-        
-        // Update notes array first
-        const notesWithNew = [newNote]
-        updateNotes(notesWithNew)
-        
-        // Then load the new note to update UI state
-        // This order ensures currentNote exists in the notes array
-        // when autosave effect evaluates
-        loadNote(newNote)
+        // Use the hook's createNote method for consistency
+        updateNotes(updatedNotes)  // First clear the notes array
+        createNote()  // Then create and load new note
       }
     } else {
       // Just update notes if deleted note wasn't current

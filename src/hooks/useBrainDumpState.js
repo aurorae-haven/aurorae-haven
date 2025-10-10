@@ -26,21 +26,18 @@ export function useBrainDumpState() {
     customEnd: ''
   })
   
-  // Track if we're currently loading a note (not editing)
-  // This prevents auto-save from triggering during programmatic note loads
-  const isLoadingRef = useRef(false)
+  // Track the previous noteId to detect note switches
+  // This helps prevent auto-save from triggering during programmatic note loads
+  const prevNoteIdRef = useRef(null)
+  const skipNextSaveRef = useRef(false)
 
   // Load a note
   const loadNote = useCallback((note) => {
-    isLoadingRef.current = true
+    skipNextSaveRef.current = true // Skip autosave on next render
     setCurrentNoteId(note.id)
     setTitle(note.title)
     setContent(note.content)
     setCategory(note.category || '')
-    // Reset loading flag after state updates
-    setTimeout(() => {
-      isLoadingRef.current = false
-    }, 0)
   }, [])
 
   // Load saved notes on mount (migrate old single note if needed)
@@ -98,8 +95,18 @@ export function useBrainDumpState() {
     // Don't save if note is locked
     if (currentNote.locked) return
     
-    // Don't save if we're currently loading a note (not editing)
-    if (isLoadingRef.current) return
+    // Skip autosave immediately after loadNote is called
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false
+      prevNoteIdRef.current = currentNoteId
+      return
+    }
+    
+    // Also skip if noteId changed (double safety check)
+    if (prevNoteIdRef.current !== currentNoteId) {
+      prevNoteIdRef.current = currentNoteId
+      return
+    }
 
     const saveTimeout = setTimeout(() => {
       // Use functional update to get latest notes state
