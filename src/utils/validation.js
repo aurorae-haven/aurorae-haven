@@ -192,7 +192,7 @@ export function validateTemplateData(template) {
     errors.push('Template type is required')
   } else if (!VALID_TEMPLATE_TYPES.includes(template.type)) {
     errors.push(
-      `Template type must be one of: ${VALID_TEMPLATE_TYPES.join(', ')} (found: ${template.type})`
+      `Template type must be one of: ${VALID_TEMPLATE_TYPES.join(', ')}`
     )
   }
 
