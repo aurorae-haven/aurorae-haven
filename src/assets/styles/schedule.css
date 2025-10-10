@@ -1,0 +1,106 @@
+/* ===== Schedule ===== */
+.layout-schedule {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 14px;
+}
+.sidebar .list {
+  display: grid;
+  gap: 8px;
+}
+.list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.calendar {
+  background: rgba(16, 20, 44, 0.3);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px;
+}
+.hours {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+}
+.hour-col {
+  display: grid;
+  grid-template-rows: repeat(16, 46px);
+}
+.hour-col .h {
+  border-bottom: 1px dashed var(--line);
+  padding: 6px 8px;
+  color: var(--dim);
+}
+.slots {
+  position: relative;
+  border-left: 1px solid var(--line);
+}
+.block {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: rgba(142, 200, 255, 0.14);
+  border: 1px solid rgba(150, 200, 255, 0.24);
+  z-index: 2;
+  overflow: hidden;
+}
+.block.task {
+  background: rgba(200, 180, 255, 0.14);
+  border-color: rgba(200, 180, 255, 0.24);
+}
+.block .title {
+  position: absolute;
+  left: 10px;
+  top: 6px;
+  font-weight: 700;
+}
+.block .meta {
+  position: absolute;
+  left: 10px;
+  bottom: 6px;
+  font-size: 0.9rem;
+  color: var(--dim);
+}
+.progress {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 28px;
+  height: 6px;
+  background: rgba(120, 140, 200, 0.16);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress i {
+  display: block;
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, #8ec8ff, #86f5e0);
+}
+
+/* Runner overlay */
+#runner {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 50;
+}
+#runner .panel {
+  width: min(760px, 92vw);
+  background: linear-gradient(180deg, var(--glass-lo), rgba(18, 22, 52, 0.22));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+

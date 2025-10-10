@@ -61,7 +61,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Test task' } })
     fireEvent.click(addButton)
@@ -74,12 +74,12 @@ describe('Tasks Component', () => {
   test('does not add empty task', () => {
     render(<Tasks />)
 
-    const addButton = screen.getByText('Add')
-    const initialEmptyStates = screen.getAllByText('No tasks yet')
+    const addButton = screen.getByText('Add Task')
+    const initialEmptyStates = screen.getAllByText('No tasks in this quadrant')
 
     fireEvent.click(addButton)
 
-    const finalEmptyStates = screen.getAllByText('No tasks yet')
+    const finalEmptyStates = screen.getAllByText('No tasks in this quadrant')
     expect(finalEmptyStates.length).toBe(initialEmptyStates.length)
   })
 
@@ -96,7 +96,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Complete me' } })
     fireEvent.click(addButton)
@@ -114,7 +114,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Delete me' } })
     fireEvent.click(addButton)
@@ -135,7 +135,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Persistent task' } })
     fireEvent.click(addButton)
@@ -175,7 +175,7 @@ describe('Tasks Component', () => {
   test('displays empty state for quadrants with no tasks', () => {
     render(<Tasks />)
 
-    const emptyStates = screen.getAllByText('No tasks yet')
+    const emptyStates = screen.getAllByText('No tasks in this quadrant')
     expect(emptyStates.length).toBe(4) // All quadrants empty initially
   })
 
@@ -249,7 +249,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Clear input test' } })
     fireEvent.click(addButton)
@@ -308,7 +308,7 @@ describe('Tasks Component', () => {
     const { container } = render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Draggable task' } })
     fireEvent.click(addButton)
@@ -324,7 +324,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Editable task' } })
     fireEvent.click(addButton)
@@ -343,7 +343,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Original text' } })
     fireEvent.click(addButton)
@@ -369,7 +369,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Unchanged task' } })
     fireEvent.click(addButton)
@@ -395,7 +395,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Keyboard edit' } })
     fireEvent.click(addButton)
@@ -418,7 +418,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Escape test' } })
     fireEvent.click(addButton)
@@ -442,7 +442,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Checkbox test' } })
     fireEvent.click(addButton)
@@ -460,7 +460,7 @@ describe('Tasks Component', () => {
     const { container } = render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Drag test' } })
     fireEvent.click(addButton)
@@ -744,7 +744,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Double click me' } })
     fireEvent.click(addButton)
@@ -764,7 +764,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Focus test' } })
     fireEvent.click(addButton)
@@ -785,7 +785,7 @@ describe('Tasks Component', () => {
     render(<Tasks />)
 
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Delete all text' } })
     fireEvent.click(addButton)
@@ -814,7 +814,7 @@ describe('Tasks Component', () => {
 
     // Add a task (which will have a UUID string ID)
     const input = screen.getByPlaceholderText('Add a new task...')
-    const addButton = screen.getByText('Add')
+    const addButton = screen.getByText('Add Task')
 
     fireEvent.change(input, { target: { value: 'Round-trip test' } })
     fireEvent.click(addButton)

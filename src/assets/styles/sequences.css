@@ -1,0 +1,202 @@
+/* ===== Sequences (runner top with bigger current) ===== */
+
+/* TAB-RTN-01: Routine Management Toolbar */
+.routine-toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* TAB-RTN-03: Progress bar at top of runner card */
+.routine-progress {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: rgba(120, 140, 200, 0.16);
+  overflow: hidden;
+}
+.routine-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #8ec8ff, #86f5e0);
+  transition: width 0.3s ease;
+}
+
+.runner-top {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 10px;
+}
+.seq-time {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.triptych {
+  display: grid;
+  grid-template-columns: 1fr 1.8fr 1fr;
+  gap: 10px;
+}
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(16, 20, 44, 0.28);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.panel.dim {
+  opacity: 0.65;
+}
+/* TAB-RTN-03: Current step with glow/accent */
+.panel.panel-current {
+  background: rgba(35, 45, 100, 0.35);
+  border: 1px solid rgba(142, 200, 255, 0.4);
+  box-shadow:
+    0 0 20px rgba(142, 200, 255, 0.15),
+    0 0 40px rgba(134, 245, 224, 0.1);
+  transform: scale(1.05);
+}
+.step-title {
+  font-weight: 700;
+}
+.step-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* TAB-RTN-04: Routine Library */
+.routine-library {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+.routine-card {
+  background: rgba(16, 20, 44, 0.28);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.routine-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.routine-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.routine-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.routine-tag {
+  font-size: 0.85rem;
+  color: var(--dim);
+  background: rgba(142, 200, 255, 0.12);
+  border: 1px solid rgba(142, 200, 255, 0.2);
+  border-radius: 8px;
+  padding: 3px 8px;
+}
+.routine-card-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.routine-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+.btn-primary {
+  background: linear-gradient(
+    135deg,
+    rgba(142, 200, 255, 0.25),
+    rgba(134, 245, 224, 0.2)
+  );
+  border: 1px solid rgba(142, 200, 255, 0.35);
+}
+.btn-primary:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(142, 200, 255, 0.3),
+    rgba(134, 245, 224, 0.25)
+  );
+  transform: translateY(-1px);
+}
+.btn-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: rgba(16, 20, 44, 0.28);
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+.btn-menu:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Empty state for routine library */
+.routine-library-empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+.routine-library-empty .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+}
+.routine-library-empty .empty-state-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 16px 0 0;
+}
+
+.bottom-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.details-list {
+  display: grid;
+  gap: 8px;
+}
+.detail-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+

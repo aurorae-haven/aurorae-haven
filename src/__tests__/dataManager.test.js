@@ -20,16 +20,10 @@ describe('Data Manager', () => {
   })
 
   describe('getDataTemplate', () => {
-    it('should return a valid data structure with empty Brain Dump data', async () => {
+    it('should return a valid data structure with all required fields', async () => {
       const data = await getDataTemplate()
 
-      expect(data).toHaveProperty('version')
-      expect(data).toHaveProperty('exportedAt')
-      expect(data).toHaveProperty('brainDump')
-      expect(data.brainDump).toHaveProperty('content')
-      expect(data.brainDump).toHaveProperty('tags')
-      expect(data.brainDump).toHaveProperty('versions')
-      expect(data.brainDump).toHaveProperty('entries')
+      // New API returns simple data fields without metadata
       expect(Array.isArray(data.tasks)).toBe(true)
       expect(Array.isArray(data.sequences)).toBe(true)
       expect(Array.isArray(data.habits)).toBe(true)
@@ -37,63 +31,34 @@ describe('Data Manager', () => {
       expect(Array.isArray(data.schedule)).toBe(true)
     })
 
-    it('should collect Brain Dump content from localStorage', async () => {
-      const testContent = '# My Brain Dump\n\nSome notes here'
-      localStorage.setItem('brainDumpContent', testContent)
-
-      const data = await getDataTemplate()
-
-      expect(data.brainDump.content).toBe(testContent)
-    })
-
-    it('should collect Brain Dump tags from localStorage', async () => {
-      const testTags =
-        '<span class="tag">#idea</span><span class="tag">#task</span>'
-      localStorage.setItem('brainDumpTags', testTags)
-
-      const data = await getDataTemplate()
-
-      expect(data.brainDump.tags).toBe(testTags)
-    })
-
-    it('should collect Brain Dump version history from localStorage', async () => {
-      const versions = [
-        { id: 1, content: 'Version 1', timestamp: '2025-01-01T00:00:00Z' },
-        { id: 2, content: 'Version 2', timestamp: '2025-01-02T00:00:00Z' }
-      ]
-      localStorage.setItem('brainDumpVersions', JSON.stringify(versions))
-
-      const data = await getDataTemplate()
-
-      expect(data.brainDump.versions).toEqual(versions)
-    })
-
-    it('should collect Brain Dump entries from localStorage', async () => {
-      const entries = [
+    it('should collect dumps (Brain Dump notes) from localStorage', async () => {
+      const dumps = [
         {
-          id: 'entry_1',
-          content: 'Entry 1',
-          timestamp: '2025-01-01T00:00:00Z'
-        },
-        { id: 'entry_2', content: 'Entry 2', timestamp: '2025-01-02T00:00:00Z' }
+          id: 'note_1',
+          title: 'My Note',
+          content: '# My Brain Dump\n\nSome notes here',
+          category: 'ideas',
+          createdAt: '2025-01-01T00:00:00Z',
+          updatedAt: '2025-01-01T00:00:00Z'
+        }
       ]
-      localStorage.setItem('brainDumpEntries', JSON.stringify(entries))
+      localStorage.setItem('dumps', JSON.stringify(dumps))
 
       const data = await getDataTemplate()
 
-      expect(data.brainDump.entries).toEqual(entries)
+      expect(data.dumps).toEqual(dumps)
     })
 
     it('should handle invalid JSON in localStorage gracefully', async () => {
-      localStorage.setItem('brainDumpVersions', 'invalid json{')
-      localStorage.setItem('brainDumpEntries', 'also invalid')
+      localStorage.setItem('dumps', 'invalid json{')
+      localStorage.setItem('tasks', 'also invalid')
 
       const data = await getDataTemplate()
 
-      expect(Array.isArray(data.brainDump.versions)).toBe(true)
-      expect(data.brainDump.versions).toHaveLength(0)
-      expect(Array.isArray(data.brainDump.entries)).toBe(true)
-      expect(data.brainDump.entries).toHaveLength(0)
+      expect(Array.isArray(data.dumps)).toBe(true)
+      expect(data.dumps).toHaveLength(0)
+      expect(Array.isArray(data.tasks)).toBe(true)
+      expect(data.tasks).toHaveLength(0)
     })
 
     it('should collect schedule data from localStorage', async () => {
@@ -103,46 +68,61 @@ describe('Data Manager', () => {
           blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00' }]
         }
       ]
-      localStorage.setItem('sj.schedule.events', JSON.stringify(schedule))
+      localStorage.setItem('schedule', JSON.stringify(schedule))
 
       const data = await getDataTemplate()
 
       expect(data.schedule).toEqual(schedule)
     })
 
-    it('should collect tasks from aurorae_tasks localStorage key', async () => {
-      const tasksData = {
-        urgent_important: [
-          {
-            id: 1,
-            text: 'Important task',
-            completed: false,
-            createdAt: Date.now()
-          }
-        ],
-        not_urgent_important: [],
-        urgent_not_important: [],
-        not_urgent_not_important: []
-      }
-      localStorage.setItem('aurorae_tasks', JSON.stringify(tasksData))
+    it('should collect tasks from localStorage', async () => {
+      const tasksData = [
+        {
+          id: 1,
+          text: 'Important task',
+          quadrant: 'urgent_important',
+          completed: false,
+          createdAt: Date.now()
+        }
+      ]
+      localStorage.setItem('tasks', JSON.stringify(tasksData))
 
       const data = await getDataTemplate()
 
-      expect(data.auroraeTasksData).toEqual(tasksData)
+      expect(data.tasks).toEqual(tasksData)
     })
 
-    it('should handle missing aurorae_tasks gracefully', async () => {
+    it('should collect sequences from localStorage', async () => {
+      const sequences = [
+        {
+          id: 'seq-1',
+          name: 'Morning Routine',
+          steps: [
+            { id: 1, text: 'Wake up', duration: 5 }
+          ]
+        }
+      ]
+      localStorage.setItem('sequences', JSON.stringify(sequences))
+
       const data = await getDataTemplate()
 
-      expect(data.auroraeTasksData).toBeNull()
+      expect(data.sequences).toEqual(sequences)
     })
 
-    it('should handle invalid JSON in aurorae_tasks', async () => {
-      localStorage.setItem('aurorae_tasks', 'invalid json{')
+    it('should collect habits from localStorage', async () => {
+      const habits = [
+        {
+          id: 1,
+          name: 'Exercise',
+          streak: 5,
+          paused: false
+        }
+      ]
+      localStorage.setItem('habits', JSON.stringify(habits))
 
       const data = await getDataTemplate()
 
-      expect(data.auroraeTasksData).toBeNull()
+      expect(data.habits).toEqual(habits)
     })
   })
 
@@ -216,153 +196,104 @@ describe('Data Manager', () => {
   describe('importJSON', () => {
     it('should import valid JSON data', async () => {
       const testData = {
-        version: 1,
         tasks: [],
         sequences: [],
         habits: [],
-        dumps: [],
-        schedule: [],
-        brainDump: {
-          content: '# Test Content',
-          tags: '<span class="tag">#test</span>',
-          versions: [],
-          entries: []
-        }
+        dumps: [
+          {
+            id: 'note_1',
+            title: 'Test Note',
+            content: '# Test Content',
+            category: 'ideas',
+            createdAt: '2025-01-01T00:00:00Z',
+            updatedAt: '2025-01-01T00:00:00Z'
+          }
+        ],
+        schedule: []
       }
 
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
+      // Mock FileReader for JSDOM
+      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
 
       const result = await importJSON(mockFile)
 
-      expect(result.success).toBe(true)
-      expect(localStorage.getItem('brainDumpContent')).toBe('# Test Content')
-      expect(localStorage.getItem('brainDumpTags')).toBe(
-        '<span class="tag">#test</span>'
-      )
+      expect(result).toBe(true)
+      const storedDumps = JSON.parse(localStorage.getItem('dumps'))
+      expect(storedDumps).toEqual(testData.dumps)
     })
 
-    it('should import Brain Dump version history', async () => {
-      const versions = [
-        { id: 1, content: 'Version 1', timestamp: '2025-01-01T00:00:00Z' }
+    it('should import dumps (Brain Dump notes)', async () => {
+      const dumps = [
+        { 
+          id: 'note_1', 
+          title: 'My Note',
+          content: 'Version 1', 
+          category: 'ideas',
+          createdAt: '2025-01-01T00:00:00Z',
+          updatedAt: '2025-01-01T00:00:00Z'
+        }
       ]
       const testData = {
-        version: 1,
         tasks: [],
         sequences: [],
-        brainDump: {
-          content: '',
-          tags: '',
-          versions: versions,
-          entries: []
-        }
+        habits: [],
+        dumps: dumps,
+        schedule: []
       }
 
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
+      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
 
       await importJSON(mockFile)
 
-      const storedVersions = JSON.parse(
-        localStorage.getItem('brainDumpVersions')
-      )
-      expect(storedVersions).toEqual(versions)
+      const storedDumps = JSON.parse(localStorage.getItem('dumps'))
+      expect(storedDumps).toEqual(dumps)
     })
 
-    it('should import Brain Dump entries', async () => {
-      const entries = [
-        { id: 'entry_1', content: 'Entry 1', timestamp: '2025-01-01T00:00:00Z' }
-      ]
+    it('should import all data types successfully', async () => {
       const testData = {
-        version: 1,
-        tasks: [],
-        sequences: [],
-        brainDump: {
-          content: '',
-          tags: '',
-          versions: [],
-          entries: entries
-        }
+        tasks: [{ id: 1, text: 'Task 1' }],
+        sequences: [{ id: 'seq-1', name: 'Sequence 1' }],
+        habits: [{ id: 1, name: 'Habit 1' }],
+        dumps: [{ id: 'note_1', title: 'Note 1', content: 'Content 1' }],
+        schedule: [{ day: '2025-01-15', blocks: [] }]
       }
 
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
-
-      await importJSON(mockFile)
-
-      const storedEntries = JSON.parse(localStorage.getItem('brainDumpEntries'))
-      expect(storedEntries).toEqual(entries)
-    })
-
-    it('should handle missing version field', async () => {
-      const testData = {
-        tasks: [],
-        sequences: []
-      }
-
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
+      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
 
       const result = await importJSON(mockFile)
 
-      expect(result.success).toBe(false)
-      expect(result.message).toContain('Missing required field: version')
-    })
-
-    it('should use default empty arrays for missing fields', async () => {
-      const testData = {
-        version: 1
-        // Missing tasks, sequences, etc.
-      }
-
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
-
-      const result = await importJSON(mockFile)
-
-      expect(result.success).toBe(true)
-      const storedData = JSON.parse(localStorage.getItem('aurorae_haven_data'))
-      expect(Array.isArray(storedData.tasks)).toBe(true)
-      expect(Array.isArray(storedData.sequences)).toBe(true)
-      expect(storedData.tasks).toHaveLength(0)
+      expect(result).toBe(true)
+      expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(testData.tasks)
+      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(testData.sequences)
+      expect(JSON.parse(localStorage.getItem('habits'))).toEqual(testData.habits)
+      expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(testData.dumps)
+      expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(testData.schedule)
     })
 
     it('should handle invalid JSON', async () => {
-      const mockFile = {
-        text: jest.fn().mockResolvedValue('invalid json{')
-      }
+      const mockFile = new Blob(['invalid json{'], { type: 'application/json' })
 
-      const result = await importJSON(mockFile)
-
-      expect(result.success).toBe(false)
-      expect(result.message).toContain('Import failed')
+      await expect(importJSON(mockFile)).rejects.toThrow('Import failed')
     })
 
-    it('should handle missing Brain Dump data gracefully', async () => {
+    it('should handle missing data fields gracefully', async () => {
       const testData = {
-        version: 1,
         tasks: [],
         sequences: []
-        // No brainDump field
+        // Missing habits, dumps, schedule - should be fine as they're optional
       }
 
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
+      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
 
       const result = await importJSON(mockFile)
 
-      expect(result.success).toBe(true)
-      // Brain Dump data should remain unchanged
-      expect(localStorage.getItem('brainDumpContent')).toBeNull()
+      expect(result).toBe(true)
+      // Data should be imported for provided fields
+      expect(JSON.parse(localStorage.getItem('tasks'))).toEqual([])
+      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual([])
     })
 
-    it('should import schedule data to separate key', async () => {
+    it('should import schedule data', async () => {
       const schedule = [
         {
           day: '2025-01-15',
@@ -370,126 +301,92 @@ describe('Data Manager', () => {
         }
       ]
       const testData = {
-        version: 1,
         tasks: [],
         sequences: [],
+        habits: [],
+        dumps: [],
         schedule: schedule
       }
 
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
+      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
 
       await importJSON(mockFile)
 
-      const storedSchedule = JSON.parse(
-        localStorage.getItem('sj.schedule.events')
-      )
+      const storedSchedule = JSON.parse(localStorage.getItem('schedule'))
       expect(storedSchedule).toEqual(schedule)
     })
 
-    it('should import tasks to aurorae_tasks', async () => {
-      const tasksData = {
-        urgent_important: [
-          {
-            id: 1,
-            text: 'Important task',
-            completed: false,
-            createdAt: Date.now()
-          }
-        ],
-        not_urgent_important: [],
-        urgent_not_important: [],
-        not_urgent_not_important: []
-      }
+    it('should import tasks array', async () => {
+      const tasksData = [
+        {
+          id: 1,
+          text: 'Important task',
+          quadrant: 'urgent_important',
+          completed: false,
+          createdAt: Date.now()
+        }
+      ]
       const testData = {
-        version: 1,
-        tasks: [],
+        tasks: tasksData,
         sequences: [],
-        auroraeTasksData: tasksData
+        habits: [],
+        dumps: [],
+        schedule: []
       }
 
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
+      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
 
       await importJSON(mockFile)
 
-      const storedTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      const storedTasks = JSON.parse(localStorage.getItem('tasks'))
       expect(storedTasks).toEqual(tasksData)
     })
 
-    it('should handle missing auroraeTasksData gracefully', async () => {
-      const testData = {
-        version: 1,
-        tasks: [],
-        sequences: []
-      }
-
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(testData))
-      }
-
-      await importJSON(mockFile)
-
-      expect(localStorage.getItem('aurorae_tasks')).toBeNull()
-    })
-
     it('should roundtrip export and import tasks correctly', async () => {
-      const tasksData = {
-        urgent_important: [
-          {
-            id: 1,
-            text: 'Do this now',
-            completed: false,
-            createdAt: 1234567890
-          }
-        ],
-        not_urgent_important: [
-          { id: 2, text: 'Plan this', completed: false, createdAt: 1234567891 }
-        ],
-        urgent_not_important: [],
-        not_urgent_not_important: [
-          { id: 3, text: 'Maybe later', completed: true, createdAt: 1234567892 }
-        ]
-      }
-      localStorage.setItem('aurorae_tasks', JSON.stringify(tasksData))
+      const tasksData = [
+        {
+          id: 1,
+          text: 'Do this now',
+          quadrant: 'urgent_important',
+          completed: false,
+          createdAt: 1234567890
+        },
+        { 
+          id: 2, 
+          text: 'Plan this', 
+          quadrant: 'not_urgent_important',
+          completed: false, 
+          createdAt: 1234567891 
+        }
+      ]
+      localStorage.setItem('tasks', JSON.stringify(tasksData))
 
       // Export
       const exportedData = await getDataTemplate()
-      expect(exportedData.auroraeTasksData).toEqual(tasksData)
+      expect(exportedData.tasks).toEqual(tasksData)
 
       // Clear and import
       localStorage.clear()
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-      }
+      const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
       await importJSON(mockFile)
 
       // Verify
-      const importedTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      const importedTasks = JSON.parse(localStorage.getItem('tasks'))
       expect(importedTasks).toEqual(tasksData)
     })
 
     it('should export and import all data types with nominal example', async () => {
-      // Setup nominal example data for all data types
+      // Setup nominal example data for all data types using new simple structure
       const nominalData = {
-        // Tasks (IndexedDB)
         tasks: [
           {
             id: 1,
             title: 'Sample task',
+            quadrant: 'urgent_important',
             done: false,
-            timestamp: 1704453600000
-          },
-          {
-            id: 2,
-            title: 'Completed task',
-            done: true,
-            timestamp: 1704453601000
+            createdAt: 1704453600000
           }
         ],
-        // Sequences
         sequences: [
           {
             id: 'seq1',
@@ -497,278 +394,145 @@ describe('Data Manager', () => {
             steps: [
               { id: 1, text: 'Wake up', duration: 5 },
               { id: 2, text: 'Exercise', duration: 20 }
-            ],
-            timestamp: 1704453600000
+            ]
           }
         ],
-        // Habits
         habits: [
           {
             id: 1,
             name: 'Read daily',
             streak: 7,
-            paused: false,
-            timestamp: 1704453600000
+            paused: false
           }
         ],
-        // Dumps (brain dump entries)
         dumps: [
           {
-            id: 1,
-            content: 'Quick thought',
-            tags: ['idea'],
-            timestamp: 1704453600000
+            id: 'note_1',
+            title: 'Quick thought',
+            content: '# My Notes',
+            category: 'ideas',
+            createdAt: '2025-01-01T00:00:00Z',
+            updatedAt: '2025-01-01T00:00:00Z'
           }
         ],
-        // Schedule
         schedule: [
           {
             id: 1,
             day: '2025-01-15',
-            blocks: [{ type: 'task', start: '09:00', end: '10:00' }],
-            timestamp: 1704453600000
+            blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00', end: '10:00' }]
           }
-        ],
-        // Aurorae Tasks (Eisenhower matrix)
-        auroraeTasksData: {
-          urgent_important: [
-            {
-              id: 1,
-              text: 'Critical deadline',
-              completed: false,
-              createdAt: 1704453600000
-            }
-          ],
-          not_urgent_important: [
-            {
-              id: 2,
-              text: 'Long-term planning',
-              completed: false,
-              createdAt: 1704453601000
-            }
-          ],
-          urgent_not_important: [
-            {
-              id: 3,
-              text: 'Quick interruption',
-              completed: true,
-              createdAt: 1704453602000
-            }
-          ],
-          not_urgent_not_important: []
-        },
-        // Brain Dump
-        brainDump: {
-          content: '# My Notes\n\n- [ ] Todo 1\n- [x] Done',
-          tags: '<span class="tag">#work</span><span class="tag">#personal</span>',
-          versions: [
-            {
-              id: 1704453600000,
-              content: '# Old version',
-              timestamp: '2025-01-15T10:00:00Z',
-              preview: '# Old version'
-            }
-          ],
-          entries: [
-            {
-              id: 'entry_1',
-              title: 'Meeting Notes',
-              content: 'Discussion points',
-              timestamp: '2025-01-15T10:00:00Z'
-            }
-          ]
-        }
+        ]
       }
 
       // Populate localStorage with all data types
-      localStorage.setItem(
-        'aurorae_haven_data',
-        JSON.stringify({
-          tasks: nominalData.tasks,
-          sequences: nominalData.sequences,
-          habits: nominalData.habits,
-          dumps: nominalData.dumps,
-          schedule: nominalData.schedule
-        })
-      )
-      localStorage.setItem(
-        'aurorae_tasks',
-        JSON.stringify(nominalData.auroraeTasksData)
-      )
-      localStorage.setItem(
-        'sj.schedule.events',
-        JSON.stringify(nominalData.schedule)
-      )
-      localStorage.setItem('brainDumpContent', nominalData.brainDump.content)
-      localStorage.setItem('brainDumpTags', nominalData.brainDump.tags)
-      localStorage.setItem(
-        'brainDumpVersions',
-        JSON.stringify(nominalData.brainDump.versions)
-      )
-      localStorage.setItem(
-        'brainDumpEntries',
-        JSON.stringify(nominalData.brainDump.entries)
-      )
+      for (const [key, value] of Object.entries(nominalData)) {
+        localStorage.setItem(key, JSON.stringify(value))
+      }
 
       // Export all data
       const exportedData = await getDataTemplate()
 
       // Verify all data types are present in export
-      expect(exportedData.version).toBe(1)
-      expect(exportedData.exportedAt).toBeDefined()
       expect(exportedData.tasks).toEqual(nominalData.tasks)
       expect(exportedData.sequences).toEqual(nominalData.sequences)
       expect(exportedData.habits).toEqual(nominalData.habits)
       expect(exportedData.dumps).toEqual(nominalData.dumps)
       expect(exportedData.schedule).toEqual(nominalData.schedule)
-      expect(exportedData.auroraeTasksData).toEqual(
-        nominalData.auroraeTasksData
-      )
-      expect(exportedData.brainDump).toEqual(nominalData.brainDump)
 
       // Clear all localStorage
       localStorage.clear()
 
       // Import the data back
-      const mockFile = {
-        text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-      }
+      const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
       const result = await importJSON(mockFile)
 
       // Verify import succeeded
-      expect(result.success).toBe(true)
+      expect(result).toBe(true)
 
       // Verify all data types were restored
-      const restoredMainData = JSON.parse(
-        localStorage.getItem('aurorae_haven_data')
-      )
-      expect(restoredMainData.tasks).toEqual(nominalData.tasks)
-      expect(restoredMainData.sequences).toEqual(nominalData.sequences)
-      expect(restoredMainData.habits).toEqual(nominalData.habits)
-      expect(restoredMainData.dumps).toEqual(nominalData.dumps)
-      expect(restoredMainData.schedule).toEqual(nominalData.schedule)
-
-      const restoredAuroraeTasks = JSON.parse(
-        localStorage.getItem('aurorae_tasks')
-      )
-      expect(restoredAuroraeTasks).toEqual(nominalData.auroraeTasksData)
-
-      const restoredSchedule = JSON.parse(
-        localStorage.getItem('sj.schedule.events')
-      )
-      expect(restoredSchedule).toEqual(nominalData.schedule)
-
-      expect(localStorage.getItem('brainDumpContent')).toBe(
-        nominalData.brainDump.content
-      )
-      expect(localStorage.getItem('brainDumpTags')).toBe(
-        nominalData.brainDump.tags
-      )
-
-      const restoredVersions = JSON.parse(
-        localStorage.getItem('brainDumpVersions')
-      )
-      expect(restoredVersions).toEqual(nominalData.brainDump.versions)
-
-      const restoredEntries = JSON.parse(
-        localStorage.getItem('brainDumpEntries')
-      )
-      expect(restoredEntries).toEqual(nominalData.brainDump.entries)
+      expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(nominalData.tasks)
+      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(nominalData.sequences)
+      expect(JSON.parse(localStorage.getItem('habits'))).toEqual(nominalData.habits)
+      expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(nominalData.dumps)
+      expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(nominalData.schedule)
     })
 
     describe('Export-Delete-Import sequences for all tabs', () => {
-      it('should restore deleted BrainDump entries after import', async () => {
-        // Setup initial data with multiple entries
-        const initialEntries = [
+      it('should restore deleted dumps (Brain Dump notes) after import', async () => {
+        // Setup initial data with multiple dump entries
+        const initialDumps = [
           {
-            id: 'entry-1',
+            id: 'note-1',
             title: 'Entry 1',
             content: 'Content 1',
+            category: 'ideas',
             createdAt: '2025-01-01T00:00:00Z',
             updatedAt: '2025-01-01T00:00:00Z'
           },
           {
-            id: 'entry-2',
+            id: 'note-2',
             title: 'Entry 2',
             content: 'Content 2',
+            category: 'tasks',
             createdAt: '2025-01-02T00:00:00Z',
             updatedAt: '2025-01-02T00:00:00Z'
           },
           {
-            id: 'entry-3',
+            id: 'note-3',
             title: 'Entry 3',
             content: 'Content 3',
+            category: 'notes',
             createdAt: '2025-01-03T00:00:00Z',
             updatedAt: '2025-01-03T00:00:00Z'
           }
         ]
-        localStorage.setItem('brainDumpEntries', JSON.stringify(initialEntries))
+        localStorage.setItem('dumps', JSON.stringify(initialDumps))
 
         // Export
         const exportedData = await getDataTemplate()
-        expect(exportedData.brainDump.entries).toEqual(initialEntries)
+        expect(exportedData.dumps).toEqual(initialDumps)
 
-        // Delete entry-2
-        const afterDelete = initialEntries.filter((e) => e.id !== 'entry-2')
-        localStorage.setItem('brainDumpEntries', JSON.stringify(afterDelete))
-        expect(
-          JSON.parse(localStorage.getItem('brainDumpEntries') || '[]').length
-        ).toBe(2)
+        // Delete note-2
+        const afterDelete = initialDumps.filter((e) => e.id !== 'note-2')
+        localStorage.setItem('dumps', JSON.stringify(afterDelete))
+        expect(JSON.parse(localStorage.getItem('dumps') || '[]').length).toBe(2)
 
         // Import
-        const mockFile = {
-          text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-        }
+        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
         await importJSON(mockFile)
 
         // Verify restoration
-        const restored = JSON.parse(localStorage.getItem('brainDumpEntries'))
+        const restored = JSON.parse(localStorage.getItem('dumps'))
         expect(restored.length).toBe(3)
-        expect(restored.find((e) => e.id === 'entry-2')).toEqual(
-          initialEntries[1]
-        )
+        expect(restored.find((e) => e.id === 'note-2')).toEqual(initialDumps[1])
       })
 
-      it('should restore deleted Tasks (Eisenhower matrix) after import', async () => {
+      it('should restore deleted Tasks after import', async () => {
         // Setup initial tasks
-        const initialTasks = {
-          urgent_important: [
-            { id: 1, text: 'Task 1', completed: false, createdAt: 1000 },
-            { id: 2, text: 'Task 2', completed: false, createdAt: 2000 }
-          ],
-          not_urgent_important: [
-            { id: 3, text: 'Task 3', completed: false, createdAt: 3000 }
-          ],
-          urgent_not_important: [],
-          not_urgent_not_important: [
-            { id: 4, text: 'Task 4', completed: true, createdAt: 4000 }
-          ]
-        }
-        localStorage.setItem('aurorae_tasks', JSON.stringify(initialTasks))
+        const initialTasks = [
+          { id: 1, text: 'Task 1', quadrant: 'urgent_important', completed: false, createdAt: 1000 },
+          { id: 2, text: 'Task 2', quadrant: 'urgent_important', completed: false, createdAt: 2000 },
+          { id: 3, text: 'Task 3', quadrant: 'not_urgent_important', completed: false, createdAt: 3000 },
+          { id: 4, text: 'Task 4', quadrant: 'not_urgent_not_important', completed: true, createdAt: 4000 }
+        ]
+        localStorage.setItem('tasks', JSON.stringify(initialTasks))
 
         // Export
         const exportedData = await getDataTemplate()
-        expect(exportedData.auroraeTasksData).toEqual(initialTasks)
+        expect(exportedData.tasks).toEqual(initialTasks)
 
-        // Delete task 2 from urgent_important
-        const modifiedTasks = {
-          ...initialTasks,
-          urgent_important: [initialTasks.urgent_important[0]]
-        }
-        localStorage.setItem('aurorae_tasks', JSON.stringify(modifiedTasks))
+        // Delete task 2
+        const afterDelete = initialTasks.filter((t) => t.id !== 2)
+        localStorage.setItem('tasks', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = {
-          text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-        }
+        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
         await importJSON(mockFile)
 
         // Verify restoration
-        const restored = JSON.parse(localStorage.getItem('aurorae_tasks'))
-        expect(restored.urgent_important.length).toBe(2)
-        expect(restored.urgent_important.find((t) => t.id === 2)).toEqual(
-          initialTasks.urgent_important[1]
-        )
+        const restored = JSON.parse(localStorage.getItem('tasks'))
+        expect(restored.length).toBe(4)
+        expect(restored.find((t) => t.id === 2)).toEqual(initialTasks[1])
       })
 
       it('should restore deleted Sequences after import', async () => {
@@ -788,36 +552,24 @@ describe('Data Manager', () => {
             steps: [{ id: 1, text: 'Dinner', duration: 30 }]
           }
         ]
-        const mainData = {
-          version: 1,
-          tasks: [],
-          sequences: initialSequences,
-          habits: [],
-          dumps: [],
-          schedule: []
-        }
-        localStorage.setItem('aurorae_haven_data', JSON.stringify(mainData))
+        localStorage.setItem('sequences', JSON.stringify(initialSequences))
 
         // Export
         const exportedData = await getDataTemplate()
         expect(exportedData.sequences).toEqual(initialSequences)
 
         // Delete seq-1
-        mainData.sequences = [initialSequences[1]]
-        localStorage.setItem('aurorae_haven_data', JSON.stringify(mainData))
+        const afterDelete = [initialSequences[1]]
+        localStorage.setItem('sequences', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = {
-          text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-        }
+        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
         await importJSON(mockFile)
 
         // Verify restoration
-        const restored = JSON.parse(localStorage.getItem('aurorae_haven_data'))
-        expect(restored.sequences.length).toBe(2)
-        expect(restored.sequences.find((s) => s.id === 'seq-1')).toEqual(
-          initialSequences[0]
-        )
+        const restored = JSON.parse(localStorage.getItem('sequences'))
+        expect(restored.length).toBe(2)
+        expect(restored.find((s) => s.id === 'seq-1')).toEqual(initialSequences[0])
       })
 
       it('should restore deleted Habits after import', async () => {
@@ -827,36 +579,24 @@ describe('Data Manager', () => {
           { id: 2, name: 'Read', streak: 10, paused: false },
           { id: 3, name: 'Meditate', streak: 3, paused: true }
         ]
-        const mainData = {
-          version: 1,
-          tasks: [],
-          sequences: [],
-          habits: initialHabits,
-          dumps: [],
-          schedule: []
-        }
-        localStorage.setItem('aurorae_haven_data', JSON.stringify(mainData))
+        localStorage.setItem('habits', JSON.stringify(initialHabits))
 
         // Export
         const exportedData = await getDataTemplate()
         expect(exportedData.habits).toEqual(initialHabits)
 
         // Delete habit with id 2
-        mainData.habits = initialHabits.filter((h) => h.id !== 2)
-        localStorage.setItem('aurorae_haven_data', JSON.stringify(mainData))
+        const afterDelete = initialHabits.filter((h) => h.id !== 2)
+        localStorage.setItem('habits', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = {
-          text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-        }
+        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
         await importJSON(mockFile)
 
         // Verify restoration
-        const restored = JSON.parse(localStorage.getItem('aurorae_haven_data'))
-        expect(restored.habits.length).toBe(3)
-        expect(restored.habits.find((h) => h.id === 2)).toEqual(
-          initialHabits[1]
-        )
+        const restored = JSON.parse(localStorage.getItem('habits'))
+        expect(restored.length).toBe(3)
+        expect(restored.find((h) => h.id === 2)).toEqual(initialHabits[1])
       })
 
       it('should restore deleted Schedule events after import', async () => {
@@ -881,10 +621,7 @@ describe('Data Manager', () => {
             ]
           }
         ]
-        localStorage.setItem(
-          'sj.schedule.events',
-          JSON.stringify(initialSchedule)
-        )
+        localStorage.setItem('schedule', JSON.stringify(initialSchedule))
 
         // Export
         const exportedData = await getDataTemplate()
@@ -892,120 +629,59 @@ describe('Data Manager', () => {
 
         // Delete schedule event with id 1
         const afterDelete = [initialSchedule[1]]
-        localStorage.setItem('sj.schedule.events', JSON.stringify(afterDelete))
+        localStorage.setItem('schedule', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = {
-          text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-        }
+        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
         await importJSON(mockFile)
 
         // Verify restoration
-        const restored = JSON.parse(localStorage.getItem('sj.schedule.events'))
+        const restored = JSON.parse(localStorage.getItem('schedule'))
         expect(restored.length).toBe(2)
         expect(restored.find((s) => s.id === 1)).toEqual(initialSchedule[0])
       })
 
       it('should restore all data types after deleting items from multiple tabs', async () => {
-        // Setup comprehensive initial data
+        // Setup comprehensive initial data using new simple structure
         const initialData = {
-          version: 1,
-          tasks: [{ id: 1, title: 'Task 1' }],
+          tasks: [{ id: 1, text: 'Task 1', quadrant: 'urgent_important' }],
           sequences: [{ id: 'seq-1', name: 'Sequence 1', steps: [] }],
           habits: [{ id: 1, name: 'Habit 1', streak: 5 }],
-          dumps: [{ id: 1, content: 'Dump 1' }],
+          dumps: [{ id: 'note-1', title: 'Note 1', content: 'Content 1', category: 'ideas' }],
           schedule: [{ id: 1, day: '2025-01-15', blocks: [] }]
         }
-        const auroraeTasksData = {
-          urgent_important: [{ id: 1, text: 'Important' }],
-          not_urgent_important: [],
-          urgent_not_important: [],
-          not_urgent_not_important: []
-        }
-        const brainDumpEntries = [
-          { id: 'note-1', title: 'Note 1', content: 'Content 1' }
-        ]
 
-        localStorage.setItem('aurorae_haven_data', JSON.stringify(initialData))
-        localStorage.setItem('aurorae_tasks', JSON.stringify(auroraeTasksData))
-        localStorage.setItem(
-          'brainDumpEntries',
-          JSON.stringify(brainDumpEntries)
-        )
-        localStorage.setItem(
-          'sj.schedule.events',
-          JSON.stringify(initialData.schedule)
-        )
+        // Set up localStorage with all data
+        for (const [key, value] of Object.entries(initialData)) {
+          localStorage.setItem(key, JSON.stringify(value))
+        }
 
         // Export
         const exportedData = await getDataTemplate()
 
-        // Delete items from multiple tabs
-        localStorage.setItem(
-          'aurorae_haven_data',
-          JSON.stringify({
-            version: 1,
-            tasks: [],
-            sequences: [],
-            habits: [],
-            dumps: [],
-            schedule: []
-          })
-        )
-        localStorage.setItem(
-          'aurorae_tasks',
-          JSON.stringify({
-            urgent_important: [],
-            not_urgent_important: [],
-            urgent_not_important: [],
-            not_urgent_not_important: []
-          })
-        )
-        localStorage.setItem('brainDumpEntries', JSON.stringify([]))
-        localStorage.setItem('sj.schedule.events', JSON.stringify([]))
+        // Delete items from all tabs
+        for (const key of Object.keys(initialData)) {
+          localStorage.setItem(key, JSON.stringify([]))
+        }
 
         // Verify deletions
-        expect(
-          JSON.parse(localStorage.getItem('aurorae_haven_data')).tasks
-        ).toHaveLength(0)
-        expect(
-          JSON.parse(localStorage.getItem('aurorae_tasks')).urgent_important
-        ).toHaveLength(0)
-        expect(
-          JSON.parse(localStorage.getItem('brainDumpEntries'))
-        ).toHaveLength(0)
+        expect(JSON.parse(localStorage.getItem('tasks'))).toHaveLength(0)
+        expect(JSON.parse(localStorage.getItem('sequences'))).toHaveLength(0)
+        expect(JSON.parse(localStorage.getItem('dumps'))).toHaveLength(0)
 
         // Import
-        const mockFile = {
-          text: jest.fn().mockResolvedValue(JSON.stringify(exportedData))
-        }
+        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
         const result = await importJSON(mockFile)
 
         // Verify success
-        expect(result.success).toBe(true)
+        expect(result).toBe(true)
 
         // Verify all data restored
-        const restoredMain = JSON.parse(
-          localStorage.getItem('aurorae_haven_data')
-        )
-        expect(restoredMain.tasks).toEqual(initialData.tasks)
-        expect(restoredMain.sequences).toEqual(initialData.sequences)
-        expect(restoredMain.habits).toEqual(initialData.habits)
-
-        const restoredTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
-        expect(restoredTasks.urgent_important).toEqual(
-          auroraeTasksData.urgent_important
-        )
-
-        const restoredEntries = JSON.parse(
-          localStorage.getItem('brainDumpEntries')
-        )
-        expect(restoredEntries).toEqual(brainDumpEntries)
-
-        const restoredSchedule = JSON.parse(
-          localStorage.getItem('sj.schedule.events')
-        )
-        expect(restoredSchedule).toEqual(initialData.schedule)
+        expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(initialData.tasks)
+        expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(initialData.sequences)
+        expect(JSON.parse(localStorage.getItem('habits'))).toEqual(initialData.habits)
+        expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(initialData.dumps)
+        expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(initialData.schedule)
       })
     })
   })

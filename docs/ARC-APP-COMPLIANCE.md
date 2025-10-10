@@ -109,7 +109,7 @@ src/
 │   ├── dataManager.js          # LocalStorage + import/export
 │   ├── listContinuation.js    # Markdown auto-list
 │   ├── pageHelpers.js          # Common helpers
-│   └── braindump-enhanced.js  # Security & sanitization
+│   └── sanitization.js        # Security & sanitization
 ├── serviceWorkerRegistration.js # PWA service worker
 └── assets/
     └── styles/                 # CSS modules

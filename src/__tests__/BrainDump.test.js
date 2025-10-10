@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
 import BrainDump from '../pages/BrainDump.jsx'
 
 // Mock marked and DOMPurify
@@ -53,7 +53,7 @@ describe('BrainDump Component', () => {
     test('renders BrainDump component', () => {
       render(<BrainDump />)
       expect(
-        screen.getByPlaceholderText('Start typing your thoughts...')
+        screen.getByPlaceholderText('Start writing your note in Markdown...')
       ).toBeInTheDocument()
     })
 
@@ -70,7 +70,7 @@ describe('BrainDump Component', () => {
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       expect(textarea).toHaveValue('Test content')
     })
@@ -79,7 +79,7 @@ describe('BrainDump Component', () => {
       localStorage.setItem('brainDumpContent', 'Old content')
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       expect(textarea).toHaveValue('Old content')
 
@@ -106,7 +106,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       fireEvent.change(textarea, { target: { value: 'New content' } })
 
@@ -136,7 +136,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       fireEvent.change(textarea, { target: { value: '# Heading' } })
 
@@ -164,7 +164,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       // Type task list item
@@ -199,7 +199,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       // Set content with empty task list item
@@ -222,7 +222,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- First item' } })
@@ -239,7 +239,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- First item\n- ' } })
@@ -256,7 +256,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '1. First item' } })
@@ -273,7 +273,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '1. First item\n2. ' } })
@@ -290,7 +290,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, {
@@ -309,7 +309,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '  - Indented item' } })
@@ -326,7 +326,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- Item' } })
@@ -343,7 +343,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: '- Item' } })
@@ -360,7 +360,7 @@ describe('BrainDump Component', () => {
       setupNoteForTest()
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       fireEvent.change(textarea, { target: { value: 'Regular text' } })
@@ -374,7 +374,7 @@ describe('BrainDump Component', () => {
   })
 
   describe('Delete functionality', () => {
-    test('deletes note on delete button click with confirmation', () => {
+    test('deletes note on delete button click with confirmation', async () => {
       window.confirm = jest.fn(() => true)
 
       const mockEntries = [
@@ -390,7 +390,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
       expect(textarea).toHaveValue('Some content')
 
@@ -398,11 +398,18 @@ describe('BrainDump Component', () => {
       const deleteButton = screen.getByRole('button', { name: /delete/i })
       fireEvent.click(deleteButton)
 
-      expect(textarea).toBeDisabled()
+      // After deleting the last note, a new empty note is automatically created
+      await waitFor(() => {
+        const textarea = screen.getByPlaceholderText('Start writing your note in Markdown...')
+        expect(textarea).toHaveValue('')
+      })
+      
+      // Verify a new note was created (not empty list)
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
       )
-      expect(entries.length).toBe(0)
+      expect(entries.length).toBe(1)
+      expect(entries[0].content).toBe('')
     })
 
     test('does not delete note if user cancels confirmation', () => {
@@ -421,7 +428,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       const deleteButton = screen.getByRole('button', { name: /delete/i })
@@ -439,8 +446,9 @@ describe('BrainDump Component', () => {
     test('creates new note on new button click', () => {
       render(<BrainDump />)
 
-      const newButton = screen.getByRole('button', { name: /new note/i })
-      fireEvent.click(newButton)
+      // Get all new note buttons (one in toolbar, one in notes list) and click the first one
+      const newButtons = screen.getAllByRole('button', { name: /new note/i })
+      fireEvent.click(newButtons[0])
 
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
@@ -470,7 +478,7 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
       const textarea = screen.getByPlaceholderText(
-        'Start typing your thoughts...'
+        'Start writing your note in Markdown...'
       )
 
       // Should load first note by default
@@ -486,7 +494,7 @@ describe('BrainDump Component', () => {
   })
 
   describe('Export functionality', () => {
-    test('exports content as markdown file with new filename format', () => {
+    test('exports content as markdown file with new filename format', async () => {
       // Mock URL.createObjectURL and revokeObjectURL
       global.URL.createObjectURL = jest.fn(() => 'blob:mock')
       global.URL.revokeObjectURL = jest.fn()
@@ -523,11 +531,22 @@ describe('BrainDump Component', () => {
 
       render(<BrainDump />)
 
+      // Wait for note to be loaded
+      await waitFor(() => {
+        const textarea = screen.getByPlaceholderText(
+          'Start writing your note in Markdown...'
+        )
+        expect(textarea).toHaveValue('Export this content')
+      })
+
       // Find and click export button
       const exportButton = screen.getByRole('button', { name: /export/i })
       fireEvent.click(exportButton)
 
-      expect(mockClick).toHaveBeenCalled()
+      // Wait for export to complete
+      await waitFor(() => {
+        expect(mockClick).toHaveBeenCalled()
+      })
       expect(global.URL.createObjectURL).toHaveBeenCalled()
 
       // Check filename format: braindump_title_YYYYMMDD_HHmm.md
@@ -653,6 +672,11 @@ describe('BrainDump Component', () => {
       // Render component with initial notes
       const { unmount } = render(<BrainDump />)
 
+      // Wait for notes to load
+      await waitFor(() => {
+        expect(screen.getByText('Second Note')).toBeInTheDocument()
+      })
+
       // Step 2: Delete the second note
       window.confirm = jest.fn(() => true)
 
@@ -660,11 +684,31 @@ describe('BrainDump Component', () => {
       const secondNoteItem = screen.getByText('Second Note')
       fireEvent.click(secondNoteItem)
 
+      // Wait for note content to load
+      await waitFor(() => {
+        const textarea = screen.getByPlaceholderText(
+          'Start writing your note in Markdown...'
+        )
+        expect(textarea).toHaveValue('Second content')
+      })
+
       // Click delete button
       const deleteButton = screen.getByRole('button', { name: /delete/i })
       fireEvent.click(deleteButton)
 
-      // Verify deletion
+      // Wait for toast to appear (indicates delete completed)
+      await waitFor(() => {
+        expect(
+          screen.getByText('✓ Note deleted successfully')
+        ).toBeInTheDocument()
+      })
+
+      // Wait for any pending auto-save (500ms debounce + buffer)
+      await act(async () => {
+        await new Promise(resolve => setTimeout(resolve, 600))
+      })
+
+      // Verify deletion in localStorage
       const notesAfterDelete = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
       )
@@ -780,8 +824,9 @@ describe('BrainDump Component', () => {
     test('creates new note with category field', () => {
       render(<BrainDump />)
 
-      const newButton = screen.getByRole('button', { name: /new note/i })
-      fireEvent.click(newButton)
+      // Get all new note buttons (one in toolbar, one in notes list) and click the first one
+      const newButtons = screen.getAllByRole('button', { name: /new note/i })
+      fireEvent.click(newButtons[0])
 
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
