@@ -221,7 +221,7 @@ export function validateTemplateData(template) {
           if (!step || typeof step !== 'object') {
             errors.push(`Step ${index} must be an object`)
           } else {
-            if (!step.label || typeof step.label !== 'string') {
+            if (typeof step.label !== 'string') {
               errors.push(
                 `Step ${index} must have a label (string) property`
               )
