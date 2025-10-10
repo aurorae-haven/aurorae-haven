@@ -9,6 +9,7 @@ This document describes the shared/reusable components available in the Aurorae 
 **Purpose**: Centralized SVG icon library to eliminate duplication
 
 **Usage**:
+
 ```javascript
 import Icon from '../components/common/Icon'
 
@@ -22,6 +23,7 @@ import Icon from '../components/common/Icon'
 ```
 
 **Available Icons**:
+
 - `plus` - Add/create action
 - `x` - Close/cancel action
 - `check` - Confirm/save action
@@ -35,6 +37,7 @@ import Icon from '../components/common/Icon'
 - `helpCircle` - Help icon
 
 **Benefits**:
+
 - Eliminates ~46 duplicate SVG definitions
 - Single source of truth for icons
 - Easy to add new icons
@@ -45,19 +48,20 @@ import Icon from '../components/common/Icon'
 **Purpose**: Reusable modal wrapper with consistent structure
 
 **Usage**:
+
 ```javascript
 import Modal from '../components/common/Modal'
-
-<Modal
+;<Modal
   isOpen={showModal}
   onClose={() => setShowModal(false)}
-  title="Modal Title"
+  title='Modal Title'
 >
   <p>Modal content goes here</p>
 </Modal>
 ```
 
 **Props**:
+
 - `isOpen` (boolean, required) - Controls visibility
 - `onClose` (function, required) - Close handler
 - `title` (string, optional) - Modal title
@@ -65,6 +69,7 @@ import Modal from '../components/common/Modal'
 - `className` (string, optional) - Additional CSS classes
 
 **Features**:
+
 - Consistent overlay and backdrop
 - Keyboard support (ESC to close)
 - Click outside to close
@@ -72,6 +77,7 @@ import Modal from '../components/common/Modal'
 - Auto-includes close button in header
 
 **Existing Modals to Migrate**:
+
 - FilterModal (BrainDump)
 - NoteDetailsModal (BrainDump)
 - HelpModal (BrainDump)
@@ -82,6 +88,7 @@ import Modal from '../components/common/Modal'
 **Purpose**: Standardized button with icon support
 
 **Usage**:
+
 ```javascript
 import Button from '../components/common/Button'
 
@@ -98,6 +105,7 @@ import Button from '../components/common/Button'
 ```
 
 **Props**:
+
 - `children` (node) - Button text/content
 - `onClick` (function) - Click handler
 - `icon` (string) - Icon name from Icon component
@@ -114,6 +122,7 @@ import Button from '../components/common/Button'
 - `title` (string) - Tooltip text
 
 **Benefits**:
+
 - Consistent button styling
 - Built-in icon support
 - Accessibility built-in
@@ -126,29 +135,31 @@ import Button from '../components/common/Button'
 **Purpose**: Manages BrainDump notes state and operations
 
 **Returns**:
+
 ```javascript
 const {
-  notes,              // Array of notes
-  currentNoteId,      // Current note ID
-  currentNote,        // Current note object
-  title,              // Current note title
-  content,            // Current note content
-  category,           // Current note category
-  searchQuery,        // Search query
-  filterOptions,      // Filter settings
-  filteredNotes,      // Filtered notes array
-  setTitle,           // Update title
-  setContent,         // Update content
-  setCategory,        // Update category
-  setSearchQuery,     // Update search
-  setFilterOptions,   // Update filters
-  loadNote,           // Load a note
-  createNote,         // Create new note
-  updateNotes         // Update notes array
+  notes, // Array of notes
+  currentNoteId, // Current note ID
+  currentNote, // Current note object
+  title, // Current note title
+  content, // Current note content
+  category, // Current note category
+  searchQuery, // Search query
+  filterOptions, // Filter settings
+  filteredNotes, // Filtered notes array
+  setTitle, // Update title
+  setContent, // Update content
+  setCategory, // Update category
+  setSearchQuery, // Update search
+  setFilterOptions, // Update filters
+  loadNote, // Load a note
+  createNote, // Create new note
+  updateNotes // Update notes array
 } = useBrainDumpState()
 ```
 
 **Features**:
+
 - Automatic localStorage persistence
 - Migration from old format
 - Debounced autosave (500ms)
@@ -160,19 +171,21 @@ const {
 **Purpose**: Manages Tasks (Eisenhower Matrix) state
 
 **Returns**:
+
 ```javascript
 const {
-  tasks,        // Tasks by quadrant
-  setTasks,     // Update all tasks
-  addTask,      // Add new task
-  toggleTask,   // Toggle completion
-  deleteTask,   // Delete task
-  editTask,     // Edit task text
-  moveTask      // Move task between quadrants
+  tasks, // Tasks by quadrant
+  setTasks, // Update all tasks
+  addTask, // Add new task
+  toggleTask, // Toggle completion
+  deleteTask, // Delete task
+  editTask, // Edit task text
+  moveTask // Move task between quadrants
 } = useTasksState()
 ```
 
 **Features**:
+
 - Automatic localStorage persistence
 - Secure UUID generation
 - Quadrant-based organization
@@ -183,6 +196,7 @@ const {
 **Purpose**: Generic drag and drop functionality
 
 **Usage**:
+
 ```javascript
 const {
   draggedTask,
@@ -201,6 +215,7 @@ const {
 ```
 
 **Benefits**:
+
 - Reusable drag and drop logic
 - Handles browser events
 - Clean separation from UI
@@ -210,11 +225,12 @@ const {
 **Purpose**: Toast notification system
 
 **Returns**:
+
 ```javascript
 const {
-  toastMessage,           // Current message
-  showToast,              // Visibility state
-  showToastNotification   // Show notification function
+  toastMessage, // Current message
+  showToast, // Visibility state
+  showToastNotification // Show notification function
 } = useToast()
 
 // Usage:
@@ -222,6 +238,7 @@ showToastNotification('✓ Saved successfully')
 ```
 
 **Features**:
+
 - Auto-dismiss after 3 seconds
 - Simple API
 - Non-intrusive notifications
@@ -259,6 +276,7 @@ src/assets/styles/
 ### CSS Import Order
 
 The main `styles.css` imports in this order:
+
 1. Base (variables, reset)
 2. Navigation (global UI)
 3. Feature-specific (schedule, sequences, brain-dump, tasks)
@@ -269,6 +287,7 @@ The main `styles.css` imports in this order:
 ### To Use Icon Component
 
 **Before**:
+
 ```javascript
 <svg className='icon' viewBox='0 0 24 24'>
   <path d='M12 5v14M5 12h14' />
@@ -276,30 +295,31 @@ The main `styles.css` imports in this order:
 ```
 
 **After**:
+
 ```javascript
-<Icon name="plus" />
+<Icon name='plus' />
 ```
 
 ### To Use Modal Component
 
 **Before**:
+
 ```javascript
 <div className='modal-overlay' onClick={onClose}>
-  <div className='modal-content' onClick={e => e.stopPropagation()}>
+  <div className='modal-content' onClick={(e) => e.stopPropagation()}>
     <div className='modal-header'>
       <h2>Title</h2>
       <button onClick={onClose}>×</button>
     </div>
-    <div className='modal-body'>
-      {children}
-    </div>
+    <div className='modal-body'>{children}</div>
   </div>
 </div>
 ```
 
 **After**:
+
 ```javascript
-<Modal isOpen={showModal} onClose={onClose} title="Title">
+<Modal isOpen={showModal} onClose={onClose} title='Title'>
   {children}
 </Modal>
 ```
@@ -307,8 +327,9 @@ The main `styles.css` imports in this order:
 ### To Use Button Component
 
 **Before**:
+
 ```javascript
-<button className='btn btn-primary' onClick={handleClick} aria-label="Add">
+<button className='btn btn-primary' onClick={handleClick} aria-label='Add'>
   <svg className='icon' viewBox='0 0 24 24'>
     <path d='M12 5v14M5 12h14' />
   </svg>
@@ -317,8 +338,9 @@ The main `styles.css` imports in this order:
 ```
 
 **After**:
+
 ```javascript
-<Button variant="primary" icon="plus" onClick={handleClick} ariaLabel="Add">
+<Button variant='primary' icon='plus' onClick={handleClick} ariaLabel='Add'>
   Add Item
 </Button>
 ```

@@ -4,7 +4,13 @@ import PropTypes from 'prop-types'
 /**
  * Context menu for note operations (right-click menu)
  */
-function ContextMenu({ contextMenu, onExport, onLockToggle, onDelete, onClose }) {
+function ContextMenu({
+  contextMenu,
+  onExport,
+  onLockToggle,
+  onDelete,
+  onClose
+}) {
   const menuRef = useRef(null)
 
   useEffect(() => {

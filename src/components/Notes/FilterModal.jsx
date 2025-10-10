@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { getUniqueCategories } from '../../utils/brainDump/noteFilters'
+import { getUniqueCategories } from '../../utils/notes/noteFilters'
 
 /**
  * Modal for filtering notes by category and date
@@ -36,11 +36,7 @@ function FilterModal({ notes, filterOptions, onFilterChange, onClose }) {
       >
         <div className='modal-header'>
           <h2 id='filter-modal-title'>Filter Notes</h2>
-          <button
-            className='btn btn-icon'
-            onClick={onClose}
-            aria-label='Close'
-          >
+          <button className='btn btn-icon' onClick={onClose} aria-label='Close'>
             <svg className='icon' viewBox='0 0 24 24'>
               <line x1='18' y1='6' x2='6' y2='18' />
               <line x1='6' y1='6' x2='18' y2='18' />

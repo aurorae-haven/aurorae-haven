@@ -12,6 +12,9 @@
   height: calc(100vh - 120px);
   min-height: 500px;
   max-width: 100%;
+  transition:
+    width 0.3s ease,
+    max-width 0.3s ease;
 }
 
 .note-list-sidebar {
@@ -258,30 +261,66 @@
   cursor: not-allowed;
 }
 
-.brain-dump-split {
+.note-editor-split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: var(--editor-width, 50%) 4px calc(
+      100% - var(--editor-width, 50%) - 4px
+    );
+  gap: 0;
   height: 100%;
   flex: 1;
   min-height: 0;
+}
+
+.resize-handle {
+  width: 4px;
+  min-width: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--line);
+  cursor: col-resize;
+  transition: background var(--dur) var(--ease);
+  position: relative;
+  z-index: 1;
+}
+
+.resize-handle:hover,
+.resize-handle:focus {
+  background: var(--mint);
+  outline: none;
+}
+
+.resize-handle:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 0;
 }
 
 .editor-pane {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
+}
+
+.editor-pane .editor {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  resize: none;
+  overflow-y: auto;
 }
 
 .preview-pane {
   display: flex;
   flex-direction: column;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   position: relative;
   padding: 12px;
+  background: rgba(16, 20, 44, 0.2);
 }
 
 .preview-pane:focus {
@@ -289,23 +328,24 @@
   outline-offset: -3px;
 }
 
-#preview {
+.preview-pane .preview {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  width: 100%;
 }
 
-#preview a {
+.preview a {
   color: var(--mint);
   text-decoration: underline;
 }
 
-#preview a:hover {
+.preview a:hover {
   color: var(--ink);
   text-decoration: underline;
 }
 
-#preview img {
+.preview img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
@@ -313,11 +353,11 @@
   display: block;
 }
 
-#preview .katex {
+.preview .katex {
   font-size: 1.1em;
 }
 
-#preview .katex-display {
+.preview .katex-display {
   margin: 16px 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -482,4 +522,3 @@ textarea:focus {
   -webkit-line-clamp: unset;
   overflow: visible;
 }
-

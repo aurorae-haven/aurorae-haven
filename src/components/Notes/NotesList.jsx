@@ -21,7 +21,7 @@ function NotesList({
   if (!showNoteList) return null
 
   return (
-    <div className='brain-dump-sidebar'>
+    <div className='note-list-sidebar'>
       <div className='note-list-header'>
         <div className='note-list-header-left'>
           <strong>Notes</strong>

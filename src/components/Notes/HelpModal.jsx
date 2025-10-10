@@ -36,7 +36,7 @@ function HelpModal({ onClose }) {
       const focusableElements = modalRef.current.querySelectorAll(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       )
-      
+
       // Guard clause: prevent errors if no focusable elements
       if (focusableElements.length === 0) return
 
@@ -330,8 +330,8 @@ $$`}
       }}
       tabIndex={-1}
     >
-      <div 
-        className='modal-content help-modal' 
+      <div
+        className='modal-content help-modal'
         ref={modalRef}
         role='dialog'
         aria-modal='true'

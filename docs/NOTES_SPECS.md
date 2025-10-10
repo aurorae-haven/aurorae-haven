@@ -299,6 +299,135 @@ src/
 - User explicitly triggers import/export
 - No automatic cloud sync
 
+## TAB-BDP-UI-01: Split-Pane Editor Layout
+
+**Requirement**: The Brain Dump editor shall display the markdown editor and preview side-by-side in desktop mode with resizable panes.
+
+**Implementation**:
+
+- **Split-Pane Layout**: Editor and preview displayed side-by-side on desktop (≥768px width)
+- **Resizable Divider**: 4px draggable handle between editor and preview panes
+- **Width Constraints**: Editor can be resized between 20% and 80% of available width
+- **Keyboard Resize**: Arrow Left/Right keys adjust pane width by 5% increments
+- **Independent Scrolling**: Both editor and preview scroll independently
+- **Scroll Synchronization**: Editor scroll position syncs with preview automatically
+- **Smooth Transitions**: Layout changes animate smoothly (0.3s ease transitions)
+
+**Usage**:
+
+1. Editor appears on left, preview on right in desktop mode
+2. Drag the resize handle between panes to adjust widths
+3. Focus the resize handle (Tab key) and use Arrow Left/Right to adjust
+4. Both panes scroll independently with mouse/keyboard
+5. Editor scroll automatically syncs preview scroll position
+
+**CSS Classes**:
+
+- `.note-editor-split`: Main container with CSS Grid (3 columns: editor | handle | preview)
+- `.editor-pane`: Contains the markdown textarea
+- `.preview-pane`: Contains the rendered preview
+- `.resize-handle`: Interactive button for resizing panes
+
+**Accessibility**:
+
+- Resize handle is a focusable button with ARIA label
+- Keyboard navigation fully supported (Arrow keys for resize)
+- Focus outline: 3px solid mint (WCAG 2.2 AA compliant)
+- All standard textarea keyboard navigation preserved (arrows, Home, End, PageUp/Down)
+
+**Responsive Behavior**:
+
+- Desktop (≥768px): Side-by-side split view with resizable divider
+- Mobile (<768px): Stacked layout (editor above preview)
+
+## TAB-BDP-UI-02: Context Menu
+
+**Requirement**: Notes in the sidebar shall support right-click context menu for quick actions.
+
+**Implementation**:
+
+- Right-click on any note in the sidebar opens context menu
+- Context menu displays at cursor position
+- Available actions: Export, Lock/Unlock, Delete
+- Click outside or press Escape to close menu
+- Locked notes cannot be deleted (menu item disabled)
+
+**CSS Classes**:
+
+- `.note-list-sidebar`: Sidebar container for notes list
+- `.context-menu`: Right-click menu container
+- `.context-menu-item`: Individual menu action buttons
+
+**Accessibility**:
+
+- Proper ARIA roles and labels
+- Keyboard accessible (Escape to close)
+- Focus management when menu opens/closes
+
+## TAB-BDP-UI-03: Smooth Navigation Transitions
+
+**Requirement**: Navigation between pages shall be smooth without jarring layout shifts.
+
+**Implementation**:
+
+- Container max-width changes smoothly when navigating to/from Brain Dump page
+- Brain Dump page uses wider layout (1600px) to accommodate split-pane editor
+- Other pages use standard layout (1240px)
+- CSS transitions (0.3s ease) on width properties prevent sudden jumps
+- Applies to `.shell`, `.card`, and `.brain-dump-container` elements
+
+**Technical Details**:
+
+- Transition duration: 0.3s
+- Transition timing: ease function
+- Properties transitioned: width, max-width
+- No performance impact (GPU-accelerated CSS transitions)
+
+## TAB-BDP-UI-04: CSS Architecture
+
+**Requirement**: Styling shall use consistent, maintainable class-based selectors.
+
+**Implementation**:
+
+- Class-based selectors used throughout (`.preview`, `.editor`, `.note-*`)
+- ID selectors removed from styling (kept only for JavaScript references if needed)
+- Consistent naming convention: `note-*` prefix for note-related classes
+- Scoped styles prevent conflicts with other components
+
+**CSS Selector Pattern**:
+
+```css
+/* Container */
+.note-editor-split {
+  /* Grid layout */
+}
+
+/* Editor pane */
+.editor-pane {
+  /* Flex container */
+}
+.editor-pane .editor {
+  /* Textarea styling */
+}
+
+/* Preview pane */
+.preview-pane {
+  /* Flex container */
+}
+.preview-pane .preview {
+  /* Content container */
+}
+.preview a {
+  /* Link styling */
+}
+.preview img {
+  /* Image styling */
+}
+.preview .katex {
+  /* Math rendering */
+}
+```
+
 ## Future Enhancements
 
 Potential improvements for future versions:
@@ -313,6 +442,9 @@ Potential improvements for future versions:
 8. Auto-save to cloud backup (optional)
 9. Export to multiple formats (Markdown, PDF, HTML)
 10. Selective import/export (choose specific data components)
+11. Persist resize preference to localStorage
+12. Double-click resize handle to reset to 50/50
+13. Touch drag support for mobile resize
 
 ## Performance Notes
 

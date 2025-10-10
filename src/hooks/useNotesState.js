@@ -5,14 +5,14 @@ import {
   updateNote,
   saveNotesToStorage,
   loadNotesFromStorage
-} from '../utils/brainDump/noteOperations'
-import { filterNotes as filterNotesUtil } from '../utils/brainDump/noteFilters'
+} from '../utils/notes/noteOperations'
+import { filterNotes as filterNotesUtil } from '../utils/notes/noteFilters'
 
 /**
- * Custom hook for managing BrainDump notes state
+ * Custom hook for managing Notes state
  * Handles loading, saving, filtering, and CRUD operations
  */
-export function useBrainDumpState() {
+export function useNotesState() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
   const [title, setTitle] = useState('')
@@ -25,7 +25,7 @@ export function useBrainDumpState() {
     customStart: '',
     customEnd: ''
   })
-  
+
   // Track the previous noteId to detect note switches
   // This helps prevent auto-save from triggering during programmatic note loads
   const prevNoteIdRef = useRef(null)
@@ -89,20 +89,20 @@ export function useBrainDumpState() {
   // Autosave current note
   useEffect(() => {
     if (!currentNoteId) return
-    
+
     // Don't save if note doesn't exist yet (e.g., during delete operations)
     if (!currentNote) return
 
     // Don't save if note is locked
     if (currentNote.locked) return
-    
+
     // Skip autosave immediately after loadNote is called
     if (skipNextSaveRef.current) {
       skipNextSaveRef.current = false
       prevNoteIdRef.current = currentNoteId
       return
     }
-    
+
     // Also skip if noteId changed (double safety check)
     if (prevNoteIdRef.current !== currentNoteId) {
       prevNoteIdRef.current = currentNoteId
@@ -116,9 +116,9 @@ export function useBrainDumpState() {
         // (it might have been deleted while the timeout was pending)
         const noteStillExists = latestNotes.find((n) => n.id === currentNoteId)
         if (!noteStillExists) {
-          return latestNotes  // Don't update if note was deleted
+          return latestNotes // Don't update if note was deleted
         }
-        
+
         const updatedNotes = updateNote(latestNotes, currentNoteId, {
           title,
           content,

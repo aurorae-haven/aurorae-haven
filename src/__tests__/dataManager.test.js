@@ -97,9 +97,7 @@ describe('Data Manager', () => {
         {
           id: 'seq-1',
           name: 'Morning Routine',
-          steps: [
-            { id: 1, text: 'Wake up', duration: 5 }
-          ]
+          steps: [{ id: 1, text: 'Wake up', duration: 5 }]
         }
       ]
       localStorage.setItem('sequences', JSON.stringify(sequences))
@@ -213,7 +211,9 @@ describe('Data Manager', () => {
       }
 
       // Mock FileReader for JSDOM
-      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(testData)], {
+        type: 'application/json'
+      })
 
       const result = await importJSON(mockFile)
 
@@ -224,10 +224,10 @@ describe('Data Manager', () => {
 
     it('should import dumps (Brain Dump notes)', async () => {
       const dumps = [
-        { 
-          id: 'note_1', 
+        {
+          id: 'note_1',
           title: 'My Note',
-          content: 'Version 1', 
+          content: 'Version 1',
           category: 'ideas',
           createdAt: '2025-01-01T00:00:00Z',
           updatedAt: '2025-01-01T00:00:00Z'
@@ -241,7 +241,9 @@ describe('Data Manager', () => {
         schedule: []
       }
 
-      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(testData)], {
+        type: 'application/json'
+      })
 
       await importJSON(mockFile)
 
@@ -258,16 +260,24 @@ describe('Data Manager', () => {
         schedule: [{ day: '2025-01-15', blocks: [] }]
       }
 
-      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(testData)], {
+        type: 'application/json'
+      })
 
       const result = await importJSON(mockFile)
 
       expect(result).toBe(true)
       expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(testData.tasks)
-      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(testData.sequences)
-      expect(JSON.parse(localStorage.getItem('habits'))).toEqual(testData.habits)
+      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(
+        testData.sequences
+      )
+      expect(JSON.parse(localStorage.getItem('habits'))).toEqual(
+        testData.habits
+      )
       expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(testData.dumps)
-      expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(testData.schedule)
+      expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(
+        testData.schedule
+      )
     })
 
     it('should handle invalid JSON', async () => {
@@ -283,7 +293,9 @@ describe('Data Manager', () => {
         // Missing habits, dumps, schedule - should be fine as they're optional
       }
 
-      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(testData)], {
+        type: 'application/json'
+      })
 
       const result = await importJSON(mockFile)
 
@@ -308,7 +320,9 @@ describe('Data Manager', () => {
         schedule: schedule
       }
 
-      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(testData)], {
+        type: 'application/json'
+      })
 
       await importJSON(mockFile)
 
@@ -334,7 +348,9 @@ describe('Data Manager', () => {
         schedule: []
       }
 
-      const mockFile = new Blob([JSON.stringify(testData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(testData)], {
+        type: 'application/json'
+      })
 
       await importJSON(mockFile)
 
@@ -351,12 +367,12 @@ describe('Data Manager', () => {
           completed: false,
           createdAt: 1234567890
         },
-        { 
-          id: 2, 
-          text: 'Plan this', 
+        {
+          id: 2,
+          text: 'Plan this',
           quadrant: 'not_urgent_important',
-          completed: false, 
-          createdAt: 1234567891 
+          completed: false,
+          createdAt: 1234567891
         }
       ]
       localStorage.setItem('tasks', JSON.stringify(tasksData))
@@ -367,7 +383,9 @@ describe('Data Manager', () => {
 
       // Clear and import
       localStorage.clear()
-      const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(exportedData)], {
+        type: 'application/json'
+      })
       await importJSON(mockFile)
 
       // Verify
@@ -419,7 +437,9 @@ describe('Data Manager', () => {
           {
             id: 1,
             day: '2025-01-15',
-            blocks: [{ type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00', end: '10:00' }]
+            blocks: [
+              { type: SCHEDULE_EVENT_TYPES.TASK, start: '09:00', end: '10:00' }
+            ]
           }
         ]
       }
@@ -443,18 +463,30 @@ describe('Data Manager', () => {
       localStorage.clear()
 
       // Import the data back
-      const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+      const mockFile = new Blob([JSON.stringify(exportedData)], {
+        type: 'application/json'
+      })
       const result = await importJSON(mockFile)
 
       // Verify import succeeded
       expect(result).toBe(true)
 
       // Verify all data types were restored
-      expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(nominalData.tasks)
-      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(nominalData.sequences)
-      expect(JSON.parse(localStorage.getItem('habits'))).toEqual(nominalData.habits)
-      expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(nominalData.dumps)
-      expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(nominalData.schedule)
+      expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(
+        nominalData.tasks
+      )
+      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(
+        nominalData.sequences
+      )
+      expect(JSON.parse(localStorage.getItem('habits'))).toEqual(
+        nominalData.habits
+      )
+      expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(
+        nominalData.dumps
+      )
+      expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(
+        nominalData.schedule
+      )
     })
 
     describe('Export-Delete-Import sequences for all tabs', () => {
@@ -498,7 +530,9 @@ describe('Data Manager', () => {
         expect(JSON.parse(localStorage.getItem('dumps') || '[]').length).toBe(2)
 
         // Import
-        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+        const mockFile = new Blob([JSON.stringify(exportedData)], {
+          type: 'application/json'
+        })
         await importJSON(mockFile)
 
         // Verify restoration
@@ -510,10 +544,34 @@ describe('Data Manager', () => {
       it('should restore deleted Tasks after import', async () => {
         // Setup initial tasks
         const initialTasks = [
-          { id: 1, text: 'Task 1', quadrant: 'urgent_important', completed: false, createdAt: 1000 },
-          { id: 2, text: 'Task 2', quadrant: 'urgent_important', completed: false, createdAt: 2000 },
-          { id: 3, text: 'Task 3', quadrant: 'not_urgent_important', completed: false, createdAt: 3000 },
-          { id: 4, text: 'Task 4', quadrant: 'not_urgent_not_important', completed: true, createdAt: 4000 }
+          {
+            id: 1,
+            text: 'Task 1',
+            quadrant: 'urgent_important',
+            completed: false,
+            createdAt: 1000
+          },
+          {
+            id: 2,
+            text: 'Task 2',
+            quadrant: 'urgent_important',
+            completed: false,
+            createdAt: 2000
+          },
+          {
+            id: 3,
+            text: 'Task 3',
+            quadrant: 'not_urgent_important',
+            completed: false,
+            createdAt: 3000
+          },
+          {
+            id: 4,
+            text: 'Task 4',
+            quadrant: 'not_urgent_not_important',
+            completed: true,
+            createdAt: 4000
+          }
         ]
         localStorage.setItem('tasks', JSON.stringify(initialTasks))
 
@@ -526,7 +584,9 @@ describe('Data Manager', () => {
         localStorage.setItem('tasks', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+        const mockFile = new Blob([JSON.stringify(exportedData)], {
+          type: 'application/json'
+        })
         await importJSON(mockFile)
 
         // Verify restoration
@@ -563,13 +623,17 @@ describe('Data Manager', () => {
         localStorage.setItem('sequences', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+        const mockFile = new Blob([JSON.stringify(exportedData)], {
+          type: 'application/json'
+        })
         await importJSON(mockFile)
 
         // Verify restoration
         const restored = JSON.parse(localStorage.getItem('sequences'))
         expect(restored.length).toBe(2)
-        expect(restored.find((s) => s.id === 'seq-1')).toEqual(initialSequences[0])
+        expect(restored.find((s) => s.id === 'seq-1')).toEqual(
+          initialSequences[0]
+        )
       })
 
       it('should restore deleted Habits after import', async () => {
@@ -590,7 +654,9 @@ describe('Data Manager', () => {
         localStorage.setItem('habits', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+        const mockFile = new Blob([JSON.stringify(exportedData)], {
+          type: 'application/json'
+        })
         await importJSON(mockFile)
 
         // Verify restoration
@@ -632,7 +698,9 @@ describe('Data Manager', () => {
         localStorage.setItem('schedule', JSON.stringify(afterDelete))
 
         // Import
-        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+        const mockFile = new Blob([JSON.stringify(exportedData)], {
+          type: 'application/json'
+        })
         await importJSON(mockFile)
 
         // Verify restoration
@@ -647,7 +715,14 @@ describe('Data Manager', () => {
           tasks: [{ id: 1, text: 'Task 1', quadrant: 'urgent_important' }],
           sequences: [{ id: 'seq-1', name: 'Sequence 1', steps: [] }],
           habits: [{ id: 1, name: 'Habit 1', streak: 5 }],
-          dumps: [{ id: 'note-1', title: 'Note 1', content: 'Content 1', category: 'ideas' }],
+          dumps: [
+            {
+              id: 'note-1',
+              title: 'Note 1',
+              content: 'Content 1',
+              category: 'ideas'
+            }
+          ],
           schedule: [{ id: 1, day: '2025-01-15', blocks: [] }]
         }
 
@@ -670,18 +745,30 @@ describe('Data Manager', () => {
         expect(JSON.parse(localStorage.getItem('dumps'))).toHaveLength(0)
 
         // Import
-        const mockFile = new Blob([JSON.stringify(exportedData)], { type: 'application/json' })
+        const mockFile = new Blob([JSON.stringify(exportedData)], {
+          type: 'application/json'
+        })
         const result = await importJSON(mockFile)
 
         // Verify success
         expect(result).toBe(true)
 
         // Verify all data restored
-        expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(initialData.tasks)
-        expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(initialData.sequences)
-        expect(JSON.parse(localStorage.getItem('habits'))).toEqual(initialData.habits)
-        expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(initialData.dumps)
-        expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(initialData.schedule)
+        expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(
+          initialData.tasks
+        )
+        expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(
+          initialData.sequences
+        )
+        expect(JSON.parse(localStorage.getItem('habits'))).toEqual(
+          initialData.habits
+        )
+        expect(JSON.parse(localStorage.getItem('dumps'))).toEqual(
+          initialData.dumps
+        )
+        expect(JSON.parse(localStorage.getItem('schedule'))).toEqual(
+          initialData.schedule
+        )
       })
     })
   })

@@ -120,8 +120,8 @@ useEffect(() => {
         ×
       </button>
       <p>
-        💡 <strong>New here?</strong> Click the <strong>?</strong> icon for help with
-        LaTeX equations and images!
+        💡 <strong>New here?</strong> Click the <strong>?</strong> icon for help
+        with LaTeX equations and images!
       </p>
     </div>
   )

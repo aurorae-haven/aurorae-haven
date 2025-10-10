@@ -6,21 +6,30 @@ import TaskForm from '../components/Tasks/TaskForm'
 import TaskQuadrant from '../components/Tasks/TaskQuadrant'
 
 function Tasks() {
-  const { tasks, setTasks, addTask, toggleTask, deleteTask, editTask, moveTask } = useTasksState()
-  
+  const {
+    tasks,
+    setTasks,
+    addTask,
+    toggleTask,
+    deleteTask,
+    editTask,
+    moveTask
+  } = useTasksState()
+
   // Form state
   const [newTask, setNewTask] = useState('')
   const [selectedQuadrant, setSelectedQuadrant] = useState('urgent_important')
-  
+
   // Editing state
   const [editingTask, setEditingTask] = useState(null)
   const [editText, setEditText] = useState('')
-  
+
   // Error state
   const [errorMessage, setErrorMessage] = useState('')
 
   // Drag and drop
-  const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(moveTask)
+  const { handleDragStart, handleDragOver, handleDrop } =
+    useDragAndDrop(moveTask)
 
   const showError = (message) => {
     setErrorMessage(message)

@@ -11,23 +11,23 @@ import {
   toggleNoteLock,
   deleteNote as deleteNoteUtil,
   exportNoteToFile
-} from '../utils/brainDump/noteOperations'
-import NoteDetailsModal from '../components/BrainDump/NoteDetailsModal'
-import HelpModal from '../components/BrainDump/HelpModal'
-import NotesList from '../components/BrainDump/NotesList'
-import NoteEditor from '../components/BrainDump/NoteEditor'
-import FilterModal from '../components/BrainDump/FilterModal'
-import ContextMenu from '../components/BrainDump/ContextMenu'
-import { useBrainDumpState } from '../hooks/useBrainDumpState'
+} from '../utils/notes/noteOperations'
+import NoteDetailsModal from '../components/Notes/NoteDetailsModal'
+import HelpModal from '../components/Notes/HelpModal'
+import NotesList from '../components/Notes/NotesList'
+import NoteEditor from '../components/Notes/NoteEditor'
+import FilterModal from '../components/Notes/FilterModal'
+import ContextMenu from '../components/Notes/ContextMenu'
+import { useNotesState } from '../hooks/useNotesState'
 import { useToast } from '../hooks/useToast'
 
 // Configure marked once at module level to avoid reconfiguration on re-renders
 // Error handling for KaTeX extension to gracefully handle load failures
+// Note: displayMode is auto-detected by markedKatex: $...$ for inline, $$...$$ for display
 try {
   marked.use(
     markedKatex({
-      throwOnError: false,
-      displayMode: false
+      throwOnError: false
     })
   )
 } catch (error) {
@@ -55,7 +55,7 @@ try {
   console.warn('Failed to configure marked options:', error)
 }
 
-function BrainDump() {
+function Notes() {
   // Use custom hooks for state management
   const {
     notes,
@@ -76,7 +76,7 @@ function BrainDump() {
     createNote,
     updateNotes,
     clearAutosaveTimeout
-  } = useBrainDumpState()
+  } = useNotesState()
 
   const { toastMessage, showToast, showToastNotification } = useToast()
 
@@ -142,7 +142,7 @@ function BrainDump() {
         // Auto-create new empty note when deleting the last note
         const newNote = createNewNote()
         const notesWithNew = [newNote]
-        
+
         // Use flushSync to ensure state updates complete synchronously
         // This prevents UI not updating issue when deleting the last note
         flushSync(() => {
@@ -301,4 +301,4 @@ function BrainDump() {
   )
 }
 
-export default BrainDump
+export default Notes

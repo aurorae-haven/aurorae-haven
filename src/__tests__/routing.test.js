@@ -20,9 +20,9 @@ jest.mock('../pages/Schedule', () => {
   }
 })
 
-jest.mock('../pages/BrainDump', () => {
-  return function MockBrainDump() {
-    return <div data-testid='braindump-page'>BrainDump Page</div>
+jest.mock('../pages/Notes', () => {
+  return function MockNotes() {
+    return <div data-testid='braindump-page'>Notes Page</div>
   }
 })
 

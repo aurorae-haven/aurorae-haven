@@ -91,7 +91,10 @@ function TaskItem({
           aria-label='Edit task text'
         />
       ) : (
-        <span className='task-text' onDoubleClick={() => onEdit(quadrant, task)}>
+        <span
+          className='task-text'
+          onDoubleClick={() => onEdit(quadrant, task)}
+        >
           {task.text}
         </span>
       )}
