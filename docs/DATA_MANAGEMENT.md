@@ -364,6 +364,99 @@ if (isIndexedDBAvailable()) {
 5. Import brain dump data to localStorage
 6. Reload page to show new data
 
+### Template Import/Export Flow
+
+Templates have additional validation requirements to ensure data integrity:
+
+#### Export Templates
+
+```javascript
+import { exportTemplates } from './utils/templatesManager'
+
+// Export all templates
+const data = await exportTemplates()
+// {
+//   version: '1.0',
+//   exportDate: '2025-01-15T10:00:00Z',
+//   templates: [...]
+// }
+
+// Export specific templates
+const data = await exportTemplates(['template-id-1', 'template-id-2'])
+```
+
+#### Import Templates
+
+```javascript
+import { importTemplates } from './utils/templatesManager'
+
+// Import templates with validation
+const result = await importTemplates(data)
+// {
+//   imported: 5,
+//   skipped: 1,
+//   errors: [
+//     { template: 'Invalid Template', error: 'Template type is required' }
+//   ]
+// }
+```
+
+**Import Validation:**
+
+1. **Data structure validation**
+   - Data must be an object
+   - Must contain `version` field
+   - Must contain `templates` array
+
+2. **Version compatibility check**
+   - Supported versions: `1.0`
+   - Rejects incompatible versions with descriptive error
+   - Example: `"Incompatible version: 2.0. Supported versions: 1.0"`
+
+3. **Individual template validation**
+   - Required fields: `type` (task/routine), `title` (non-empty string)
+   - Type-specific validation:
+     - Routine templates: `steps` must be array if present
+     - Routine templates: `estimatedDuration` must be non-negative number if present
+   - Optional fields: `tags` (array of strings), `quadrant`, `category`, etc.
+
+4. **ID collision handling**
+   - Automatically generates new ID if template ID already exists
+   - Preserves all other template data
+
+**Error Handling:**
+
+- Import throws error for invalid data structure or incompatible version
+- Individual template validation errors are collected in results
+- Skipped templates don't block import of valid templates
+- Error messages include template name and specific validation failure
+
+**Example Import Errors:**
+
+```javascript
+// Missing version
+{
+  error: 'Invalid import data: missing version field'
+}
+
+// Incompatible version
+{
+  error: 'Incompatible version: 2.0. Supported versions: 1.0'
+}
+
+// Invalid template structure
+{
+  imported: 3,
+  skipped: 1,
+  errors: [
+    {
+      template: 'My Template',
+      error: 'Template type must be one of: task, routine'
+    }
+  ]
+}
+```
+
 ### Auto-Backup Flow
 
 1. App initializes `initAutoBackup()` on load
