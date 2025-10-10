@@ -477,12 +477,92 @@ describe('templatesManager', () => {
       expect(uuidGenerator.generateSecureUUID).toHaveBeenCalled()
     })
 
-    test('throws error for invalid import data', async () => {
+    test('throws error for missing version field', async () => {
+      const invalidData = { templates: [] }
+
+      await expect(importTemplates(invalidData)).rejects.toThrow(
+        'Invalid import data: missing version field'
+      )
+    })
+
+    test('throws error for incompatible version', async () => {
+      const invalidData = {
+        version: '2.0',
+        templates: []
+      }
+
+      await expect(importTemplates(invalidData)).rejects.toThrow(
+        'Incompatible version: 2.0'
+      )
+    })
+
+    test('throws error for null data', async () => {
+      await expect(importTemplates(null)).rejects.toThrow(
+        'Invalid import data: data must be an object'
+      )
+    })
+
+    test('throws error for non-object data', async () => {
+      await expect(importTemplates('string')).rejects.toThrow(
+        'Invalid import data: data must be an object'
+      )
+    })
+
+    test('throws error for invalid import data without templates', async () => {
       const invalidData = { version: '1.0' }
 
       await expect(importTemplates(invalidData)).rejects.toThrow(
-        'Invalid import data'
+        'Invalid import data: missing templates array'
       )
+    })
+
+    test('throws error when templates is not an array', async () => {
+      const invalidData = {
+        version: '1.0',
+        templates: 'not an array'
+      }
+
+      await expect(importTemplates(invalidData)).rejects.toThrow(
+        'Invalid import data: missing templates array'
+      )
+    })
+
+    test('skips templates with invalid structure', async () => {
+      const importData = {
+        version: '1.0',
+        templates: [
+          { id: '1', type: 'task', title: 'Valid Task' },
+          { id: '2', type: 'invalid-type', title: 'Invalid Task' }
+        ]
+      }
+
+      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+
+      const result = await importTemplates(importData)
+
+      expect(result.imported).toBe(1)
+      expect(result.skipped).toBe(1)
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0].error).toContain('task, routine')
+    })
+
+    test('skips templates with missing required fields', async () => {
+      const importData = {
+        version: '1.0',
+        templates: [
+          { id: '1', type: 'task', title: 'Valid Task' },
+          { id: '2', type: 'task' } // Missing title
+        ]
+      }
+
+      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+
+      const result = await importTemplates(importData)
+
+      expect(result.imported).toBe(1)
+      expect(result.skipped).toBe(1)
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0].error).toContain('title is required')
     })
 
     test('handles errors during import gracefully', async () => {
@@ -504,6 +584,29 @@ describe('templatesManager', () => {
       expect(result.imported).toBe(1)
       expect(result.skipped).toBe(1)
       expect(result.errors).toHaveLength(1)
+    })
+
+    test('validates template structure before importing', async () => {
+      const importData = {
+        version: '1.0',
+        templates: [
+          {
+            id: '1',
+            type: 'routine',
+            title: 'Invalid Routine',
+            steps: 'not an array'
+          }
+        ]
+      }
+
+      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+
+      const result = await importTemplates(importData)
+
+      expect(result.imported).toBe(0)
+      expect(result.skipped).toBe(1)
+      expect(result.errors).toHaveLength(1)
+      expect(result.errors[0].error).toContain('must be an array')
     })
   })
 })
