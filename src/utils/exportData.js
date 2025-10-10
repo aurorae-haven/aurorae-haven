@@ -85,29 +85,7 @@ export async function getDataTemplate() {
     console.warn('Failed to parse aurorae_tasks during export:', e)
   }
 
-  // Also check for brainDumpEntries (notes)
-  try {
-    const entriesStr = localStorage.getItem('brainDumpEntries')
-    if (entriesStr) {
-      const entries = JSON.parse(entriesStr)
-      if (Array.isArray(entries)) {
-        data.dumps = entries
-      }
-    }
-  } catch (e) {
-    console.warn('Failed to parse brainDumpEntries during export:', e)
-  }
-
-  // Include brain dump data for backward compatibility
-  // Safely parse brainDumpVersions and brainDumpEntries with error handling
-  let versions = []
-  try {
-    const versionsStr = localStorage.getItem('brainDumpVersions')
-    versions = versionsStr ? JSON.parse(versionsStr) : []
-  } catch (e) {
-    console.warn('Failed to parse brainDumpVersions during export:', e)
-    versions = []
-  }
+  // Parse brainDumpEntries once and use for both dumps and brainDump.entries
   let entries = []
   try {
     const entriesStr = localStorage.getItem('brainDumpEntries')
@@ -116,6 +94,23 @@ export async function getDataTemplate() {
     console.warn('Failed to parse brainDumpEntries during export:', e)
     entries = []
   }
+  
+  // Override dumps field with entries if brainDumpEntries has data
+  if (Array.isArray(entries) && entries.length > 0) {
+    data.dumps = entries
+  }
+
+  // Parse brainDumpVersions for backward compatibility
+  let versions = []
+  try {
+    const versionsStr = localStorage.getItem('brainDumpVersions')
+    versions = versionsStr ? JSON.parse(versionsStr) : []
+  } catch (e) {
+    console.warn('Failed to parse brainDumpVersions during export:', e)
+    versions = []
+  }
+  
+  // Include brain dump data for backward compatibility
   data.brainDump = {
     content: localStorage.getItem('brainDumpContent') || '',
     tags: localStorage.getItem('brainDumpTags') || '',
