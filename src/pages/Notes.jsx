@@ -23,11 +23,11 @@ import { useToast } from '../hooks/useToast'
 
 // Configure marked once at module level to avoid reconfiguration on re-renders
 // Error handling for KaTeX extension to gracefully handle load failures
+// Note: displayMode is auto-detected by markedKatex: $...$ for inline, $$...$$ for display
 try {
   marked.use(
     markedKatex({
       throwOnError: false
-      // displayMode is auto-detected: $...$ for inline, $$...$$ for display
     })
   )
 } catch (error) {
