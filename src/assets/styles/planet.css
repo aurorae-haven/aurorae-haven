@@ -1,0 +1,41 @@
+/* Planet Background Element */
+.planet-wrap {
+  position: fixed;
+  right: -120px;
+  bottom: -120px;
+  width: 560px;
+  height: 560px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.planet {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 520px;
+  height: 520px;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      at 28% 26%,
+      rgba(90, 140, 230, 0.18),
+      rgba(90, 140, 230, 0) 58%
+    ),
+    radial-gradient(
+      at 26% 22%,
+      rgba(35, 70, 150, 0.5),
+      rgba(35, 70, 150, 0.05) 70%
+    ),
+    radial-gradient(
+      farthest-side at 72% 78%,
+      rgba(0, 0, 0, 0.48),
+      rgba(0, 0, 0, 0.86) 80%
+    ),
+    linear-gradient(180deg, #0b133a, #080f30 60%, #050a22);
+  box-shadow:
+    inset -36px -56px 110px rgba(0, 0, 0, 0.55),
+    inset 54px 76px 130px rgba(110, 160, 245, 0.1),
+    0 0 90px rgba(70, 120, 220, 0.18);
+  filter: saturate(108%);
+}

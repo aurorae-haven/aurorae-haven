@@ -1,3 +1,5 @@
+/* Tablet responsive styles */
+@media (max-width: 1024px) and (min-width: 769px) {
   .matrix-quadrant {
     min-height: 250px;
     padding: 14px;
