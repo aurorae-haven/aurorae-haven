@@ -111,6 +111,13 @@ export function useBrainDumpState() {
     const saveTimeout = setTimeout(() => {
       // Use functional update to get latest notes state
       setNotes((latestNotes) => {
+        // Double-check that the note still exists before saving
+        // (it might have been deleted while the timeout was pending)
+        const noteStillExists = latestNotes.find((n) => n.id === currentNoteId)
+        if (!noteStillExists) {
+          return latestNotes  // Don't update if note was deleted
+        }
+        
         const updatedNotes = updateNote(latestNotes, currentNoteId, {
           title,
           content,
