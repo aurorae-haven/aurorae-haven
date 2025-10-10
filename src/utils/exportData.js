@@ -100,11 +100,28 @@ export async function getDataTemplate() {
   }
 
   // Include brain dump data for backward compatibility
+  // Safely parse brainDumpVersions and brainDumpEntries with error handling
+  let versions = []
+  try {
+    const versionsStr = localStorage.getItem('brainDumpVersions')
+    versions = versionsStr ? JSON.parse(versionsStr) : []
+  } catch (e) {
+    console.warn('Failed to parse brainDumpVersions during export:', e)
+    versions = []
+  }
+  let entries = []
+  try {
+    const entriesStr = localStorage.getItem('brainDumpEntries')
+    entries = entriesStr ? JSON.parse(entriesStr) : []
+  } catch (e) {
+    console.warn('Failed to parse brainDumpEntries during export:', e)
+    entries = []
+  }
   data.brainDump = {
     content: localStorage.getItem('brainDumpContent') || '',
     tags: localStorage.getItem('brainDumpTags') || '',
-    versions: JSON.parse(localStorage.getItem('brainDumpVersions') || '[]'),
-    entries: JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+    versions,
+    entries
   }
 
   return data
