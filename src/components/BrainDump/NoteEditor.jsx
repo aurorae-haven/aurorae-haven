@@ -182,7 +182,8 @@ function NoteEditor({
         </div>
       </div>
       <div className='card-b'>
-          <div className='editor-container'>
+        <div className='brain-dump-split'>
+          <div className='editor-pane'>
             <textarea
               ref={editorRef}
               className='editor'
@@ -211,6 +212,8 @@ function NoteEditor({
               disabled={!currentNoteId || currentNote?.locked}
               aria-label='Markdown editor'
             />
+          </div>
+          <div className='preview-pane'>
             <div
               id='preview'
               ref={previewRef}
@@ -220,6 +223,7 @@ function NoteEditor({
             />
           </div>
         </div>
+      </div>
     </>
   )
 }
