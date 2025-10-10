@@ -219,11 +219,11 @@ export function validateTemplateData(template) {
         // Validate each step structure
         template.steps.forEach((step, index) => {
           if (!step || typeof step !== 'object') {
-            errors.push(`Step ${index} must be an object`)
+            errors.push(`Template step ${index} must be an object`)
           } else {
             if (typeof step.label !== 'string') {
               errors.push(
-                `Step ${index} must have a label (string) property`
+                `Template step ${index} must have a label (string) property`
               )
             }
             if (
@@ -231,7 +231,7 @@ export function validateTemplateData(template) {
               typeof step.duration !== 'number'
             ) {
               errors.push(
-                `Step ${index} duration must be a number (found: ${typeof step.duration})`
+                `Template step ${index} duration must be a number (found: ${typeof step.duration})`
               )
             }
           }
@@ -249,7 +249,7 @@ export function validateTemplateData(template) {
           `Routine estimatedDuration must be a number (found: ${typeof template.estimatedDuration})`
         )
       } else if (template.estimatedDuration < 0) {
-        errors.push('Routine estimatedDuration must be non-negative')
+        errors.push('Template estimatedDuration must be non-negative')
       }
     }
   }
@@ -261,7 +261,7 @@ export function validateTemplateData(template) {
     } else {
       template.tags.forEach((tag, index) => {
         if (typeof tag !== 'string') {
-          errors.push(`Tag ${index} must be a string (found: ${typeof tag})`)
+          errors.push(`Template tag ${index} must be a string (found: ${typeof tag})`)
         }
       })
     }
