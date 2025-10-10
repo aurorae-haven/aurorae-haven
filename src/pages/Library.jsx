@@ -73,6 +73,11 @@ function Library() {
 
   // Filter and sort templates when dependencies change
   useEffect(() => {
+    if (!Array.isArray(templates)) {
+      setFilteredTemplates([])
+      return
+    }
+
     let result = templates
 
     // Apply search query
