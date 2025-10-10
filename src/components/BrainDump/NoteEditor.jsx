@@ -123,7 +123,7 @@ function NoteEditor({
           </button>
           <button
             className='btn btn-delete'
-              onClick={onDelete}
+              onClick={() => onDelete()}
               aria-label='Delete'
               title='Delete'
               disabled={!currentNoteId || currentNote?.locked}
