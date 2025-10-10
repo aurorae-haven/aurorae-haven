@@ -320,3 +320,9 @@
 @media (max-width: 1024px) and (min-width: 769px) {
   .eisenhower-matrix {
     gap: 12px;
+  }
+
+  .matrix-quadrant {
+    min-height: 250px;
+  }
+}
