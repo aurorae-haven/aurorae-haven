@@ -257,8 +257,8 @@ function NoteEditor({
                     // Set cursor position after state update
                     setTimeout(() => {
                       if (editorRef.current) {
-                        editorRef.current.selectionStart = result.newCursorPos;
-                        editorRef.current.selectionEnd = result.newCursorPos;
+                        editorRef.current.selectionStart = result.newCursorPos
+                        editorRef.current.selectionEnd = result.newCursorPos
                       }
                     }, 0)
                   }

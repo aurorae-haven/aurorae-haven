@@ -51,7 +51,6 @@ import Icon from '../components/common/Icon'
 
 ```javascript
 import Modal from '../components/common/Modal'
-
 ;<Modal
   isOpen={showModal}
   onClose={() => setShowModal(false)}
