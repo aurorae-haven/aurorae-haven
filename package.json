@@ -12,6 +12,7 @@
     "dev": "vite",
     "start": "vite",
     "test": "jest --coverage",
+    "test:export": "jest src/__tests__/dataManager.test.js --testNamePattern='should export aurorae_tasks|should export brainDumpEntries'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings 0",
     "lint:md": "markdownlint '**/*.md' -i node_modules",
     "lint:css": "stylelint \"**/*.{css,scss}\"",
