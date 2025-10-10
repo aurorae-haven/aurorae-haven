@@ -49,7 +49,10 @@ export async function getDataTemplate() {
   }
 
   // Fallback to localStorage
-  const data = {}
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString()
+  }
 
   // Load all data fields from localStorage
   for (const field of Object.values(DATA_FIELDS)) {
@@ -60,6 +63,60 @@ export async function getDataTemplate() {
       console.error(`Error loading ${field} from localStorage:`, e)
       data[field] = []
     }
+  }
+
+  // Also check for aurorae_tasks (Eisenhower matrix format)
+  try {
+    const tasksStr = localStorage.getItem('aurorae_tasks')
+    if (tasksStr) {
+      const auroraeTasksData = JSON.parse(tasksStr)
+      if (auroraeTasksData) {
+        data.auroraeTasksData = auroraeTasksData
+        // Also flatten to tasks array for backward compatibility
+        data.tasks = []
+        for (const quadrant of Object.values(auroraeTasksData)) {
+          if (Array.isArray(quadrant)) {
+            data.tasks.push(...quadrant)
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse aurorae_tasks during export:', e)
+  }
+
+  // Parse brainDumpEntries once for both dumps override and brainDump.entries
+  let entries = []
+  try {
+    const entriesStr = localStorage.getItem('brainDumpEntries')
+    if (entriesStr) {
+      entries = JSON.parse(entriesStr)
+      // Override dumps field with brainDumpEntries if it exists
+      if (Array.isArray(entries)) {
+        data.dumps = entries
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse brainDumpEntries during export:', e)
+    entries = []
+  }
+
+  // Parse brainDumpVersions for backward compatibility
+  let versions = []
+  try {
+    const versionsStr = localStorage.getItem('brainDumpVersions')
+    versions = versionsStr ? JSON.parse(versionsStr) : []
+  } catch (e) {
+    console.warn('Failed to parse brainDumpVersions during export:', e)
+    versions = []
+  }
+  
+  // Include brain dump data for backward compatibility
+  data.brainDump = {
+    content: localStorage.getItem('brainDumpContent') || '',
+    tags: localStorage.getItem('brainDumpTags') || '',
+    versions,
+    entries
   }
 
   return data

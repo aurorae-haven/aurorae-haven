@@ -23,7 +23,12 @@ describe('Data Manager', () => {
     it('should return a valid data structure with all required fields', async () => {
       const data = await getDataTemplate()
 
-      // New API returns simple data fields without metadata
+      // Data should include metadata
+      expect(data.version).toBe(1)
+      expect(typeof data.exportedAt).toBe('string')
+      expect(data.exportedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
+
+      // Data should include all data fields as arrays
       expect(Array.isArray(data.tasks)).toBe(true)
       expect(Array.isArray(data.sequences)).toBe(true)
       expect(Array.isArray(data.habits)).toBe(true)
@@ -121,6 +126,139 @@ describe('Data Manager', () => {
       const data = await getDataTemplate()
 
       expect(data.habits).toEqual(habits)
+    })
+
+    it('should include version and exportedAt metadata in exports', async () => {
+      // Setup some test data
+      localStorage.setItem('tasks', JSON.stringify([{ id: 1, text: 'Test' }]))
+      localStorage.setItem('sequences', JSON.stringify([]))
+      localStorage.setItem('habits', JSON.stringify([]))
+      localStorage.setItem('dumps', JSON.stringify([]))
+      localStorage.setItem('schedule', JSON.stringify([]))
+
+      const data = await getDataTemplate()
+
+      // Verify metadata is present
+      expect(data).toHaveProperty('version')
+      expect(data.version).toBe(1)
+      expect(data).toHaveProperty('exportedAt')
+      expect(typeof data.exportedAt).toBe('string')
+      // Verify it's a valid ISO 8601 timestamp
+      expect(new Date(data.exportedAt).toISOString()).toBe(data.exportedAt)
+
+      // Verify data is still present
+      expect(data.tasks).toEqual([{ id: 1, text: 'Test' }])
+    })
+
+    it('should include metadata even when no data exists', async () => {
+      // Clear all localStorage
+      localStorage.clear()
+
+      const data = await getDataTemplate()
+
+      // Metadata should still be present
+      expect(data.version).toBe(1)
+      expect(typeof data.exportedAt).toBe('string')
+
+      // All data arrays should be empty
+      expect(data.tasks).toEqual([])
+      expect(data.sequences).toEqual([])
+      expect(data.habits).toEqual([])
+      expect(data.dumps).toEqual([])
+      expect(data.schedule).toEqual([])
+    })
+
+    it('should export aurorae_tasks (Eisenhower matrix format)', async () => {
+      // Setup tasks in Eisenhower matrix format (actual storage format)
+      const auroraeTasksData = {
+        urgent_important: [
+          {
+            id: '1',
+            text: 'Important task',
+            completed: false,
+            createdAt: Date.now()
+          }
+        ],
+        not_urgent_important: [
+          {
+            id: '2',
+            text: 'Plan ahead',
+            completed: false,
+            createdAt: Date.now()
+          }
+        ],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+      localStorage.setItem('aurorae_tasks', JSON.stringify(auroraeTasksData))
+
+      const data = await getDataTemplate()
+
+      // Should include the original Eisenhower format
+      expect(data.auroraeTasksData).toEqual(auroraeTasksData)
+
+      // Should also flatten to tasks array
+      expect(data.tasks).toHaveLength(2)
+      expect(data.tasks[0].text).toBe('Important task')
+      expect(data.tasks[1].text).toBe('Plan ahead')
+    })
+
+    it('should export brainDumpEntries as dumps', async () => {
+      // Setup brain dump entries (actual storage format for notes)
+      const entries = [
+        {
+          id: 'note_1',
+          title: 'My Note',
+          content: '# Test Content',
+          category: 'ideas',
+          createdAt: '2025-01-01T00:00:00Z',
+          updatedAt: '2025-01-01T00:00:00Z'
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(entries))
+
+      const data = await getDataTemplate()
+
+      // Should export as dumps
+      expect(data.dumps).toEqual(entries)
+
+      // Should also include brainDump metadata
+      expect(data.brainDump).toHaveProperty('entries')
+      expect(data.brainDump.entries).toEqual(entries)
+    })
+
+    it('should roundtrip aurorae_tasks through export and import', async () => {
+      // Setup tasks in Eisenhower matrix format (actual storage)
+      const auroraeTasksData = {
+        urgent_important: [
+          { id: '1', text: 'Critical task', completed: false, createdAt: Date.now() }
+        ],
+        not_urgent_important: [
+          { id: '2', text: 'Important task', completed: false, createdAt: Date.now() }
+        ],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+      localStorage.setItem('aurorae_tasks', JSON.stringify(auroraeTasksData))
+
+      // Export
+      const exportedData = await getDataTemplate()
+
+      // Verify export includes both formats
+      expect(exportedData.auroraeTasksData).toEqual(auroraeTasksData)
+      expect(exportedData.tasks).toHaveLength(2)
+
+      // Clear and import
+      localStorage.clear()
+      const mockFile = new Blob([JSON.stringify(exportedData)], {
+        type: 'application/json'
+      })
+      await importJSON(mockFile)
+
+      // Verify import - should restore to dumps (not aurorae_tasks)
+      // Note: Import stores to 'tasks' key, not 'aurorae_tasks'
+      const importedTasks = JSON.parse(localStorage.getItem('tasks'))
+      expect(importedTasks).toHaveLength(2)
     })
   })
 
