@@ -213,7 +213,7 @@ export function validateTemplateData(template) {
     if (template.steps !== undefined && template.steps !== null) {
       if (!Array.isArray(template.steps)) {
         errors.push(
-          `Routine template steps must be an array (found: ${typeof template.steps})`
+          `Template steps must be an array (found: ${typeof template.steps})`
         )
       } else {
         // Validate each step structure
