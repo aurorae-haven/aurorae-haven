@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import HelpModal from '../components/BrainDump/HelpModal'
+import HelpModal from '../components/Notes/HelpModal'
 
 describe('HelpModal', () => {
   const mockOnClose = jest.fn()

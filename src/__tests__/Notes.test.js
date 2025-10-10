@@ -1,10 +1,10 @@
 /**
- * Integration tests for BrainDump component
+ * Integration tests for Notes component
  */
 
 import React from 'react'
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import BrainDump from '../pages/BrainDump.jsx'
+import Notes from '../pages/Notes.jsx'
 
 // Mock marked and DOMPurify
 jest.mock('marked', () => ({
@@ -44,14 +44,14 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock
 })
 
-describe('BrainDump Component', () => {
+describe('Notes Component', () => {
   beforeEach(() => {
     localStorage.clear()
   })
 
   describe('Basic functionality', () => {
-    test('renders BrainDump component', () => {
-      render(<BrainDump />)
+    test('renders Notes component', () => {
+      render(<Notes />)
       expect(
         screen.getByPlaceholderText('Start writing your note in Markdown...')
       ).toBeInTheDocument()
@@ -68,7 +68,7 @@ describe('BrainDump Component', () => {
         }
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -77,7 +77,7 @@ describe('BrainDump Component', () => {
 
     test('migrates old single-note content to new structure', () => {
       localStorage.setItem('brainDumpContent', 'Old content')
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -104,7 +104,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -134,7 +134,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -162,7 +162,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -197,7 +197,7 @@ describe('BrainDump Component', () => {
 
     test('removes empty task list item on second Enter', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -220,7 +220,7 @@ describe('BrainDump Component', () => {
 
     test('continues bullet list on Enter', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -237,7 +237,7 @@ describe('BrainDump Component', () => {
 
     test('removes empty bullet list item on second Enter', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -254,7 +254,7 @@ describe('BrainDump Component', () => {
 
     test('continues numbered list on Enter', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -271,7 +271,7 @@ describe('BrainDump Component', () => {
 
     test('removes empty numbered list item on second Enter', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -288,7 +288,7 @@ describe('BrainDump Component', () => {
 
     test('handles task list with asterisk marker', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -307,7 +307,7 @@ describe('BrainDump Component', () => {
 
     test('handles indented lists', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -324,7 +324,7 @@ describe('BrainDump Component', () => {
 
     test('does not intercept Enter with Shift key', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -341,7 +341,7 @@ describe('BrainDump Component', () => {
 
     test('does not intercept Enter with Ctrl key', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -358,7 +358,7 @@ describe('BrainDump Component', () => {
 
     test('does not intercept Enter on non-list content', async () => {
       setupNoteForTest()
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -388,7 +388,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -428,7 +428,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -446,7 +446,7 @@ describe('BrainDump Component', () => {
 
   describe('Multi-note functionality', () => {
     test('creates new note on new button click', () => {
-      render(<BrainDump />)
+      render(<Notes />)
 
       // Get all new note buttons (one in toolbar, one in notes list) and click the first one
       const newButtons = screen.getAllByRole('button', { name: /new note/i })
@@ -478,7 +478,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
       const textarea = screen.getByPlaceholderText(
         'Start writing your note in Markdown...'
       )
@@ -531,7 +531,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
 
       // Wait for note to be loaded
       await waitFor(() => {
@@ -561,7 +561,7 @@ describe('BrainDump Component', () => {
     })
 
     test('does not export when no note is selected', () => {
-      render(<BrainDump />)
+      render(<Notes />)
 
       const exportButton = screen.getByRole('button', { name: /export/i })
       expect(exportButton).toBeDisabled()
@@ -570,7 +570,7 @@ describe('BrainDump Component', () => {
 
   describe('Import functionality', () => {
     test('imports markdown file as new note', async () => {
-      render(<BrainDump />)
+      render(<Notes />)
 
       const importInput = screen.getByLabelText('Import markdown file')
 
@@ -608,7 +608,7 @@ describe('BrainDump Component', () => {
     })
 
     test('extracts title from filename correctly', async () => {
-      render(<BrainDump />)
+      render(<Notes />)
 
       const importInput = screen.getByLabelText('Import markdown file')
 
@@ -672,7 +672,7 @@ describe('BrainDump Component', () => {
       expect(exportedData.length).toBe(3)
 
       // Render component with initial notes
-      const { unmount } = render(<BrainDump />)
+      const { unmount } = render(<Notes />)
 
       // Wait for notes to load
       await waitFor(() => {
@@ -722,7 +722,7 @@ describe('BrainDump Component', () => {
 
       // Unmount and re-render to simulate page reload after import
       unmount()
-      render(<BrainDump />)
+      render(<Notes />)
 
       // Step 4: Verify all notes are restored
       await waitFor(() => {
@@ -824,7 +824,7 @@ describe('BrainDump Component', () => {
 
   describe('Category and filtering functionality', () => {
     test('creates new note with category field', () => {
-      render(<BrainDump />)
+      render(<Notes />)
 
       // Get all new note buttons (one in toolbar, one in notes list) and click the first one
       const newButtons = screen.getAllByRole('button', { name: /new note/i })
@@ -850,7 +850,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(oldNotes))
 
-      render(<BrainDump />)
+      render(<Notes />)
 
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
@@ -871,7 +871,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
 
       const categoryInput = screen.getByPlaceholderText('Category...')
       fireEvent.change(categoryInput, { target: { value: 'Work' } })
@@ -888,7 +888,7 @@ describe('BrainDump Component', () => {
     })
 
     test('opens filter modal when filter button is clicked', () => {
-      render(<BrainDump />)
+      render(<Notes />)
 
       const filterButton = screen.getByRole('button', { name: /filter notes/i })
       fireEvent.click(filterButton)
@@ -909,7 +909,7 @@ describe('BrainDump Component', () => {
       ]
       localStorage.setItem('brainDumpEntries', JSON.stringify(mockEntries))
 
-      render(<BrainDump />)
+      render(<Notes />)
 
       expect(screen.getByText('Personal')).toBeInTheDocument()
     })

@@ -14,7 +14,7 @@
 /* Feature-specific styles */
 @import './schedule.css';
 @import './sequences.css';
-@import './brain-dump.css';
+@import './notes.css';
 @import './tasks.css';
 
 /* Common UI components */

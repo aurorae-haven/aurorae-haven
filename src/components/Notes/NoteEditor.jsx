@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { handleEnterKey } from '../../utils/listContinuation'
-import { getUniqueCategories } from '../../utils/brainDump/noteFilters'
+import { getUniqueCategories } from '../../utils/notes/noteFilters'
 
 // Editor pane width constraints (percentage of container)
 const MIN_EDITOR_WIDTH_PERCENT = 20

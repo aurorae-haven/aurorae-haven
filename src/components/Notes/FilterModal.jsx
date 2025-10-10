@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { getUniqueCategories } from '../../utils/brainDump/noteFilters'
+import { getUniqueCategories } from '../../utils/notes/noteFilters'
 
 /**
  * Modal for filtering notes by category and date

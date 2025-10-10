@@ -21,7 +21,7 @@ import Toast from './components/Toast.jsx'
 import Home from './pages/Home.jsx'
 import Schedule from './pages/Schedule.jsx'
 import Sequences from './pages/Sequences.jsx'
-import BrainDump from './pages/BrainDump.jsx'
+import Notes from './pages/Notes.jsx'
 import Tasks from './pages/Tasks.jsx'
 import Habits from './pages/Habits.jsx'
 import Stats from './pages/Stats.jsx'
@@ -110,7 +110,7 @@ function RouterApp() {
           <Route path='/home' element={<Home />} />
           <Route path='/schedule' element={<Schedule />} />
           <Route path='/sequences' element={<Sequences />} />
-          <Route path='/braindump' element={<BrainDump />} />
+          <Route path='/braindump' element={<Notes />} />
           <Route path='/tasks' element={<Tasks />} />
           <Route path='/habits' element={<Habits />} />
           <Route path='/stats' element={<Stats />} />

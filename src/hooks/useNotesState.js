@@ -5,14 +5,14 @@ import {
   updateNote,
   saveNotesToStorage,
   loadNotesFromStorage
-} from '../utils/brainDump/noteOperations'
-import { filterNotes as filterNotesUtil } from '../utils/brainDump/noteFilters'
+} from '../utils/notes/noteOperations'
+import { filterNotes as filterNotesUtil } from '../utils/notes/noteFilters'
 
 /**
- * Custom hook for managing BrainDump notes state
+ * Custom hook for managing Notes state
  * Handles loading, saving, filtering, and CRUD operations
  */
-export function useBrainDumpState() {
+export function useNotesState() {
   const [notes, setNotes] = useState([])
   const [currentNoteId, setCurrentNoteId] = useState(null)
   const [title, setTitle] = useState('')
