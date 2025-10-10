@@ -275,9 +275,25 @@ console.log(data)
 // {
 //   version: 1,
 //   exportedAt: "2025-01-15T10:00:00Z",
-//   tasks: [...],
+//   tasks: [...],              // Flattened tasks from all quadrants
 //   sequences: [...],
-//   ...
+//   habits: [...],
+//   dumps: [...],              // Brain dump entries
+//   schedule: [...],
+//   auroraeTasksData: {        // Original Eisenhower matrix format
+//     urgent_important: [...],
+//     not_urgent_important: [...],
+//     urgent_not_important: [...],
+//     not_urgent_not_important: [...]
+//   },
+//   brainDump: {              // Brain dump metadata
+//     content: "...",
+//     tags: "...",
+//     versions: [...],
+//     entries: [...]
+//   },
+//   stats: [...],
+//   fileRefs: [...]
 // }
 ```
 

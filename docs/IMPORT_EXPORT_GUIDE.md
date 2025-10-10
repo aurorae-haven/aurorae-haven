@@ -39,10 +39,59 @@ The export includes:
 
 ### Export File Structure
 
+The export file contains all your data in a structured JSON format:
+
 ```json
 {
   "version": 1,
   "exportedAt": "2025-01-15T12:34:56.789Z",
+  "tasks": [
+    {
+      "id": "uuid-1",
+      "text": "Do this now",
+      "completed": false,
+      "createdAt": 1704453600000
+    },
+    {
+      "id": "uuid-2",
+      "text": "Plan ahead",
+      "completed": false,
+      "createdAt": 1704453700000
+    }
+  ],
+  "sequences": [],
+  "habits": [],
+  "dumps": [
+    {
+      "id": "note_1",
+      "title": "My Note",
+      "content": "# Note Content\n\nSome text here",
+      "category": "ideas",
+      "createdAt": "2025-01-15T12:00:00Z",
+      "updatedAt": "2025-01-15T12:30:00Z"
+    }
+  ],
+  "schedule": [],
+  "auroraeTasksData": {
+    "urgent_important": [
+      {
+        "id": "uuid-1",
+        "text": "Do this now",
+        "completed": false,
+        "createdAt": 1704453600000
+      }
+    ],
+    "not_urgent_important": [
+      {
+        "id": "uuid-2",
+        "text": "Plan ahead",
+        "completed": false,
+        "createdAt": 1704453700000
+      }
+    ],
+    "urgent_not_important": [],
+    "not_urgent_not_important": []
+  },
   "brainDump": {
     "content": "# Your markdown content here\n\n- [ ] Task 1\n- [x] Task 2",
     "tags": "<span class=\"tag\">#idea</span><span class=\"tag\">#urgent</span>",
@@ -54,27 +103,39 @@ The export includes:
         "preview": "Previous version content..."
       }
     ],
-    "entries": []
-  },
-  "tasks": [],
-  "sequences": [],
-  "habits": [],
-  "schedule": [],
-  "auroraeTasksData": {
-    "urgent_important": [
+    "entries": [
       {
-        "id": 1,
-        "text": "Do this now",
-        "completed": false,
-        "createdAt": 1704453600000
+        "id": "note_1",
+        "title": "My Note",
+        "content": "# Note Content",
+        "category": "ideas",
+        "createdAt": "2025-01-15T12:00:00Z",
+        "updatedAt": "2025-01-15T12:30:00Z"
       }
-    ],
-    "not_urgent_important": [],
-    "urgent_not_important": [],
-    "not_urgent_not_important": []
+    ]
   }
 }
 ```
+
+**Key Fields Explained:**
+
+- **`version`** (number): Data format version for compatibility checking
+- **`exportedAt`** (ISO timestamp): When the export was created
+- **`tasks`** (array): Flattened array of all tasks from all quadrants
+- **`sequences`** (array): Saved routine sequences
+- **`habits`** (array): Habit tracking data
+- **`dumps`** (array): Brain dump notes/entries
+- **`schedule`** (array): Calendar/schedule events
+- **`auroraeTasksData`** (object): Original Eisenhower matrix format with four quadrants:
+  - `urgent_important`: Do first (high priority, urgent)
+  - `not_urgent_important`: Schedule (high priority, not urgent)
+  - `urgent_not_important`: Delegate (low priority, urgent)
+  - `not_urgent_not_important`: Eliminate (low priority, not urgent)
+- **`brainDump`** (object): Brain dump metadata and version history:
+  - `content`: Current markdown content
+  - `tags`: HTML tag palette
+  - `versions`: Version history (up to 50 versions)
+  - `entries`: Same as `dumps` array (for backward compatibility)
 
 ### Export Validation
 
@@ -198,15 +259,30 @@ If import fails, you'll see an error message:
 
 ### Storage Keys
 
-Aurorae Haven uses these localStorage keys:
+Aurorae Haven uses these storage locations:
 
-- `aurorae_haven_data` - Main data store
-- `aurorae_tasks` - Tasks in Eisenhower matrix format (4 quadrants)
+**localStorage keys:**
+- `aurorae_tasks` - Tasks in Eisenhower matrix format (4 quadrants: urgent_important, not_urgent_important, urgent_not_important, not_urgent_not_important)
 - `brainDumpContent` - Current brain dump markdown content
 - `brainDumpTags` - HTML string of tag palette
 - `brainDumpVersions` - Array of version history objects
-- `brainDumpEntries` - Array of brain dump entry objects
-- `sj.schedule.events` - Schedule data
+- `brainDumpEntries` - Array of brain dump entry objects (exported as `dumps`)
+
+**IndexedDB stores:**
+- `tasks` - Task management (when using IndexedDB)
+- `sequences` - Routine sequences
+- `habits` - Habit tracking
+- `dumps` - Brain dump entries (when using IndexedDB)
+- `schedule` - Schedule events
+- `stats` - Statistics data
+- `file_refs` - File attachment references
+- `backups` - Automatic backups
+
+**Export Behavior:**
+- The export function first checks IndexedDB for data
+- If IndexedDB is empty or unavailable, it falls back to localStorage
+- From localStorage, it reads `aurorae_tasks` and `brainDumpEntries`
+- The export includes both the original Eisenhower format (`auroraeTasksData`) and a flattened tasks array (`tasks`)
 
 ### Data Format Version
 
