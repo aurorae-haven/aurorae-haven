@@ -5,6 +5,9 @@
 /* Base styles: variables, reset, body, backgrounds */
 @import './base.css';
 
+/* Planet background element */
+@import './planet.css';
+
 /* Navigation: appbar, tabs, mobile menu */
 @import './navigation.css';
 
