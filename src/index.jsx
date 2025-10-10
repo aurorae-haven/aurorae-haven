@@ -25,6 +25,7 @@ import Notes from './pages/Notes.jsx'
 import Tasks from './pages/Tasks.jsx'
 import Habits from './pages/Habits.jsx'
 import Stats from './pages/Stats.jsx'
+import Library from './pages/Library.jsx'
 import Settings from './pages/Settings.jsx'
 
 // Utils
@@ -120,6 +121,7 @@ function RouterApp() {
           <Route path='/tasks' element={<Tasks />} />
           <Route path='/habits' element={<Habits />} />
           <Route path='/stats' element={<Stats />} />
+          <Route path='/library' element={<Library />} />
           <Route path='/settings' element={<Settings />} />
 
           {/* Fallback: unknown routes → home */}

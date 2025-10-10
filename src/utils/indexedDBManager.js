@@ -3,7 +3,7 @@
 // Implements ARC-DAT-02: File attachment references
 
 const DB_NAME = 'aurorae_haven_db'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 // Object store names
 export const STORES = {
@@ -14,7 +14,8 @@ export const STORES = {
   SCHEDULE: 'schedule',
   STATS: 'stats',
   FILE_REFS: 'file_refs',
-  BACKUPS: 'backups'
+  BACKUPS: 'backups',
+  TEMPLATES: 'templates'
 }
 
 /**
@@ -105,6 +106,17 @@ export function openDB() {
           autoIncrement: true
         })
         backupStore.createIndex('timestamp', 'timestamp', { unique: false })
+      }
+
+      // TAB-LIB: Template storage
+      if (!db.objectStoreNames.contains(STORES.TEMPLATES)) {
+        const templateStore = db.createObjectStore(STORES.TEMPLATES, {
+          keyPath: 'id'
+        })
+        templateStore.createIndex('type', 'type', { unique: false })
+        templateStore.createIndex('title', 'title', { unique: false })
+        templateStore.createIndex('createdAt', 'createdAt', { unique: false })
+        templateStore.createIndex('lastUsed', 'lastUsed', { unique: false })
       }
     }
   })
