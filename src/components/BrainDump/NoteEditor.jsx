@@ -3,6 +3,12 @@ import PropTypes from 'prop-types'
 import { handleEnterKey } from '../../utils/listContinuation'
 import { getUniqueCategories } from '../../utils/brainDump/noteFilters'
 
+// Editor pane width constraints (percentage of container)
+const MIN_EDITOR_WIDTH_PERCENT = 20
+const MAX_EDITOR_WIDTH_PERCENT = 80
+const DEFAULT_EDITOR_WIDTH_PERCENT = 50
+const EDITOR_WIDTH_STEP_PERCENT = 5
+
 /**
  * Component for editing a note's title, category, and markdown content
  */
@@ -29,12 +35,7 @@ function NoteEditor({
   const editorRef = useRef(null)
   const previewRef = useRef(null)
   const splitContainerRef = useRef(null)
-  /**
-   * Controls the width of the editor pane as a percentage of the container width.
-   * Constraints: Must be between 20% and 80%.
-   * Units: Percentage of container width.
-   */
-  const [editorWidth, setEditorWidth] = useState(50)
+  const [editorWidth, setEditorWidth] = useState(DEFAULT_EDITOR_WIDTH_PERCENT)
   const [isResizing, setIsResizing] = useState(false)
 
   // Sync scroll between editor and preview
@@ -64,8 +65,8 @@ function NoteEditor({
       const containerRect = container.getBoundingClientRect()
       const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100
       
-      // Constrain width between 20% and 80%
-      const constrainedWidth = Math.min(Math.max(newWidth, 20), 80)
+      // Constrain width between min and max percentages
+      const constrainedWidth = Math.min(Math.max(newWidth, MIN_EDITOR_WIDTH_PERCENT), MAX_EDITOR_WIDTH_PERCENT)
       setEditorWidth(constrainedWidth)
     }
 
@@ -269,10 +270,10 @@ function NoteEditor({
             onKeyDown={(e) => {
               if (e.key === 'ArrowLeft') {
                 e.preventDefault()
-                setEditorWidth(Math.max(20, editorWidth - 5))
+                setEditorWidth(Math.max(MIN_EDITOR_WIDTH_PERCENT, editorWidth - EDITOR_WIDTH_STEP_PERCENT))
               } else if (e.key === 'ArrowRight') {
                 e.preventDefault()
-                setEditorWidth(Math.min(80, editorWidth + 5))
+                setEditorWidth(Math.min(MAX_EDITOR_WIDTH_PERCENT, editorWidth + EDITOR_WIDTH_STEP_PERCENT))
               }
             }}
           />
