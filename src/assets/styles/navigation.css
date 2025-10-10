@@ -423,6 +423,7 @@
   max-width: 1240px;
   margin: 0 auto;
   padding: 70px 18px 24px;
+  transition: max-width 0.3s ease;
 }
 
 /* Expand shell for Brain Dump to utilize more horizontal space on desktop */
@@ -439,6 +440,7 @@
   box-shadow: var(--shadow);
   backdrop-filter: var(--blur);
   overflow: hidden;
+  transition: width 0.3s ease, max-width 0.3s ease;
 }
 .card .card-h {
   padding: 10px 14px;
