@@ -69,22 +69,28 @@ function RouterApp() {
     setToast({ visible: false, message: '' })
   }, [])
 
-  const handleExport = useCallback(() => {
-    exportJSON()
-    showToast('Data exported (aurorae_haven_data.json)')
+  const handleExport = useCallback(async () => {
+    try {
+      await exportJSON()
+      showToast('Data exported successfully')
+    } catch (error) {
+      console.error('Export failed:', error)
+      showToast('Export failed: ' + error.message)
+    }
   }, [showToast])
 
   const handleImport = useCallback(
     async (e) => {
       const file = e.target.files?.[0]
       if (file) {
-        const result = await importJSON(file)
-        if (result.success) {
+        try {
+          await importJSON(file)
           showToast(IMPORT_SUCCESS_MESSAGE)
           // Use shared utility function for page reload
           reloadPageAfterDelay(1500)
-        } else {
-          showToast(result.message)
+        } catch (error) {
+          console.error('Import failed:', error)
+          showToast('Import failed: ' + error.message)
         }
         // allow re-selecting the same file next time
         e.target.value = ''
