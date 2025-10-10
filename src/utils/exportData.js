@@ -65,6 +65,48 @@ export async function getDataTemplate() {
     }
   }
 
+  // Also check for aurorae_tasks (Eisenhower matrix format)
+  try {
+    const tasksStr = localStorage.getItem('aurorae_tasks')
+    if (tasksStr) {
+      const auroraeTasksData = JSON.parse(tasksStr)
+      // Convert Eisenhower matrix format to flat array if tasks field is empty
+      if (data.tasks.length === 0 && auroraeTasksData) {
+        data.auroraeTasksData = auroraeTasksData
+        // Also flatten to tasks array for backward compatibility
+        data.tasks = []
+        for (const quadrant of Object.values(auroraeTasksData)) {
+          if (Array.isArray(quadrant)) {
+            data.tasks.push(...quadrant)
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse aurorae_tasks during export:', e)
+  }
+
+  // Also check for brainDumpEntries (notes)
+  try {
+    const entriesStr = localStorage.getItem('brainDumpEntries')
+    if (entriesStr) {
+      const entries = JSON.parse(entriesStr)
+      if (data.dumps.length === 0 && Array.isArray(entries)) {
+        data.dumps = entries
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse brainDumpEntries during export:', e)
+  }
+
+  // Include brain dump data for backward compatibility
+  data.brainDump = {
+    content: localStorage.getItem('brainDumpContent') || '',
+    tags: localStorage.getItem('brainDumpTags') || '',
+    versions: JSON.parse(localStorage.getItem('brainDumpVersions') || '[]'),
+    entries: JSON.parse(localStorage.getItem('brainDumpEntries') || '[]')
+  }
+
   return data
 }
 

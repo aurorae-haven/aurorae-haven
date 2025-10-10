@@ -167,6 +167,65 @@ describe('Data Manager', () => {
       expect(data.dumps).toEqual([])
       expect(data.schedule).toEqual([])
     })
+
+    it('should export aurorae_tasks (Eisenhower matrix format)', async () => {
+      // Setup tasks in Eisenhower matrix format (actual storage format)
+      const auroraeTasksData = {
+        urgent_important: [
+          {
+            id: '1',
+            text: 'Important task',
+            completed: false,
+            createdAt: Date.now()
+          }
+        ],
+        not_urgent_important: [
+          {
+            id: '2',
+            text: 'Plan ahead',
+            completed: false,
+            createdAt: Date.now()
+          }
+        ],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+      localStorage.setItem('aurorae_tasks', JSON.stringify(auroraeTasksData))
+
+      const data = await getDataTemplate()
+
+      // Should include the original Eisenhower format
+      expect(data.auroraeTasksData).toEqual(auroraeTasksData)
+
+      // Should also flatten to tasks array
+      expect(data.tasks).toHaveLength(2)
+      expect(data.tasks[0].text).toBe('Important task')
+      expect(data.tasks[1].text).toBe('Plan ahead')
+    })
+
+    it('should export brainDumpEntries as dumps', async () => {
+      // Setup brain dump entries (actual storage format for notes)
+      const entries = [
+        {
+          id: 'note_1',
+          title: 'My Note',
+          content: '# Test Content',
+          category: 'ideas',
+          createdAt: '2025-01-01T00:00:00Z',
+          updatedAt: '2025-01-01T00:00:00Z'
+        }
+      ]
+      localStorage.setItem('brainDumpEntries', JSON.stringify(entries))
+
+      const data = await getDataTemplate()
+
+      // Should export as dumps
+      expect(data.dumps).toEqual(entries)
+
+      // Should also include brainDump metadata
+      expect(data.brainDump).toHaveProperty('entries')
+      expect(data.brainDump.entries).toEqual(entries)
+    })
   })
 
   describe('exportJSON', () => {
