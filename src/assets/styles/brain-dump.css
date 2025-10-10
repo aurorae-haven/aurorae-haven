@@ -331,21 +331,17 @@
   width: 100%;
 }
 
-#preview {
-  min-height: 0;
-}
-
-#preview a {
+.preview a {
   color: var(--mint);
   text-decoration: underline;
 }
 
-#preview a:hover {
+.preview a:hover {
   color: var(--ink);
   text-decoration: underline;
 }
 
-#preview img {
+.preview img {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
@@ -353,11 +349,11 @@
   display: block;
 }
 
-#preview .katex {
+.preview .katex {
   font-size: 1.1em;
 }
 
-#preview .katex-display {
+.preview .katex-display {
   margin: 16px 0;
   overflow-x: auto;
   overflow-y: hidden;
