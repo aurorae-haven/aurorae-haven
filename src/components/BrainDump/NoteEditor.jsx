@@ -231,7 +231,7 @@ function NoteEditor({
           className='note-editor-split'
           ref={splitContainerRef}
           style={{
-            gridTemplateColumns: `${editorWidth}% 4px ${100 - editorWidth}%`
+            '--editor-width': `${editorWidth}%`
           }}
         >
           <div className='editor-pane'>
