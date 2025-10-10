@@ -70,8 +70,7 @@ export async function getDataTemplate() {
     const tasksStr = localStorage.getItem('aurorae_tasks')
     if (tasksStr) {
       const auroraeTasksData = JSON.parse(tasksStr)
-      // Convert Eisenhower matrix format to flat array if tasks field is empty
-      if (data.tasks.length === 0 && auroraeTasksData) {
+      if (auroraeTasksData) {
         data.auroraeTasksData = auroraeTasksData
         // Also flatten to tasks array for backward compatibility
         data.tasks = []
@@ -91,7 +90,7 @@ export async function getDataTemplate() {
     const entriesStr = localStorage.getItem('brainDumpEntries')
     if (entriesStr) {
       const entries = JSON.parse(entriesStr)
-      if (data.dumps.length === 0 && Array.isArray(entries)) {
+      if (Array.isArray(entries)) {
         data.dumps = entries
       }
     }

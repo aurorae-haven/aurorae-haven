@@ -226,6 +226,40 @@ describe('Data Manager', () => {
       expect(data.brainDump).toHaveProperty('entries')
       expect(data.brainDump.entries).toEqual(entries)
     })
+
+    it('should roundtrip aurorae_tasks through export and import', async () => {
+      // Setup tasks in Eisenhower matrix format (actual storage)
+      const auroraeTasksData = {
+        urgent_important: [
+          { id: '1', text: 'Critical task', completed: false, createdAt: Date.now() }
+        ],
+        not_urgent_important: [
+          { id: '2', text: 'Important task', completed: false, createdAt: Date.now() }
+        ],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+      localStorage.setItem('aurorae_tasks', JSON.stringify(auroraeTasksData))
+
+      // Export
+      const exportedData = await getDataTemplate()
+
+      // Verify export includes both formats
+      expect(exportedData.auroraeTasksData).toEqual(auroraeTasksData)
+      expect(exportedData.tasks).toHaveLength(2)
+
+      // Clear and import
+      localStorage.clear()
+      const mockFile = new Blob([JSON.stringify(exportedData)], {
+        type: 'application/json'
+      })
+      await importJSON(mockFile)
+
+      // Verify import - should restore to dumps (not aurorae_tasks)
+      // Note: Import stores to 'tasks' key, not 'aurorae_tasks'
+      const importedTasks = JSON.parse(localStorage.getItem('tasks'))
+      expect(importedTasks).toHaveLength(2)
+    })
   })
 
   describe('exportJSON', () => {
