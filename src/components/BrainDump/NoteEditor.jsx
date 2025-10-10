@@ -29,7 +29,12 @@ function NoteEditor({
   const editorRef = useRef(null)
   const previewRef = useRef(null)
   const splitContainerRef = useRef(null)
-  const [editorWidth, setEditorWidth] = useState(50) // Percentage
+  /**
+   * Controls the width of the editor pane as a percentage of the container width.
+   * Constraints: Must be between 20% and 80%.
+   * Units: Percentage of container width.
+   */
+  const [editorWidth, setEditorWidth] = useState(50)
   const [isResizing, setIsResizing] = useState(false)
 
   // Sync scroll between editor and preview
