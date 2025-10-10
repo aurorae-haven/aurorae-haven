@@ -127,10 +127,14 @@ describe('templatesManager', () => {
     test('throws error when template type is invalid', async () => {
       const template = { type: 'invalid', title: 'Test Task' }
 
-      await expect(saveTemplate(template)).rejects.toThrow(
-        'Invalid template data'
-      )
-      await expect(saveTemplate(template)).rejects.toThrow('task, routine')
+      try {
+        await saveTemplate(template)
+        // If no error is thrown, fail the test
+        throw new Error('Expected saveTemplate to throw')
+      } catch (err) {
+        expect(err.message).toContain('Invalid template data')
+        expect(err.message).toContain('task, routine')
+      }
     })
 
     test('throws error when title is missing', async () => {
