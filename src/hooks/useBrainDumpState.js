@@ -26,21 +26,19 @@ export function useBrainDumpState() {
     customEnd: ''
   })
   
-  // Track if we're currently loading a note (not editing)
-  // This prevents auto-save from triggering during programmatic note loads
-  const isLoadingRef = useRef(false)
+  // Track the previous noteId to detect note switches
+  // This helps prevent auto-save from triggering during programmatic note loads
+  const prevNoteIdRef = useRef(null)
+  const skipNextSaveRef = useRef(false)
+  const autosaveTimeoutRef = useRef(null)
 
   // Load a note
   const loadNote = useCallback((note) => {
-    isLoadingRef.current = true
+    skipNextSaveRef.current = true // Skip autosave on next render
     setCurrentNoteId(note.id)
     setTitle(note.title)
     setContent(note.content)
     setCategory(note.category || '')
-    // Reset loading flag after state updates
-    setTimeout(() => {
-      isLoadingRef.current = false
-    }, 0)
   }, [])
 
   // Load saved notes on mount (migrate old single note if needed)
@@ -98,12 +96,29 @@ export function useBrainDumpState() {
     // Don't save if note is locked
     if (currentNote.locked) return
     
-    // Don't save if we're currently loading a note (not editing)
-    if (isLoadingRef.current) return
+    // Skip autosave immediately after loadNote is called
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false
+      prevNoteIdRef.current = currentNoteId
+      return
+    }
+    
+    // Also skip if noteId changed (double safety check)
+    if (prevNoteIdRef.current !== currentNoteId) {
+      prevNoteIdRef.current = currentNoteId
+      return
+    }
 
     const saveTimeout = setTimeout(() => {
       // Use functional update to get latest notes state
       setNotes((latestNotes) => {
+        // Double-check that the note still exists before saving
+        // (it might have been deleted while the timeout was pending)
+        const noteStillExists = latestNotes.find((n) => n.id === currentNoteId)
+        if (!noteStillExists) {
+          return latestNotes  // Don't update if note was deleted
+        }
+        
         const updatedNotes = updateNote(latestNotes, currentNoteId, {
           title,
           content,
@@ -114,7 +129,13 @@ export function useBrainDumpState() {
       })
     }, 500) // Debounce autosave
 
-    return () => clearTimeout(saveTimeout)
+    // Store timeout ID so it can be cleared externally (e.g., during delete)
+    autosaveTimeoutRef.current = saveTimeout
+
+    return () => {
+      clearTimeout(saveTimeout)
+      autosaveTimeoutRef.current = null
+    }
   }, [currentNoteId, title, content, category, currentNote])
 
   // Create new note
@@ -131,6 +152,14 @@ export function useBrainDumpState() {
   const updateNotes = (updatedNotes) => {
     setNotes(updatedNotes)
     saveNotesToStorage(updatedNotes)
+  }
+
+  // Clear pending autosave timeout (useful when deleting notes)
+  const clearAutosaveTimeout = () => {
+    if (autosaveTimeoutRef.current) {
+      clearTimeout(autosaveTimeoutRef.current)
+      autosaveTimeoutRef.current = null
+    }
   }
 
   return {
@@ -154,6 +183,7 @@ export function useBrainDumpState() {
     // Actions
     loadNote,
     createNote,
-    updateNotes
+    updateNotes,
+    clearAutosaveTimeout
   }
 }
