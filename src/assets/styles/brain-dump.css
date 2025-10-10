@@ -260,11 +260,35 @@
 
 .brain-dump-split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: 1fr 4px 1fr;
+  gap: 0;
   height: 100%;
   flex: 1;
   min-height: 0;
+}
+
+.resize-handle {
+  width: 4px;
+  min-width: 4px;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: var(--line);
+  cursor: col-resize;
+  transition: background var(--dur) var(--ease);
+  position: relative;
+  z-index: 1;
+}
+
+.resize-handle:hover,
+.resize-handle:focus {
+  background: var(--mint);
+  outline: none;
+}
+
+.resize-handle:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 0;
 }
 
 .editor-pane {
@@ -292,7 +316,6 @@
   position: relative;
   padding: 12px;
   background: rgba(16, 20, 44, 0.2);
-  border-left: 1px solid var(--line);
 }
 
 .preview-pane:focus {

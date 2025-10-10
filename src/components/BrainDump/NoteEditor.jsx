@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { handleEnterKey } from '../../utils/listContinuation'
 import { getUniqueCategories } from '../../utils/brainDump/noteFilters'
@@ -28,6 +28,9 @@ function NoteEditor({
 }) {
   const editorRef = useRef(null)
   const previewRef = useRef(null)
+  const splitContainerRef = useRef(null)
+  const [editorWidth, setEditorWidth] = useState(50) // Percentage
+  const [isResizing, setIsResizing] = useState(false)
 
   // Sync scroll between editor and preview
   useEffect(() => {
@@ -44,6 +47,40 @@ function NoteEditor({
     editor.addEventListener('scroll', handleScroll)
     return () => editor.removeEventListener('scroll', handleScroll)
   }, [])
+
+  // Handle resize functionality
+  useEffect(() => {
+    if (!isResizing) return
+
+    const handleMouseMove = (e) => {
+      const container = splitContainerRef.current
+      if (!container) return
+
+      const containerRect = container.getBoundingClientRect()
+      const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100
+      
+      // Constrain width between 20% and 80%
+      const constrainedWidth = Math.min(Math.max(newWidth, 20), 80)
+      setEditorWidth(constrainedWidth)
+    }
+
+    const handleMouseUp = () => {
+      setIsResizing(false)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+  }, [isResizing])
+
+  const handleResizeStart = (e) => {
+    e.preventDefault()
+    setIsResizing(true)
+  }
 
   return (
     <>
@@ -182,7 +219,13 @@ function NoteEditor({
         </div>
       </div>
       <div className='card-b'>
-        <div className='brain-dump-split'>
+        <div 
+          className='brain-dump-split' 
+          ref={splitContainerRef}
+          style={{
+            gridTemplateColumns: `${editorWidth}% 4px ${100 - editorWidth}%`
+          }}
+        >
           <div className='editor-pane'>
             <textarea
               ref={editorRef}
@@ -213,6 +256,21 @@ function NoteEditor({
               aria-label='Markdown editor'
             />
           </div>
+          <button 
+            className='resize-handle'
+            onMouseDown={handleResizeStart}
+            aria-label='Resize editor and preview'
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'ArrowLeft') {
+                e.preventDefault()
+                setEditorWidth(Math.max(20, editorWidth - 5))
+              } else if (e.key === 'ArrowRight') {
+                e.preventDefault()
+                setEditorWidth(Math.min(80, editorWidth + 5))
+              }
+            }}
+          />
           <div className='preview-pane'>
             <div
               id='preview'
