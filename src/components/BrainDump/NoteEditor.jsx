@@ -220,7 +220,7 @@ function NoteEditor({
       </div>
       <div className='card-b'>
         <div 
-          className='brain-dump-split' 
+          className='note-editor-split' 
           ref={splitContainerRef}
           style={{
             gridTemplateColumns: `${editorWidth}% 4px ${100 - editorWidth}%`

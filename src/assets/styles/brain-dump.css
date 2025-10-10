@@ -258,7 +258,7 @@
   cursor: not-allowed;
 }
 
-.brain-dump-split {
+.note-editor-split {
   display: grid;
   grid-template-columns: 1fr 4px 1fr;
   gap: 0;
