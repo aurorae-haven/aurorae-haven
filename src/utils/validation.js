@@ -7,6 +7,9 @@ const VALIDATION_TYPES = {
   ARRAY: 'array'
 }
 
+// Valid template types
+const VALID_TEMPLATE_TYPES = ['task', 'routine']
+
 // BrainDump field type definitions for validation
 const BRAIN_DUMP_FIELDS = {
   content: VALIDATION_TYPES.STRING,
@@ -156,6 +159,112 @@ export function validateImportData(obj) {
   // Basic structure validation
   if (!obj || typeof obj !== 'object') {
     errors.push('Import data must be an object')
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
+/**
+ * @typedef {Object} ValidateTemplateResult
+ * @property {boolean} valid - Whether the template data is valid
+ * @property {string[]} errors - List of validation error messages
+ */
+
+/**
+ * Validate template data structure
+ * @param {object} template - Template data to validate
+ * @returns {ValidateTemplateResult}
+ */
+export function validateTemplateData(template) {
+  const errors = []
+
+  // Check if template is an object
+  if (!template || typeof template !== 'object') {
+    errors.push('Template must be an object')
+    return { valid: false, errors }
+  }
+
+  // Validate required field: type
+  if (!template.type) {
+    errors.push('Template type is required')
+  } else if (!VALID_TEMPLATE_TYPES.includes(template.type)) {
+    errors.push(
+      `Template type must be one of: ${VALID_TEMPLATE_TYPES.join(', ')} (found: ${template.type})`
+    )
+  }
+
+  // Validate required field: title
+  if (template.title === undefined || template.title === null) {
+    errors.push('Template title is required')
+  } else if (typeof template.title !== 'string') {
+    errors.push(
+      `Template title must be a string (found: ${typeof template.title})`
+    )
+  } else if (template.title.trim() === '') {
+    errors.push('Template title cannot be empty')
+  }
+
+  // Type-specific validation
+  if (template.type === 'routine') {
+    // Validate steps for routine templates
+    if (template.steps !== undefined && template.steps !== null) {
+      if (!Array.isArray(template.steps)) {
+        errors.push(
+          `Routine template steps must be an array (found: ${typeof template.steps})`
+        )
+      } else {
+        // Validate each step structure
+        template.steps.forEach((step, index) => {
+          if (!step || typeof step !== 'object') {
+            errors.push(`Step ${index} must be an object`)
+          } else {
+            if (!step.label || typeof step.label !== 'string') {
+              errors.push(
+                `Step ${index} must have a label (string) property`
+              )
+            }
+            if (
+              step.duration !== undefined &&
+              typeof step.duration !== 'number'
+            ) {
+              errors.push(
+                `Step ${index} duration must be a number (found: ${typeof step.duration})`
+              )
+            }
+          }
+        })
+      }
+    }
+
+    // Validate estimatedDuration if present
+    if (
+      template.estimatedDuration !== undefined &&
+      template.estimatedDuration !== null
+    ) {
+      if (typeof template.estimatedDuration !== 'number') {
+        errors.push(
+          `Routine estimatedDuration must be a number (found: ${typeof template.estimatedDuration})`
+        )
+      } else if (template.estimatedDuration < 0) {
+        errors.push('Routine estimatedDuration must be non-negative')
+      }
+    }
+  }
+
+  // Validate tags if present
+  if (template.tags !== undefined && template.tags !== null) {
+    if (!Array.isArray(template.tags)) {
+      errors.push(`Template tags must be an array (found: ${typeof template.tags})`)
+    } else {
+      template.tags.forEach((tag, index) => {
+        if (typeof tag !== 'string') {
+          errors.push(`Tag ${index} must be a string (found: ${typeof tag})`)
+        }
+      })
+    }
   }
 
   return {

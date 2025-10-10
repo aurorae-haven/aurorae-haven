@@ -115,6 +115,74 @@ describe('templatesManager', () => {
         'IndexedDB not available'
       )
     })
+
+    test('throws error when template type is missing', async () => {
+      const template = { title: 'Test Task' }
+
+      await expect(saveTemplate(template)).rejects.toThrow(
+        'Invalid template data: Template type is required'
+      )
+    })
+
+    test('throws error when template type is invalid', async () => {
+      const template = { type: 'invalid', title: 'Test Task' }
+
+      await expect(saveTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
+      await expect(saveTemplate(template)).rejects.toThrow('task, routine')
+    })
+
+    test('throws error when title is missing', async () => {
+      const template = { type: 'task' }
+
+      await expect(saveTemplate(template)).rejects.toThrow(
+        'Invalid template data: Template title is required'
+      )
+    })
+
+    test('throws error when title is empty', async () => {
+      const template = { type: 'task', title: '' }
+
+      await expect(saveTemplate(template)).rejects.toThrow(
+        'Invalid template data: Template title cannot be empty'
+      )
+    })
+
+    test('throws error when title is not a string', async () => {
+      const template = { type: 'task', title: 123 }
+
+      await expect(saveTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
+      await expect(saveTemplate(template)).rejects.toThrow('must be a string')
+    })
+
+    test('throws error when routine steps is not an array', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Test Routine',
+        steps: 'not an array'
+      }
+
+      await expect(saveTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
+      await expect(saveTemplate(template)).rejects.toThrow('must be an array')
+    })
+
+    test('throws error when routine step is invalid', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Test Routine',
+        steps: [{ duration: 60 }]
+      }
+
+      await expect(saveTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
+      await expect(saveTemplate(template)).rejects.toThrow('must have a label')
+    })
   })
 
   describe('updateTemplate', () => {
@@ -138,6 +206,37 @@ describe('templatesManager', () => {
       await expect(updateTemplate('non-existent', {})).rejects.toThrow(
         'Template not found'
       )
+    })
+
+    test('throws error when update results in invalid template', async () => {
+      const existingTemplate = {
+        id: 'test-id',
+        type: 'task',
+        title: 'Old Title'
+      }
+
+      mockDB.mockStore.get.mockReturnValue(Promise.resolve(existingTemplate))
+
+      await expect(
+        updateTemplate('test-id', { title: '' })
+      ).rejects.toThrow('Invalid template data')
+      await expect(
+        updateTemplate('test-id', { title: '' })
+      ).rejects.toThrow('title cannot be empty')
+    })
+
+    test('throws error when updating to invalid type', async () => {
+      const existingTemplate = {
+        id: 'test-id',
+        type: 'task',
+        title: 'Test Title'
+      }
+
+      mockDB.mockStore.get.mockReturnValue(Promise.resolve(existingTemplate))
+
+      await expect(
+        updateTemplate('test-id', { type: 'invalid' })
+      ).rejects.toThrow('Invalid template data')
     })
   })
 
