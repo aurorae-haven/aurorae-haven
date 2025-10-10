@@ -51,7 +51,10 @@ function TemplateEditor({ template, onSave, onClose }) {
       newErrors.steps = 'At least one step is required for routines'
     }
 
-    if (formData.estimatedDuration && formData.estimatedDuration < 0) {
+    if (
+      formData.estimatedDuration &&
+      Number(formData.estimatedDuration) < 0
+    ) {
       newErrors.estimatedDuration = 'Duration cannot be negative'
     }
 
