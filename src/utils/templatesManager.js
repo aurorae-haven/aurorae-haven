@@ -5,6 +5,7 @@
 
 import { openDB, isIndexedDBAvailable } from './indexedDBManager'
 import { generateSecureUUID } from './uuidGenerator'
+import { validateTemplateData } from './validation'
 
 const TEMPLATES_STORE = 'templates'
 
@@ -72,6 +73,14 @@ export async function saveTemplate(template) {
     throw new Error('IndexedDB not available')
   }
 
+  // Validate template data
+  const validation = validateTemplateData(template)
+  if (!validation.valid) {
+    throw new Error(
+      `Invalid template data: ${validation.errors.join('; ')}`
+    )
+  }
+
   try {
     const db = await openDB()
     const tx = db.transaction(TEMPLATES_STORE, 'readwrite')
@@ -132,6 +141,14 @@ export async function updateTemplate(templateId, updates) {
       ...updates,
       id: templateId, // Ensure ID doesn't change
       updatedAt: new Date().toISOString()
+    }
+
+    // Validate the updated template data
+    const validation = validateTemplateData(updated)
+    if (!validation.valid) {
+      throw new Error(
+        `Invalid template data: ${validation.errors.join('; ')}`
+      )
     }
 
     await store.put(updated)
