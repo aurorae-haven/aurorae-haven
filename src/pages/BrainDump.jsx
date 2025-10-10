@@ -136,6 +136,7 @@ function BrainDump() {
     // Load next note or create new empty note if the deleted note was current
     if (noteId === currentNoteId) {
       if (updatedNotes.length > 0) {
+        updateNotes(updatedNotes)
         loadNote(updatedNotes[0])
       } else {
         // Auto-create new empty note when deleting the last note
@@ -149,6 +150,9 @@ function BrainDump() {
         })
         loadNote(newNote)
       }
+    } else {
+      // Just update notes if deleted note wasn't current
+      updateNotes(updatedNotes)
     }
 
     // Close context menu if open
