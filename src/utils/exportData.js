@@ -85,19 +85,20 @@ export async function getDataTemplate() {
     console.warn('Failed to parse aurorae_tasks during export:', e)
   }
 
-  // Parse brainDumpEntries once and use for both dumps and brainDump.entries
+  // Parse brainDumpEntries once for both dumps override and brainDump.entries
   let entries = []
   try {
     const entriesStr = localStorage.getItem('brainDumpEntries')
-    entries = entriesStr ? JSON.parse(entriesStr) : []
+    if (entriesStr) {
+      entries = JSON.parse(entriesStr)
+      // Override dumps field with brainDumpEntries if it exists
+      if (Array.isArray(entries)) {
+        data.dumps = entries
+      }
+    }
   } catch (e) {
     console.warn('Failed to parse brainDumpEntries during export:', e)
     entries = []
-  }
-  
-  // Override dumps field with entries if brainDumpEntries has data
-  if (Array.isArray(entries) && entries.length > 0) {
-    data.dumps = entries
   }
 
   // Parse brainDumpVersions for backward compatibility
