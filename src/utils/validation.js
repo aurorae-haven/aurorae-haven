@@ -246,7 +246,7 @@ export function validateTemplateData(template) {
     ) {
       if (typeof template.estimatedDuration !== 'number') {
         errors.push(
-          `Routine estimatedDuration must be a number (found: ${typeof template.estimatedDuration})`
+          `Template estimatedDuration must be a number (found: ${typeof template.estimatedDuration})`
         )
       } else if (template.estimatedDuration < 0) {
         errors.push('Template estimatedDuration must be non-negative')
