@@ -63,10 +63,14 @@ function NoteEditor({
       if (!container) return
 
       const containerRect = container.getBoundingClientRect()
-      const newWidth = ((e.clientX - containerRect.left) / containerRect.width) * 100
-      
+      const newWidth =
+        ((e.clientX - containerRect.left) / containerRect.width) * 100
+
       // Constrain width between min and max percentages
-      const constrainedWidth = Math.min(Math.max(newWidth, MIN_EDITOR_WIDTH_PERCENT), MAX_EDITOR_WIDTH_PERCENT)
+      const constrainedWidth = Math.min(
+        Math.max(newWidth, MIN_EDITOR_WIDTH_PERCENT),
+        MAX_EDITOR_WIDTH_PERCENT
+      )
       setEditorWidth(constrainedWidth)
     }
 
@@ -138,95 +142,93 @@ function NoteEditor({
         </div>
         <div className='toolbar'>
           <label className='btn' aria-label='Import' title='Import'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-                <polyline points='17 8 12 3 7 8' />
-                <line x1='12' y1='3' x2='12' y2='15' />
-              </svg>
-              <input
-                type='file'
-                accept='.md,.markdown,.txt'
-                onChange={onImport}
-                style={{ display: 'none' }}
-                aria-label='Import markdown file'
-              />
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+              <polyline points='17 8 12 3 7 8' />
+              <line x1='12' y1='3' x2='12' y2='15' />
+            </svg>
+            <input
+              type='file'
+              accept='.md,.markdown,.txt'
+              onChange={onImport}
+              style={{ display: 'none' }}
+              aria-label='Import markdown file'
+            />
           </label>
           <button
-              className='btn'
-              onClick={onExport}
-              aria-label='Export'
-              title='Export'
-              disabled={!currentNoteId}
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-                <polyline points='7 10 12 15 17 10' />
-                <line x1='12' y1='15' x2='12' y2='3' />
-              </svg>
+            className='btn'
+            onClick={onExport}
+            aria-label='Export'
+            title='Export'
+            disabled={!currentNoteId}
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
+              <polyline points='7 10 12 15 17 10' />
+              <line x1='12' y1='15' x2='12' y2='3' />
+            </svg>
           </button>
           <button
             className='btn btn-delete'
-              onClick={() => onDelete()}
-              aria-label='Delete'
-              title='Delete'
-              disabled={!currentNoteId || currentNote?.locked}
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
-                <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
-              </svg>
+            onClick={() => onDelete()}
+            aria-label='Delete'
+            title='Delete'
+            disabled={!currentNoteId || currentNote?.locked}
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
+              <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
+            </svg>
           </button>
           <button
             className='btn'
             onClick={onNewNote}
-              aria-label='New note'
-              title='New note'
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M12 5v14M5 12h14' />
-              </svg>
+            aria-label='New note'
+            title='New note'
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <path d='M12 5v14M5 12h14' />
+            </svg>
           </button>
           <button
             className='btn'
             onClick={onLockToggle}
-              aria-label={
-                currentNote?.locked ? 'Unlock note' : 'Lock note'
-              }
-              title={currentNote?.locked ? 'Unlock note' : 'Lock note'}
-              disabled={!currentNoteId}
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                {currentNote?.locked ? (
-                  <>
-                    <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
-                    <path d='M7 11V7a5 5 0 0 1 10 0v4' />
-                  </>
-                ) : (
-                  <>
-                    <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
-                    <path d='M7 11V7a5 5 0 0 1 9.9-1' />
-                  </>
-                )}
-              </svg>
+            aria-label={currentNote?.locked ? 'Unlock note' : 'Lock note'}
+            title={currentNote?.locked ? 'Unlock note' : 'Lock note'}
+            disabled={!currentNoteId}
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              {currentNote?.locked ? (
+                <>
+                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                  <path d='M7 11V7a5 5 0 0 1 10 0v4' />
+                </>
+              ) : (
+                <>
+                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
+                  <path d='M7 11V7a5 5 0 0 1 9.9-1' />
+                </>
+              )}
+            </svg>
           </button>
           <button
             className='btn'
             onClick={onShowDetails}
-              aria-label='Show note details'
-              title='Show note details'
-              disabled={!currentNoteId}
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <circle cx='12' cy='12' r='10' />
-                <line x1='12' y1='16' x2='12' y2='12' />
-                <line x1='12' y1='8' x2='12.01' y2='8' />
-              </svg>
+            aria-label='Show note details'
+            title='Show note details'
+            disabled={!currentNoteId}
+          >
+            <svg className='icon' viewBox='0 0 24 24'>
+              <circle cx='12' cy='12' r='10' />
+              <line x1='12' y1='16' x2='12' y2='12' />
+              <line x1='12' y1='8' x2='12.01' y2='8' />
+            </svg>
           </button>
         </div>
       </div>
       <div className='card-b'>
-        <div 
-          className='note-editor-split' 
+        <div
+          className='note-editor-split'
           ref={splitContainerRef}
           style={{
             gridTemplateColumns: `${editorWidth}% 4px ${100 - editorWidth}%`
@@ -240,17 +242,23 @@ function NoteEditor({
               value={content}
               onChange={(e) => onContentChange(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey) {
+                if (
+                  e.key === 'Enter' &&
+                  !e.shiftKey &&
+                  !e.ctrlKey &&
+                  !e.metaKey
+                ) {
                   const cursorPos = e.target.selectionStart
                   const result = handleEnterKey(content, cursorPos)
-                  
+
                   if (result) {
                     e.preventDefault()
                     onContentChange(result.newValue)
                     // Set cursor position after state update
                     setTimeout(() => {
                       if (editorRef.current) {
-                        editorRef.current.selectionStart = editorRef.current.selectionEnd = result.newCursorPos
+                        editorRef.current.selectionStart =
+                          editorRef.current.selectionEnd = result.newCursorPos
                       }
                     }, 0)
                   }
@@ -262,7 +270,7 @@ function NoteEditor({
               aria-label='Markdown editor'
             />
           </div>
-          <button 
+          <button
             className='resize-handle'
             onMouseDown={handleResizeStart}
             aria-label='Resize editor and preview'
@@ -270,10 +278,20 @@ function NoteEditor({
             onKeyDown={(e) => {
               if (e.key === 'ArrowLeft') {
                 e.preventDefault()
-                setEditorWidth(Math.max(MIN_EDITOR_WIDTH_PERCENT, editorWidth - EDITOR_WIDTH_STEP_PERCENT))
+                setEditorWidth(
+                  Math.max(
+                    MIN_EDITOR_WIDTH_PERCENT,
+                    editorWidth - EDITOR_WIDTH_STEP_PERCENT
+                  )
+                )
               } else if (e.key === 'ArrowRight') {
                 e.preventDefault()
-                setEditorWidth(Math.min(MAX_EDITOR_WIDTH_PERCENT, editorWidth + EDITOR_WIDTH_STEP_PERCENT))
+                setEditorWidth(
+                  Math.min(
+                    MAX_EDITOR_WIDTH_PERCENT,
+                    editorWidth + EDITOR_WIDTH_STEP_PERCENT
+                  )
+                )
               }
             }}
           />

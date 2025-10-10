@@ -1,5 +1,9 @@
 // Automatic backup utilities
-import { isIndexedDBAvailable, saveBackup, cleanOldBackups } from './indexedDBManager'
+import {
+  isIndexedDBAvailable,
+  saveBackup,
+  cleanOldBackups
+} from './indexedDBManager'
 import { getDataTemplate } from './exportData'
 
 // ARC-DAT-03: Automatic backup configuration

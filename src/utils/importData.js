@@ -1,6 +1,9 @@
 // Data import utilities
 import { validateImportData } from './validation'
-import { isIndexedDBAvailable, importAllData as importToIndexedDB } from './indexedDBManager'
+import {
+  isIndexedDBAvailable,
+  importAllData as importToIndexedDB
+} from './indexedDBManager'
 
 // Data schema field names
 const DATA_FIELDS = {
@@ -12,7 +15,8 @@ const DATA_FIELDS = {
 }
 
 // Import success message constant
-export const IMPORT_SUCCESS_MESSAGE = 'Data imported successfully. Page will reload...'
+export const IMPORT_SUCCESS_MESSAGE =
+  'Data imported successfully. Page will reload...'
 
 /**
  * Reload page after a delay
@@ -51,7 +55,10 @@ export async function importJSON(file) {
             resolve(true)
             return
           } catch (e) {
-            console.warn('IndexedDB import failed, falling back to localStorage:', e)
+            console.warn(
+              'IndexedDB import failed, falling back to localStorage:',
+              e
+            )
           }
         }
 

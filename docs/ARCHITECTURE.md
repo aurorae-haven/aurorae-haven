@@ -66,6 +66,7 @@ BrainDump.jsx (272 lines)
 ```
 
 **Custom Hooks:**
+
 - `useBrainDumpState` (140 lines): Manages notes state, localStorage, filtering
 - `useToast` (18 lines): Manages toast notifications
 
@@ -81,6 +82,7 @@ Tasks.jsx (275 lines)
 ```
 
 **Custom Hooks:**
+
 - `useTasksState` (117 lines): Manages tasks state, CRUD operations
 - `useDragAndDrop` (30 lines): Manages drag and drop functionality
 
@@ -101,13 +103,14 @@ export function useBrainDumpState() {
     notes,
     currentNote,
     loadNote,
-    createNote,
+    createNote
     // ... other actions
   }
 }
 ```
 
 **Benefits:**
+
 - Separates business logic from UI
 - Makes components focused on presentation
 - Easy to test in isolation
@@ -120,8 +123,8 @@ Components are composed into larger features:
 ```javascript
 // Example: BrainDump.jsx
 function BrainDump() {
-  const { notes, /* ... */ } = useBrainDumpState()
-  
+  const { notes /* ... */ } = useBrainDumpState()
+
   return (
     <>
       <NotesList notes={notes} />
@@ -132,6 +135,7 @@ function BrainDump() {
 ```
 
 **Benefits:**
+
 - Single Responsibility Principle
 - Easy to understand and modify
 - Better testing granularity
@@ -218,7 +222,7 @@ function ComponentName({ prop1, prop2 }) {
   // Effects
   // Event handlers
   // Render helpers
-  
+
   return (
     // JSX
   )
@@ -310,6 +314,7 @@ When adding new features:
 ### Bundle Size
 
 Current bundle analysis:
+
 - BrainDump module: ~25KB (down from ~40KB)
 - Tasks module: ~18KB (down from ~30KB)
 - Shared utilities: ~10KB

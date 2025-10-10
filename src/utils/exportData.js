@@ -1,7 +1,10 @@
 // Data export utilities
 import { generateSecureUUID } from './uuidGenerator'
 import { validateExportData } from './validation'
-import { isIndexedDBAvailable, exportAllData as exportFromIndexedDB } from './indexedDBManager'
+import {
+  isIndexedDBAvailable,
+  exportAllData as exportFromIndexedDB
+} from './indexedDBManager'
 
 // Data schema field names - centralized to prevent drift
 const DATA_FIELDS = {

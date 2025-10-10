@@ -440,7 +440,9 @@
   box-shadow: var(--shadow);
   backdrop-filter: var(--blur);
   overflow: hidden;
-  transition: width 0.3s ease, max-width 0.3s ease;
+  transition:
+    width 0.3s ease,
+    max-width 0.3s ease;
 }
 .card .card-h {
   padding: 10px 14px;
@@ -490,4 +492,3 @@
   fill: none;
   opacity: 0.92;
 }
-

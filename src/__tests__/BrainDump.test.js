@@ -400,10 +400,12 @@ describe('BrainDump Component', () => {
 
       // After deleting the last note, a new empty note is automatically created
       await waitFor(() => {
-        const textarea = screen.getByPlaceholderText('Start writing your note in Markdown...')
+        const textarea = screen.getByPlaceholderText(
+          'Start writing your note in Markdown...'
+        )
         expect(textarea).toHaveValue('')
       })
-      
+
       // Verify a new note was created (not empty list)
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
@@ -705,7 +707,7 @@ describe('BrainDump Component', () => {
 
       // Wait for any pending auto-save (500ms debounce + buffer)
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 600))
+        await new Promise((resolve) => setTimeout(resolve, 600))
       })
 
       // Verify deletion in localStorage

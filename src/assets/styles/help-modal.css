@@ -179,7 +179,9 @@
 /* Help button in toolbar */
 .btn-help {
   opacity: 0.7;
-  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 
 .btn-help:hover,

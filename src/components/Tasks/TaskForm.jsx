@@ -4,7 +4,13 @@ import PropTypes from 'prop-types'
 /**
  * Component for adding new tasks
  */
-function TaskForm({ newTask, selectedQuadrant, onTaskChange, onQuadrantChange, onSubmit }) {
+function TaskForm({
+  newTask,
+  selectedQuadrant,
+  onTaskChange,
+  onQuadrantChange,
+  onSubmit
+}) {
   return (
     <form onSubmit={onSubmit} className='add-task-form'>
       <input

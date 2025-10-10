@@ -320,10 +320,12 @@ Alt text is essential for:
 
 ```markdown
 <!-- ❌ Bad -->
+
 ![image](./photo.jpg)
 ![picture](./diagram.png)
 
 <!-- ✅ Good -->
+
 ![Network topology diagram with three servers and load balancer](./diagram.png)
 ```
 
@@ -341,9 +343,11 @@ Alt text is essential for:
 
 ```markdown
 <!-- ❌ Avoid -->
+
 ![Diagram](./img1.png)
 
 <!-- ✅ Better -->
+
 ![Database schema diagram](./database-schema-diagram.png)
 ```
 
@@ -487,7 +491,7 @@ _Italic text_ or _italic text_
 
 ```markdown
 [Link text](https://example.com)
-[Link with title](https://example.com "Hover text")
+[Link with title](https://example.com 'Hover text')
 <https://example.com> — Automatic link
 ```
 
@@ -526,7 +530,6 @@ def factorial(n):
 
 ```markdown
 ---
-
 ---
 
 ---
@@ -540,9 +543,9 @@ def factorial(n):
 | Cell 1   | Cell 2   | Cell 3   |
 | Cell 4   | Cell 5   | Cell 6   |
 
-Left-aligned | Center-aligned | Right-aligned
-:--- | :---: | ---:
-Left | Center | Right
+| Left-aligned | Center-aligned | Right-aligned |
+| :----------- | :------------: | ------------: |
+| Left         |     Center     |         Right |
 ```
 
 ### Auto-List Continuation
@@ -662,12 +665,8 @@ Add a context menu item when right-clicking in the editor:
     <Tab label='Quick Reference'>
       {/* Cheat sheet with common markdown, LaTeX, images */}
     </Tab>
-    <Tab label='LaTeX Examples'>
-      {/* Common equations and symbols */}
-    </Tab>
-    <Tab label='Images'>
-      {/* How to embed and attach images */}
-    </Tab>
+    <Tab label='LaTeX Examples'>{/* Common equations and symbols */}</Tab>
+    <Tab label='Images'>{/* How to embed and attach images */}</Tab>
     <Tab label='Full Manual'>
       {/* Link to USER_MANUAL.md or embedded view */}
     </Tab>

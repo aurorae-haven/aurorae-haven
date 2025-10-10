@@ -21,7 +21,9 @@ function TaskQuadrant({
   onDrop
 }) {
   const isEditing = (task) => {
-    return editingTask?.quadrant === quadrant.key && editingTask?.taskId === task.id
+    return (
+      editingTask?.quadrant === quadrant.key && editingTask?.taskId === task.id
+    )
   }
 
   return (
@@ -36,9 +38,7 @@ function TaskQuadrant({
       </div>
       <div className='task-list'>
         {tasks.length === 0 ? (
-          <p className='empty-state'>
-            No tasks in this quadrant
-          </p>
+          <p className='empty-state'>No tasks in this quadrant</p>
         ) : (
           tasks.map((task) => (
             <TaskItem

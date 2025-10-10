@@ -12,7 +12,9 @@
   height: calc(100vh - 120px);
   min-height: 500px;
   max-width: 100%;
-  transition: width 0.3s ease, max-width 0.3s ease;
+  transition:
+    width 0.3s ease,
+    max-width 0.3s ease;
 }
 
 .note-list-sidebar {
@@ -518,4 +520,3 @@ textarea:focus {
   -webkit-line-clamp: unset;
   overflow: visible;
 }
-

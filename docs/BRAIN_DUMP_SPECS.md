@@ -398,18 +398,34 @@ src/
 
 ```css
 /* Container */
-.note-editor-split { /* Grid layout */ }
+.note-editor-split {
+  /* Grid layout */
+}
 
 /* Editor pane */
-.editor-pane { /* Flex container */ }
-.editor-pane .editor { /* Textarea styling */ }
+.editor-pane {
+  /* Flex container */
+}
+.editor-pane .editor {
+  /* Textarea styling */
+}
 
 /* Preview pane */
-.preview-pane { /* Flex container */ }
-.preview-pane .preview { /* Content container */ }
-.preview a { /* Link styling */ }
-.preview img { /* Image styling */ }
-.preview .katex { /* Math rendering */ }
+.preview-pane {
+  /* Flex container */
+}
+.preview-pane .preview {
+  /* Content container */
+}
+.preview a {
+  /* Link styling */
+}
+.preview img {
+  /* Image styling */
+}
+.preview .katex {
+  /* Math rendering */
+}
 ```
 
 ## Future Enhancements

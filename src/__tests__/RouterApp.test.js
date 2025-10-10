@@ -89,7 +89,7 @@ describe('RouterApp Setup and Configuration', () => {
 
       // Verify import was called successfully
       expect(mockImportJSON).toHaveBeenCalledWith(file)
-      
+
       // Note: The actual page reload is handled by reloadPageAfterDelay utility
       // which is tested separately in reloadPageAfterDelay.test.js
     })
@@ -110,7 +110,7 @@ describe('RouterApp Setup and Configuration', () => {
       // Verify import was called and returned failure
       expect(mockImportJSON).toHaveBeenCalledWith(file)
       expect(result.success).toBe(false)
-      
+
       // Note: The reload logic checks result.success, so reload won't be called
     })
   })

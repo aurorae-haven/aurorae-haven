@@ -142,7 +142,7 @@ function BrainDump() {
         // Auto-create new empty note when deleting the last note
         const newNote = createNewNote()
         const notesWithNew = [newNote]
-        
+
         // Use flushSync to ensure state updates complete synchronously
         // This prevents UI not updating issue when deleting the last note
         flushSync(() => {
