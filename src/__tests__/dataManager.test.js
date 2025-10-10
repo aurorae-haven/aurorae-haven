@@ -23,7 +23,12 @@ describe('Data Manager', () => {
     it('should return a valid data structure with all required fields', async () => {
       const data = await getDataTemplate()
 
-      // New API returns simple data fields without metadata
+      // Data should include metadata
+      expect(data.version).toBe(1)
+      expect(typeof data.exportedAt).toBe('string')
+      expect(data.exportedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/)
+
+      // Data should include all data fields as arrays
       expect(Array.isArray(data.tasks)).toBe(true)
       expect(Array.isArray(data.sequences)).toBe(true)
       expect(Array.isArray(data.habits)).toBe(true)
@@ -121,6 +126,46 @@ describe('Data Manager', () => {
       const data = await getDataTemplate()
 
       expect(data.habits).toEqual(habits)
+    })
+
+    it('should include version and exportedAt metadata in exports', async () => {
+      // Setup some test data
+      localStorage.setItem('tasks', JSON.stringify([{ id: 1, text: 'Test' }]))
+      localStorage.setItem('sequences', JSON.stringify([]))
+      localStorage.setItem('habits', JSON.stringify([]))
+      localStorage.setItem('dumps', JSON.stringify([]))
+      localStorage.setItem('schedule', JSON.stringify([]))
+
+      const data = await getDataTemplate()
+
+      // Verify metadata is present
+      expect(data).toHaveProperty('version')
+      expect(data.version).toBe(1)
+      expect(data).toHaveProperty('exportedAt')
+      expect(typeof data.exportedAt).toBe('string')
+      // Verify it's a valid ISO 8601 timestamp
+      expect(new Date(data.exportedAt).toISOString()).toBe(data.exportedAt)
+
+      // Verify data is still present
+      expect(data.tasks).toEqual([{ id: 1, text: 'Test' }])
+    })
+
+    it('should include metadata even when no data exists', async () => {
+      // Clear all localStorage
+      localStorage.clear()
+
+      const data = await getDataTemplate()
+
+      // Metadata should still be present
+      expect(data.version).toBe(1)
+      expect(typeof data.exportedAt).toBe('string')
+
+      // All data arrays should be empty
+      expect(data.tasks).toEqual([])
+      expect(data.sequences).toEqual([])
+      expect(data.habits).toEqual([])
+      expect(data.dumps).toEqual([])
+      expect(data.schedule).toEqual([])
     })
   })
 

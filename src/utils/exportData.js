@@ -49,7 +49,10 @@ export async function getDataTemplate() {
   }
 
   // Fallback to localStorage
-  const data = {}
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString()
+  }
 
   // Load all data fields from localStorage
   for (const field of Object.values(DATA_FIELDS)) {
