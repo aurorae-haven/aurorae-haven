@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 /**
  * Accessible confirmation modal component
  * Replaces native confirm() with proper ARIA labels and keyboard navigation
- * 
+ *
  * Implements:
  * - TAB-SEC-30: role="alertdialog" with aria-modal="true"
  * - TAB-POP-08: Focus trap with Tab/Shift+Tab navigation
