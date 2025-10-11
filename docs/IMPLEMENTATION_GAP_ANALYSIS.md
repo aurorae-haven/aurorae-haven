@@ -36,7 +36,7 @@ The following pages currently exist in `src/pages/`:
 | TAB-BDP  | 61    | BrainDump               | ✅ Implemented                                     |
 | TAB-HAB  | 52    | Habits                  | 🔄 Partial (basic structure exists)                |
 | TAB-IEX  | 32    | Layout (Export/Import)  | ✅ Implemented (in Layout component)               |
-| TAB-LIB  | 39    | N/A                     | ❌ Not Implemented (Library/Templates tab missing) |
+| TAB-LIB  | 39    | Library (partial)       | 🔄 Partial (template instantiation implemented)    |
 | TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)               |
 | TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                     |
 | TAB-RTN  | 58    | Sequences               | 🔄 Partial (sequences = routines)                  |
@@ -76,6 +76,8 @@ These features are substantially complete:
 ### 🔄 Partially Implemented
 
 These features exist but need significant enhancements:
+
+#### TAB-LIB: Library/Templates (39 specifications)
 
 #### TAB-HAB: Habits (52 specifications)
 
@@ -137,19 +139,25 @@ These features exist but need significant enhancements:
 
 These features are completely missing from the current implementation:
 
-#### TAB-LIB: Library/Templates (39 specifications)
+**Status**: Partially Implemented (Core functionality complete)
 
-**Required**: A new tab for managing task and routine templates
+**Implemented Features** (as of 2025-10-11):
+
+- ✅ Template library page (Library.jsx)
+- ✅ Task template management (CRUD operations)
+- ✅ Routine template management (CRUD operations)
+- ✅ Template search and filtering
+- ✅ Template import/export
+- ✅ One-click template instantiation (TAB-LIB-13)
+- ✅ Template duplication
+- ✅ Last used tracking
 
 **Missing Features**:
 
-- Template library page
-- Task template management
-- Routine template management
-- Template categories and tags
-- Template search and filtering
-- Template import/export
-- One-click template instantiation
+- ❌ Template categories (partial - tags implemented)
+- ❌ Advanced template versioning
+- ❌ Template sharing/collaboration
+- ❌ Template analytics and usage statistics
 
 #### TAB-SEC: Security (42 specifications)
 
@@ -291,8 +299,8 @@ The following categories have specifications but no implementation:
 | Status                   | Categories | Specifications | Percentage |
 | ------------------------ | ---------- | -------------- | ---------- |
 | ✅ Fully Implemented     | 3          | ~180           | 28%        |
-| 🔄 Partially Implemented | 7          | ~350           | 55%        |
-| ❌ Not Implemented       | 2          | ~80            | 13%        |
+| 🔄 Partially Implemented | 8          | ~390           | 61%        |
+| ❌ Not Implemented       | 1          | ~40            | 6%         |
 | 📋 New Categories        | 16         | ~30            | 5%         |
 | **Total**                | **28**     | **640**        | **100%**   |
 
