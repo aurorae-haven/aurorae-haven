@@ -109,9 +109,6 @@ export async function instantiateSequenceFromTemplate(template) {
   }
 
   // Additional validation for sequence-specific fields
-  // (Removed: step-level validation is now handled by validateTemplateData)
-
-
   // Create new independent sequence
   const sequence = {
     name: template.title,
