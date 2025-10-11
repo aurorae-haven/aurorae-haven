@@ -196,9 +196,6 @@ describe('Library Component', () => {
     templatesManager.sortTemplates.mockImplementation((templates) => templates)
     templatesManager.deleteTemplate.mockResolvedValue()
 
-    // Mock window.confirm
-    global.confirm = jest.fn(() => true)
-
     render(<Library />)
 
     await waitFor(() => {
@@ -208,9 +205,18 @@ describe('Library Component', () => {
     const deleteButton = screen.getByRole('button', { name: /Delete template/i })
     fireEvent.click(deleteButton)
 
+    // Wait for confirmation modal to appear
+    await waitFor(() => {
+      expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      expect(screen.getByText('Delete Template')).toBeInTheDocument()
+    })
+
+    // Click the confirm button in the modal
+    const confirmButton = screen.getByRole('button', { name: /^Delete$/i })
+    fireEvent.click(confirmButton)
+
     await waitFor(() => {
       expect(templatesManager.deleteTemplate).toHaveBeenCalledWith('1')
-      expect(global.confirm).toHaveBeenCalled()
     })
   })
 

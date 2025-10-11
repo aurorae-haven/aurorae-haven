@@ -22,6 +22,7 @@ import TemplateCard from '../components/Library/TemplateCard'
 import TemplateEditor from '../components/Library/TemplateEditor'
 import TemplateToolbar from '../components/Library/TemplateToolbar'
 import FilterModal from '../components/Library/FilterModal'
+import ConfirmModal from '../components/common/ConfirmModal'
 
 function Library() {
   const [templates, setTemplates] = useState([])
@@ -46,6 +47,10 @@ function Library() {
   // Toast state
   const [toastMessage, setToastMessage] = useState('')
   const [showToast, setShowToast] = useState(false)
+
+  // Delete confirmation modal state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [templateToDelete, setTemplateToDelete] = useState(null)
 
   // Load templates on mount
   useEffect(() => {
@@ -133,10 +138,17 @@ function Library() {
   }
 
   const handleDeleteTemplate = async (templateId) => {
-    if (!confirm('Are you sure you want to delete this template?')) return
+    const template = templates.find((t) => t.id === templateId)
+    setTemplateToDelete(template)
+    setShowDeleteConfirm(true)
+  }
+
+  // Confirmed delete action
+  const handleConfirmDelete = async () => {
+    if (!templateToDelete) return
 
     try {
-      await deleteTemplate(templateId)
+      await deleteTemplate(templateToDelete.id)
       showToastNotification('Template deleted')
 
       // Reload templates
@@ -146,6 +158,16 @@ function Library() {
       console.error('Failed to delete template')
       showToastNotification('Failed to delete template')
     }
+
+    // Close modal and reset state
+    setShowDeleteConfirm(false)
+    setTemplateToDelete(null)
+  }
+
+  // Cancel delete action
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false)
+    setTemplateToDelete(null)
   }
 
   const handleDuplicateTemplate = async (templateId) => {
@@ -320,6 +342,18 @@ function Library() {
           {toastMessage}
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        title='Delete Template'
+        message={`Are you sure you want to delete the template "${templateToDelete?.title || 'this template'}"? This action cannot be undone.`}
+        confirmText='Delete'
+        cancelText='Cancel'
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isDestructive
+      />
     </div>
   )
 }
