@@ -3,9 +3,12 @@
  * Handles filename sanitization and formatting
  */
 
+// Windows reserved device names (CON, PRN, AUX, NUL, COM1-9, LPT1-9)
+const WINDOWS_RESERVED_NAMES = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i
+
 /**
  * Sanitizes a string to be safe for use as a filename
- * Removes special characters, converts to lowercase, and limits length
+ * Removes dangerous characters, handles OS-specific issues, and limits length
  * @param {string} text - The text to sanitize
  * @param {number} maxLength - Maximum length of the sanitized string (default: 30)
  * @returns {string} - Sanitized filename-safe string
@@ -15,10 +18,39 @@ export function sanitizeFilename(text, maxLength = 30) {
     return 'untitled'
   }
 
-  return text
-    .replace(/[^a-z0-9]/gi, '_') // Replace non-alphanumeric with underscore
-    .toLowerCase()
-    .slice(0, maxLength) // Limit length
+  // Remove control characters (ASCII 0-31) and DEL (127)
+  // eslint-disable-next-line no-control-regex -- Intentionally removing control characters for filename safety
+  let sanitized = text.replace(/[\x00-\x1F\x7F]/g, '')
+
+  // Block path traversal patterns specifically (../ or ..\)
+  sanitized = sanitized.replace(/\.\.[/\\]/g, '_')
+
+  // Remove Windows reserved characters: < > : " / \ | ? *
+  sanitized = sanitized.replace(/[<>:"/\\|?*]/g, '_')
+
+  // Replace remaining special characters and whitespace (including dots) with underscore
+  sanitized = sanitized.replace(/[^a-z0-9]/gi, '_')
+  // Collapse multiple consecutive underscores
+  sanitized = sanitized.replace(/_+/g, '_')
+
+  // Remove leading/trailing underscores
+  sanitized = sanitized.replace(/^_+|_+$/g, '')
+
+  // Convert to lowercase for consistency
+  sanitized = sanitized.toLowerCase()
+
+  // Check for Windows reserved names
+  if (WINDOWS_RESERVED_NAMES.test(sanitized)) {
+    sanitized = `file_${sanitized}`
+  }
+
+  // Handle empty result after sanitization
+  if (!sanitized) {
+    return 'untitled'
+  }
+
+  // Limit length
+  return sanitized.slice(0, maxLength)
 }
 
 /**

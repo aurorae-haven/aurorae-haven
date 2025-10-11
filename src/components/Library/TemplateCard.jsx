@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { sanitizeFilename } from '../../utils/fileHelpers'
 
 function TemplateCard({
   template,
@@ -45,7 +46,7 @@ function TemplateCard({
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `template-${template.title.replace(/\s+/g, '-')}.json`
+      a.download = `template-${sanitizeFilename(template.title, 50)}.json`
       a.click()
       URL.revokeObjectURL(url)
     } catch (error) {
