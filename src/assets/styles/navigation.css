@@ -101,11 +101,13 @@
 }
 
 /* TAB-NAV-07: Pill-shaped tab buttons with hover/active states */
+/* TAB-LIB-23: Touch targets ≥48×48px for better accessibility */
 .nav-tab {
   display: inline-flex;
   gap: 6px;
   align-items: center;
   padding: 6px 10px;
+  min-height: 48px;
   border-radius: 20px;
   color: var(--dim);
   background: transparent;
@@ -159,12 +161,13 @@
 }
 
 /* TAB-NAV-19: Icon buttons with hover states */
+/* TAB-LIB-23: Touch targets ≥48×48px for better accessibility */
 .icon-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -460,6 +463,7 @@
 }
 
 /* Airy buttons */
+/* TAB-LIB-23: Touch targets ≥48×48px for better accessibility */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -467,7 +471,7 @@
   cursor: pointer;
   color: #fff;
   padding: 9px 12px;
-  min-height: 44px;
+  min-height: 48px;
   border-radius: 12px;
   border: 1px solid var(--line);
   background: rgba(35, 45, 100, 0.28);
