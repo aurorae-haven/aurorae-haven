@@ -16,6 +16,7 @@ import {
   exportTemplates,
   importTemplates
 } from '../utils/templatesManager'
+import { instantiateTemplate } from '../utils/templateInstantiation'
 import { isIndexedDBAvailable } from '../utils/indexedDBManager'
 import TemplateCard from '../components/Library/TemplateCard'
 import TemplateEditor from '../components/Library/TemplateEditor'
@@ -163,15 +164,18 @@ function Library() {
 
   const handleUseTemplate = async (template) => {
     try {
+      // TAB-LIB-13: Spawn a new Task or Routine pre-filled with template's fields
+      await instantiateTemplate(template)
+      
+      // Mark template as used
       await markTemplateUsed(template.id)
+      
+      // Show appropriate confirmation message (TAB-LIB-15)
       showToastNotification(
         template.type === 'task'
           ? 'Template applied — Task created'
-          : 'Routine created'
+          : 'Template applied — Routine created'
       )
-
-      // TODO: Implement actual task/routine creation logic
-      // This would integrate with Tasks or Sequences pages
     } catch (error) {
       console.error('Error using template:', error)
       showToastNotification('Failed to use template')

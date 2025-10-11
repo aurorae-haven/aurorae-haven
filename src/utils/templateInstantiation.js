@@ -1,0 +1,128 @@
+/**
+ * Template Instantiation Utility
+ * Implements TAB-LIB-13: Spawn new Tasks or Routines from templates
+ */
+
+import { generateSecureUUID } from './uuidGenerator'
+import { createSequence } from './sequencesManager'
+
+/**
+ * Instantiate a task from a task template
+ * Creates a new independent task in localStorage (aurorae_tasks) from template data
+ * @param {Object} template - Task template object
+ * @returns {Object} Created task object with id and quadrant
+ */
+export function instantiateTaskFromTemplate(template) {
+  if (!template || template.type !== 'task') {
+    throw new Error('Invalid task template')
+  }
+
+  // Determine target quadrant (default to urgent_important if not specified)
+  const quadrant = template.quadrant || 'urgent_important'
+
+  // Create new independent task
+  const task = {
+    id: generateSecureUUID(),
+    text: template.title,
+    completed: false,
+    createdAt: Date.now(),
+    dueDate: template.dueOffset ? Date.now() + template.dueOffset : null,
+    completedAt: null
+  }
+
+  // Load existing tasks from localStorage
+  let tasks
+  try {
+    const savedTasks = localStorage.getItem('aurorae_tasks')
+    tasks = savedTasks ? JSON.parse(savedTasks) : {
+      urgent_important: [],
+      not_urgent_important: [],
+      urgent_not_important: [],
+      not_urgent_not_important: []
+    }
+  } catch (e) {
+    console.error('Failed to parse saved tasks:', e)
+    tasks = {
+      urgent_important: [],
+      not_urgent_important: [],
+      urgent_not_important: [],
+      not_urgent_not_important: []
+    }
+  }
+
+  // Add task to appropriate quadrant
+  if (!tasks[quadrant]) {
+    tasks[quadrant] = []
+  }
+  tasks[quadrant].push(task)
+
+  // Save back to localStorage
+  try {
+    localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
+  } catch (e) {
+    console.error('Failed to save task:', e)
+    throw new Error('Failed to save task to storage')
+  }
+
+  return {
+    task,
+    quadrant
+  }
+}
+
+/**
+ * Instantiate a sequence/routine from a routine template
+ * Creates a new independent sequence in IndexedDB from template data
+ * @param {Object} template - Routine template object
+ * @returns {Promise<string>} Created sequence ID
+ */
+export async function instantiateSequenceFromTemplate(template) {
+  if (!template || template.type !== 'routine') {
+    throw new Error('Invalid routine template')
+  }
+
+  // Create new independent sequence
+  const sequence = {
+    name: template.title,
+    steps: template.steps || [],
+    tags: template.tags || [],
+    energyTag: template.energyTag || null,
+    estimatedDuration: template.estimatedDuration || null,
+    createdAt: new Date().toISOString()
+  }
+
+  // Use existing createSequence function from sequencesManager
+  const sequenceId = await createSequence(sequence)
+
+  return sequenceId
+}
+
+/**
+ * Instantiate a template (task or routine)
+ * Main entry point that routes to appropriate instantiation function
+ * @param {Object} template - Template object (task or routine)
+ * @returns {Promise<Object>} Created entity details
+ */
+export async function instantiateTemplate(template) {
+  if (!template) {
+    throw new Error('Template is required')
+  }
+
+  if (template.type === 'task') {
+    const result = instantiateTaskFromTemplate(template)
+    return {
+      type: 'task',
+      id: result.task.id,
+      quadrant: result.quadrant,
+      task: result.task
+    }
+  } else if (template.type === 'routine') {
+    const sequenceId = await instantiateSequenceFromTemplate(template)
+    return {
+      type: 'routine',
+      id: sequenceId
+    }
+  } else {
+    throw new Error(`Unknown template type: ${template.type}`)
+  }
+}
