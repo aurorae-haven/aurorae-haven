@@ -566,7 +566,7 @@ npm test -- indexedDBManager.test.js
 
 ### Test Coverage
 
-```
+```text
 File                    | % Stmts | % Branch | % Funcs | % Lines
 indexedDBManager.js     |   90.58 |    62.65 |   86.53 |   93.03
 ```

@@ -1186,4 +1186,4 @@ EOF
 
 ---
 
-_Generated from AuroraeHaven_Specs.docx specifications_
+**Note:** Generated from AuroraeHaven_Specs.docx specifications
