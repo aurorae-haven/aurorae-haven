@@ -307,7 +307,7 @@ describe('Data Manager', () => {
       const testData = {
         version: 1,
         tasks: [{ id: 1, title: 'Test' }],
-        sequences: [],
+        routines: [],
         habits: [],
         dumps: [],
         schedule: []
@@ -343,7 +343,7 @@ describe('Data Manager', () => {
     it('should import valid JSON data', async () => {
       const testData = {
         tasks: [],
-        sequences: [],
+        routines: [],
         habits: [],
         dumps: [
           {
@@ -383,7 +383,7 @@ describe('Data Manager', () => {
       ]
       const testData = {
         tasks: [],
-        sequences: [],
+        routines: [],
         habits: [],
         dumps: dumps,
         schedule: []
@@ -402,7 +402,7 @@ describe('Data Manager', () => {
     it('should import all data types successfully', async () => {
       const testData = {
         tasks: [{ id: 1, text: 'Task 1' }],
-        sequences: [{ id: 'seq-1', name: 'Sequence 1' }],
+        routines: [{ id: 'seq-1', name: 'Sequence 1' }],
         habits: [{ id: 1, name: 'Habit 1' }],
         dumps: [{ id: 'note_1', title: 'Note 1', content: 'Content 1' }],
         schedule: [{ day: '2025-01-15', blocks: [] }]
@@ -416,7 +416,7 @@ describe('Data Manager', () => {
 
       expect(result).toBe(true)
       expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(testData.tasks)
-      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(
+      expect(JSON.parse(localStorage.getItem('routines'))).toEqual(
         testData.sequences
       )
       expect(JSON.parse(localStorage.getItem('habits'))).toEqual(
@@ -437,7 +437,7 @@ describe('Data Manager', () => {
     it('should handle missing data fields gracefully', async () => {
       const testData = {
         tasks: [],
-        sequences: []
+        routines: []
         // Missing habits, dumps, schedule - should be fine as they're optional
       }
 
@@ -450,7 +450,7 @@ describe('Data Manager', () => {
       expect(result).toBe(true)
       // Data should be imported for provided fields
       expect(JSON.parse(localStorage.getItem('tasks'))).toEqual([])
-      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual([])
+      expect(JSON.parse(localStorage.getItem('routines'))).toEqual([])
     })
 
     it('should import schedule data', async () => {
@@ -462,7 +462,7 @@ describe('Data Manager', () => {
       ]
       const testData = {
         tasks: [],
-        sequences: [],
+        routines: [],
         habits: [],
         dumps: [],
         schedule: schedule
@@ -490,7 +490,7 @@ describe('Data Manager', () => {
       ]
       const testData = {
         tasks: tasksData,
-        sequences: [],
+        routines: [],
         habits: [],
         dumps: [],
         schedule: []
@@ -553,7 +553,7 @@ describe('Data Manager', () => {
             createdAt: 1704453600000
           }
         ],
-        sequences: [
+        routines: [
           {
             id: 'seq1',
             name: 'Morning Routine',
@@ -623,7 +623,7 @@ describe('Data Manager', () => {
       expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(
         nominalData.tasks
       )
-      expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(
+      expect(JSON.parse(localStorage.getItem('routines'))).toEqual(
         nominalData.sequences
       )
       expect(JSON.parse(localStorage.getItem('habits'))).toEqual(
@@ -777,7 +777,7 @@ describe('Data Manager', () => {
         await importJSON(mockFile)
 
         // Verify restoration
-        const restored = JSON.parse(localStorage.getItem('sequences'))
+        const restored = JSON.parse(localStorage.getItem('routines'))
         expect(restored.length).toBe(2)
         expect(restored.find((s) => s.id === 'seq-1')).toEqual(
           initialSequences[0]
@@ -861,7 +861,7 @@ describe('Data Manager', () => {
         // Setup comprehensive initial data using new simple structure
         const initialData = {
           tasks: [{ id: 1, text: 'Task 1', quadrant: 'urgent_important' }],
-          sequences: [{ id: 'seq-1', name: 'Sequence 1', steps: [] }],
+          routines: [{ id: 'seq-1', name: 'Sequence 1', steps: [] }],
           habits: [{ id: 1, name: 'Habit 1', streak: 5 }],
           dumps: [
             {
@@ -889,7 +889,7 @@ describe('Data Manager', () => {
 
         // Verify deletions
         expect(JSON.parse(localStorage.getItem('tasks'))).toHaveLength(0)
-        expect(JSON.parse(localStorage.getItem('sequences'))).toHaveLength(0)
+        expect(JSON.parse(localStorage.getItem('routines'))).toHaveLength(0)
         expect(JSON.parse(localStorage.getItem('dumps'))).toHaveLength(0)
 
         // Import
@@ -905,8 +905,8 @@ describe('Data Manager', () => {
         expect(JSON.parse(localStorage.getItem('tasks'))).toEqual(
           initialData.tasks
         )
-        expect(JSON.parse(localStorage.getItem('sequences'))).toEqual(
-          initialData.sequences
+        expect(JSON.parse(localStorage.getItem('routines'))).toEqual(
+          initialData.routines
         )
         expect(JSON.parse(localStorage.getItem('habits'))).toEqual(
           initialData.habits

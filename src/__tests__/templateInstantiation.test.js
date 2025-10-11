@@ -249,7 +249,7 @@ describe('templateInstantiation', () => {
       )
     })
 
-    test('creates sequence with minimal template data', async () => {
+    test('creates routine with minimal template data', async () => {
       const template = {
         type: 'routine',
         title: 'Simple routine'

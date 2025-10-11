@@ -13,7 +13,7 @@ const DEFAULT_SETTINGS = {
     enabled: false,
     tasks: true,
     habits: true,
-    sequences: true
+    routines: true
   },
   accessibility: {
     reducedMotion: false,

@@ -102,7 +102,7 @@ export function validateExportData(data) {
   const errors = []
 
   // Check required fields exist and are arrays
-  const arrayFields = ['tasks', 'sequences', 'habits', 'dumps', 'schedule']
+  const arrayFields = ['tasks', 'routines', 'habits', 'dumps', 'schedule']
   errors.push(...validateArrayFields(data, arrayFields, VALIDATION_TYPES.ARRAY))
 
   // Validate BrainDump structure if dumps exist
@@ -144,7 +144,7 @@ export function validateImportData(obj) {
   const errors = []
 
   // Check required fields
-  const arrayFields = ['tasks', 'sequences', 'habits', 'dumps', 'schedule']
+  const arrayFields = ['tasks', 'routines', 'habits', 'dumps', 'schedule']
   errors.push(...validateArrayFields(obj, arrayFields, VALIDATION_TYPES.ARRAY))
 
   // Validate BrainDump structure if dumps exist

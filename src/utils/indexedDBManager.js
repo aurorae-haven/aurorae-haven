@@ -482,6 +482,9 @@ export async function exportAllData() {
     data.auroraeTasksData = null
   }
 
+  // Backward compatibility: include sequences field as alias for routines
+  data.sequences = data.routines || []
+
   return data
 }
 
