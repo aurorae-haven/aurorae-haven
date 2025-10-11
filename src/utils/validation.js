@@ -192,7 +192,7 @@ export function validateTemplateData(template) {
     errors.push('Template type is required')
   } else if (!VALID_TEMPLATE_TYPES.includes(template.type)) {
     errors.push(
-      `Template type must be one of: ${VALID_TEMPLATE_TYPES.join(', ')}`
+      `Template type must be one of: ${VALID_TEMPLATE_TYPES.join(', ')} (found: ${template.type})`
     )
   }
 
@@ -213,7 +213,7 @@ export function validateTemplateData(template) {
     if (template.steps !== undefined && template.steps !== null) {
       if (!Array.isArray(template.steps)) {
         errors.push(
-          `Template steps must be an array (found: ${typeof template.steps})`
+          `Routine template steps must be an array (found: ${typeof template.steps})`
         )
       } else {
         // Validate each step structure
@@ -246,7 +246,7 @@ export function validateTemplateData(template) {
     ) {
       if (typeof template.estimatedDuration !== 'number') {
         errors.push(
-          `Template estimatedDuration must be a number (found: ${typeof template.estimatedDuration})`
+          `Routine estimatedDuration must be a number (found: ${typeof template.estimatedDuration})`
         )
       } else if (template.estimatedDuration < 0) {
         errors.push('Template estimatedDuration must be non-negative')
