@@ -25,16 +25,8 @@ export function sanitizeFilename(text, maxLength = 30) {
   // Remove Windows reserved characters: < > : " / \ | ? *
   sanitized = sanitized.replace(/[<>:"/\\|?*]/g, '_')
 
-  // Replace remaining special characters and whitespace with underscore (but preserve single dots temporarily)
-  sanitized = sanitized.replace(/[^a-z0-9.]/gi, '_')
-
-  // Now remove dots that are at the start/end or multiple consecutive dots
-  sanitized = sanitized.replace(/^\.+|\.+$/g, '')
-  sanitized = sanitized.replace(/\.{2,}/g, '_')
-
-  // Replace remaining single dots with underscores
-  sanitized = sanitized.replace(/\./g, '_')
-
+  // Replace remaining special characters and whitespace (including dots) with underscore
+  sanitized = sanitized.replace(/[^a-z0-9]/gi, '_')
   // Collapse multiple consecutive underscores
   sanitized = sanitized.replace(/_+/g, '_')
 
