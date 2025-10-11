@@ -238,7 +238,7 @@ const result = await importTemplates(data)
 
 if (result.skipped > 0) {
   console.log(`Skipped ${result.skipped} templates:`)
-  result.errors.forEach(err => {
+  result.errors.forEach((err) => {
     console.log(`- ${err.template}: ${err.error}`)
   })
 }
@@ -481,7 +481,7 @@ Promise<{
 try {
   const result = await importTemplates(importData)
   console.log(`Imported: ${result.imported}, Skipped: ${result.skipped}`)
-  
+
   if (result.errors.length > 0) {
     console.error('Validation errors:', result.errors)
   }

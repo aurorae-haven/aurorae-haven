@@ -257,11 +257,15 @@ export function validateTemplateData(template) {
   // Validate tags if present
   if (template.tags !== undefined && template.tags !== null) {
     if (!Array.isArray(template.tags)) {
-      errors.push(`Template tags must be an array (found: ${typeof template.tags})`)
+      errors.push(
+        `Template tags must be an array (found: ${typeof template.tags})`
+      )
     } else {
       template.tags.forEach((tag, index) => {
         if (typeof tag !== 'string') {
-          errors.push(`Template tag ${index} must be a string (found: ${typeof tag})`)
+          errors.push(
+            `Template tag ${index} must be a string (found: ${typeof tag})`
+          )
         }
       })
     }

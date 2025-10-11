@@ -201,9 +201,7 @@ These errors skip individual templates but continue:
 const data = {
   version: '1.0',
   exportDate: '2025-01-15T10:00:00Z',
-  templates: [
-    { id: '1', type: 'task', title: 'Review PR' }
-  ]
+  templates: [{ id: '1', type: 'task', title: 'Review PR' }]
 }
 
 const result = await importTemplates(data)

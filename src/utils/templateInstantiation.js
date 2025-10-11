@@ -51,14 +51,16 @@ export function instantiateTaskFromTemplate(template) {
   let tasks
   try {
     const savedTasks = localStorage.getItem('aurorae_tasks')
-    tasks = savedTasks ? JSON.parse(savedTasks) : {
-      urgent_important: [],
-      not_urgent_important: [],
-      urgent_not_important: [],
-      not_urgent_not_important: []
-    }
-  } catch (error) { // eslint-disable-line no-unused-vars
-    console.error('Failed to parse saved tasks')
+    tasks = savedTasks
+      ? JSON.parse(savedTasks)
+      : {
+          urgent_important: [],
+          not_urgent_important: [],
+          urgent_not_important: [],
+          not_urgent_not_important: []
+        }
+  } catch (error) {
+    console.error('Failed to parse saved tasks:', error)
     tasks = {
       urgent_important: [],
       not_urgent_important: [],
@@ -80,7 +82,9 @@ export function instantiateTaskFromTemplate(template) {
     console.error('Failed to save task')
     // Check for quota exceeded error
     if (error.name === 'QuotaExceededError' || error.code === 22) {
-      throw new Error('Storage quota exceeded. Please free up space by deleting old tasks.')
+      throw new Error(
+        'Storage quota exceeded. Please free up space by deleting old tasks.'
+      )
     }
     throw new Error('Failed to save task to storage')
   }
@@ -119,7 +123,10 @@ export async function instantiateSequenceFromTemplate(template) {
       if (typeof step.label !== 'string' || step.label.trim() === '') {
         throw new Error(`Step ${i} must have a non-empty label`)
       }
-      if (step.duration !== undefined && (typeof step.duration !== 'number' || step.duration < 0)) {
+      if (
+        step.duration !== undefined &&
+        (typeof step.duration !== 'number' || step.duration < 0)
+      ) {
         throw new Error(`Step ${i} duration must be a non-negative number`)
       }
     }
@@ -135,9 +142,12 @@ export async function instantiateSequenceFromTemplate(template) {
   }
 
   // Validate estimatedDuration
-  if (template.estimatedDuration !== undefined && 
-      template.estimatedDuration !== null && 
-      (typeof template.estimatedDuration !== 'number' || template.estimatedDuration < 0)) {
+  if (
+    template.estimatedDuration !== undefined &&
+    template.estimatedDuration !== null &&
+    (typeof template.estimatedDuration !== 'number' ||
+      template.estimatedDuration < 0)
+  ) {
     throw new Error('estimatedDuration must be a non-negative number')
   }
 

@@ -262,6 +262,7 @@ If import fails, you'll see an error message:
 Aurorae Haven uses these storage locations:
 
 **localStorage keys:**
+
 - `aurorae_tasks` - Tasks in Eisenhower matrix format (4 quadrants: urgent_important, not_urgent_important, urgent_not_important, not_urgent_not_important)
 - `brainDumpContent` - Current brain dump markdown content
 - `brainDumpTags` - HTML string of tag palette
@@ -269,6 +270,7 @@ Aurorae Haven uses these storage locations:
 - `brainDumpEntries` - Array of brain dump entry objects (exported as `dumps`)
 
 **IndexedDB stores:**
+
 - `tasks` - Task management (when using IndexedDB)
 - `sequences` - Routine sequences
 - `habits` - Habit tracking
@@ -279,6 +281,7 @@ Aurorae Haven uses these storage locations:
 - `backups` - Automatic backups
 
 **Export Behavior:**
+
 - The export function first checks IndexedDB for data
 - If IndexedDB is empty or unavailable, it falls back to localStorage
 - From localStorage, it reads `aurorae_tasks` and `brainDumpEntries`

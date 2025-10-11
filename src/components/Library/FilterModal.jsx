@@ -55,7 +55,11 @@ function FilterModal({ filters, onFilterChange, onClose }) {
             aria-label='Close filter'
           >
             <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-              <path d='M18 6L6 18M6 6l12 12' stroke='currentColor' strokeWidth='2' />
+              <path
+                d='M18 6L6 18M6 6l12 12'
+                stroke='currentColor'
+                strokeWidth='2'
+              />
             </svg>
           </button>
         </div>
@@ -91,7 +95,9 @@ function FilterModal({ filters, onFilterChange, onClose }) {
                 onChange={(e) =>
                   setLocalFilters({
                     ...localFilters,
-                    durationMin: e.target.value ? parseInt(e.target.value) : null
+                    durationMin: e.target.value
+                      ? parseInt(e.target.value)
+                      : null
                   })
                 }
                 aria-label='Minimum duration'
@@ -104,7 +110,9 @@ function FilterModal({ filters, onFilterChange, onClose }) {
                 onChange={(e) =>
                   setLocalFilters({
                     ...localFilters,
-                    durationMax: e.target.value ? parseInt(e.target.value) : null
+                    durationMax: e.target.value
+                      ? parseInt(e.target.value)
+                      : null
                   })
                 }
                 aria-label='Maximum duration'
@@ -116,9 +124,7 @@ function FilterModal({ filters, onFilterChange, onClose }) {
           <div className='active-filters'>
             <strong className='small'>Active Filters:</strong>
             {localFilters.type && (
-              <span className='filter-chip'>
-                Type: {localFilters.type}
-              </span>
+              <span className='filter-chip'>Type: {localFilters.type}</span>
             )}
             {(localFilters.durationMin || localFilters.durationMax) && (
               <span className='filter-chip'>
@@ -141,7 +147,11 @@ function FilterModal({ filters, onFilterChange, onClose }) {
           <button type='button' className='btn' onClick={onClose}>
             Cancel
           </button>
-          <button type='button' className='btn btn-primary' onClick={handleApply}>
+          <button
+            type='button'
+            className='btn btn-primary'
+            onClick={handleApply}
+          >
             Apply Filters
           </button>
         </div>

@@ -4,15 +4,24 @@ import '@testing-library/jest-dom'
 import Library from '../pages/Library'
 import * as indexedDBManager from '../utils/indexedDBManager'
 import * as templatesManager from '../utils/templatesManager'
+import * as predefinedTemplates from '../utils/predefinedTemplates'
 
-// Mock IndexedDB
+// Mock IndexedDB and templates
 jest.mock('../utils/indexedDBManager')
 jest.mock('../utils/templatesManager')
+jest.mock('../utils/predefinedTemplates')
 
 describe('Library Component', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     indexedDBManager.isIndexedDBAvailable.mockReturnValue(true)
+    // Mock predefined templates to avoid seeding during tests
+    predefinedTemplates.arePredefinedTemplatesSeeded.mockResolvedValue(true)
+    predefinedTemplates.seedPredefinedTemplates.mockResolvedValue({
+      added: 0,
+      skipped: 0,
+      errors: []
+    })
   })
 
   test('renders Library component with title', async () => {
@@ -31,7 +40,9 @@ describe('Library Component', () => {
     )
 
     render(<Library />)
-    expect(screen.getByText('Loading your template library...')).toBeInTheDocument()
+    expect(
+      screen.getByText('Loading your template library...')
+    ).toBeInTheDocument()
   })
 
   test('shows message when IndexedDB is not available', async () => {
@@ -85,7 +96,9 @@ describe('Library Component', () => {
     ]
 
     templatesManager.getAllTemplates.mockResolvedValue(mockTemplates)
-    templatesManager.filterTemplates.mockImplementation((templates) => templates)
+    templatesManager.filterTemplates.mockImplementation(
+      (templates) => templates
+    )
     templatesManager.sortTemplates.mockImplementation((templates) => templates)
 
     render(<Library />)
@@ -104,12 +117,16 @@ describe('Library Component', () => {
     render(<Library />)
 
     await waitFor(() => {
-      const newButton = screen.getByRole('button', { name: /Create new template/i })
+      const newButton = screen.getByRole('button', {
+        name: /Create new template/i
+      })
       fireEvent.click(newButton)
     })
 
     await waitFor(() => {
-      expect(screen.getByRole('dialog', { name: /New Template/i })).toBeInTheDocument()
+      expect(
+        screen.getByRole('dialog', { name: /New Template/i })
+      ).toBeInTheDocument()
     })
   })
 
@@ -134,14 +151,16 @@ describe('Library Component', () => {
     ]
 
     templatesManager.getAllTemplates.mockResolvedValue(mockTemplates)
-    templatesManager.filterTemplates.mockImplementation((templates, filters) => {
-      if (filters.query) {
-        return templates.filter((t) =>
-          t.title.toLowerCase().includes(filters.query.toLowerCase())
-        )
+    templatesManager.filterTemplates.mockImplementation(
+      (templates, filters) => {
+        if (filters.query) {
+          return templates.filter((t) =>
+            t.title.toLowerCase().includes(filters.query.toLowerCase())
+          )
+        }
+        return templates
       }
-      return templates
-    })
+    )
     templatesManager.sortTemplates.mockImplementation((templates) => templates)
 
     render(<Library />)
@@ -192,7 +211,9 @@ describe('Library Component', () => {
     templatesManager.getAllTemplates
       .mockResolvedValueOnce([mockTemplate])
       .mockResolvedValueOnce([])
-    templatesManager.filterTemplates.mockImplementation((templates) => templates)
+    templatesManager.filterTemplates.mockImplementation(
+      (templates) => templates
+    )
     templatesManager.sortTemplates.mockImplementation((templates) => templates)
     templatesManager.deleteTemplate.mockResolvedValue()
 
@@ -202,7 +223,9 @@ describe('Library Component', () => {
       expect(screen.getByText('Test Template')).toBeInTheDocument()
     })
 
-    const deleteButton = screen.getByRole('button', { name: /Delete template/i })
+    const deleteButton = screen.getByRole('button', {
+      name: /Delete template/i
+    })
     fireEvent.click(deleteButton)
 
     // Wait for confirmation modal to appear
@@ -247,7 +270,9 @@ describe('Library Component', () => {
     render(<Library />)
 
     await waitFor(() => {
-      const exportButton = screen.getByRole('button', { name: /Export all templates/i })
+      const exportButton = screen.getByRole('button', {
+        name: /Export all templates/i
+      })
       fireEvent.click(exportButton)
     })
 
@@ -273,7 +298,9 @@ describe('Library Component', () => {
           createdAt: '2024-01-01T00:00:00Z'
         }
       ])
-    templatesManager.filterTemplates.mockImplementation((templates) => templates)
+    templatesManager.filterTemplates.mockImplementation(
+      (templates) => templates
+    )
     templatesManager.sortTemplates.mockImplementation((templates) => templates)
     templatesManager.importTemplates.mockResolvedValue({
       imported: 1,
@@ -284,7 +311,9 @@ describe('Library Component', () => {
     render(<Library />)
 
     await waitFor(() => {
-      const importButton = screen.getByRole('button', { name: /Import templates/i })
+      const importButton = screen.getByRole('button', {
+        name: /Import templates/i
+      })
       expect(importButton).toBeInTheDocument()
     })
 
@@ -313,13 +342,17 @@ describe('Library Component', () => {
     ]
 
     templatesManager.getAllTemplates.mockResolvedValue(mockTemplates)
-    templatesManager.filterTemplates.mockImplementation((templates) => templates)
+    templatesManager.filterTemplates.mockImplementation(
+      (templates) => templates
+    )
     templatesManager.sortTemplates.mockImplementation((templates) => templates)
 
     render(<Library />)
 
     await waitFor(() => {
-      const sortSelect = screen.queryByRole('combobox', { name: /Sort templates/i })
+      const sortSelect = screen.queryByRole('combobox', {
+        name: /Sort templates/i
+      })
       expect(sortSelect).toBeInTheDocument()
     })
 

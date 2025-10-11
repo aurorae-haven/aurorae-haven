@@ -110,7 +110,7 @@ export async function getDataTemplate() {
     console.warn('Failed to parse brainDumpVersions during export:', e)
     versions = []
   }
-  
+
   // Include brain dump data for backward compatibility
   data.brainDump = {
     content: localStorage.getItem('brainDumpContent') || '',

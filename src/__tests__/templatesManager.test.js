@@ -55,9 +55,7 @@ describe('templatesManager', () => {
     })
 
     test('returns array of templates', async () => {
-      const mockTemplates = [
-        { id: '1', type: 'task', title: 'Test' }
-      ]
+      const mockTemplates = [{ id: '1', type: 'task', title: 'Test' }]
       mockDB.mockStore.getAll.mockReturnValue(Promise.resolve(mockTemplates))
 
       const result = await getAllTemplates()
@@ -221,12 +219,12 @@ describe('templatesManager', () => {
 
       mockDB.mockStore.get.mockReturnValue(Promise.resolve(existingTemplate))
 
-      await expect(
-        updateTemplate('test-id', { title: '' })
-      ).rejects.toThrow('Invalid template data')
-      await expect(
-        updateTemplate('test-id', { title: '' })
-      ).rejects.toThrow('title cannot be empty')
+      await expect(updateTemplate('test-id', { title: '' })).rejects.toThrow(
+        'Invalid template data'
+      )
+      await expect(updateTemplate('test-id', { title: '' })).rejects.toThrow(
+        'title cannot be empty'
+      )
     })
 
     test('throws error when updating to invalid type', async () => {
@@ -412,9 +410,7 @@ describe('templatesManager', () => {
 
   describe('exportTemplates', () => {
     test('exports all templates', async () => {
-      const mockTemplates = [
-        { id: '1', type: 'task', title: 'Test' }
-      ]
+      const mockTemplates = [{ id: '1', type: 'task', title: 'Test' }]
 
       mockDB.mockStore.getAll.mockReturnValue(Promise.resolve(mockTemplates))
 
@@ -445,9 +441,7 @@ describe('templatesManager', () => {
     test('imports valid templates', async () => {
       const importData = {
         version: '1.0',
-        templates: [
-          { id: 'import-1', type: 'task', title: 'Imported Task' }
-        ]
+        templates: [{ id: 'import-1', type: 'task', title: 'Imported Task' }]
       }
 
       mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
@@ -462,9 +456,7 @@ describe('templatesManager', () => {
     test('handles ID collisions by generating new IDs', async () => {
       const importData = {
         version: '1.0',
-        templates: [
-          { id: 'existing-id', type: 'task', title: 'Imported Task' }
-        ]
+        templates: [{ id: 'existing-id', type: 'task', title: 'Imported Task' }]
       }
 
       mockDB.mockStore.get.mockReturnValue(

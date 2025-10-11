@@ -7,7 +7,14 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-function TemplateCard({ template, viewMode, onUse, onEdit, onDelete, onDuplicate }) {
+function TemplateCard({
+  template,
+  viewMode,
+  onUse,
+  onEdit,
+  onDelete,
+  onDuplicate
+}) {
   const [showActions, setShowActions] = useState(false)
 
   const formatDate = (dateString) => {
@@ -57,14 +64,48 @@ function TemplateCard({ template, viewMode, onUse, onEdit, onDelete, onDuplicate
       <div className='template-header'>
         <div className='template-icon'>
           {template.type === 'task' ? (
-            <svg className='icon icon-task' viewBox='0 0 24 24' aria-hidden='true'>
-              <rect x='4' y='4' width='16' height='16' rx='2' fill='none' stroke='currentColor' strokeWidth='2' />
-              <path d='M8 12l2 2 4-4' stroke='currentColor' strokeWidth='2' fill='none' />
+            <svg
+              className='icon icon-task'
+              viewBox='0 0 24 24'
+              aria-hidden='true'
+            >
+              <rect
+                x='4'
+                y='4'
+                width='16'
+                height='16'
+                rx='2'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+              />
+              <path
+                d='M8 12l2 2 4-4'
+                stroke='currentColor'
+                strokeWidth='2'
+                fill='none'
+              />
             </svg>
           ) : (
-            <svg className='icon icon-routine' viewBox='0 0 24 24' aria-hidden='true'>
-              <circle cx='12' cy='12' r='8' fill='none' stroke='currentColor' strokeWidth='2' />
-              <path d='M12 8v4l3 2' stroke='currentColor' strokeWidth='2' fill='none' />
+            <svg
+              className='icon icon-routine'
+              viewBox='0 0 24 24'
+              aria-hidden='true'
+            >
+              <circle
+                cx='12'
+                cy='12'
+                r='8'
+                fill='none'
+                stroke='currentColor'
+                strokeWidth='2'
+              />
+              <path
+                d='M12 8v4l3 2'
+                stroke='currentColor'
+                strokeWidth='2'
+                fill='none'
+              />
             </svg>
           )}
         </div>
@@ -145,9 +186,7 @@ function TemplateCard({ template, viewMode, onUse, onEdit, onDelete, onDuplicate
       </div>
 
       {/* Version badge */}
-      <div className='template-version small dim'>
-        v{template.version || 1}
-      </div>
+      <div className='template-version small dim'>v{template.version || 1}</div>
     </div>
   )
 }

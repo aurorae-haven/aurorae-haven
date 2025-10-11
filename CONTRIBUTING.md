@@ -281,6 +281,26 @@ When adding new features:
 - Add inline comments for complex logic only
 - Follow existing documentation style
 
+## Contributing Templates
+
+Want to add predefined task or routine templates to help users get started?
+
+See the **[Contributing Templates Guide](./docs/CONTRIBUTING_TEMPLATES.md)** for:
+
+- Template schemas and structure
+- File locations and naming conventions
+- Validation requirements
+- Testing guidelines
+- Submission process
+
+Quick summary:
+
+1. Add templates to `src/data/templates/tasks.json` or `src/data/templates/routines.json`
+2. Follow the JSON schema (see guide for details)
+3. Test locally by clearing IndexedDB and reloading
+4. Run linters: `npm run lint && npm run format`
+5. Submit PR with clear description
+
 ## Getting Help
 
 - Check [README.md](./README.md) for project overview
