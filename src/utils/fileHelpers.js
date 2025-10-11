@@ -3,6 +3,9 @@
  * Handles filename sanitization and formatting
  */
 
+// Windows reserved device names (CON, PRN, AUX, NUL, COM1-9, LPT1-9)
+const WINDOWS_RESERVED_NAMES = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i
+
 /**
  * Sanitizes a string to be safe for use as a filename
  * Removes dangerous characters, handles OS-specific issues, and limits length
@@ -36,9 +39,8 @@ export function sanitizeFilename(text, maxLength = 30) {
   // Convert to lowercase for consistency
   sanitized = sanitized.toLowerCase()
 
-  // Check for Windows reserved names (CON, PRN, AUX, NUL, COM1-9, LPT1-9)
-  const reservedNames = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i
-  if (reservedNames.test(sanitized)) {
+  // Check for Windows reserved names
+  if (WINDOWS_RESERVED_NAMES.test(sanitized)) {
     sanitized = `file_${sanitized}`
   }
 
