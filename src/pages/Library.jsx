@@ -16,6 +16,7 @@ import {
   exportTemplates,
   importTemplates
 } from '../utils/templatesManager'
+import { instantiateTemplate } from '../utils/templateInstantiation'
 import { isIndexedDBAvailable } from '../utils/indexedDBManager'
 import TemplateCard from '../components/Library/TemplateCard'
 import TemplateEditor from '../components/Library/TemplateEditor'
@@ -60,8 +61,8 @@ function Library() {
       try {
         const allTemplates = await getAllTemplates()
         setTemplates(allTemplates)
-      } catch (error) {
-        console.error('Failed to load templates:', error)
+      } catch (error) { // eslint-disable-line no-unused-vars
+        console.error('Failed to load templates')
         showToastNotification('Failed to load templates')
       } finally {
         setLoading(false)
@@ -125,8 +126,8 @@ function Library() {
       setTemplates(allTemplates)
       setShowEditor(false)
       setEditingTemplate(null)
-    } catch (error) {
-      console.error('Error saving template:', error)
+    } catch (error) { // eslint-disable-line no-unused-vars
+      console.error('Failed to save template')
       showToastNotification('Failed to save template')
     }
   }
@@ -141,8 +142,8 @@ function Library() {
       // Reload templates
       const allTemplates = await getAllTemplates()
       setTemplates(allTemplates)
-    } catch (error) {
-      console.error('Error deleting template:', error)
+    } catch (error) { // eslint-disable-line no-unused-vars
+      console.error('Failed to delete template')
       showToastNotification('Failed to delete template')
     }
   }
@@ -155,25 +156,28 @@ function Library() {
       // Reload templates
       const allTemplates = await getAllTemplates()
       setTemplates(allTemplates)
-    } catch (error) {
-      console.error('Error duplicating template:', error)
+    } catch (error) { // eslint-disable-line no-unused-vars
+      console.error('Failed to duplicate template')
       showToastNotification('Failed to duplicate template')
     }
   }
 
   const handleUseTemplate = async (template) => {
     try {
+      // TAB-LIB-13: Spawn a new Task or Routine pre-filled with template's fields
+      await instantiateTemplate(template)
+      
+      // Mark template as used
       await markTemplateUsed(template.id)
+      
+      // Show appropriate confirmation message (TAB-LIB-15)
       showToastNotification(
         template.type === 'task'
           ? 'Template applied — Task created'
-          : 'Routine created'
+          : 'Template applied — Routine created'
       )
-
-      // TODO: Implement actual task/routine creation logic
-      // This would integrate with Tasks or Sequences pages
-    } catch (error) {
-      console.error('Error using template:', error)
+    } catch (error) { // eslint-disable-line no-unused-vars
+      console.error('Failed to use template')
       showToastNotification('Failed to use template')
     }
   }
@@ -191,8 +195,8 @@ function Library() {
       a.click()
       URL.revokeObjectURL(url)
       showToastNotification('Templates exported')
-    } catch (error) {
-      console.error('Error exporting templates:', error)
+    } catch (error) { // eslint-disable-line no-unused-vars
+      console.error('Failed to export templates')
       showToastNotification('Failed to export templates')
     }
   }
@@ -212,8 +216,8 @@ function Library() {
       showToastNotification(
         `Imported ${results.imported} templates (${results.skipped} skipped)`
       )
-    } catch (error) {
-      console.error('Error importing templates:', error)
+    } catch (error) { // eslint-disable-line no-unused-vars
+      console.error('Failed to import templates')
       showToastNotification('Import failed: Invalid schema')
     }
   }
