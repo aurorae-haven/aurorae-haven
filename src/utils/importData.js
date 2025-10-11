@@ -21,9 +21,10 @@ export const IMPORT_SUCCESS_MESSAGE =
 /**
  * Reload page after a delay
  * @param {number} delay - Delay in milliseconds (default: 1500ms)
+ * @param {object} windowObj - Window object (default: global window, injectable for testing)
  */
-export function reloadPageAfterDelay(delay = 1500) {
-  setTimeout(() => window.location.reload(), delay)
+export function reloadPageAfterDelay(delay = 1500, windowObj = window) {
+  setTimeout(() => windowObj.location.reload(), delay)
 }
 
 /**

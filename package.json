@@ -64,7 +64,7 @@
   "overrides": {
     "glob": "11.0.0",
     "test-exclude": "7.0.1",
-    "source-map": "0.7.4",
+    "source-map": "0.6.1",
     "magic-string": "0.30.19"
   },
   "browserslist": {
