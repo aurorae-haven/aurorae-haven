@@ -112,13 +112,6 @@ export async function instantiateSequenceFromTemplate(template) {
   // (Removed: step-level validation is now handled by validateTemplateData)
 
 
-  // Validate estimatedDuration
-  if (template.estimatedDuration !== undefined && 
-      template.estimatedDuration !== null && 
-      (typeof template.estimatedDuration !== 'number' || template.estimatedDuration < 0)) {
-    throw new Error('estimatedDuration must be a non-negative number')
-  }
-
   // Create new independent sequence
   const sequence = {
     name: template.title,
