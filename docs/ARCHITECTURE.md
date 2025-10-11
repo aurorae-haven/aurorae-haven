@@ -14,7 +14,7 @@ This document describes the modularized architecture of the Aurorae Haven applic
 
 ## Directory Structure
 
-```
+```text
 src/
 ├── components/           # React UI components
 │   ├── common/          # Shared components (Icon, Modal, etc.)
@@ -55,7 +55,7 @@ src/
 
 ### BrainDump Module
 
-```
+```text
 BrainDump.jsx (272 lines)
 ├── NotesList (86 lines)
 ├── NoteEditor (196 lines)
@@ -74,7 +74,7 @@ BrainDump.jsx (272 lines)
 
 ### Tasks Module
 
-```
+```text
 Tasks.jsx (275 lines)
 ├── TaskForm (47 lines)
 └── TaskQuadrant (81 lines)

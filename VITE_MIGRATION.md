@@ -14,7 +14,7 @@ Aurorae Haven has been successfully migrated from Create React App (CRA) to Vite
 
 ### File Structure
 
-```
+```text
 Before:                          After:
 public/index.html        →       index.html (root)
 src/index.js            →       src/index.jsx

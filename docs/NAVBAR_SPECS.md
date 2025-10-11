@@ -18,7 +18,7 @@ The navbar is divided into three distinct zones:
 2. **Center Zone**: Primary navigation tabs
 3. **Right Zone**: Global actions (search, theme, export/import)
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │ [Logo] Brand │ [Tasks] [Routines] ... [Settings] │ [Actions] │
 └────────────────────────────────────────────────────────────┘
