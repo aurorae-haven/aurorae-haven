@@ -20,7 +20,7 @@ import Toast from './components/Toast.jsx'
 // Pages
 import Home from './pages/Home.jsx'
 import Schedule from './pages/Schedule.jsx'
-import Sequences from './pages/Sequences.jsx'
+import Routines from './pages/Routines.jsx'
 import Notes from './pages/Notes.jsx'
 import Tasks from './pages/Tasks.jsx'
 import Habits from './pages/Habits.jsx'
@@ -116,7 +116,9 @@ function RouterApp() {
           {/* Explicit routes */}
           <Route path='/home' element={<Home />} />
           <Route path='/schedule' element={<Schedule />} />
-          <Route path='/sequences' element={<Sequences />} />
+          <Route path='/routines' element={<Routines />} />
+          {/* Legacy route redirect */}
+          <Route path='/sequences' element={<Navigate to='/routines' replace />} />
           <Route path='/braindump' element={<Notes />} />
           <Route path='/tasks' element={<Tasks />} />
           <Route path='/habits' element={<Habits />} />

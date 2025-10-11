@@ -88,7 +88,7 @@ function Layout({ children, onExport, onImport }) {
       icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'
     },
     {
-      path: '/sequences',
+      path: '/routines',
       label: 'Routines',
       icon: 'M12 13m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0M12 9v5l3 2M9 2h6'
     },
