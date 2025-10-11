@@ -111,7 +111,6 @@ export async function instantiateSequenceFromTemplate(template) {
   // Additional validation for sequence-specific fields
   // (Removed: step-level validation is now handled by validateTemplateData)
 
-  // (Tag validation is handled by validateTemplateData; redundant check removed)
 
   // Validate estimatedDuration
   if (template.estimatedDuration !== undefined && 
