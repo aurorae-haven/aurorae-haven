@@ -94,7 +94,7 @@ python3 -m http.server 8000
 # Then open your browser to: http://localhost:8000
 ```
 
-**Option B: Using Node.js**
+#### Option B: Using Node.js
 
 ```bash
 cd path/to/extracted/folder
@@ -102,7 +102,7 @@ npx serve -p 8000
 # Then open your browser to: http://localhost:8000
 ```
 
-**Option C: Using PHP**
+#### Option C: Using PHP
 
 ```bash
 cd path/to/extracted/folder

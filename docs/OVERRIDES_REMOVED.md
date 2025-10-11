@@ -110,5 +110,5 @@ The removal of these overrides simplifies dependency management and allows npm t
 ---
 
 **Date**: 2025-01-15  
-**PR**: https://github.com/your-org/your-repo/pull/1234  
+**PR**: <https://github.com/your-org/your-repo/pull/1234>  
 **Related Issue**: [nitpick] Review postcss override necessity

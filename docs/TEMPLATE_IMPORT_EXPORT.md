@@ -32,7 +32,7 @@ When importing templates, the import process:
 
 **Example error for incompatible version:**
 
-```
+```text
 Incompatible version: 2.0. Supported versions: 1.0
 ```
 
@@ -126,7 +126,7 @@ The import process validates data in the following order:
 
 **Errors:**
 
-```
+```text
 Invalid import data: data must be an object
 Invalid import data: missing version field
 Invalid import data: missing templates array
@@ -139,7 +139,7 @@ Invalid import data: missing templates array
 
 **Error:**
 
-```
+```text
 Incompatible version: 2.0. Supported versions: 1.0
 ```
 
@@ -163,7 +163,7 @@ Each template is validated before import:
 
 **Validation Errors:**
 
-```
+```text
 Template type is required
 Template type must be one of: task, routine
 Template title is required

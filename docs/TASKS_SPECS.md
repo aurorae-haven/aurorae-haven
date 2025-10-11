@@ -105,6 +105,7 @@ The task data structure includes all fields necessary for gamification:
 - Tasks track `completedAt` timestamp when marked complete
 - `dueDate` field reserved for future functionality
 - Infrastructure supports punctuality calculation:
+
   ```javascript
   const isPunctual = task.dueDate && task.completedAt <= task.dueDate
   const xpBonus = isPunctual ? 50 : 0 // Example calculation

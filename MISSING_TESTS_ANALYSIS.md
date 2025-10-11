@@ -18,15 +18,16 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 ### Pages (5 pages - 0% coverage)
 
-| Page | Status | Lines | Priority | Notes |
-|------|--------|-------|----------|-------|
-| `Habits.jsx` | ❌ No tests | 20 | Medium | Stub implementation - "coming soon" |
-| `Schedule.jsx` | ❌ No tests | 165 | **HIGH** | Full implementation with state management |
-| `Sequences.jsx` | ❌ No tests | ~50 | **HIGH** | Full implementation |
-| `Settings.jsx` | ❌ No tests | ~100 | **HIGH** | Full implementation |
-| `Stats.jsx` | ❌ No tests | 82 | **HIGH** | Full implementation with IndexedDB |
+| Page            | Status      | Lines | Priority | Notes                                     |
+| --------------- | ----------- | ----- | -------- | ----------------------------------------- |
+| `Habits.jsx`    | ❌ No tests | 20    | Medium   | Stub implementation - "coming soon"       |
+| `Schedule.jsx`  | ❌ No tests | 165   | **HIGH** | Full implementation with state management |
+| `Sequences.jsx` | ❌ No tests | ~50   | **HIGH** | Full implementation                       |
+| `Settings.jsx`  | ❌ No tests | ~100  | **HIGH** | Full implementation                       |
+| `Stats.jsx`     | ❌ No tests | 82    | **HIGH** | Full implementation with IndexedDB        |
 
 **Specifications Coverage:**
+
 - TAB-HAB: 52 specifications (Habits) - 📋 Not tested
 - TAB-SCH: 52 specifications (Schedule) - 📋 Not tested
 - TAB-SEC: 42 specifications (Sequences) - 📋 Not tested
@@ -35,32 +36,32 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 ### Components (4 components - 0% coverage)
 
-| Component | Status | Priority | Notes |
-|-----------|--------|----------|-------|
-| `Toast.jsx` | ❌ No tests | Medium | Simple component but used app-wide |
-| `common/Button.jsx` | ❌ No tests | **HIGH** | Reusable component, multiple variants |
-| `common/Icon.jsx` | ❌ No tests | Medium | Large icon library, needs prop validation |
-| `common/Modal.jsx` | ❌ No tests | **HIGH** | Base modal component used by others |
+| Component           | Status      | Priority | Notes                                     |
+| ------------------- | ----------- | -------- | ----------------------------------------- |
+| `Toast.jsx`         | ❌ No tests | Medium   | Simple component but used app-wide        |
+| `common/Button.jsx` | ❌ No tests | **HIGH** | Reusable component, multiple variants     |
+| `common/Icon.jsx`   | ❌ No tests | Medium   | Large icon library, needs prop validation |
+| `common/Modal.jsx`  | ❌ No tests | **HIGH** | Base modal component used by others       |
 
 ### Utilities (6 utils - 0% coverage)
 
-| Utility | Status | Lines | Priority | Notes |
-|---------|--------|-------|----------|-------|
-| `autoBackup.js` | ❌ No tests | 80 | **HIGH** | ARC-DAT-03 requirement |
-| `pageHelpers.js` | ❌ No tests | 86 | Medium | URL and navigation utilities |
-| `uuidGenerator.js` | ❌ No tests | 31 | Medium | Security-critical for ID generation |
-| `notes/backlinks.js` | ❌ No tests | 101 | **HIGH** | TAB-BDP backlink functionality |
-| `notes/fileAttachments.js` | ❌ No tests | 162 | **HIGH** | File upload/download logic |
-| `notes/versionHistory.js` | ❌ No tests | 113 | **HIGH** | Version control for notes |
+| Utility                    | Status      | Lines | Priority | Notes                               |
+| -------------------------- | ----------- | ----- | -------- | ----------------------------------- |
+| `autoBackup.js`            | ❌ No tests | 80    | **HIGH** | ARC-DAT-03 requirement              |
+| `pageHelpers.js`           | ❌ No tests | 86    | Medium   | URL and navigation utilities        |
+| `uuidGenerator.js`         | ❌ No tests | 31    | Medium   | Security-critical for ID generation |
+| `notes/backlinks.js`       | ❌ No tests | 101   | **HIGH** | TAB-BDP backlink functionality      |
+| `notes/fileAttachments.js` | ❌ No tests | 162   | **HIGH** | File upload/download logic          |
+| `notes/versionHistory.js`  | ❌ No tests | 113   | **HIGH** | Version control for notes           |
 
 ### Hooks (4 hooks - 0% coverage or very low)
 
-| Hook | Status | Coverage | Priority | Notes |
-|------|--------|----------|----------|-------|
-| `useDragAndDrop.js` | ❌ No tests | 41.66% | **HIGH** | Complex interaction logic |
-| `useNotesState.js` | ⚠️ Low coverage | 92.2% | Low | Some edge cases uncovered |
-| `useTasksState.js` | ⚠️ Low coverage | 82.85% | Low | Some error paths uncovered |
-| `useToast.js` | ⚠️ Low coverage | 87.5% | Low | Missing one line coverage |
+| Hook                | Status          | Coverage | Priority | Notes                      |
+| ------------------- | --------------- | -------- | -------- | -------------------------- |
+| `useDragAndDrop.js` | ❌ No tests     | 41.66%   | **HIGH** | Complex interaction logic  |
+| `useNotesState.js`  | ⚠️ Low coverage | 92.2%    | Low      | Some edge cases uncovered  |
+| `useTasksState.js`  | ⚠️ Low coverage | 82.85%   | Low      | Some error paths uncovered |
+| `useToast.js`       | ⚠️ Low coverage | 87.5%    | Low      | Missing one line coverage  |
 
 ---
 
@@ -68,25 +69,26 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 ### Library Components (5-66% coverage)
 
-| Component | Coverage | Priority | Notes |
-|-----------|----------|----------|-------|
-| `Library/FilterModal.jsx` | 5.55% | **HIGH** | TAB-LIB-13 filter functionality |
-| `Library/TemplateEditor.jsx` | 25% | **HIGH** | Core template editing logic |
-| `Library/TemplateCard.jsx` | 41.93% | Medium | Display logic mostly covered |
-| `Library/TemplateToolbar.jsx` | 66.66% | Low | Main actions covered |
+| Component                     | Coverage | Priority | Notes                           |
+| ----------------------------- | -------- | -------- | ------------------------------- |
+| `Library/FilterModal.jsx`     | 5.55%    | **HIGH** | TAB-LIB-13 filter functionality |
+| `Library/TemplateEditor.jsx`  | 25%      | **HIGH** | Core template editing logic     |
+| `Library/TemplateCard.jsx`    | 41.93%   | Medium   | Display logic mostly covered    |
+| `Library/TemplateToolbar.jsx` | 66.66%   | Low      | Main actions covered            |
 
 **Specifications Coverage:**
+
 - TAB-LIB: 39 specifications - Partially tested
 
 ### Notes Components (23-86% coverage)
 
-| Component | Coverage | Priority | Notes |
-|-----------|----------|----------|-------|
-| `Notes/FilterModal.jsx` | 23.07% | **HIGH** | Filter logic needs testing |
-| `Notes/NoteDetailsModal.jsx` | 28.57% | **HIGH** | Metadata display |
-| `Notes/ContextMenu.jsx` | 56.52% | Medium | Menu actions |
-| `Notes/NoteEditor.jsx` | 57.57% | Medium | Editor logic partially covered |
-| `Notes/HelpModal.jsx` | 86.79% | Low | Well tested |
+| Component                    | Coverage | Priority | Notes                          |
+| ---------------------------- | -------- | -------- | ------------------------------ |
+| `Notes/FilterModal.jsx`      | 23.07%   | **HIGH** | Filter logic needs testing     |
+| `Notes/NoteDetailsModal.jsx` | 28.57%   | **HIGH** | Metadata display               |
+| `Notes/ContextMenu.jsx`      | 56.52%   | Medium   | Menu actions                   |
+| `Notes/NoteEditor.jsx`       | 57.57%   | Medium   | Editor logic partially covered |
+| `Notes/HelpModal.jsx`        | 86.79%   | Low      | Well tested                    |
 
 ---
 
@@ -126,17 +128,18 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 ### Current Coverage by Category
 
-| Category | Stmts | Branch | Funcs | Lines |
-|----------|-------|--------|-------|-------|
-| Components | 75% | 43.18% | 75% | 77.77% |
-| Hooks | 84.84% | 69.04% | 81.57% | 86.66% |
-| Pages | 64.86% | 55.46% | 51.89% | 66.01% |
-| Utils | 81.04% | 76.05% | 84.53% | 81.46% |
+| Category    | Stmts  | Branch | Funcs  | Lines  |
+| ----------- | ------ | ------ | ------ | ------ |
+| Components  | 75%    | 43.18% | 75%    | 77.77% |
+| Hooks       | 84.84% | 69.04% | 81.57% | 86.66% |
+| Pages       | 64.86% | 55.46% | 51.89% | 66.01% |
+| Utils       | 81.04% | 76.05% | 84.53% | 81.46% |
 | Utils/Notes | 19.27% | 15.68% | 38.29% | 18.68% |
 
 ### Existing Test Files (26 total)
 
 ✅ Well-tested modules:
+
 - `sanitization.test.js` - 96.77% coverage
 - `listContinuation.test.js` - 96.96% coverage
 - `scheduleManager.test.js` - 95.52% coverage
@@ -150,12 +153,14 @@ This document identifies components, pages, utilities, and hooks that are **miss
 ## Specification Compliance
 
 ### ✅ Well-Tested (with test files)
+
 - **TAB-TSK** (Tasks): 62 specifications - ✅ 94.31% coverage
 - **TAB-BDP** (Brain Dump/Notes): 61 specifications - ✅ Partially tested
 - **ARC-APP** (Application): 4 specifications - ✅ Tested
 - **ARC-DAT** (Data Management): 4 specifications - ⚠️ Partially tested (missing autoBackup)
 
 ### 📋 Not Tested (no test files)
+
 - **TAB-HAB** (Habits): 52 specifications - ❌ No tests
 - **TAB-SCH** (Schedule): 52 specifications - ❌ No tests
 - **TAB-SEC** (Sequences): 42 specifications - ❌ No tests
@@ -165,6 +170,7 @@ This document identifies components, pages, utilities, and hooks that are **miss
 - **TAB-IEX** (Import/Export): 32 specifications - ⚠️ Partially tested
 
 ### 📋 Security Testing (STP specifications)
+
 - **STP-AST** (Asset): 4 specifications - ⚠️ Unknown coverage
 - **STP-HDR** (Headers): 3 specifications - ⚠️ Unknown coverage
 - **STP-IEX** (Import/Export): 4 specifications - ⚠️ Partially tested
@@ -211,13 +217,13 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 ## Coverage Target by Category
 
-| Category | Current | Target | Gap |
-|----------|---------|--------|-----|
-| Components | 75% | 85% | +10% |
-| Hooks | 84.84% | 90% | +5.16% |
-| Pages | 64.86% | 80% | +15.14% |
-| Utils | 81.04% | 90% | +8.96% |
-| Utils/Notes | **19.27%** | 80% | **+60.73%** |
+| Category    | Current    | Target | Gap         |
+| ----------- | ---------- | ------ | ----------- |
+| Components  | 75%        | 85%    | +10%        |
+| Hooks       | 84.84%     | 90%    | +5.16%      |
+| Pages       | 64.86%     | 80%    | +15.14%     |
+| Utils       | 81.04%     | 90%    | +8.96%      |
+| Utils/Notes | **19.27%** | 80%    | **+60.73%** |
 
 ---
 
@@ -225,12 +231,12 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 Tests marked as `test.todo()` or `it.todo()` that need implementation:
 
-| File | TODO Count | Examples |
-|------|------------|----------|
-| `sequencesManager.test.js` | 16 | Routine execution, progress tracking, completion logic |
-| `habitsManager.test.js` | 14 | Streak tracking, habit completion, reset logic |
-| `settingsManager.test.js` | 12 | Settings migration, validation, storage errors |
-| `scheduleManager.test.js` | 12 | Event validation, conflict detection, recurring events |
+| File                       | TODO Count | Examples                                               |
+| -------------------------- | ---------- | ------------------------------------------------------ |
+| `sequencesManager.test.js` | 16         | Routine execution, progress tracking, completion logic |
+| `habitsManager.test.js`    | 14         | Streak tracking, habit completion, reset logic         |
+| `settingsManager.test.js`  | 12         | Settings migration, validation, storage errors         |
+| `scheduleManager.test.js`  | 12         | Event validation, conflict detection, recurring events |
 
 **Total TODO tests**: 54
 
@@ -241,6 +247,7 @@ These represent **known gaps** in test coverage for existing functionality that 
 **Good news**: The Library page and templates management system have **NO TODO tests** - they are fully implemented and tested!
 
 **Library Coverage:**
+
 - ✅ `Library.test.js` - 366 lines of comprehensive tests
 - ✅ `templatesManager.test.js` - Complete coverage (88.11% stmts, 88.07% branch, 95.23% funcs)
 - ✅ `templateInstantiation.test.js` - Complete coverage (90.16% stmts, 90.66% branch, 100% funcs)
@@ -248,6 +255,7 @@ These represent **known gaps** in test coverage for existing functionality that 
 - ✅ `validation.test.js` - Complete coverage (91.02% stmts) - **just fixed!**
 
 **Implementation Size:**
+
 - Library page: 376 lines (fully functional)
 - Library components: 1,032 lines (4 components)
 - Template utilities: 733 lines (3 utility files)

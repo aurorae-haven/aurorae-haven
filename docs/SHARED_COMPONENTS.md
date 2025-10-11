@@ -249,7 +249,7 @@ The CSS has been refactored into focused modules:
 
 ### File Structure
 
-```
+```text
 src/assets/styles/
 ├── styles.css           # Main file (19 lines) - imports all modules
 ├── base.css             # Variables, reset, body (80 lines)

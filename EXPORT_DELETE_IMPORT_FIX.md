@@ -72,7 +72,7 @@ Added 6 new comprehensive tests for **all tabs**:
 
 ### 3. Test Results
 
-```
+```text
 Test Suites: 18 passed, 18 total
 Tests:       54 todo, 428 passed, 482 total
 Snapshots:   0 total
