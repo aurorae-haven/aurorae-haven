@@ -11,20 +11,34 @@ Templates are predefined task and routine patterns that help users get started q
 To add a new template:
 
 1. **Choose template type**: Task or Routine
-2. **Add to appropriate JSON file**: `src/data/templates/tasks.json` or `src/data/templates/routines.json`
-3. **Follow the schema**: Use the structure defined below
-4. **Test locally**: Run the app and verify your template appears
-5. **Submit PR**: Follow the standard contribution process
+2. **Create a new JSON file**: Add `task-{name}.json` or `routine-{name}.json` to `src/data/templates/`
+3. **Register the template**: Add import and array entry in `src/utils/predefinedTemplates.js`
+4. **Follow the schema**: Use the structure defined below
+5. **Test locally**: Run the app and verify your template appears
+6. **Submit PR**: Follow the standard contribution process
 
 ## File Structure
+
+Each template is stored as a **separate JSON file** in the templates directory:
 
 ```text
 src/
 └── data/
     └── templates/
-        ├── tasks.json      # Predefined task templates
-        └── routines.json   # Predefined routine templates
+        ├── README.md                    # Quick reference guide
+        ├── task-morning-review.json     # Individual task template
+        ├── task-exercise.json           # Individual task template
+        ├── routine-morning-launch.json  # Individual routine template
+        ├── routine-focus-session.json   # Individual routine template
+        └── ...                          # One file per template
 ```
+
+**Key Points:**
+
+- Each template is a separate file
+- Naming convention: `{type}-{name}.json`
+- The filename should match the template's `id` field
+- Adding a new template = creating a new file
 
 ## Template Schemas
 
@@ -331,12 +345,15 @@ npm run format:check
 
 1. **Fork the repository**
 2. **Create feature branch**: `git checkout -b feature/add-template-name`
-3. **Add your template** to appropriate JSON file
-4. **Test thoroughly** following checklist above
-5. **Run linters**: `npm run lint && npm run format`
-6. **Commit changes**: `git commit -m "✨ Add [template name] template"`
-7. **Push to fork**: `git push origin feature/add-template-name`
-8. **Create Pull Request** with:
+3. **Create your template file** in `src/data/templates/` (e.g., `task-my-template.json`)
+4. **Register in `src/utils/predefinedTemplates.js`**:
+   - Add import statement for your template
+   - Add template to the `allTemplates` array
+5. **Test thoroughly** following checklist above
+6. **Run linters**: `npm run lint && npm run format`
+7. **Commit changes**: `git commit -m "✨ Add [template name] template"`
+8. **Push to fork**: `git push origin feature/add-template-name`
+9. **Create Pull Request** with:
    - Clear description of template purpose
    - User story or use case
    - Testing confirmation

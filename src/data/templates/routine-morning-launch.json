@@ -1,0 +1,34 @@
+{
+  "id": "routine-morning-launch",
+  "type": "routine",
+  "title": "Morning Launch Routine",
+  "tags": ["morning", "daily", "energy"],
+  "steps": [
+    {
+      "label": "Stretch and breathe",
+      "duration": 180,
+      "description": "Light stretching and deep breathing to wake up the body"
+    },
+    {
+      "label": "Hydrate",
+      "duration": 60,
+      "description": "Drink a glass of water"
+    },
+    {
+      "label": "Plan your day",
+      "duration": 300,
+      "description": "Review tasks and set priorities for the day"
+    },
+    {
+      "label": "Quick tidy",
+      "duration": 300,
+      "description": "Organize workspace or living area"
+    }
+  ],
+  "energyTag": "high",
+  "estimatedDuration": 840,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": true
+}

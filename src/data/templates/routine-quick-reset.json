@@ -1,0 +1,34 @@
+{
+  "id": "routine-quick-reset",
+  "type": "routine",
+  "title": "5-Minute Reset Break",
+  "tags": ["break", "energy", "quick"],
+  "steps": [
+    {
+      "label": "Stand and stretch",
+      "duration": 60,
+      "description": "Full body stretch"
+    },
+    {
+      "label": "Deep breathing",
+      "duration": 120,
+      "description": "4-7-8 breathing technique"
+    },
+    {
+      "label": "Hydrate",
+      "duration": 30,
+      "description": "Drink water"
+    },
+    {
+      "label": "Eye rest",
+      "duration": 90,
+      "description": "Look away from screens, focus on distant objects"
+    }
+  ],
+  "energyTag": "medium",
+  "estimatedDuration": 300,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

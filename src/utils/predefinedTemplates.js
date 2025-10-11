@@ -1,18 +1,64 @@
 /**
  * Predefined Templates Utility
  * Loads and seeds predefined task and routine templates
+ * Each template is stored as a separate JSON file in src/data/templates/
+ *
+ * NOTE FOR CONTRIBUTORS:
+ * When adding a new template file to src/data/templates/, you must also:
+ * 1. Add an import statement below for your new template file
+ * 2. Add the imported template to the allTemplates array
+ *
+ * Example:
+ *   import taskMyNewTask from '../data/templates/task-my-new-task.json'
+ *   // Then add 'taskMyNewTask' to the allTemplates array below
  */
 
-import predefinedTasks from '../data/templates/tasks.json'
-import predefinedRoutines from '../data/templates/routines.json'
 import { saveTemplate, getAllTemplates } from './templatesManager'
+
+// Import all predefined template files
+// When adding a new template, add its import here
+// Task templates
+import taskMorningReview from '../data/templates/task-morning-review.json'
+import taskExercise from '../data/templates/task-exercise.json'
+import taskMealPrep from '../data/templates/task-meal-prep.json'
+import taskCodeReview from '../data/templates/task-code-review.json'
+import taskJournal from '../data/templates/task-journal.json'
+import taskReading from '../data/templates/task-reading.json'
+import taskWaterPlants from '../data/templates/task-water-plants.json'
+
+// Routine templates
+import routineMorningLaunch from '../data/templates/routine-morning-launch.json'
+import routineFocusSession from '../data/templates/routine-focus-session.json'
+import routineEveningWindDown from '../data/templates/routine-evening-wind-down.json'
+import routineQuickReset from '../data/templates/routine-quick-reset.json'
+import routineCreativeWarmUp from '../data/templates/routine-creative-warm-up.json'
+import routineWeeklyReview from '../data/templates/routine-weekly-review.json'
+
+// Collect all templates in a single array
+const allTemplates = [
+  // Tasks
+  taskMorningReview,
+  taskExercise,
+  taskMealPrep,
+  taskCodeReview,
+  taskJournal,
+  taskReading,
+  taskWaterPlants,
+  // Routines
+  routineMorningLaunch,
+  routineFocusSession,
+  routineEveningWindDown,
+  routineQuickReset,
+  routineCreativeWarmUp,
+  routineWeeklyReview
+]
 
 /**
  * Get all predefined templates (tasks + routines)
  * @returns {Array} Array of predefined template objects
  */
 export function getPredefinedTemplates() {
-  return [...predefinedTasks, ...predefinedRoutines]
+  return allTemplates
 }
 
 /**
@@ -20,7 +66,7 @@ export function getPredefinedTemplates() {
  * @returns {Array} Array of predefined task objects
  */
 export function getPredefinedTasks() {
-  return predefinedTasks
+  return allTemplates.filter((t) => t.type === 'task')
 }
 
 /**
@@ -28,7 +74,7 @@ export function getPredefinedTasks() {
  * @returns {Array} Array of predefined routine objects
  */
 export function getPredefinedRoutines() {
-  return predefinedRoutines
+  return allTemplates.filter((t) => t.type === 'routine')
 }
 
 /**

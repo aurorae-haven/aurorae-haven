@@ -295,11 +295,12 @@ See the **[Contributing Templates Guide](./docs/CONTRIBUTING_TEMPLATES.md)** for
 
 Quick summary:
 
-1. Add templates to `src/data/templates/tasks.json` or `src/data/templates/routines.json`
-2. Follow the JSON schema (see guide for details)
-3. Test locally by clearing IndexedDB and reloading
-4. Run linters: `npm run lint && npm run format`
-5. Submit PR with clear description
+1. Create a new JSON file in `src/data/templates/` (e.g., `task-my-template.json`)
+2. Register it in `src/utils/predefinedTemplates.js` (add import + array entry)
+3. Follow the JSON schema (see guide for details)
+4. Test locally by clearing IndexedDB and reloading
+5. Run linters: `npm run lint && npm run format`
+6. Submit PR with clear description
 
 ## Getting Help
 

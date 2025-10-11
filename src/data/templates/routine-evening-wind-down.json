@@ -1,0 +1,39 @@
+{
+  "id": "routine-evening-wind-down",
+  "type": "routine",
+  "title": "Evening Wind-Down Routine",
+  "tags": ["evening", "relaxation", "sleep"],
+  "steps": [
+    {
+      "label": "Dim the lights",
+      "duration": 60,
+      "description": "Reduce bright lights to signal rest time"
+    },
+    {
+      "label": "Light reading",
+      "duration": 600,
+      "description": "Read something calming or inspiring"
+    },
+    {
+      "label": "Gratitude reflection",
+      "duration": 180,
+      "description": "Think of three things you're grateful for"
+    },
+    {
+      "label": "Prepare for tomorrow",
+      "duration": 300,
+      "description": "Set out clothes and review tomorrow's plan"
+    },
+    {
+      "label": "Relaxation exercise",
+      "duration": 360,
+      "description": "Progressive muscle relaxation or meditation"
+    }
+  ],
+  "energyTag": "low",
+  "estimatedDuration": 1500,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": true
+}

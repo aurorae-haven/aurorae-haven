@@ -2,10 +2,16 @@
 
 This directory contains predefined task and routine templates that are automatically loaded when users first access the Library tab.
 
-## Files
+## File Structure
 
-- **tasks.json** - Predefined task templates for the Eisenhower Matrix
-- **routines.json** - Predefined routine templates with steps and durations
+Each template is stored as a **separate JSON file**. Adding a new template is as simple as creating a new `.json` file in this directory.
+
+### Naming Convention
+
+- Task templates: `task-{name}.json` (e.g., `task-morning-review.json`)
+- Routine templates: `routine-{name}.json` (e.g., `routine-morning-launch.json`)
+- Use lowercase with hyphens for the filename
+- The filename should match the template's `id` field
 
 ## Current Templates
 
@@ -34,11 +40,47 @@ See the **[Contributing Templates Guide](../../../docs/CONTRIBUTING_TEMPLATES.md
 
 ### Quick Start
 
-1. **Choose file**: Edit `tasks.json` or `routines.json`
-2. **Follow schema**: Use existing templates as examples
-3. **Use unique IDs**: Format: `task-name` or `routine-name`
-4. **Test locally**: Clear IndexedDB and reload
-5. **Submit PR**: Include description and testing confirmation
+1. **Create new file**: Add a new `.json` file in this directory (e.g., `task-my-new-task.json`)
+2. **Register the template**: Add import and array entry in `src/utils/predefinedTemplates.js`
+3. **Follow schema**: Use existing template files as examples
+4. **Use unique IDs**: Filename format: `task-name.json` or `routine-name.json`
+5. **Test locally**: Clear IndexedDB and reload
+6. **Submit PR**: Include description and testing confirmation
+
+### Example: Adding a New Task
+
+**Step 1:** Create the template file `task-daily-standup.json`:
+
+```json
+{
+  "id": "task-daily-standup",
+  "type": "task",
+  "title": "Daily Team Standup",
+  "tags": ["work", "meeting", "daily"],
+  "category": "Work",
+  "quadrant": "urgent_important",
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}
+```
+
+**Step 2:** Register in `src/utils/predefinedTemplates.js`:
+
+```javascript
+// Add import at the top with other task imports
+import taskDailyStandup from '../data/templates/task-daily-standup.json'
+
+// Add to allTemplates array
+const allTemplates = [
+  // ... existing tasks
+  taskDailyStandup // Add your template here
+  // ... routines
+]
+```
+
+That's it! The template will be automatically loaded when users access the Library tab.
 
 ### Schema Requirements
 
