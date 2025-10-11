@@ -57,8 +57,8 @@ export function instantiateTaskFromTemplate(template) {
       urgent_not_important: [],
       not_urgent_not_important: []
     }
-  } catch (e) {
-    console.error('Failed to parse saved tasks:', e.message)
+  } catch (e) { // eslint-disable-line no-unused-vars
+    console.error('Failed to parse saved tasks')
     tasks = {
       urgent_important: [],
       not_urgent_important: [],
@@ -77,7 +77,7 @@ export function instantiateTaskFromTemplate(template) {
   try {
     localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
   } catch (e) {
-    console.error('Failed to save task:', e.message)
+    console.error('Failed to save task')
     // Check for quota exceeded error
     if (e.name === 'QuotaExceededError' || e.code === 22) {
       throw new Error('Storage quota exceeded. Please free up space by deleting old tasks.')
@@ -109,6 +109,38 @@ export async function instantiateSequenceFromTemplate(template) {
   }
 
   // Additional validation for sequence-specific fields
+  if (template.steps && template.steps.length > 0) {
+    // Validate each step has required fields
+    for (let i = 0; i < template.steps.length; i++) {
+      const step = template.steps[i]
+      if (!step || typeof step !== 'object') {
+        throw new Error(`Step ${i} must be an object`)
+      }
+      if (typeof step.label !== 'string' || step.label.trim() === '') {
+        throw new Error(`Step ${i} must have a non-empty label`)
+      }
+      if (step.duration !== undefined && (typeof step.duration !== 'number' || step.duration < 0)) {
+        throw new Error(`Step ${i} duration must be a non-negative number`)
+      }
+    }
+  }
+
+  // Validate tags are strings
+  if (template.tags && template.tags.length > 0) {
+    for (let i = 0; i < template.tags.length; i++) {
+      if (typeof template.tags[i] !== 'string') {
+        throw new Error(`Tag ${i} must be a string`)
+      }
+    }
+  }
+
+  // Validate estimatedDuration
+  if (template.estimatedDuration !== undefined && 
+      template.estimatedDuration !== null && 
+      (typeof template.estimatedDuration !== 'number' || template.estimatedDuration < 0)) {
+    throw new Error('estimatedDuration must be a non-negative number')
+  }
+
   // Create new independent sequence
   const sequence = {
     name: template.title,
