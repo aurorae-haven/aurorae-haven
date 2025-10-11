@@ -43,7 +43,7 @@ describe('IndexedDBManager', () => {
       const db = await openDB()
       expect(db.name).toBe('aurorae_haven_db')
       expect(db.objectStoreNames.contains(STORES.TASKS)).toBe(true)
-      expect(db.objectStoreNames.contains(STORES.SEQUENCES)).toBe(true)
+      expect(db.objectStoreNames.contains(STORES.ROUTINES)).toBe(true)
       expect(db.objectStoreNames.contains(STORES.HABITS)).toBe(true)
       expect(db.objectStoreNames.contains(STORES.DUMPS)).toBe(true)
       expect(db.objectStoreNames.contains(STORES.SCHEDULE)).toBe(true)
@@ -212,7 +212,7 @@ describe('IndexedDBManager', () => {
 
       expect(report.success).toBe(true)
       expect(report.migrated.tasks).toBe(1)
-      expect(report.migrated.sequences).toBe(1)
+      expect(report.migrated.routines).toBe(1)
       expect(report.migrated.habits).toBe(1)
 
       const tasks = await getAll(STORES.TASKS)
@@ -230,7 +230,7 @@ describe('IndexedDBManager', () => {
   describe('Export/Import', () => {
     test('exportAllData exports all stores', async () => {
       await put(STORES.TASKS, { id: 1, title: 'Test Task' })
-      await put(STORES.SEQUENCES, { id: 'seq1', name: 'Test Sequence' })
+      await put(STORES.ROUTINES, { id: 'seq1', name: 'Test Sequence' })
       await saveStats('test', { value: 100 })
 
       const exported = await exportAllData()
@@ -238,7 +238,7 @@ describe('IndexedDBManager', () => {
       expect(exported.version).toBe(1)
       expect(exported.exportedAt).toBeDefined()
       expect(exported.tasks).toHaveLength(1)
-      expect(exported.sequences).toHaveLength(1)
+      expect(exported.routines).toHaveLength(1)
       expect(exported.stats).toHaveLength(1)
       expect(exported.brainDump).toBeDefined()
     })
@@ -292,7 +292,7 @@ describe('IndexedDBManager', () => {
 
       expect(report.success).toBe(true)
       expect(report.imported.tasks).toBe(1)
-      expect(report.imported.sequences).toBe(1)
+      expect(report.imported.routines).toBe(1)
       expect(report.imported.stats).toBe(1)
 
       const tasks = await getAll(STORES.TASKS)
@@ -387,7 +387,7 @@ describe('IndexedDBManager', () => {
         { id: 2, title: 'Task 2', status: 'done', timestamp: 1704453601000 }
       ]
 
-      const nominalSequences = [
+      const nominalRoutines = [
         {
           id: 'seq1',
           name: 'Morning Routine',
@@ -470,8 +470,8 @@ describe('IndexedDBManager', () => {
       for (const task of nominalTasks) {
         await put(STORES.TASKS, task)
       }
-      for (const seq of nominalSequences) {
-        await put(STORES.SEQUENCES, seq)
+      for (const seq of nominalRoutines) {
+        await put(STORES.ROUTINES, seq)
       }
       for (const habit of nominalHabits) {
         await put(STORES.HABITS, habit)
@@ -509,7 +509,7 @@ describe('IndexedDBManager', () => {
       expect(exported.version).toBe(1)
       expect(exported.exportedAt).toBeDefined()
       expect(exported.tasks).toEqual(nominalTasks)
-      expect(exported.sequences).toEqual(nominalSequences)
+      expect(exported.routines).toEqual(nominalRoutines)
       expect(exported.habits).toEqual(nominalHabits)
       expect(exported.dumps).toEqual(nominalDumps)
       expect(exported.schedule).toEqual(nominalSchedule)
@@ -520,7 +520,7 @@ describe('IndexedDBManager', () => {
 
       // Clear all data
       await clear(STORES.TASKS)
-      await clear(STORES.SEQUENCES)
+      await clear(STORES.ROUTINES)
       await clear(STORES.HABITS)
       await clear(STORES.DUMPS)
       await clear(STORES.SCHEDULE)
@@ -534,7 +534,7 @@ describe('IndexedDBManager', () => {
       // Verify import succeeded
       expect(report.success).toBe(true)
       expect(report.imported.tasks).toBe(nominalTasks.length)
-      expect(report.imported.sequences).toBe(nominalSequences.length)
+      expect(report.imported.routines).toBe(nominalRoutines.length)
       expect(report.imported.habits).toBe(nominalHabits.length)
       expect(report.imported.dumps).toBe(nominalDumps.length)
       expect(report.imported.schedule).toBe(nominalSchedule.length)
@@ -546,8 +546,8 @@ describe('IndexedDBManager', () => {
       const restoredTasks = await getAll(STORES.TASKS)
       expect(restoredTasks).toEqual(nominalTasks)
 
-      const restoredSequences = await getAll(STORES.SEQUENCES)
-      expect(restoredSequences).toEqual(nominalSequences)
+      const restoredSequences = await getAll(STORES.ROUTINES)
+      expect(restoredSequences).toEqual(nominalRoutines)
 
       const restoredHabits = await getAll(STORES.HABITS)
       expect(restoredHabits).toEqual(nominalHabits)

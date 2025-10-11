@@ -14,7 +14,7 @@ Created `validateImportData()` and `validateExportData()` functions in `src/util
 **Import Validation:**
 
 - **Version field**: Must exist and be a number
-- **Array fields**: If present, must be arrays (tasks, sequences, habits, dumps, schedule)
+- **Array fields**: If present, must be arrays (tasks, routines, habits, dumps, schedule)
 - **BrainDump object**: If present, must be an object with correct structure
   - `content`: Must be a string if present
   - `tags`: Must be a string if present
@@ -106,7 +106,7 @@ Tests:       22 passed, 22 total
 {
   "version": 1,
   "tasks": [],
-  "sequences": [],
+  "routines": [],
   "brainDump": {
     "content": "# Notes",
     "tags": "",

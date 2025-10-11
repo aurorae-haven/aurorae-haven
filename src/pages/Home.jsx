@@ -38,7 +38,7 @@ function Home() {
             </div>
             <div>
               <strong>
-                <Link to='/sequences'>⏱️ Sequences</Link>
+                <Link to='/routines'>⏱️ Routines</Link>
               </strong>
               <p style={{ margin: '4px 0 0 0', opacity: 0.8 }}>
                 Create and run daily routines with step-by-step timers

@@ -1,14 +1,14 @@
 import {
   instantiateTaskFromTemplate,
-  instantiateSequenceFromTemplate,
+  instantiateRoutineFromTemplate,
   instantiateTemplate
 } from '../utils/templateInstantiation'
 import * as uuidGenerator from '../utils/uuidGenerator'
-import * as sequencesManager from '../utils/sequencesManager'
+import * as routinesManager from '../utils/routinesManager'
 
 // Mock dependencies
 jest.mock('../utils/uuidGenerator')
-jest.mock('../utils/sequencesManager')
+jest.mock('../utils/routinesManager')
 
 describe('templateInstantiation', () => {
   beforeEach(() => {
@@ -214,14 +214,14 @@ describe('templateInstantiation', () => {
     })
   })
 
-  describe('instantiateSequenceFromTemplate', () => {
+  describe('instantiateRoutineFromTemplate', () => {
     beforeEach(() => {
-      sequencesManager.createSequence.mockResolvedValue(
-        'test-sequence-uuid-456'
+      routinesManager.createRoutine.mockResolvedValue(
+        'test-routine-uuid-456'
       )
     })
 
-    test('creates a sequence from a routine template', async () => {
+    test('creates a routine from a routine template', async () => {
       const template = {
         type: 'routine',
         title: 'Morning routine',
@@ -235,10 +235,10 @@ describe('templateInstantiation', () => {
         estimatedDuration: 1860
       }
 
-      const sequenceId = await instantiateSequenceFromTemplate(template)
+      const routineId = await instantiateRoutineFromTemplate(template)
 
-      expect(sequenceId).toBe('test-sequence-uuid-456')
-      expect(sequencesManager.createSequence).toHaveBeenCalledWith(
+      expect(routineId).toBe('test-routine-uuid-456')
+      expect(routinesManager.createRoutine).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'Morning routine',
           steps: template.steps,
@@ -249,16 +249,16 @@ describe('templateInstantiation', () => {
       )
     })
 
-    test('creates sequence with minimal template data', async () => {
+    test('creates routine with minimal template data', async () => {
       const template = {
         type: 'routine',
         title: 'Simple routine'
       }
 
-      const sequenceId = await instantiateSequenceFromTemplate(template)
+      const routineId = await instantiateRoutineFromTemplate(template)
 
-      expect(sequenceId).toBe('test-sequence-uuid-456')
-      expect(sequencesManager.createSequence).toHaveBeenCalledWith(
+      expect(routineId).toBe('test-routine-uuid-456')
+      expect(routinesManager.createRoutine).toHaveBeenCalledWith(
         expect.objectContaining({
           name: 'Simple routine',
           steps: [],
@@ -270,7 +270,7 @@ describe('templateInstantiation', () => {
     })
 
     test('throws error for null template', async () => {
-      await expect(instantiateSequenceFromTemplate(null)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(null)).rejects.toThrow(
         'Invalid routine template'
       )
     })
@@ -281,7 +281,7 @@ describe('templateInstantiation', () => {
         title: 'Not a routine'
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Invalid routine template'
       )
     })
@@ -293,10 +293,10 @@ describe('templateInstantiation', () => {
         id: 'template-id-789'
       }
 
-      await instantiateSequenceFromTemplate(template)
+      await instantiateRoutineFromTemplate(template)
 
       // The sequence should not have the template ID
-      const createCall = sequencesManager.createSequence.mock.calls[0][0]
+      const createCall = routinesManager.createRoutine.mock.calls[0][0]
       expect(createCall.id).toBeUndefined()
       expect(createCall.name).toBe('Template routine')
     })
@@ -307,7 +307,7 @@ describe('templateInstantiation', () => {
         title: '' // Empty title should fail validation
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Invalid template data'
       )
     })
@@ -322,7 +322,7 @@ describe('templateInstantiation', () => {
         ]
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Invalid template data'
       )
     })
@@ -336,7 +336,7 @@ describe('templateInstantiation', () => {
         ]
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Invalid template data'
       )
     })
@@ -350,7 +350,7 @@ describe('templateInstantiation', () => {
         ]
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Step 0 duration must be a non-negative number'
       )
     })
@@ -362,7 +362,7 @@ describe('templateInstantiation', () => {
         tags: ['valid', 123, 'also-valid'] // Numeric tag
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Invalid template data'
       )
     })
@@ -374,7 +374,7 @@ describe('templateInstantiation', () => {
         estimatedDuration: -100 // Negative duration
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Invalid template data'
       )
     })
@@ -386,7 +386,7 @@ describe('templateInstantiation', () => {
         estimatedDuration: 'invalid' // String instead of number
       }
 
-      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
         'Invalid template data'
       )
     })
@@ -394,8 +394,8 @@ describe('templateInstantiation', () => {
 
   describe('instantiateTemplate', () => {
     beforeEach(() => {
-      sequencesManager.createSequence.mockResolvedValue(
-        'test-sequence-uuid-456'
+      routinesManager.createRoutine.mockResolvedValue(
+        'test-routine-uuid-456'
       )
     })
 
@@ -422,7 +422,7 @@ describe('templateInstantiation', () => {
       const result = await instantiateTemplate(template)
 
       expect(result.type).toBe('routine')
-      expect(result.id).toBe('test-sequence-uuid-456')
+      expect(result.id).toBe('test-routine-uuid-456')
     })
 
     test('throws error for null template', async () => {

@@ -4,7 +4,7 @@
  */
 
 import { generateSecureUUID } from './uuidGenerator'
-import { createSequence } from './sequencesManager'
+import { createRoutine } from './routinesManager'
 import { validateTemplateData } from './validation'
 
 /**
@@ -96,12 +96,12 @@ export function instantiateTaskFromTemplate(template) {
 }
 
 /**
- * Instantiate a sequence/routine from a routine template
- * Creates a new independent sequence in IndexedDB from template data
+ * Instantiate a routine from a routine template
+ * Creates a new independent routine in IndexedDB from template data
  * @param {Object} template - Routine template object
- * @returns {Promise<string>} Created sequence ID
+ * @returns {Promise<string>} Created routine ID
  */
-export async function instantiateSequenceFromTemplate(template) {
+export async function instantiateRoutineFromTemplate(template) {
   if (!template || template.type !== 'routine') {
     throw new Error('Invalid routine template')
   }
@@ -112,7 +112,7 @@ export async function instantiateSequenceFromTemplate(template) {
     throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
   }
 
-  // Additional validation for sequence-specific fields
+  // Additional validation for routine-specific fields
   if (template.steps && template.steps.length > 0) {
     // Validate each step has required fields
     for (let i = 0; i < template.steps.length; i++) {
@@ -151,8 +151,8 @@ export async function instantiateSequenceFromTemplate(template) {
     throw new Error('estimatedDuration must be a non-negative number')
   }
 
-  // Create new independent sequence
-  const sequence = {
+  // Create new independent routine
+  const routine = {
     name: template.title,
     steps: template.steps || [],
     tags: template.tags || [],
@@ -161,10 +161,10 @@ export async function instantiateSequenceFromTemplate(template) {
     createdAt: new Date().toISOString()
   }
 
-  // Use existing createSequence function from sequencesManager
-  const sequenceId = await createSequence(sequence)
+  // Use existing createRoutine function from routinesManager
+  const routineId = await createRoutine(routine)
 
-  return sequenceId
+  return routineId
 }
 
 /**
@@ -187,10 +187,10 @@ export async function instantiateTemplate(template) {
       task: result.task
     }
   } else if (template.type === 'routine') {
-    const sequenceId = await instantiateSequenceFromTemplate(template)
+    const routineId = await instantiateRoutineFromTemplate(template)
     return {
       type: 'routine',
-      id: sequenceId
+      id: routineId
     }
   } else {
     throw new Error(`Unknown template type: ${template.type}`)

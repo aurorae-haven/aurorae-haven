@@ -22,7 +22,7 @@ function Schedule() {
               <svg className='icon' viewBox='0 0 24 24'>
                 <path d='M12 5v14M5 12h14' />
               </svg>{' '}
-              Sequence
+              Routine
             </button>
             <button className='btn'>
               <svg className='icon' viewBox='0 0 24 24'>
@@ -129,7 +129,7 @@ function Schedule() {
               alignItems: 'center'
             }}
           >
-            <div className='small'>Sequence timer</div>
+            <div className='small'>Routine timer</div>
             <div style={{ fontWeight: '700' }}>00:12:34</div>
           </div>
           <div style={{ marginTop: '8px' }} className='progress'>

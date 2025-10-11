@@ -25,7 +25,7 @@ Aurorae Haven implements a robust data management system that meets all ARC-DAT 
 | Store Name | Purpose            | Key Path  | Indexes                                   |
 | ---------- | ------------------ | --------- | ----------------------------------------- |
 | tasks      | Task management    | id (auto) | timestamp, status                         |
-| sequences  | Routine sequences  | id        | timestamp                                 |
+| routines   | Routines           | id        | timestamp                                 |
 | habits     | Habit tracking     | id (auto) | timestamp, paused                         |
 | dumps      | Brain dump entries | id (auto) | timestamp                                 |
 | schedule   | Schedule events    | id (auto) | day, timestamp                            |
@@ -276,7 +276,7 @@ console.log(data)
 //   version: 1,
 //   exportedAt: "2025-01-15T10:00:00Z",
 //   tasks: [...],              // Flattened tasks from all quadrants
-//   sequences: [...],
+//   routines: [...],
 //   habits: [...],
 //   dumps: [...],              // Brain dump entries
 //   schedule: [...],
@@ -310,7 +310,7 @@ console.log(report)
 //   success: true,
 //   migrated: {
 //     tasks: 5,
-//     sequences: 3,
+//     routines: 3,
 //     habits: 2
 //   },
 //   errors: []

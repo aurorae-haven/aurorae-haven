@@ -27,7 +27,7 @@ src/
 │   ├── BrainDump.jsx    # Brain Dump page (272 lines)
 │   ├── Tasks.jsx        # Tasks page (275 lines)
 │   ├── Schedule.jsx     # Schedule page
-│   ├── Sequences.jsx    # Sequences page
+│   ├── Routines.jsx    # Routines page
 │   ├── Habits.jsx       # Habits page
 │   ├── Stats.jsx        # Stats page
 │   ├── Settings.jsx     # Settings page

@@ -185,7 +185,7 @@ After migration completes:
 After migration, verify the following:
 
 - [ ] All tasks are visible
-- [ ] Sequences/routines are intact
+- [ ] Routines are intact
 - [ ] Habits and streaks are correct
 - [ ] Brain dump content is preserved
 - [ ] Schedule events are present
@@ -198,7 +198,7 @@ After migration, verify the following:
 ### Automatically Migrated
 
 ✅ Tasks
-✅ Sequences (routines)
+✅ Routines
 ✅ Habits
 ✅ Brain dump entries
 ✅ Schedule events

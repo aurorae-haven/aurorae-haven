@@ -24,7 +24,7 @@ The following pages currently exist in `src/pages/`:
 - **Habits.jsx**
 - **Home.jsx**
 - **Schedule.jsx**
-- **Sequences.jsx**
+- **Routines.jsx**
 - **Settings.jsx**
 - **Stats.jsx**
 - **Tasks.jsx**
@@ -39,7 +39,7 @@ The following pages currently exist in `src/pages/`:
 | TAB-LIB  | 39    | Library (partial)       | 🔄 Partial (template instantiation implemented) |
 | TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)            |
 | TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                  |
-| TAB-RTN  | 58    | Sequences               | 🔄 Partial (sequences = routines)               |
+| TAB-RTN  | 58    | Sequences               | 🔄 Partial (routines)               |
 | TAB-SCH  | 52    | Schedule                | 🔄 Partial (basic structure exists)             |
 | TAB-SEC  | 42    | Settings (Security)     | ❌ Not Implemented (security features missing)  |
 | TAB-SET  | 44    | Settings                | 🔄 Partial (basic structure exists)             |
@@ -89,7 +89,7 @@ These features exist but need significant enhancements:
 
 #### TAB-RTN: Sequences (Routines) (58 specifications)
 
-- ✅ Basic sequence runner exists
+- ✅ Basic routine runner exists
 - ❌ Missing: Step templates and library
 - ❌ Missing: Advanced timing options
 - ❌ Missing: Routine scheduling
@@ -255,7 +255,7 @@ The following categories have specifications but no implementation:
    - Reason: Core productivity feature
    - Estimated Effort: 2 weeks
 
-3. **Complete TAB-RTN (Routines/Sequences)** - 58 specs
+3. **Complete TAB-RTN (Routines)** - 58 specs
    - Priority: HIGH
    - Reason: Core productivity feature
    - Estimated Effort: 2-3 weeks

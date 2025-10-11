@@ -8,7 +8,7 @@ const DB_VERSION = 2
 // Object store names
 export const STORES = {
   TASKS: 'tasks',
-  SEQUENCES: 'sequences',
+  ROUTINES: 'routines',
   HABITS: 'habits',
   DUMPS: 'dumps',
   SCHEDULE: 'schedule',
@@ -43,11 +43,11 @@ export function openDB() {
         taskStore.createIndex('status', 'status', { unique: false })
       }
 
-      if (!db.objectStoreNames.contains(STORES.SEQUENCES)) {
-        const seqStore = db.createObjectStore(STORES.SEQUENCES, {
+      if (!db.objectStoreNames.contains(STORES.ROUTINES)) {
+        const routineStore = db.createObjectStore(STORES.ROUTINES, {
           keyPath: 'id'
         })
-        seqStore.createIndex('timestamp', 'timestamp', { unique: false })
+        routineStore.createIndex('timestamp', 'timestamp', { unique: false })
       }
 
       if (!db.objectStoreNames.contains(STORES.HABITS)) {
@@ -395,12 +395,12 @@ export async function migrateFromLocalStorage() {
         migrationReport.migrated.tasks = mainData.tasks.length
       }
 
-      // Migrate sequences
+      // Migrate routines (previously called sequences)
       if (Array.isArray(mainData.sequences)) {
-        for (const seq of mainData.sequences) {
-          await put(STORES.SEQUENCES, seq)
+        for (const routine of mainData.sequences) {
+          await put(STORES.ROUTINES, routine)
         }
-        migrationReport.migrated.sequences = mainData.sequences.length
+        migrationReport.migrated.routines = mainData.sequences.length
       }
 
       // Migrate habits
@@ -457,7 +457,7 @@ export async function exportAllData() {
     version: 1,
     exportedAt: new Date().toISOString(),
     tasks: await getAll(STORES.TASKS),
-    sequences: await getAll(STORES.SEQUENCES),
+    routines: await getAll(STORES.ROUTINES),
     habits: await getAll(STORES.HABITS),
     dumps: await getAll(STORES.DUMPS),
     schedule: await getAll(STORES.SCHEDULE),
@@ -482,6 +482,9 @@ export async function exportAllData() {
     data.auroraeTasksData = null
   }
 
+  // Backward compatibility: include sequences field as alias for routines
+  data.sequences = data.routines || []
+
   return data
 }
 
@@ -500,7 +503,7 @@ export async function importAllData(data) {
   try {
     // Clear existing data
     await clear(STORES.TASKS)
-    await clear(STORES.SEQUENCES)
+    await clear(STORES.ROUTINES)
     await clear(STORES.HABITS)
     await clear(STORES.DUMPS)
     await clear(STORES.SCHEDULE)
@@ -515,12 +518,18 @@ export async function importAllData(data) {
       importReport.imported.tasks = data.tasks.length
     }
 
-    // Import sequences
-    if (Array.isArray(data.sequences)) {
-      for (const seq of data.sequences) {
-        await put(STORES.SEQUENCES, seq)
+    // Import routines (also accepts legacy "sequences" field)
+    if (Array.isArray(data.routines)) {
+      for (const routine of data.routines) {
+        await put(STORES.ROUTINES, routine)
       }
-      importReport.imported.sequences = data.sequences.length
+      importReport.imported.routines = data.routines.length
+    } else if (Array.isArray(data.sequences)) {
+      // Legacy support for old exports
+      for (const routine of data.sequences) {
+        await put(STORES.ROUTINES, routine)
+      }
+      importReport.imported.routines = data.sequences.length
     }
 
     // Import habits

@@ -33,7 +33,7 @@ The export includes:
 - ✅ **Brain Dump Entries**: All saved entries
 - ✅ **Tasks (Eisenhower Matrix)**: All tasks organized in four quadrants (urgent/important matrix)
 - ✅ **Tasks (IndexedDB)**: Legacy task list with completion status (if using IndexedDB)
-- ✅ **Sequences**: Routines with steps and timings
+- ✅ **Routines**: Routines with steps and timings
 - ✅ **Habits**: Habit tracking data and streaks
 - ✅ **Schedule**: Your daily schedule and time blocks
 
@@ -59,7 +59,7 @@ The export file contains all your data in a structured JSON format:
       "createdAt": 1704453700000
     }
   ],
-  "sequences": [],
+  "routines": [],
   "habits": [],
   "dumps": [
     {
@@ -122,7 +122,7 @@ The export file contains all your data in a structured JSON format:
 - **`version`** (number): Data format version for compatibility checking
 - **`exportedAt`** (ISO timestamp): When the export was created
 - **`tasks`** (array): Flattened array of all tasks from all quadrants
-- **`sequences`** (array): Saved routine sequences
+-**`routines`** (array): Saved routines
 - **`habits`** (array): Habit tracking data
 - **`dumps`** (array): Brain dump notes/entries
 - **`schedule`** (array): Calendar/schedule events
@@ -170,7 +170,7 @@ The import process validates:
 - ✅ Valid JSON format
 - ✅ Required `version` field present (must be a number)
 - ✅ Data structure matches expected schema
-- ✅ Array fields (`tasks`, `sequences`, `habits`, `dumps`, `schedule`) must be arrays if present
+- ✅ Array fields (`tasks`, `routines`, `habits`, `dumps`, `schedule`) must be arrays if present
 - ✅ `brainDump` object structure validation:
   - `content` must be a string if present
   - `tags` must be a string if present
@@ -272,7 +272,7 @@ Aurorae Haven uses these storage locations:
 **IndexedDB stores:**
 
 - `tasks` - Task management (when using IndexedDB)
-- `sequences` - Routine sequences
+- `routines` (formerly `sequences`) - Routines
 - `habits` - Habit tracking
 - `dumps` - Brain dump entries (when using IndexedDB)
 - `schedule` - Schedule events

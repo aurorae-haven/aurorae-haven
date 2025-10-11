@@ -47,7 +47,7 @@ Three comprehensive markdown documents were created in the `docs/` folder:
 
 - **Partially Implemented** (55%): 7 categories (~350 specs)
   - TAB-HAB (Habits) - needs advanced features
-  - TAB-RTN (Routines/Sequences) - needs templates
+  - TAB-RTN (Routines) - needs templates
   - TAB-SCH (Schedule) - needs full calendar
   - TAB-STT (Stats) - needs dashboards
   - TAB-SET (Settings) - needs categories

@@ -8,7 +8,7 @@ import {
 // Data schema field names
 const DATA_FIELDS = {
   TASKS: 'tasks',
-  SEQUENCES: 'sequences',
+  ROUTINES: 'routines',
   HABITS: 'habits',
   DUMPS: 'dumps',
   SCHEDULE: 'schedule'

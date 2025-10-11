@@ -35,7 +35,7 @@ The repository contains a **fully React-based Progressive Web App** built with V
 - `Schedule.jsx` - Daily schedule and time blocking
 - `Tasks.jsx` - Task management with Eisenhower matrix
 - `Habits.jsx` - Habit tracking with streaks
-- `Sequences.jsx` - Routine management with timers
+- `Routines.jsx` - Routine management with timers
 - `Stats.jsx` - Progress tracking and analytics
 - `Settings.jsx` - App configuration
 - `Home.jsx` - Landing page
@@ -68,7 +68,7 @@ The repository contains a **fully React-based Progressive Web App** built with V
 │        │   ├─→ Home.jsx               │
 │        │   ├─→ BrainDump.jsx         │
 │        │   ├─→ Schedule.jsx          │
-│        │   ├─→ Sequences.jsx         │
+│        │   ├─→ Routines.jsx         │
 │        │   ├─→ Tasks.jsx             │
 │        │   ├─→ Habits.jsx            │
 │        │   ├─→ Stats.jsx             │
