@@ -111,14 +111,7 @@ export async function instantiateSequenceFromTemplate(template) {
   // Additional validation for sequence-specific fields
   // (Removed: step-level validation is now handled by validateTemplateData)
 
-  // Validate tags are strings
-  if (template.tags && template.tags.length > 0) {
-    for (let i = 0; i < template.tags.length; i++) {
-      if (typeof template.tags[i] !== 'string') {
-        throw new Error(`Tag ${i} must be a string`)
-      }
-    }
-  }
+  // (Tag validation is handled by validateTemplateData; redundant check removed)
 
   // Validate estimatedDuration
   if (template.estimatedDuration !== undefined && 
