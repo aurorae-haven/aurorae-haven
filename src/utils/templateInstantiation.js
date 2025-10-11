@@ -57,7 +57,7 @@ export function instantiateTaskFromTemplate(template) {
       urgent_not_important: [],
       not_urgent_not_important: []
     }
-  } catch (e) { // eslint-disable-line no-unused-vars
+  } catch (error) { // eslint-disable-line no-unused-vars
     console.error('Failed to parse saved tasks')
     tasks = {
       urgent_important: [],
@@ -76,10 +76,10 @@ export function instantiateTaskFromTemplate(template) {
   // Save back to localStorage
   try {
     localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
-  } catch (e) {
+  } catch (error) {
     console.error('Failed to save task')
     // Check for quota exceeded error
-    if (e.name === 'QuotaExceededError' || e.code === 22) {
+    if (error.name === 'QuotaExceededError' || error.code === 22) {
       throw new Error('Storage quota exceeded. Please free up space by deleting old tasks.')
     }
     throw new Error('Failed to save task to storage')
