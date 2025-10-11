@@ -11,6 +11,7 @@
 - **Progressive Web App (PWA)**: Install on any device, works offline
 - **Routines**: Create, edit, and run daily routines with timers
 - **Tasks**: Prioritise using the Eisenhower matrix
+- **Template Library**: 13+ predefined task and routine templates to get started quickly
 - **Habits**: Track streaks and small wins
 - **Notes & Brain Dump**: Markdown-ready with comprehensive import/export (`.json` for full backup, `.md` for content only)
 - **Stats Foundation**: Track routine time and structured progress with IndexedDB
@@ -233,3 +234,12 @@ The deployment workflow:
 ## 🙌 Contributing
 
 Contributions, feedback, and ideas are welcome!
+
+### Adding Templates
+
+Want to contribute task or routine templates? We welcome community contributions!
+
+- See **[Contributing Templates Guide](./docs/CONTRIBUTING_TEMPLATES.md)** for detailed instructions
+- Templates are stored in `src/data/templates/` as JSON files
+- 13+ predefined templates already included to help users get started
+- Easy to add: just follow the schema, test locally, and submit a PR
