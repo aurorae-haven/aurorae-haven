@@ -5,6 +5,7 @@
 
 import { generateSecureUUID } from './uuidGenerator'
 import { createSequence } from './sequencesManager'
+import { validateTemplateData } from './validation'
 
 /**
  * Instantiate a task from a task template
@@ -15,6 +16,22 @@ import { createSequence } from './sequencesManager'
 export function instantiateTaskFromTemplate(template) {
   if (!template || template.type !== 'task') {
     throw new Error('Invalid task template')
+  }
+
+  // Validate template data
+  const validation = validateTemplateData(template)
+  if (!validation.valid) {
+    throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+  }
+
+  // Validate dueOffset if present
+  if (template.dueOffset !== undefined && template.dueOffset !== null) {
+    if (typeof template.dueOffset !== 'number') {
+      throw new Error('Template dueOffset must be a number')
+    }
+    if (template.dueOffset <= 0) {
+      throw new Error('Template dueOffset must be a positive number')
+    }
   }
 
   // Determine target quadrant (default to urgent_important if not specified)
@@ -41,7 +58,7 @@ export function instantiateTaskFromTemplate(template) {
       not_urgent_not_important: []
     }
   } catch (e) {
-    console.error('Failed to parse saved tasks:', e)
+    console.error('Failed to parse saved tasks:', e.message)
     tasks = {
       urgent_important: [],
       not_urgent_important: [],
@@ -60,7 +77,11 @@ export function instantiateTaskFromTemplate(template) {
   try {
     localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
   } catch (e) {
-    console.error('Failed to save task:', e)
+    console.error('Failed to save task:', e.message)
+    // Check for quota exceeded error
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      throw new Error('Storage quota exceeded. Please free up space by deleting old tasks.')
+    }
     throw new Error('Failed to save task to storage')
   }
 
@@ -79,6 +100,45 @@ export function instantiateTaskFromTemplate(template) {
 export async function instantiateSequenceFromTemplate(template) {
   if (!template || template.type !== 'routine') {
     throw new Error('Invalid routine template')
+  }
+
+  // Validate template data
+  const validation = validateTemplateData(template)
+  if (!validation.valid) {
+    throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+  }
+
+  // Additional validation for sequence-specific fields
+  if (template.steps && template.steps.length > 0) {
+    // Validate each step has required fields
+    for (let i = 0; i < template.steps.length; i++) {
+      const step = template.steps[i]
+      if (!step || typeof step !== 'object') {
+        throw new Error(`Step ${i} must be an object`)
+      }
+      if (typeof step.label !== 'string' || step.label.trim() === '') {
+        throw new Error(`Step ${i} must have a non-empty label`)
+      }
+      if (step.duration !== undefined && (typeof step.duration !== 'number' || step.duration < 0)) {
+        throw new Error(`Step ${i} duration must be a non-negative number`)
+      }
+    }
+  }
+
+  // Validate tags are strings
+  if (template.tags && template.tags.length > 0) {
+    for (let i = 0; i < template.tags.length; i++) {
+      if (typeof template.tags[i] !== 'string') {
+        throw new Error(`Tag ${i} must be a string`)
+      }
+    }
+  }
+
+  // Validate estimatedDuration
+  if (template.estimatedDuration !== undefined && 
+      template.estimatedDuration !== null && 
+      (typeof template.estimatedDuration !== 'number' || template.estimatedDuration < 0)) {
+    throw new Error('estimatedDuration must be a non-negative number')
   }
 
   // Create new independent sequence

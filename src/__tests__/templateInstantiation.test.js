@@ -153,6 +153,65 @@ describe('templateInstantiation', () => {
       expect(result.task.id).not.toBe('template-id-123')
       expect(result.task.id).toBe('test-task-uuid-123')
     })
+
+    test('throws error for negative dueOffset', () => {
+      const template = {
+        type: 'task',
+        title: 'Task with invalid offset',
+        dueOffset: -1000
+      }
+
+      expect(() => {
+        instantiateTaskFromTemplate(template)
+      }).toThrow('Template dueOffset must be a positive number')
+    })
+
+    test('throws error for non-numeric dueOffset', () => {
+      const template = {
+        type: 'task',
+        title: 'Task with invalid offset',
+        dueOffset: 'invalid'
+      }
+
+      expect(() => {
+        instantiateTaskFromTemplate(template)
+      }).toThrow('Template dueOffset must be a number')
+    })
+
+    test('throws error for invalid task template data', () => {
+      const template = {
+        type: 'task',
+        title: ''  // Empty title should fail validation
+      }
+
+      expect(() => {
+        instantiateTaskFromTemplate(template)
+      }).toThrow('Invalid template data')
+    })
+
+    test('handles quota exceeded error gracefully', () => {
+      // Pre-populate with a task to ensure localStorage works
+      const template = {
+        type: 'task',
+        title: 'Test task'
+      }
+
+      // Mock localStorage to throw QuotaExceededError
+      const originalSetItem = Storage.prototype.setItem
+      Storage.prototype.setItem = jest.fn(() => {
+        const error = new Error('QuotaExceededError')
+        error.name = 'QuotaExceededError'
+        error.code = 22
+        throw error
+      })
+
+      expect(() => {
+        instantiateTaskFromTemplate(template)
+      }).toThrow('Storage quota exceeded')
+
+      // Restore original
+      Storage.prototype.setItem = originalSetItem
+    })
   })
 
   describe('instantiateSequenceFromTemplate', () => {
@@ -238,6 +297,96 @@ describe('templateInstantiation', () => {
       const createCall = sequencesManager.createSequence.mock.calls[0][0]
       expect(createCall.id).toBeUndefined()
       expect(createCall.name).toBe('Template routine')
+    })
+
+    test('throws error for invalid routine template data', async () => {
+      const template = {
+        type: 'routine',
+        title: ''  // Empty title should fail validation
+      }
+
+      await expect(
+        instantiateSequenceFromTemplate(template)
+      ).rejects.toThrow('Invalid template data')
+    })
+
+    test('throws error for invalid step structure', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Routine with invalid step',
+        steps: [
+          { label: 'Valid step', duration: 60 },
+          { duration: 120 }  // Missing label
+        ]
+      }
+
+      await expect(
+        instantiateSequenceFromTemplate(template)
+      ).rejects.toThrow('Invalid template data')
+    })
+
+    test('throws error for invalid step duration', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Routine with invalid duration',
+        steps: [
+          { label: 'Step 1', duration: 'invalid' }  // Non-numeric duration
+        ]
+      }
+
+      await expect(
+        instantiateSequenceFromTemplate(template)
+      ).rejects.toThrow('Invalid template data')
+    })
+
+    test('throws error for negative step duration', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Routine with negative duration',
+        steps: [
+          { label: 'Step 1', duration: -10 }  // Negative duration
+        ]
+      }
+
+      await expect(
+        instantiateSequenceFromTemplate(template)
+      ).rejects.toThrow('Step 0 duration must be a non-negative number')
+    })
+
+    test('throws error for non-string tags', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Routine with invalid tags',
+        tags: ['valid', 123, 'also-valid']  // Numeric tag
+      }
+
+      await expect(
+        instantiateSequenceFromTemplate(template)
+      ).rejects.toThrow('Invalid template data')
+    })
+
+    test('throws error for invalid estimatedDuration', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Routine with invalid duration',
+        estimatedDuration: -100  // Negative duration
+      }
+
+      await expect(
+        instantiateSequenceFromTemplate(template)
+      ).rejects.toThrow('Invalid template data')
+    })
+
+    test('throws error for non-numeric estimatedDuration', async () => {
+      const template = {
+        type: 'routine',
+        title: 'Routine with invalid duration',
+        estimatedDuration: 'invalid'  // String instead of number
+      }
+
+      await expect(
+        instantiateSequenceFromTemplate(template)
+      ).rejects.toThrow('Invalid template data')
     })
   })
 
