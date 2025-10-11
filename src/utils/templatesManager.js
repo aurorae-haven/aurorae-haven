@@ -80,9 +80,7 @@ export async function saveTemplate(template) {
   // Validate template data
   const validation = validateTemplateData(template)
   if (!validation.valid) {
-    throw new Error(
-      `Invalid template data: ${validation.errors.join('; ')}`
-    )
+    throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
   }
 
   try {
@@ -150,9 +148,7 @@ export async function updateTemplate(templateId, updates) {
     // Validate the updated template data
     const validation = validateTemplateData(updated)
     if (!validation.valid) {
-      throw new Error(
-        `Invalid template data: ${validation.errors.join('; ')}`
-      )
+      throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
     }
 
     await store.put(updated)

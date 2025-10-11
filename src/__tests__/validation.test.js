@@ -240,7 +240,9 @@ describe('validateTemplateData', () => {
       const result = validateTemplateData(template)
 
       expect(result.valid).toBe(false)
-      expect(result.errors).toContain('Template step 0 must have a label (string) property')
+      expect(result.errors).toContain(
+        'Template step 0 must have a label (string) property'
+      )
     })
 
     test('rejects step with non-string label', () => {
@@ -253,7 +255,9 @@ describe('validateTemplateData', () => {
       const result = validateTemplateData(template)
 
       expect(result.valid).toBe(false)
-      expect(result.errors).toContain('Template step 0 must have a label (string) property')
+      expect(result.errors).toContain(
+        'Template step 0 must have a label (string) property'
+      )
     })
 
     test('rejects step with non-number duration', () => {
@@ -354,7 +358,9 @@ describe('validateTemplateData', () => {
       const result = validateTemplateData(template)
 
       expect(result.valid).toBe(false)
-      expect(result.errors).toContain('Template tag 1 must be a string (found: number)')
+      expect(result.errors).toContain(
+        'Template tag 1 must be a string (found: number)'
+      )
     })
 
     test('accepts empty tags array', () => {

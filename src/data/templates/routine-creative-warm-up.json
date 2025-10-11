@@ -1,0 +1,34 @@
+{
+  "id": "routine-creative-warm-up",
+  "type": "routine",
+  "title": "Creative Warm-Up Routine",
+  "tags": ["creativity", "brainstorming", "inspiration"],
+  "steps": [
+    {
+      "label": "Free writing",
+      "duration": 300,
+      "description": "Write whatever comes to mind for 5 minutes"
+    },
+    {
+      "label": "Mind mapping",
+      "duration": 420,
+      "description": "Create a quick mind map of ideas"
+    },
+    {
+      "label": "Inspiration review",
+      "duration": 240,
+      "description": "Browse saved inspiration or examples"
+    },
+    {
+      "label": "Quick sketching",
+      "duration": 240,
+      "description": "Simple sketches or doodles"
+    }
+  ],
+  "energyTag": "medium",
+  "estimatedDuration": 1200,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

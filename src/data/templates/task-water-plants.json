@@ -1,0 +1,12 @@
+{
+  "id": "task-water-plants",
+  "type": "task",
+  "title": "Water Indoor Plants",
+  "tags": ["home", "maintenance", "weekly"],
+  "category": "Home",
+  "quadrant": "not_urgent_not_important",
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

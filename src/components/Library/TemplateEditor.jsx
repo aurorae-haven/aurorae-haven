@@ -21,7 +21,11 @@ function TemplateEditor({ template, onSave, onClose }) {
   })
 
   const [tagInput, setTagInput] = useState('')
-  const [stepInput, setStepInput] = useState({ label: '', duration: '', description: '' })
+  const [stepInput, setStepInput] = useState({
+    label: '',
+    duration: '',
+    description: ''
+  })
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
@@ -51,10 +55,7 @@ function TemplateEditor({ template, onSave, onClose }) {
       newErrors.steps = 'At least one step is required for routines'
     }
 
-    if (
-      formData.estimatedDuration &&
-      Number(formData.estimatedDuration) < 0
-    ) {
+    if (formData.estimatedDuration && Number(formData.estimatedDuration) < 0) {
       newErrors.estimatedDuration = 'Duration cannot be negative'
     }
 
@@ -142,7 +143,11 @@ function TemplateEditor({ template, onSave, onClose }) {
             aria-label='Close editor'
           >
             <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-              <path d='M18 6L6 18M6 6l12 12' stroke='currentColor' strokeWidth='2' />
+              <path
+                d='M18 6L6 18M6 6l12 12'
+                stroke='currentColor'
+                strokeWidth='2'
+              />
             </svg>
           </button>
         </div>
@@ -154,7 +159,9 @@ function TemplateEditor({ template, onSave, onClose }) {
             <select
               id='type'
               value={formData.type}
-              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, type: e.target.value })
+              }
               disabled={!!template}
               required
             >
@@ -170,7 +177,9 @@ function TemplateEditor({ template, onSave, onClose }) {
               id='title'
               type='text'
               value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, title: e.target.value })
+              }
               placeholder='Template title'
               required
               aria-describedby={errors.title ? 'title-error' : undefined}
@@ -233,7 +242,9 @@ function TemplateEditor({ template, onSave, onClose }) {
                   id='category'
                   type='text'
                   value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
                   placeholder='e.g., Work, Personal'
                 />
               </div>
@@ -243,12 +254,20 @@ function TemplateEditor({ template, onSave, onClose }) {
                 <select
                   id='quadrant'
                   value={formData.quadrant}
-                  onChange={(e) => setFormData({ ...formData, quadrant: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, quadrant: e.target.value })
+                  }
                 >
                   <option value='urgent_important'>Urgent & Important</option>
-                  <option value='not_urgent_important'>Not Urgent & Important</option>
-                  <option value='urgent_not_important'>Urgent & Not Important</option>
-                  <option value='not_urgent_not_important'>Not Urgent & Not Important</option>
+                  <option value='not_urgent_important'>
+                    Not Urgent & Important
+                  </option>
+                  <option value='urgent_not_important'>
+                    Urgent & Not Important
+                  </option>
+                  <option value='not_urgent_not_important'>
+                    Not Urgent & Not Important
+                  </option>
                 </select>
               </div>
 
@@ -258,7 +277,9 @@ function TemplateEditor({ template, onSave, onClose }) {
                   id='dueOffset'
                   type='number'
                   value={formData.dueOffset}
-                  onChange={(e) => setFormData({ ...formData, dueOffset: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, dueOffset: e.target.value })
+                  }
                   placeholder='e.g., 7 for one week'
                 />
               </div>
@@ -274,13 +295,17 @@ function TemplateEditor({ template, onSave, onClose }) {
                   <input
                     type='text'
                     value={stepInput.label}
-                    onChange={(e) => setStepInput({ ...stepInput, label: e.target.value })}
+                    onChange={(e) =>
+                      setStepInput({ ...stepInput, label: e.target.value })
+                    }
                     placeholder='Step label'
                   />
                   <input
                     type='number'
                     value={stepInput.duration}
-                    onChange={(e) => setStepInput({ ...stepInput, duration: e.target.value })}
+                    onChange={(e) =>
+                      setStepInput({ ...stepInput, duration: e.target.value })
+                    }
                     placeholder='Duration (sec)'
                     style={{ width: '120px' }}
                   />
@@ -319,7 +344,9 @@ function TemplateEditor({ template, onSave, onClose }) {
                 <select
                   id='energyTag'
                   value={formData.energyTag}
-                  onChange={(e) => setFormData({ ...formData, energyTag: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, energyTag: e.target.value })
+                  }
                 >
                   <option value=''>None</option>
                   <option value='low'>Low Energy</option>
@@ -329,18 +356,31 @@ function TemplateEditor({ template, onSave, onClose }) {
               </div>
 
               <div className='form-group'>
-                <label htmlFor='estimatedDuration'>Estimated Duration (seconds)</label>
+                <label htmlFor='estimatedDuration'>
+                  Estimated Duration (seconds)
+                </label>
                 <input
                   id='estimatedDuration'
                   type='number'
                   value={formData.estimatedDuration}
-                  onChange={(e) => setFormData({ ...formData, estimatedDuration: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      estimatedDuration: e.target.value
+                    })
+                  }
                   placeholder='Total duration in seconds'
-                  aria-describedby={errors.estimatedDuration ? 'duration-error' : undefined}
+                  aria-describedby={
+                    errors.estimatedDuration ? 'duration-error' : undefined
+                  }
                   aria-invalid={!!errors.estimatedDuration}
                 />
                 {errors.estimatedDuration && (
-                  <span id='duration-error' className='error-message' role='alert'>
+                  <span
+                    id='duration-error'
+                    className='error-message'
+                    role='alert'
+                  >
                     {errors.estimatedDuration}
                   </span>
                 )}

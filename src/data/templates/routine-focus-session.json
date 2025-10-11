@@ -1,0 +1,39 @@
+{
+  "id": "routine-focus-session",
+  "type": "routine",
+  "title": "Deep Focus Work Session",
+  "tags": ["work", "productivity", "focus"],
+  "steps": [
+    {
+      "label": "Clear workspace",
+      "duration": 120,
+      "description": "Remove distractions and prepare materials"
+    },
+    {
+      "label": "Set intention",
+      "duration": 60,
+      "description": "Clarify what you want to accomplish"
+    },
+    {
+      "label": "Deep work block",
+      "duration": 1500,
+      "description": "Focus on single task without interruptions"
+    },
+    {
+      "label": "Short break",
+      "duration": 300,
+      "description": "Step away, stretch, or walk"
+    },
+    {
+      "label": "Review progress",
+      "duration": 180,
+      "description": "Note what was accomplished and next steps"
+    }
+  ],
+  "energyTag": "high",
+  "estimatedDuration": 2160,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": true
+}

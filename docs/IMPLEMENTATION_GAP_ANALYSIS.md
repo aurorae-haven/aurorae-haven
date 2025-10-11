@@ -31,21 +31,21 @@ The following pages currently exist in `src/pages/`:
 
 ## Feature Mapping: Specifications → Implementation
 
-| Category | Specs | Mapped Page/Component   | Implementation Status                              |
-| -------- | ----- | ----------------------- | -------------------------------------------------- |
-| TAB-BDP  | 61    | BrainDump               | ✅ Implemented                                     |
-| TAB-HAB  | 52    | Habits                  | 🔄 Partial (basic structure exists)                |
-| TAB-IEX  | 32    | Layout (Export/Import)  | ✅ Implemented (in Layout component)               |
-| TAB-LIB  | 39    | Library (partial)       | 🔄 Partial (template instantiation implemented)    |
-| TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)               |
-| TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                     |
-| TAB-RTN  | 58    | Sequences               | 🔄 Partial (sequences = routines)                  |
-| TAB-SCH  | 52    | Schedule                | 🔄 Partial (basic structure exists)                |
-| TAB-SEC  | 42    | Settings (Security)     | ❌ Not Implemented (security features missing)     |
-| TAB-SET  | 44    | Settings                | 🔄 Partial (basic structure exists)                |
-| TAB-SPG  | 29    | Home (Static Pages)     | 🔄 Partial (Home exists)                           |
-| TAB-STT  | 42    | Stats                   | 🔄 Partial (basic structure exists)                |
-| TAB-TSK  | 62    | Tasks                   | ✅ Implemented                                     |
+| Category | Specs | Mapped Page/Component   | Implementation Status                           |
+| -------- | ----- | ----------------------- | ----------------------------------------------- |
+| TAB-BDP  | 61    | BrainDump               | ✅ Implemented                                  |
+| TAB-HAB  | 52    | Habits                  | 🔄 Partial (basic structure exists)             |
+| TAB-IEX  | 32    | Layout (Export/Import)  | ✅ Implemented (in Layout component)            |
+| TAB-LIB  | 39    | Library (partial)       | 🔄 Partial (template instantiation implemented) |
+| TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)            |
+| TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                  |
+| TAB-RTN  | 58    | Sequences               | 🔄 Partial (sequences = routines)               |
+| TAB-SCH  | 52    | Schedule                | 🔄 Partial (basic structure exists)             |
+| TAB-SEC  | 42    | Settings (Security)     | ❌ Not Implemented (security features missing)  |
+| TAB-SET  | 44    | Settings                | 🔄 Partial (basic structure exists)             |
+| TAB-SPG  | 29    | Home (Static Pages)     | 🔄 Partial (Home exists)                        |
+| TAB-STT  | 42    | Stats                   | 🔄 Partial (basic structure exists)             |
+| TAB-TSK  | 62    | Tasks                   | ✅ Implemented                                  |
 
 ## Implementation Status Details
 

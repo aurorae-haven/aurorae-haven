@@ -181,7 +181,7 @@ describe('templateInstantiation', () => {
     test('throws error for invalid task template data', () => {
       const template = {
         type: 'task',
-        title: ''  // Empty title should fail validation
+        title: '' // Empty title should fail validation
       }
 
       expect(() => {
@@ -216,7 +216,9 @@ describe('templateInstantiation', () => {
 
   describe('instantiateSequenceFromTemplate', () => {
     beforeEach(() => {
-      sequencesManager.createSequence.mockResolvedValue('test-sequence-uuid-456')
+      sequencesManager.createSequence.mockResolvedValue(
+        'test-sequence-uuid-456'
+      )
     })
 
     test('creates a sequence from a routine template', async () => {
@@ -268,9 +270,9 @@ describe('templateInstantiation', () => {
     })
 
     test('throws error for null template', async () => {
-      await expect(
-        instantiateSequenceFromTemplate(null)
-      ).rejects.toThrow('Invalid routine template')
+      await expect(instantiateSequenceFromTemplate(null)).rejects.toThrow(
+        'Invalid routine template'
+      )
     })
 
     test('throws error for non-routine template', async () => {
@@ -279,9 +281,9 @@ describe('templateInstantiation', () => {
         title: 'Not a routine'
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Invalid routine template')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Invalid routine template'
+      )
     })
 
     test('creates independent sequence (not linked to template)', async () => {
@@ -302,12 +304,12 @@ describe('templateInstantiation', () => {
     test('throws error for invalid routine template data', async () => {
       const template = {
         type: 'routine',
-        title: ''  // Empty title should fail validation
+        title: '' // Empty title should fail validation
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Invalid template data')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
     })
 
     test('throws error for invalid step structure', async () => {
@@ -316,13 +318,13 @@ describe('templateInstantiation', () => {
         title: 'Routine with invalid step',
         steps: [
           { label: 'Valid step', duration: 60 },
-          { duration: 120 }  // Missing label
+          { duration: 120 } // Missing label
         ]
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Invalid template data')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
     })
 
     test('throws error for invalid step duration', async () => {
@@ -330,13 +332,13 @@ describe('templateInstantiation', () => {
         type: 'routine',
         title: 'Routine with invalid duration',
         steps: [
-          { label: 'Step 1', duration: 'invalid' }  // Non-numeric duration
+          { label: 'Step 1', duration: 'invalid' } // Non-numeric duration
         ]
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Invalid template data')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
     })
 
     test('throws error for negative step duration', async () => {
@@ -344,55 +346,57 @@ describe('templateInstantiation', () => {
         type: 'routine',
         title: 'Routine with negative duration',
         steps: [
-          { label: 'Step 1', duration: -10 }  // Negative duration
+          { label: 'Step 1', duration: -10 } // Negative duration
         ]
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Step 0 duration must be a non-negative number')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Step 0 duration must be a non-negative number'
+      )
     })
 
     test('throws error for non-string tags', async () => {
       const template = {
         type: 'routine',
         title: 'Routine with invalid tags',
-        tags: ['valid', 123, 'also-valid']  // Numeric tag
+        tags: ['valid', 123, 'also-valid'] // Numeric tag
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Invalid template data')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
     })
 
     test('throws error for invalid estimatedDuration', async () => {
       const template = {
         type: 'routine',
         title: 'Routine with invalid duration',
-        estimatedDuration: -100  // Negative duration
+        estimatedDuration: -100 // Negative duration
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Invalid template data')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
     })
 
     test('throws error for non-numeric estimatedDuration', async () => {
       const template = {
         type: 'routine',
         title: 'Routine with invalid duration',
-        estimatedDuration: 'invalid'  // String instead of number
+        estimatedDuration: 'invalid' // String instead of number
       }
 
-      await expect(
-        instantiateSequenceFromTemplate(template)
-      ).rejects.toThrow('Invalid template data')
+      await expect(instantiateSequenceFromTemplate(template)).rejects.toThrow(
+        'Invalid template data'
+      )
     })
   })
 
   describe('instantiateTemplate', () => {
     beforeEach(() => {
-      sequencesManager.createSequence.mockResolvedValue('test-sequence-uuid-456')
+      sequencesManager.createSequence.mockResolvedValue(
+        'test-sequence-uuid-456'
+      )
     })
 
     test('instantiates task template', async () => {

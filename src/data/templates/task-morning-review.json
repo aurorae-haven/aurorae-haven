@@ -1,0 +1,12 @@
+{
+  "id": "task-morning-review",
+  "type": "task",
+  "title": "Morning Email Review",
+  "tags": ["work", "communication", "daily"],
+  "category": "Work",
+  "quadrant": "urgent_important",
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": true
+}

@@ -1,0 +1,39 @@
+{
+  "id": "routine-weekly-review",
+  "type": "routine",
+  "title": "Weekly Planning & Review",
+  "tags": ["planning", "review", "weekly"],
+  "steps": [
+    {
+      "label": "Review last week",
+      "duration": 600,
+      "description": "What went well? What can improve?"
+    },
+    {
+      "label": "Brain dump",
+      "duration": 300,
+      "description": "Write down all pending tasks and ideas"
+    },
+    {
+      "label": "Prioritize tasks",
+      "duration": 600,
+      "description": "Organize tasks by importance and urgency"
+    },
+    {
+      "label": "Schedule key activities",
+      "duration": 420,
+      "description": "Block time for important tasks"
+    },
+    {
+      "label": "Set weekly goals",
+      "duration": 180,
+      "description": "Define 3-5 key goals for the week"
+    }
+  ],
+  "energyTag": "medium",
+  "estimatedDuration": 2100,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

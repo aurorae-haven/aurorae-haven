@@ -1,0 +1,12 @@
+{
+  "id": "task-exercise",
+  "type": "task",
+  "title": "30-Minute Exercise Session",
+  "tags": ["health", "fitness", "self-care"],
+  "category": "Health",
+  "quadrant": "not_urgent_important",
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": true
+}

@@ -231,10 +231,20 @@ describe('Data Manager', () => {
       // Setup tasks in Eisenhower matrix format (actual storage)
       const auroraeTasksData = {
         urgent_important: [
-          { id: '1', text: 'Critical task', completed: false, createdAt: Date.now() }
+          {
+            id: '1',
+            text: 'Critical task',
+            completed: false,
+            createdAt: Date.now()
+          }
         ],
         not_urgent_important: [
-          { id: '2', text: 'Important task', completed: false, createdAt: Date.now() }
+          {
+            id: '2',
+            text: 'Important task',
+            completed: false,
+            createdAt: Date.now()
+          }
         ],
         urgent_not_important: [],
         not_urgent_not_important: []
