@@ -109,21 +109,7 @@ export async function instantiateSequenceFromTemplate(template) {
   }
 
   // Additional validation for sequence-specific fields
-  if (template.steps && template.steps.length > 0) {
-    // Validate each step has required fields
-    for (let i = 0; i < template.steps.length; i++) {
-      const step = template.steps[i]
-      if (!step || typeof step !== 'object') {
-        throw new Error(`Step ${i} must be an object`)
-      }
-      if (typeof step.label !== 'string' || step.label.trim() === '') {
-        throw new Error(`Step ${i} must have a non-empty label`)
-      }
-      if (step.duration !== undefined && (typeof step.duration !== 'number' || step.duration < 0)) {
-        throw new Error(`Step ${i} duration must be a non-negative number`)
-      }
-    }
-  }
+  // (Removed: step-level validation is now handled by validateTemplateData)
 
   // Validate tags are strings
   if (template.tags && template.tags.length > 0) {
