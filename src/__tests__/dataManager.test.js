@@ -602,7 +602,7 @@ describe('Data Manager', () => {
 
       // Verify all data types are present in export
       expect(exportedData.tasks).toEqual(nominalData.tasks)
-      expect(exportedData.sequences).toEqual(nominalData.routines)
+      expect(exportedData.routines).toEqual(nominalData.routines)
       expect(exportedData.habits).toEqual(nominalData.habits)
       expect(exportedData.dumps).toEqual(nominalData.dumps)
       expect(exportedData.schedule).toEqual(nominalData.schedule)
