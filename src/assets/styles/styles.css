@@ -13,7 +13,7 @@
 
 /* Feature-specific styles */
 @import './schedule.css';
-@import './sequences.css';
+@import './routines.css';
 @import './notes.css';
 @import './tasks.css';
 @import './library.css';

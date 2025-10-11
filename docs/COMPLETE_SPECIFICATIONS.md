@@ -2369,7 +2369,7 @@ _Section_: Tab Appearance
 
 #### TAB-SCH-14
 
-**Requirement**: New events shall be created only from existing entities: Task, Routine (sequence), Habit (reminder), Note (reference).
+**Requirement**: New events shall be created only from existing entities: Task, Routine, Habit (reminder), Note (reference).
 
 _Section_: Tab Appearance
 

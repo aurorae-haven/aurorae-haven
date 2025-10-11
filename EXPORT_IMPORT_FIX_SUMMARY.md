@@ -12,7 +12,7 @@ The export function was looking for data in localStorage keys like `tasks`, `seq
 
 - **Tasks**: `aurorae_tasks` (Eisenhower matrix format with quadrants)
 - **Notes/Dumps**: `brainDumpEntries` (array of note objects)
-- **Sequences/Habits/Schedule**: IndexedDB stores (not localStorage)
+- **Routines/Habits/Schedule**: IndexedDB stores (not localStorage)
 
 This mismatch caused the export to find no data in localStorage, resulting in empty arrays.
 

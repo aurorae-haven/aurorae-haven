@@ -382,7 +382,7 @@ Aurorae Haven is a calm, astro-themed productivity app designed for neurodiverge
 ├── index.html              # Main entry point
 ├── public/
 │   ├── index.html         # Public landing page
-│   └── pages/             # Feature pages (schedule, sequences, braindump, home)
+│   └── pages/             # Feature pages (schedule, routines, braindump, home)
 ├── src/
 │   ├── main.js            # Core application logic
 │   ├── braindump.js       # Brain dump module
@@ -396,7 +396,7 @@ Aurorae Haven is a calm, astro-themed productivity app designed for neurodiverge
 ### Key Modules
 
 - **Schedule**: Daily schedule and time blocking
-- **Sequences**: Routine management with step-by-step timers
+- **Routines**: Routine management with step-by-step timers
 - **Brain Dump**: Quick note capture with tags
 - **Tasks**: Eisenhower matrix prioritization (planned)
 - **Habits**: Streak tracking (planned)
@@ -449,7 +449,7 @@ Aurorae Haven is a calm, astro-themed productivity app designed for neurodiverge
 {
   version: 1,
   tasks: [{id: 1, title: "...", done: false}],
-  sequences: [{id: "seq_1", name: "...", steps: [...]}],
+  routines: [{id: "seq_1", name: "...", steps: [...]}],
   habits: [{id: "hab_1", name: "...", streak: 0, paused: false}],
   dumps: [{id: "dump_1", ts: Date.now(), text: "..."}],
   schedule: [{day: "2025-01-15", blocks: [...]}]
@@ -665,7 +665,7 @@ function importJSON(file) {
 
 **Completed:**
 
-- Minimal routine runner (sequences with timers)
+- Minimal routine runner with timers
 - Notes/brain dump with tags
 - JSON export/import
 - LocalStorage persistence

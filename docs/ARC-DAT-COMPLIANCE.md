@@ -28,7 +28,7 @@
 | Store Name | Key Path | Indexes                                   | Auto-Increment |
 | ---------- | -------- | ----------------------------------------- | -------------- |
 | tasks      | id       | timestamp, status                         | Yes            |
-| sequences  | id       | timestamp                                 | No             |
+| routines   | id       | timestamp                                 | No             |
 | habits     | id       | timestamp, paused                         | Yes            |
 | dumps      | id       | timestamp                                 | Yes            |
 | schedule   | id       | day, timestamp                            | Yes            |
@@ -214,7 +214,7 @@ backups.forEach((b) => {
 **Stats Page**:
 
 - Enhanced Stats.jsx to display statistics
-- Shows task completions, habit streaks, routine times
+- Shows task completions, habit streaks, routine execution times
 - Ready for v2.0 dashboard visualizations
 
 **Verification**:

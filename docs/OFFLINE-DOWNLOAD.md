@@ -183,7 +183,7 @@ The app includes a service worker that:
 
 All user data is stored locally in your browser:
 
-- **IndexedDB**: Tasks, sequences, habits, statistics
+- **IndexedDB**: Tasks, routines, habits, statistics
 - **LocalStorage**: Brain dump notes, settings
 - **OPFS**: File attachments (if supported)
 

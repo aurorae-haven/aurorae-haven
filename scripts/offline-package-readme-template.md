@@ -109,7 +109,7 @@ Once you've opened the app in your browser:
 ## Features
 
 - 📅 **Schedule**: Plan your day with time blocks
-- ⏱️ **Sequences**: Run daily routines with step-by-step timers
+- ⏱️ **Routines**: Run daily routines with step-by-step timers
 - 📝 **Brain Dump**: Quickly capture thoughts and ideas
 - ✓ **Tasks**: Prioritize using the Eisenhower matrix
 - 🌱 **Habits**: Track streaks and celebrate small wins
@@ -119,7 +119,7 @@ Once you've opened the app in your browser:
 
 All your data is stored locally in your browser:
 
-- **IndexedDB**: Tasks, sequences, habits, statistics
+- **IndexedDB**: Tasks, routines, habits, statistics
 - **LocalStorage**: Brain dump notes, settings
 
 **Privacy**: No data is sent to external servers. Everything stays on your device.

@@ -22,7 +22,7 @@ This document identifies components, pages, utilities, and hooks that are **miss
 | --------------- | ----------- | ----- | -------- | ----------------------------------------- |
 | `Habits.jsx`    | ❌ No tests | 20    | Medium   | Stub implementation - "coming soon"       |
 | `Schedule.jsx`  | ❌ No tests | 165   | **HIGH** | Full implementation with state management |
-| `Sequences.jsx` | ❌ No tests | ~50   | **HIGH** | Full implementation                       |
+| `Routines.jsx` | ❌ No tests | ~50   | **HIGH** | Full implementation                       |
 | `Settings.jsx`  | ❌ No tests | ~100  | **HIGH** | Full implementation                       |
 | `Stats.jsx`     | ❌ No tests | 82    | **HIGH** | Full implementation with IndexedDB        |
 
@@ -30,7 +30,7 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 - TAB-HAB: 52 specifications (Habits) - 📋 Not tested
 - TAB-SCH: 52 specifications (Schedule) - 📋 Not tested
-- TAB-SEC: 42 specifications (Sequences) - 📋 Not tested
+- TAB-SEC: 42 specifications (Routines) - 📋 Not tested
 - TAB-SET: 44 specifications (Settings) - 📋 Not tested
 - TAB-STT: 42 specifications (Stats) - 📋 Not tested
 
@@ -107,7 +107,7 @@ This document identifies components, pages, utilities, and hooks that are **miss
 1. **Schedule.jsx** - 52 specifications (TAB-SCH)
 2. **Stats.jsx** - 42 specifications (TAB-STT)
 3. **Settings.jsx** - 44 specifications (TAB-SET)
-4. **Sequences.jsx** - 42 specifications (TAB-SEC)
+4. **Routines.jsx** - 42 specifications (TAB-SEC)
 5. **notes/backlinks.js** - TAB-BDP backlink feature
 6. **notes/versionHistory.js** - Version control feature
 7. **Library/FilterModal.jsx** - TAB-LIB filtering
@@ -163,7 +163,7 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 - **TAB-HAB** (Habits): 52 specifications - ❌ No tests
 - **TAB-SCH** (Schedule): 52 specifications - ❌ No tests
-- **TAB-SEC** (Sequences): 42 specifications - ❌ No tests
+- **TAB-SEC** (Routines): 42 specifications - ❌ No tests
 - **TAB-SET** (Settings): 44 specifications - ❌ No tests
 - **TAB-STT** (Stats): 42 specifications - ❌ No tests
 - **TAB-LIB** (Library): 39 specifications - ⚠️ 5-66% coverage
@@ -233,7 +233,7 @@ Tests marked as `test.todo()` or `it.todo()` that need implementation:
 
 | File                       | TODO Count | Examples                                               |
 | -------------------------- | ---------- | ------------------------------------------------------ |
-| `sequencesManager.test.js` | 16         | Routine execution, progress tracking, completion logic |
+| `routinesManager.test.js` | 16         | Routine execution, progress tracking, completion logic |
 | `habitsManager.test.js`    | 14         | Streak tracking, habit completion, reset logic         |
 | `settingsManager.test.js`  | 12         | Settings migration, validation, storage errors         |
 | `scheduleManager.test.js`  | 12         | Event validation, conflict detection, recurring events |

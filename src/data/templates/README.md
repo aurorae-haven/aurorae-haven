@@ -29,7 +29,7 @@ Each template is stored as a **separate JSON file**. Adding a new template is as
 
 1. **Morning Launch Routine** - 14-minute energizing start (stretch, hydrate, plan)
 2. **Deep Focus Work Session** - 36-minute productivity block
-3. **Evening Wind-Down Routine** - 25-minute relaxation sequence
+3. **Evening Wind-Down Routine** - 25-minute relaxation routine
 4. **5-Minute Reset Break** - Quick energy refresh
 5. **Creative Warm-Up Routine** - 20-minute inspiration boost
 6. **Weekly Planning & Review** - 35-minute planning session

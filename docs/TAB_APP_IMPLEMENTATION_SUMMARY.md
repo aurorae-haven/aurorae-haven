@@ -52,7 +52,7 @@ The original task was:
 **Key Features**:
 
 - Follows the same pattern as existing specs (TAB-BDP, TAB-TSK)
-- Covers all 8 tabs in the application (Home, Schedule, Sequences, Brain Dump, Tasks, Habits,
+- Covers all 8 tabs in the application (Home, Schedule, Routines, Brain Dump, Tasks, Habits,
   Stats, Settings)
 - Ensures WCAG 2.2 AA accessibility compliance
 - Maintains neurodivergent-friendly design principles
