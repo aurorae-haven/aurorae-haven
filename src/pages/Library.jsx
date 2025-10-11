@@ -61,7 +61,7 @@ function Library() {
       try {
         const allTemplates = await getAllTemplates()
         setTemplates(allTemplates)
-      } catch {
+      } catch (error) { // eslint-disable-line no-unused-vars
         console.error('Failed to load templates')
         showToastNotification('Failed to load templates')
       } finally {
@@ -126,7 +126,7 @@ function Library() {
       setTemplates(allTemplates)
       setShowEditor(false)
       setEditingTemplate(null)
-    } catch {
+    } catch (error) { // eslint-disable-line no-unused-vars
       console.error('Failed to save template')
       showToastNotification('Failed to save template')
     }
@@ -142,7 +142,7 @@ function Library() {
       // Reload templates
       const allTemplates = await getAllTemplates()
       setTemplates(allTemplates)
-    } catch {
+    } catch (error) { // eslint-disable-line no-unused-vars
       console.error('Failed to delete template')
       showToastNotification('Failed to delete template')
     }
@@ -156,7 +156,7 @@ function Library() {
       // Reload templates
       const allTemplates = await getAllTemplates()
       setTemplates(allTemplates)
-    } catch {
+    } catch (error) { // eslint-disable-line no-unused-vars
       console.error('Failed to duplicate template')
       showToastNotification('Failed to duplicate template')
     }
@@ -176,7 +176,7 @@ function Library() {
           ? 'Template applied — Task created'
           : 'Template applied — Routine created'
       )
-    } catch {
+    } catch (error) { // eslint-disable-line no-unused-vars
       console.error('Failed to use template')
       showToastNotification('Failed to use template')
     }
@@ -195,7 +195,7 @@ function Library() {
       a.click()
       URL.revokeObjectURL(url)
       showToastNotification('Templates exported')
-    } catch {
+    } catch (error) { // eslint-disable-line no-unused-vars
       console.error('Failed to export templates')
       showToastNotification('Failed to export templates')
     }
@@ -216,7 +216,7 @@ function Library() {
       showToastNotification(
         `Imported ${results.imported} templates (${results.skipped} skipped)`
       )
-    } catch {
+    } catch (error) { // eslint-disable-line no-unused-vars
       console.error('Failed to import templates')
       showToastNotification('Import failed: Invalid schema')
     }
