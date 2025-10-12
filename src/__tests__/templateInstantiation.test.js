@@ -58,7 +58,7 @@ describe('templateInstantiation', () => {
       const template = {
         type: 'task',
         title: 'Submit report',
-        dueOffset: 86400000 // 1 day in milliseconds
+        dueOffset: 1 // 1 day (will be converted to milliseconds)
       }
 
       const result = instantiateTaskFromTemplate(template)
