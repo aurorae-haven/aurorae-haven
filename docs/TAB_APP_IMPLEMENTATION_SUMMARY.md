@@ -398,7 +398,7 @@ TAB-APP complements these by defining cross-cutting UI/UX standards that apply t
 - Main Specification: [TAB_APP_SPECS.md](./TAB_APP_SPECS.md)
 - Sub-Issues Document: [TAB_APP_SUB_ISSUES.md](./TAB_APP_SUB_ISSUES.md)
 - Documentation Guide: [TAB_APP_README.md](./TAB_APP_README.md)
-- Brain Dump Specs: [NOTES_SPECS.md](./NOTES_SPECS.md)
+- Notes Specs: [NOTES_SPECS.md](./NOTES_SPECS.md)
 - Tasks Specs: [TASKS_SPECS.md](./TASKS_SPECS.md)
 
 ---
