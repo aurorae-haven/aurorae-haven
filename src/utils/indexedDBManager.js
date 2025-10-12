@@ -214,7 +214,7 @@ export async function putBatch(storeName, items) {
           results[index] = request.result
           completed++
 
-          if (completed === items.length && !hasError) {
+          if (completed === items.length) {
             resolve(results)
           }
         }
