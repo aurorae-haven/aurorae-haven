@@ -102,9 +102,15 @@ describe('reloadPageAfterDelay', () => {
       setTimeout: customSetTimeout
     }
     
+    // Spy on globalThis.setTimeout to verify it's NOT called
+    const globalSetTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
+    
     reloadPageAfterDelay(2000, windowWithCustomSetTimeout)
     
     // Verify that the custom setTimeout was called, not the global one
     expect(customSetTimeout).toHaveBeenCalledWith(expect.any(Function), 2000)
+    expect(globalSetTimeoutSpy).not.toHaveBeenCalled()
+    
+    globalSetTimeoutSpy.mockRestore()
   })
 })
