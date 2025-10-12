@@ -14,6 +14,19 @@ const DATA_FIELDS = {
   SCHEDULE: 'schedule'
 }
 
+/**
+ * Import data to localStorage
+ * @param {Object} data - Data object to import
+ * @returns {void}
+ */
+function importToLocalStorage(data) {
+  for (const field of Object.values(DATA_FIELDS)) {
+    if (data[field]) {
+      localStorage.setItem(field, JSON.stringify(data[field]))
+    }
+  }
+}
+
 // Import success message constant
 export const IMPORT_SUCCESS_MESSAGE =
   'Data imported successfully. Page will reload...'
@@ -28,10 +41,17 @@ export function reloadPageAfterDelay(
   delay = 1500,
   windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined
 ) {
-  if (windowObj && windowObj.location && typeof windowObj.location.reload === 'function') {
-    const setTimeoutFn = windowObj.setTimeout || globalThis.setTimeout;
-    setTimeoutFn(() => windowObj.location.reload(), delay);
-  }
+  // Early return if no window object available
+  if (!windowObj) return
+
+  // Early return if location is not available
+  if (!windowObj.location) return
+
+  // Early return if reload function is not available
+  if (typeof windowObj.location.reload !== 'function') return
+
+  const setTimeoutFn = windowObj.setTimeout || globalThis.setTimeout
+  setTimeoutFn(() => windowObj.location.reload(), delay)
 }
 
 /**
@@ -56,7 +76,7 @@ export async function importJSON(file) {
           )
         }
 
-        // Save to IndexedDB if available, otherwise localStorage
+        // Try IndexedDB first if available
         if (isIndexedDBAvailable()) {
           try {
             await importToIndexedDB(obj)
@@ -67,16 +87,12 @@ export async function importJSON(file) {
               'IndexedDB import failed, falling back to localStorage:',
               e
             )
+            // Continue to localStorage fallback below
           }
         }
 
         // Fallback to localStorage
-        for (const field of Object.values(DATA_FIELDS)) {
-          if (obj[field]) {
-            localStorage.setItem(field, JSON.stringify(obj[field]))
-          }
-        }
-
+        importToLocalStorage(obj)
         resolve(true)
       } catch (e) {
         console.error('Import failed:', e)
