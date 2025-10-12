@@ -52,8 +52,8 @@ const results = await putBatch(STORES.TASKS, items)
 **Returns:** `Promise<Array>` - Array of generated IDs/keys
 
 **Throws:**
-- Error if `items` is not an array
-- Error if transaction fails
+- Error with message `'Items must be an array'` if `items` is not an array
+- Error with message `'Transaction failed: <reason>'` if the transaction fails
 
 ---
 
