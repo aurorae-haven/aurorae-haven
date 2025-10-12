@@ -284,7 +284,7 @@ export async function instantiateTemplatesBatch(templates) {
         text: template.title,
         completed: false,
         createdAt: new Date().toISOString(),
-        dueDate: template.dueOffset ? new Date(Date.now() + template.dueOffset).toISOString() : null,
+        dueDate: template.dueOffset ? new Date(Date.now() + template.dueOffset * 24 * 60 * 60 * 1000).toISOString() : null,
         completedAt: null
       }
 
