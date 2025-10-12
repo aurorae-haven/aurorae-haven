@@ -337,7 +337,7 @@ export async function exportTemplates(templateIds = []) {
  * @returns {boolean} True if version is supported
  */
 function isVersionCompatible(version) {
-  return SUPPORTED_VERSIONS.includes(version)
+  return isSupportedVersion(version)
 }
 
 /**
@@ -359,7 +359,7 @@ export async function importTemplates(data) {
   // Check version compatibility
   if (!isVersionCompatible(data.version)) {
     throw new Error(
-      `Incompatible version: ${data.version}. Supported versions: ${SUPPORTED_VERSIONS.join(', ')}`
+      `Incompatible version: ${data.version}. Supported version range: ${SUPPORTED_VERSION_RANGE}`
     )
   }
 
