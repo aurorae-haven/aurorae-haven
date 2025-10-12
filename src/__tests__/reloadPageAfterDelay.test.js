@@ -75,18 +75,32 @@ describe('reloadPageAfterDelay', () => {
   })
 
   test('gracefully handles absence of window without throwing', () => {
-    // Save original window reference
-    const originalWindow = globalThis.window
-    
-    // Temporarily remove window to simulate non-browser environment
-    delete globalThis.window
-    
-    // Function should not throw when window is undefined
-    expect(() => {
-      reloadPageAfterDelay(1000, undefined)
-    }).not.toThrow()
-    
-    // Restore original window
-    globalThis.window = originalWindow
+    // Save original window property descriptor
+    const windowDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'window');
+
+    try {
+      // Remove window property to simulate non-browser environment
+      if (windowDescriptor) {
+        Object.defineProperty(globalThis, 'window', {
+          configurable: true,
+          enumerable: true,
+          value: undefined,
+          writable: true,
+        });
+      }
+
+      // Function should not throw when window is undefined
+      expect(() => {
+        reloadPageAfterDelay(1000, undefined)
+      }).not.toThrow()
+    } finally {
+      // Restore original window property descriptor
+      if (windowDescriptor) {
+        Object.defineProperty(globalThis, 'window', windowDescriptor);
+      } else {
+        // If there was no window property, delete it
+        delete globalThis.window;
+      }
+    }
   })
 })
