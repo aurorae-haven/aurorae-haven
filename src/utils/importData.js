@@ -24,10 +24,12 @@ export const IMPORT_SUCCESS_MESSAGE =
  * @param {Window} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
  * @returns {void}
  */
-export function reloadPageAfterDelay(delay = 1500, windowObj) {
-  const win = windowObj ?? (typeof globalThis !== 'undefined' ? globalThis.window : undefined);
-  if (win && win.location && typeof win.location.reload === 'function') {
-    setTimeout(() => win.location.reload(), delay);
+export function reloadPageAfterDelay(
+  delay = 1500,
+  windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined
+) {
+  if (windowObj && windowObj.location && typeof windowObj.location.reload === 'function') {
+    setTimeout(() => windowObj.location.reload(), delay);
   }
 }
 
