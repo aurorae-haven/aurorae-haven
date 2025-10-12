@@ -201,8 +201,7 @@ export async function putBatch(storeName, items) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(storeName, 'readwrite')
     const store = transaction.objectStore(storeName)
-    // Pre-allocate results array to maintain input order regardless of async completion order.
-    // results are assigned by index, not push order
+    // Pre-allocate results array to maintain input order across async operations.
     const results = new Array(items.length)
 
     let completed = 0
