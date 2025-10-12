@@ -228,6 +228,7 @@ export async function putBatch(storeName, items) {
 
     transaction.oncomplete = () => db.close()
     transaction.onerror = () => {
+      db.close()
       if (!hasError) {
         hasError = true
         reject(transaction.error)
