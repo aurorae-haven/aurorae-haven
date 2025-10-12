@@ -27,8 +27,8 @@ The offline package is automatically generated and uploaded to multiple location
 **Access**:
 
 - Branch: <https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases>
-- Direct download (tar.gz): `https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v{VERSION}.tar.gz`
-- Direct download (zip): `https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v{VERSION}.zip`
+- Direct download (tar.gz): [https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz)
+- Direct download (zip): [https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip)
 
 **Benefits**:
 
