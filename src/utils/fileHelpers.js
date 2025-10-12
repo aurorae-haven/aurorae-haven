@@ -3,7 +3,13 @@
  * Handles filename sanitization and formatting
  */
 
-// Windows reserved device names (CON, PRN, AUX, NUL, COM1-9, LPT1-9)
+/**
+ * Regex to match Windows reserved device names:
+ *   - CON, PRN, AUX, NUL, COM1-9, LPT1-9
+ * The case-insensitive flag (/i) is used because Windows treats filenames as case-insensitive.
+ * Pattern explanation:
+ *   ^(con|prn|aux|nul|com[1-9]|lpt[1-9])$ matches the entire string if it is one of the reserved names.
+ */
 const WINDOWS_RESERVED_NAMES = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i
 
 /**
