@@ -76,7 +76,7 @@ export async function importJSON(file) {
           )
         }
 
-        // Try IndexedDB first if available
+        // Try IndexedDB first if available, fallback to localStorage
         if (isIndexedDBAvailable()) {
           try {
             await importToIndexedDB(obj)
@@ -87,13 +87,15 @@ export async function importJSON(file) {
               'IndexedDB import failed, falling back to localStorage:',
               e
             )
-            // Continue to localStorage fallback below
+            // Use localStorage as fallback when IndexedDB fails
+            importToLocalStorage(obj)
+            resolve(true)
           }
+        } else {
+          // Use localStorage when IndexedDB is not available
+          importToLocalStorage(obj)
+          resolve(true)
         }
-
-        // Fallback to localStorage
-        importToLocalStorage(obj)
-        resolve(true)
       } catch (e) {
         console.error('Import failed:', e)
         reject(new Error('Import failed: ' + e.message))
