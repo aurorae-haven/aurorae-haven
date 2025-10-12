@@ -17,7 +17,7 @@ function TemplateCard({
   onDuplicate
 }) {
   const [showActions, setShowActions] = useState(false)
-
+  const MAX_FILENAME_LEN = 50
   const formatDate = (dateString) => {
     if (!dateString) return 'Never'
     const date = new Date(dateString)
@@ -46,7 +46,7 @@ function TemplateCard({
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `template-${sanitizeFilename(template.title, 50)}.json`
+      a.download = `template-${sanitizeFilename(template.title, MAX_FILENAME_LEN)}.json`
       a.click()
       URL.revokeObjectURL(url)
     } catch (error) {
