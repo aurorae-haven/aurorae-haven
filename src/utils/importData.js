@@ -21,7 +21,7 @@ export const IMPORT_SUCCESS_MESSAGE =
 /**
  * Reload page after a delay
  * @param {number} [delay=1500] - Delay in milliseconds (default: 1500ms)
- * @param {Window} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
+ * @param {Window|undefined} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
  * @returns {void}
  */
 export function reloadPageAfterDelay(
