@@ -19,7 +19,7 @@ const CURRENT_VERSION = '1.0'
  * @param {string} version
  * @returns {boolean}
  */
-export function isSupportedVersion(version) {
+function isSupportedVersion(version) {
   return semver.satisfies(semver.coerce(version), SUPPORTED_VERSION_RANGE)
 }
 /**
