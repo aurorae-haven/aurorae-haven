@@ -18,6 +18,7 @@ const BRAIN_DUMP_FIELDS = {
   entries: VALIDATION_TYPES.ARRAY
 }
 
+// Array of field names that should be arrays in export/import data
 const ARRAY_FIELDS = ['tasks', 'routines', 'habits', 'dumps', 'schedule']
 
 /**

@@ -6,6 +6,7 @@
 import { generateSecureUUID } from './uuidGenerator'
 import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
+import { MS_PER_DAY } from './timeConstants'
 
 /**
  * Instantiate a task from a task template
@@ -44,7 +45,7 @@ export function instantiateTaskFromTemplate(template) {
     completed: false,
     createdAt: new Date().toISOString(),
     dueDate: template.dueOffset
-      ? new Date(Date.now() + template.dueOffset * 24 * 60 * 60 * 1000).toISOString()
+      ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
       : null,
     completedAt: null
   }
@@ -284,7 +285,7 @@ export async function instantiateTemplatesBatch(templates) {
         text: template.title,
         completed: false,
         createdAt: new Date().toISOString(),
-        dueDate: template.dueOffset ? new Date(Date.now() + template.dueOffset * 24 * 60 * 60 * 1000).toISOString() : null,
+        dueDate: template.dueOffset ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString() : null,
         completedAt: null
       }
 
