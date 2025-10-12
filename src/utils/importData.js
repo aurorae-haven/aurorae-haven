@@ -29,8 +29,7 @@ export function reloadPageAfterDelay(
   windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined
 ) {
   if (windowObj && windowObj.location && typeof windowObj.location.reload === 'function') {
-    const timerFn = typeof windowObj.setTimeout === 'function' ? windowObj.setTimeout : setTimeout;
-    timerFn(() => windowObj.location.reload(), delay);
+    globalThis.setTimeout(() => windowObj.location.reload(), delay);
   }
 }
 
