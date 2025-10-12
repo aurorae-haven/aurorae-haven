@@ -25,8 +25,10 @@ export const IMPORT_SUCCESS_MESSAGE =
  * @returns {void}
  */
 export function reloadPageAfterDelay(delay = 1500, windowObj) {
-  const win = windowObj ?? globalThis.window;
-  setTimeout(() => win.location.reload(), delay)
+  const win = windowObj ?? (typeof globalThis !== 'undefined' ? globalThis.window : undefined);
+  if (win && win.location && typeof win.location.reload === 'function') {
+    setTimeout(() => win.location.reload(), delay);
+  }
 }
 
 /**
