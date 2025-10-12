@@ -19,7 +19,7 @@ const DATA_FIELDS = {
  * @param {Object} data - Data object to import
  * @returns {void}
  */
-function importToLocalStorage(data) {
+export function importToLocalStorage(data) {
   for (const field of Object.values(DATA_FIELDS)) {
     if (data[field]) {
       localStorage.setItem(field, JSON.stringify(data[field]))
