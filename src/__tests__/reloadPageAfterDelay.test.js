@@ -25,7 +25,7 @@ describe('reloadPageAfterDelay', () => {
   })
 
   test('reloads page after default delay of 1500ms', () => {
-    reloadPageAfterDelay(1500, mockWindow)
+    reloadPageAfterDelay(undefined, mockWindow)
 
     // Should not reload immediately
     expect(reloadMock).not.toHaveBeenCalled()
@@ -63,13 +63,14 @@ describe('reloadPageAfterDelay', () => {
   })
 
   test('uses global window by default when no window object provided', () => {
-    // This test verifies backward compatibility
-    // We can't fully test window.location.reload in Jest, but we can verify
-    // the function is callable without errors
-    expect(() => {
-      // Just verify the function can be called with only delay parameter
-      // In production, this would use the global window object
-      reloadPageAfterDelay(1500)
-    }).not.toThrow()
+    // This test verifies backward compatibility by checking setTimeout is called with default delay
+    const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
+    
+    reloadPageAfterDelay()
+    
+    // Verify setTimeout was called with correct default delay (1500ms)
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 1500)
+    
+    setTimeoutSpy.mockRestore()
   })
 })
