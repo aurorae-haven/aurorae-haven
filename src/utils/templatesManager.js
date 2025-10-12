@@ -6,13 +6,22 @@
 import { openDB, isIndexedDBAvailable } from './indexedDBManager'
 import { generateSecureUUID } from './uuidGenerator'
 import { validateTemplateData } from './validation'
+import semver from 'semver'
 
 const TEMPLATES_STORE = 'templates'
 
-// Supported template export versions
-const SUPPORTED_VERSIONS = ['1.0']
+// Supported template export version range (semver)
+const SUPPORTED_VERSION_RANGE = '>=1.0 <2.0'
 const CURRENT_VERSION = '1.0'
 
+/**
+ * Check if a template version is supported
+ * @param {string} version
+ * @returns {boolean}
+ */
+export function isSupportedVersion(version) {
+  return semver.satisfies(semver.coerce(version), SUPPORTED_VERSION_RANGE)
+}
 /**
  * Initialize templates in IndexedDB
  * @returns {Promise<void>}
