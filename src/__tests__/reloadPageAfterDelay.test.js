@@ -84,7 +84,7 @@ describe('reloadPageAfterDelay', () => {
     }).not.toThrow()
     
     // Verify no setTimeout was scheduled (since there's no reload function)
-    const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
+    const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
     reloadPageAfterDelay(1000, invalidWindow)
     
     // setTimeout should not be called when window.location.reload is not a function
