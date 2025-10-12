@@ -78,16 +78,15 @@ describe('reloadPageAfterDelay', () => {
     // Pass an object without location.reload to simulate incompatible environment
     const invalidWindow = { location: {} }
     
+    // Create setTimeout spy before invocation to avoid redundant calls
+    const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
+    
     // Function should not throw when window.location.reload is not available
+    // and setTimeout should not be called
     expect(() => {
       reloadPageAfterDelay(1000, invalidWindow)
     }).not.toThrow()
     
-    // Verify no setTimeout was scheduled (since there's no reload function)
-    const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
-    reloadPageAfterDelay(1000, invalidWindow)
-    
-    // setTimeout should not be called when window.location.reload is not a function
     expect(setTimeoutSpy).not.toHaveBeenCalled()
     
     setTimeoutSpy.mockRestore()
