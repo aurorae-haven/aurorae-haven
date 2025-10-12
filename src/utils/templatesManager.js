@@ -22,6 +22,7 @@ const CURRENT_VERSION = '1.0'
 function isSupportedVersion(version) {
   return semver.satisfies(semver.coerce(version), SUPPORTED_VERSION_RANGE)
 }
+
 /**
  * Initialize templates in IndexedDB
  * @returns {Promise<void>}
@@ -332,15 +333,6 @@ export async function exportTemplates(templateIds = []) {
 }
 
 /**
- * Check if import version is compatible
- * @param {string} version - Version string from import data
- * @returns {boolean} True if version is supported
- */
-function isVersionCompatible(version) {
-  return isSupportedVersion(version)
-}
-
-/**
  * Import templates from JSON
  * @param {Object} data - Import data
  * @returns {Promise<Object>} Import results
@@ -357,7 +349,7 @@ export async function importTemplates(data) {
   }
 
   // Check version compatibility
-  if (!isVersionCompatible(data.version)) {
+  if (!isSupportedVersion(data.version)) {
     throw new Error(
       `Incompatible version: ${data.version}. Supported version range: ${SUPPORTED_VERSION_RANGE}`
     )
