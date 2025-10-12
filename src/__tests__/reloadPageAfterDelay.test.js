@@ -64,7 +64,7 @@ describe('reloadPageAfterDelay', () => {
 
   test('schedules reload with default delay when no window object provided', () => {
     // This test verifies backward compatibility by checking setTimeout is called with default delay
-    const setTimeoutSpy = jest.spyOn(global, 'setTimeout')
+    const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
     
     reloadPageAfterDelay()
     
