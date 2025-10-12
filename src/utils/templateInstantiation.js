@@ -301,7 +301,7 @@ export async function instantiateTemplatesBatch(templates) {
     try {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
     } catch (error) {
-      console.error('Failed to save tasks')
+      console.error('Failed to save tasks:', error)
       if (error.name === 'QuotaExceededError' || error.code === 22) {
         throw new Error(
           'Storage quota exceeded. Please free up space by deleting old tasks.'
