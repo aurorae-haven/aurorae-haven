@@ -17,12 +17,13 @@ import {
  */
 export async function createRoutine(routine) {
   // TODO: Implement routine validation and step validation
-  const now = new Date()
+  const now = Date.now()
+  const isoNow = new Date(now).toISOString()
   const newRoutine = {
     ...routine,
-    id: routine.id || `routine_${now.getTime()}`,
-    timestamp: now.toISOString(),
-    createdAt: now.toISOString(),
+    id: routine.id || `routine_${now}`,
+    timestamp: isoNow,
+    createdAt: isoNow,
     steps: routine.steps || [],
     totalDuration: calculateTotalDuration(routine.steps || [])
   }
@@ -46,12 +47,13 @@ export async function createRoutineBatch(routines) {
   }
 
   // Prepare all routines with proper structure
-  const now = new Date()
+  const baseTimestamp = Date.now()
+  const isoNow = new Date(baseTimestamp).toISOString()
   const newRoutines = routines.map((routine, index) => ({
     ...routine,
-    id: routine.id || `routine_${now.getTime()}_${index}`,
-    timestamp: now.toISOString(),
-    createdAt: now.toISOString(),
+    id: routine.id || `routine_${baseTimestamp}_${index}`,
+    timestamp: isoNow,
+    createdAt: isoNow,
     steps: routine.steps || [],
     totalDuration: calculateTotalDuration(routine.steps || [])
   }))
@@ -123,7 +125,7 @@ export async function addStep(routineId, step) {
 
   const newStep = {
     ...step,
-    id: step.id || `step_${new Date().getTime()}`,
+    id: step.id || `step_${Date.now()}`,
     order: routine.steps.length,
     duration: step.duration || 60 // Default 60 seconds
   }
@@ -213,13 +215,14 @@ export async function cloneRoutine(routineId, newName) {
     throw new Error('Routine not found')
   }
 
-  const now = new Date()
+  const timestamp = Date.now()
+  const isoNow = new Date(timestamp).toISOString()
   const cloned = {
     ...routine,
-    id: `routine_${now.getTime()}`,
+    id: `routine_${timestamp}`,
     name: newName || `${routine.name} (Copy)`,
-    timestamp: now.toISOString(),
-    createdAt: now.toISOString()
+    timestamp: isoNow,
+    createdAt: isoNow
   }
 
   await put(STORES.ROUTINES, cloned)
