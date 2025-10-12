@@ -336,7 +336,7 @@ Currently, export includes all data types. Use the dedicated "📤 Export" butto
 
 ## Additional Resources
 
-- [Brain Dump Specifications](./BRAIN_DUMP_SPECS.md) - Technical details about Brain Dump features
+- [Brain Dump Specifications](./NOTES_SPECS.md) - Technical details about Brain Dump features
 - [Contributing Guide](../CONTRIBUTING.md) - Report bugs or request features
 - [Roadmap](../ROADMAP.md) - See planned improvements to import/export
 

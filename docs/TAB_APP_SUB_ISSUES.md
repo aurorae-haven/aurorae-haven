@@ -612,7 +612,7 @@ Track implementation status in the main TAB_APP_SPECS.md document.
 ## Related Documentation
 
 - [Tab Appearances Specifications (TAB-APP)](./TAB_APP_SPECS.md) - Main specification document
-- [Brain Dump Specifications (TAB-BDP)](./BRAIN_DUMP_SPECS.md)
+- [Brain Dump Specifications (TAB-BDP)](./NOTES_SPECS.md)
 - [Tasks Specifications (TAB-TSK)](./TASKS_SPECS.md)
 - [ARC-APP Compliance Report](./ARC-APP-COMPLIANCE.md)
 ````
