@@ -91,4 +91,20 @@ describe('reloadPageAfterDelay', () => {
     
     setTimeoutSpy.mockRestore()
   })
+
+  test('uses windowObj.setTimeout when provided', () => {
+    // Create a custom setTimeout mock
+    const customSetTimeout = jest.fn()
+    const windowWithCustomSetTimeout = {
+      location: {
+        reload: jest.fn()
+      },
+      setTimeout: customSetTimeout
+    }
+    
+    reloadPageAfterDelay(2000, windowWithCustomSetTimeout)
+    
+    // Verify that the custom setTimeout was called, not the global one
+    expect(customSetTimeout).toHaveBeenCalledWith(expect.any(Function), 2000)
+  })
 })
