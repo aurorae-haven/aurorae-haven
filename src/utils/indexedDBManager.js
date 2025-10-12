@@ -201,7 +201,8 @@ export async function putBatch(storeName, items) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(storeName, 'readwrite')
     const store = transaction.objectStore(storeName)
-    const results = []
+    // Pre-allocate results array to maintain input order
+    const results = new Array(items.length)
 
     let completed = 0
     let hasError = false
@@ -211,6 +212,7 @@ export async function putBatch(storeName, items) {
 
       request.onsuccess = () => {
         if (!hasError) {
+          // Assign result to specific index to maintain order regardless of completion order
           results[index] = request.result
           completed++
 

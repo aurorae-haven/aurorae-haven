@@ -17,11 +17,12 @@ import {
  */
 export async function createRoutine(routine) {
   // TODO: Implement routine validation and step validation
+  const now = new Date()
   const newRoutine = {
     ...routine,
-    id: routine.id || `routine_${Date.now()}`,
-    timestamp: Date.now(),
-    createdAt: new Date().toISOString(),
+    id: routine.id || `routine_${now.getTime()}`,
+    timestamp: now.toISOString(),
+    createdAt: now.toISOString(),
     steps: routine.steps || [],
     totalDuration: calculateTotalDuration(routine.steps || [])
   }
@@ -45,11 +46,12 @@ export async function createRoutineBatch(routines) {
   }
 
   // Prepare all routines with proper structure
+  const now = new Date()
   const newRoutines = routines.map((routine, index) => ({
     ...routine,
-    id: routine.id || `routine_${Date.now()}_${index}`,
-    timestamp: Date.now(),
-    createdAt: new Date().toISOString(),
+    id: routine.id || `routine_${now.getTime()}_${index}`,
+    timestamp: now.toISOString(),
+    createdAt: now.toISOString(),
     steps: routine.steps || [],
     totalDuration: calculateTotalDuration(routine.steps || [])
   }))
@@ -89,7 +91,7 @@ export async function updateRoutine(routine) {
   // TODO: Add validation and recalculate total duration
   const updated = {
     ...routine,
-    timestamp: Date.now(),
+    timestamp: new Date().toISOString(),
     totalDuration: calculateTotalDuration(routine.steps || [])
   }
   await put(STORES.ROUTINES, updated)
@@ -121,14 +123,14 @@ export async function addStep(routineId, step) {
 
   const newStep = {
     ...step,
-    id: step.id || `step_${Date.now()}`,
+    id: step.id || `step_${new Date().getTime()}`,
     order: routine.steps.length,
     duration: step.duration || 60 // Default 60 seconds
   }
 
   routine.steps.push(newStep)
   routine.totalDuration = calculateTotalDuration(routine.steps)
-  routine.timestamp = Date.now()
+  routine.timestamp = new Date().toISOString()
 
   await put(STORES.ROUTINES, routine)
   return routine
@@ -152,7 +154,7 @@ export async function removeStep(routineId, stepId) {
     step.order = index
   })
   routine.totalDuration = calculateTotalDuration(routine.steps)
-  routine.timestamp = Date.now()
+  routine.timestamp = new Date().toISOString()
 
   await put(STORES.ROUTINES, routine)
   return routine
@@ -183,7 +185,7 @@ export async function reorderStep(routineId, stepId, newOrder) {
   routine.steps.forEach((s, index) => {
     s.order = index
   })
-  routine.timestamp = Date.now()
+  routine.timestamp = new Date().toISOString()
 
   await put(STORES.ROUTINES, routine)
   return routine
@@ -211,12 +213,13 @@ export async function cloneRoutine(routineId, newName) {
     throw new Error('Routine not found')
   }
 
+  const now = new Date()
   const cloned = {
     ...routine,
-    id: `routine_${Date.now()}`,
+    id: `routine_${now.getTime()}`,
     name: newName || `${routine.name} (Copy)`,
-    timestamp: Date.now(),
-    createdAt: new Date().toISOString()
+    timestamp: now.toISOString(),
+    createdAt: now.toISOString()
   }
 
   await put(STORES.ROUTINES, cloned)
