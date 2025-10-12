@@ -42,7 +42,7 @@ export function instantiateTaskFromTemplate(template) {
     id: generateSecureUUID(),
     text: template.title,
     completed: false,
-    createdAt: Date.now(),
+    createdAt: new Date().toISOString(),
     dueDate: template.dueOffset ? Date.now() + template.dueOffset : null,
     completedAt: null
   }
@@ -279,7 +279,7 @@ export async function instantiateTemplatesBatch(templates) {
         id: generateSecureUUID(),
         text: template.title,
         completed: false,
-        createdAt: Date.now(),
+        createdAt: new Date().toISOString(),
         dueDate: template.dueOffset ? Date.now() + template.dueOffset : null,
         completedAt: null
       }
