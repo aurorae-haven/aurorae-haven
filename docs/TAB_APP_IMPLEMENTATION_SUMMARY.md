@@ -328,7 +328,7 @@ Future enhancements to improve user experience and polish.
 
 This specification follows the same pattern as:
 
-- **TAB-BDP** (Tab - Brain Dump): [NOTES_SPECS.md](./NOTES_SPECS.md)
+- **TAB-BDP** (Tab - Notes): [NOTES_SPECS.md](./NOTES_SPECS.md)
   - TAB-BDP-FIL-01 (File Management)
   - TAB-BDP-BLK-01 (Backlinks)
   - TAB-BDP-VSH-01 (Version History)
