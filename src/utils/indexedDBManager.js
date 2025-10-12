@@ -210,11 +210,13 @@ export async function putBatch(storeName, items) {
       const request = store.put(item)
 
       request.onsuccess = () => {
-        results[index] = request.result
-        completed++
+        if (!hasError) {
+          results[index] = request.result
+          completed++
 
-        if (completed === items.length && !hasError) {
-          resolve(results)
+          if (completed === items.length && !hasError) {
+            resolve(results)
+          }
         }
       }
 

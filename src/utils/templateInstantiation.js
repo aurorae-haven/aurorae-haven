@@ -234,6 +234,24 @@ export async function instantiateTemplatesBatch(templates) {
 
   // Process task templates (synchronous, but batched in localStorage)
   if (taskTemplates.length > 0) {
+    // Validate all task templates upfront before processing
+    for (const template of taskTemplates) {
+      const validation = validateTemplateData(template)
+      if (!validation.valid) {
+        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+      }
+
+      // Validate dueOffset if present
+      if (template.dueOffset !== undefined && template.dueOffset !== null) {
+        if (typeof template.dueOffset !== 'number') {
+          throw new Error('Template dueOffset must be a number')
+        }
+        if (template.dueOffset <= 0) {
+          throw new Error('Template dueOffset must be a positive number')
+        }
+      }
+    }
+
     // Load existing tasks once
     let tasks
     try {
@@ -256,24 +274,8 @@ export async function instantiateTemplatesBatch(templates) {
       }
     }
 
-    // Create all tasks
+    // Create all tasks after validation passes
     for (const template of taskTemplates) {
-      // Validate template data
-      const validation = validateTemplateData(template)
-      if (!validation.valid) {
-        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
-      }
-
-      // Validate dueOffset if present
-      if (template.dueOffset !== undefined && template.dueOffset !== null) {
-        if (typeof template.dueOffset !== 'number') {
-          throw new Error('Template dueOffset must be a number')
-        }
-        if (template.dueOffset <= 0) {
-          throw new Error('Template dueOffset must be a positive number')
-        }
-      }
-
       const quadrant = template.quadrant || 'urgent_important'
       const task = {
         id: generateSecureUUID(),
