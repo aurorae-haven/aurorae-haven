@@ -376,11 +376,12 @@ export async function importTemplates(data) {
 
       // Re-ID on collision
       const existing = await getTemplate(template.id)
+      let templateToSave = template;
       if (existing) {
-        template.id = generateSecureUUID()
+        templateToSave = { ...template, id: generateSecureUUID() }
       }
 
-      await saveTemplate(template)
+      await saveTemplate(templateToSave)
       results.imported++
     } catch (error) {
       results.errors.push({
