@@ -18,6 +18,8 @@ const BRAIN_DUMP_FIELDS = {
   entries: VALIDATION_TYPES.ARRAY
 }
 
+const ARRAY_FIELDS = ['tasks', 'routines', 'habits', 'dumps', 'schedule']
+
 /**
  * Check if value matches expected type
  * @param {*} value - Value to check
@@ -102,8 +104,7 @@ export function validateExportData(data) {
   const errors = []
 
   // Check required fields exist and are arrays
-  const arrayFields = ['tasks', 'routines', 'habits', 'dumps', 'schedule']
-  errors.push(...validateArrayFields(data, arrayFields, VALIDATION_TYPES.ARRAY))
+  errors.push(...validateArrayFields(data, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY))
 
   // Validate BrainDump structure if dumps exist
   if (data.dumps && Array.isArray(data.dumps)) {
@@ -144,8 +145,7 @@ export function validateImportData(obj) {
   const errors = []
 
   // Check required fields
-  const arrayFields = ['tasks', 'routines', 'habits', 'dumps', 'schedule']
-  errors.push(...validateArrayFields(obj, arrayFields, VALIDATION_TYPES.ARRAY))
+  errors.push(...validateArrayFields(obj, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY))
 
   // Validate BrainDump structure if dumps exist
   if (obj.dumps && Array.isArray(obj.dumps)) {
