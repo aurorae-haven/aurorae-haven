@@ -33,17 +33,12 @@ import { generateSecureUUID } from './uuidGenerator'
 
   async function importJSON(file) {
     try {
-      const result = await importData(file)
+      await importData(file)
+      exported = true // importing counts as having current data saved
+      toast(IMPORT_SUCCESS_MESSAGE)
 
-      if (result.success) {
-        exported = true // importing counts as having current data saved
-        toast(IMPORT_SUCCESS_MESSAGE)
-
-        // Use shared utility function for page reload
-        reloadPageAfterDelay(1500)
-      } else {
-        toast('Import failed: ' + result.message)
-      }
+      // Use shared utility function for page reload
+      reloadPageAfterDelay(1500)
     } catch (e) {
       console.error(e)
       toast('Import failed: ' + e.message)
