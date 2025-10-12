@@ -64,7 +64,11 @@ describe('templateInstantiation', () => {
       const result = instantiateTaskFromTemplate(template)
 
       expect(result.task.dueDate).toBeDefined()
-      expect(result.task.dueDate).toBeGreaterThan(Date.now())
+      // dueDate should be an ISO string
+      expect(typeof result.task.dueDate).toBe('string')
+      // Verify it's a valid ISO date string and in the future
+      const dueDateTime = new Date(result.task.dueDate).getTime()
+      expect(dueDateTime).toBeGreaterThan(Date.now())
     })
 
     test('adds task to existing tasks in localStorage', () => {
