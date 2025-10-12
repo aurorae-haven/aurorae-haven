@@ -4,7 +4,7 @@
  */
 
 import { generateSecureUUID } from './uuidGenerator'
-import { createRoutine } from './routinesManager'
+import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
 
 /**
@@ -42,8 +42,8 @@ export function instantiateTaskFromTemplate(template) {
     id: generateSecureUUID(),
     text: template.title,
     completed: false,
-    createdAt: Date.now(),
-    dueDate: template.dueOffset ? Date.now() + template.dueOffset : null,
+    createdAt: new Date().toISOString(),
+    dueDate: template.dueOffset ? new Date(Date.now() + template.dueOffset).toISOString() : null,
     completedAt: null
   }
 
@@ -195,4 +195,192 @@ export async function instantiateTemplate(template) {
   } else {
     throw new Error(`Unknown template type: ${template.type}`)
   }
+}
+
+/**
+ * Instantiate multiple templates in a batch operation
+ * More efficient than calling instantiateTemplate() multiple times
+ * @param {Array<Object>} templates - Array of template objects
+ * @returns {Promise<Array<Object>>} Array of created entity details
+ */
+export async function instantiateTemplatesBatch(templates) {
+  if (!Array.isArray(templates)) {
+    throw new Error('Templates must be an array')
+  }
+
+  if (templates.length === 0) {
+    return []
+  }
+
+  // Separate task and routine templates
+  const taskTemplates = []
+  const routineTemplates = []
+
+  for (const template of templates) {
+    if (!template) {
+      throw new Error('Template is required')
+    }
+
+    if (template.type === 'task') {
+      taskTemplates.push(template)
+    } else if (template.type === 'routine') {
+      routineTemplates.push(template)
+    } else {
+      throw new Error(`Unknown template type: ${template.type}`)
+    }
+  }
+
+  const results = []
+
+  // Process task templates (synchronous, but batched in localStorage)
+  if (taskTemplates.length > 0) {
+    // Validate all task templates upfront before processing
+    for (const template of taskTemplates) {
+      const validation = validateTemplateData(template)
+      if (!validation.valid) {
+        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+      }
+
+      // Validate dueOffset if present
+      if (template.dueOffset !== undefined && template.dueOffset !== null) {
+        if (typeof template.dueOffset !== 'number') {
+          throw new Error('Template dueOffset must be a number')
+        }
+        if (template.dueOffset <= 0) {
+          throw new Error('Template dueOffset must be a positive number')
+        }
+      }
+    }
+
+    // Load existing tasks once
+    let tasks
+    try {
+      const savedTasks = localStorage.getItem('aurorae_tasks')
+      tasks = savedTasks
+        ? JSON.parse(savedTasks)
+        : {
+            urgent_important: [],
+            not_urgent_important: [],
+            urgent_not_important: [],
+            not_urgent_not_important: []
+          }
+    } catch (error) {
+      console.error('Failed to parse saved tasks:', error)
+      tasks = {
+        urgent_important: [],
+        not_urgent_important: [],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+    }
+
+    // Create all tasks after validation passes
+    for (const template of taskTemplates) {
+      const quadrant = template.quadrant || 'urgent_important'
+      const task = {
+        id: generateSecureUUID(),
+        text: template.title,
+        completed: false,
+        createdAt: new Date().toISOString(),
+        dueDate: template.dueOffset ? new Date(Date.now() + template.dueOffset).toISOString() : null,
+        completedAt: null
+      }
+
+      if (!tasks[quadrant]) {
+        tasks[quadrant] = []
+      }
+      tasks[quadrant].push(task)
+
+      results.push({
+        type: 'task',
+        id: task.id,
+        quadrant,
+        task
+      })
+    }
+
+    // Save all tasks once
+    try {
+      localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
+    } catch (error) {
+      console.error('Failed to save tasks:', error)
+      if (error.name === 'QuotaExceededError' || error.code === 22) {
+        throw new Error(
+          'Storage quota exceeded. Please free up space by deleting old tasks.'
+        )
+      }
+      throw new Error('Failed to save tasks to storage')
+    }
+  }
+
+  // Process routine templates using batch operation
+  if (routineTemplates.length > 0) {
+    // Validate all routine templates first
+    const routines = []
+    for (const template of routineTemplates) {
+      // Validate template data
+      const validation = validateTemplateData(template)
+      if (!validation.valid) {
+        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+      }
+
+      // Additional validation for routine-specific fields
+      if (template.steps && template.steps.length > 0) {
+        for (let i = 0; i < template.steps.length; i++) {
+          const step = template.steps[i]
+          if (!step || typeof step !== 'object') {
+            throw new Error(`Step ${i} must be an object`)
+          }
+          if (typeof step.label !== 'string' || step.label.trim() === '') {
+            throw new Error(`Step ${i} must have a non-empty label`)
+          }
+          if (
+            step.duration !== undefined &&
+            (typeof step.duration !== 'number' || step.duration < 0)
+          ) {
+            throw new Error(`Step ${i} duration must be a non-negative number`)
+          }
+        }
+      }
+
+      if (template.tags && template.tags.length > 0) {
+        for (let i = 0; i < template.tags.length; i++) {
+          if (typeof template.tags[i] !== 'string') {
+            throw new Error(`Tag ${i} must be a string`)
+          }
+        }
+      }
+
+      if (
+        template.estimatedDuration !== undefined &&
+        template.estimatedDuration !== null &&
+        (typeof template.estimatedDuration !== 'number' ||
+          template.estimatedDuration < 0)
+      ) {
+        throw new Error('estimatedDuration must be a non-negative number')
+      }
+
+      routines.push({
+        name: template.title,
+        steps: template.steps || [],
+        tags: template.tags || [],
+        energyTag: template.energyTag || null,
+        estimatedDuration: template.estimatedDuration || null,
+        createdAt: new Date().toISOString()
+      })
+    }
+
+    // Create all routines in a single batch
+    const routineIds = await createRoutineBatch(routines)
+
+    // Add results
+    routineIds.forEach((id) => {
+      results.push({
+        type: 'routine',
+        id
+      })
+    })
+  }
+
+  return results
 }
