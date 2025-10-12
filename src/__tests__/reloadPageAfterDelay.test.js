@@ -20,6 +20,7 @@ describe('reloadPageAfterDelay', () => {
   })
 
   afterEach(() => {
+    jest.clearAllTimers()
     jest.useRealTimers()
   })
 
