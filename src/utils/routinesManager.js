@@ -1,7 +1,14 @@
 // Routines Manager - Feature stub for routine management
 // TODO: Implement full routines functionality with timer integration
 
-import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
+import {
+  put,
+  putBatch,
+  getAll,
+  getById,
+  deleteById,
+  STORES
+} from './indexedDBManager'
 
 /**
  * Create a new routine
@@ -20,6 +27,38 @@ export async function createRoutine(routine) {
   }
   await put(STORES.ROUTINES, newRoutine)
   return newRoutine.id
+}
+
+/**
+ * Create multiple routines in a single batch operation
+ * More efficient than calling createRoutine() multiple times
+ * @param {Array<object>} routines - Array of routine data objects
+ * @returns {Promise<Array<string>>} Array of routine IDs
+ */
+export async function createRoutineBatch(routines) {
+  if (!Array.isArray(routines)) {
+    throw new Error('Routines must be an array')
+  }
+
+  if (routines.length === 0) {
+    return []
+  }
+
+  // Prepare all routines with proper structure
+  const newRoutines = routines.map((routine, index) => ({
+    ...routine,
+    id: routine.id || `routine_${Date.now()}_${index}`,
+    timestamp: Date.now(),
+    createdAt: new Date().toISOString(),
+    steps: routine.steps || [],
+    totalDuration: calculateTotalDuration(routine.steps || [])
+  }))
+
+  // Use batch operation for efficiency
+  await putBatch(STORES.ROUTINES, newRoutines)
+
+  // Return array of IDs
+  return newRoutines.map((r) => r.id)
 }
 
 /**

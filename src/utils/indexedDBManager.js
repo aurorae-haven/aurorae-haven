@@ -182,6 +182,61 @@ export async function put(storeName, item) {
 }
 
 /**
+ * Generic batch add or update items
+ * More efficient than multiple put() calls as it uses a single transaction
+ * @param {string} storeName
+ * @param {Array} items - Array of items to add/update
+ * @returns {Promise<Array>} Array of generated IDs/keys
+ */
+export async function putBatch(storeName, items) {
+  if (!Array.isArray(items)) {
+    throw new Error('Items must be an array')
+  }
+
+  if (items.length === 0) {
+    return []
+  }
+
+  const db = await openDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, 'readwrite')
+    const store = transaction.objectStore(storeName)
+    const results = []
+
+    let completed = 0
+    let hasError = false
+
+    items.forEach((item, index) => {
+      const request = store.put(item)
+
+      request.onsuccess = () => {
+        results[index] = request.result
+        completed++
+
+        if (completed === items.length && !hasError) {
+          resolve(results)
+        }
+      }
+
+      request.onerror = () => {
+        if (!hasError) {
+          hasError = true
+          reject(request.error)
+        }
+      }
+    })
+
+    transaction.oncomplete = () => db.close()
+    transaction.onerror = () => {
+      if (!hasError) {
+        hasError = true
+        reject(transaction.error)
+      }
+    }
+  })
+}
+
+/**
  * Generic delete item by ID
  * @param {string} storeName
  * @param {*} id

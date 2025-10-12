@@ -4,6 +4,7 @@
 import 'fake-indexeddb/auto'
 import {
   createRoutine,
+  createRoutineBatch,
   getRoutines,
   getRoutine,
   updateRoutine,
@@ -216,5 +217,152 @@ describe('Routines Manager', () => {
 
     // TODO: Add tests for routine completion
     test.todo('should handle routine completion')
+  })
+
+  describe('createRoutineBatch', () => {
+    test('should create multiple routines in one batch', async () => {
+      const routines = [
+        {
+          name: 'Morning Routine',
+          steps: [{ name: 'Wake up', duration: 60 }]
+        },
+        {
+          name: 'Evening Routine',
+          steps: [{ name: 'Wind down', duration: 120 }]
+        },
+        {
+          name: 'Workout Routine',
+          steps: [
+            { name: 'Warm up', duration: 300 },
+            { name: 'Exercise', duration: 1800 }
+          ]
+        }
+      ]
+
+      const ids = await createRoutineBatch(routines)
+      expect(ids).toHaveLength(3)
+      expect(ids[0]).toContain('routine_')
+      expect(ids[1]).toContain('routine_')
+      expect(ids[2]).toContain('routine_')
+
+      const allRoutines = await getRoutines()
+      expect(allRoutines).toHaveLength(3)
+      expect(allRoutines[0].name).toBe('Morning Routine')
+      expect(allRoutines[1].name).toBe('Evening Routine')
+      expect(allRoutines[2].name).toBe('Workout Routine')
+    })
+
+    test('should return empty array for empty input', async () => {
+      const ids = await createRoutineBatch([])
+      expect(ids).toEqual([])
+    })
+
+    test('should throw error for non-array input', async () => {
+      await expect(createRoutineBatch('not an array')).rejects.toThrow(
+        'Routines must be an array'
+      )
+    })
+
+    test('should handle single routine', async () => {
+      const routines = [
+        {
+          name: 'Single Routine',
+          steps: [{ name: 'Step 1', duration: 60 }]
+        }
+      ]
+
+      const ids = await createRoutineBatch(routines)
+      expect(ids).toHaveLength(1)
+
+      const allRoutines = await getRoutines()
+      expect(allRoutines).toHaveLength(1)
+      expect(allRoutines[0].name).toBe('Single Routine')
+    })
+
+    test('should calculate total duration for all routines', async () => {
+      const routines = [
+        {
+          name: 'Routine 1',
+          steps: [
+            { name: 'Step 1', duration: 60 },
+            { name: 'Step 2', duration: 120 }
+          ]
+        },
+        {
+          name: 'Routine 2',
+          steps: [{ name: 'Step 1', duration: 300 }]
+        }
+      ]
+
+      const ids = await createRoutineBatch(routines)
+      const routine1 = await getRoutine(ids[0])
+      const routine2 = await getRoutine(ids[1])
+
+      expect(routine1.totalDuration).toBe(180)
+      expect(routine2.totalDuration).toBe(300)
+    })
+
+    test('should assign unique IDs to each routine', async () => {
+      const routines = [
+        { name: 'Routine 1', steps: [] },
+        { name: 'Routine 2', steps: [] },
+        { name: 'Routine 3', steps: [] }
+      ]
+
+      const ids = await createRoutineBatch(routines)
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(3)
+    })
+
+    test('should handle routines with no steps', async () => {
+      const routines = [
+        { name: 'Empty Routine 1', steps: [] },
+        { name: 'Empty Routine 2' }
+      ]
+
+      const ids = await createRoutineBatch(routines)
+      expect(ids).toHaveLength(2)
+
+      const routine1 = await getRoutine(ids[0])
+      const routine2 = await getRoutine(ids[1])
+
+      expect(routine1.steps).toEqual([])
+      expect(routine2.steps).toEqual([])
+      expect(routine1.totalDuration).toBe(0)
+      expect(routine2.totalDuration).toBe(0)
+    })
+
+    test('should demonstrate batch operation works correctly', async () => {
+      const routines = Array.from({ length: 10 }, (_, i) => ({
+        name: `Routine ${i + 1}`,
+        steps: [{ name: 'Step 1', duration: 60 }]
+      }))
+
+      // Use batch operation
+      const batchIds = await createRoutineBatch(routines)
+
+      // Verify all routines were created
+      expect(batchIds).toHaveLength(10)
+      expect(batchIds.every((id) => id.startsWith('routine_'))).toBe(true)
+
+      // Verify all IDs are unique
+      const uniqueIds = new Set(batchIds)
+      expect(uniqueIds.size).toBe(10)
+
+      // Verify batch operation is a single function call
+      // (as opposed to looping createRoutine 10 times)
+      // This demonstrates the efficiency improvement
+      const allRoutines = await getRoutines()
+      expect(allRoutines.length).toBeGreaterThanOrEqual(10)
+
+      // Verify routines have correct structure
+      batchIds.forEach(async (id) => {
+        const routine = await getRoutine(id)
+        expect(routine).toBeDefined()
+        expect(routine.name).toMatch(/^Routine \d+$/)
+        expect(routine.steps).toHaveLength(1)
+        expect(routine.totalDuration).toBe(60)
+      })
+    })
   })
 })

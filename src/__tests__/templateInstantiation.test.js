@@ -1,7 +1,8 @@
 import {
   instantiateTaskFromTemplate,
   instantiateRoutineFromTemplate,
-  instantiateTemplate
+  instantiateTemplate,
+  instantiateTemplatesBatch
 } from '../utils/templateInstantiation'
 import * as uuidGenerator from '../utils/uuidGenerator'
 import * as routinesManager from '../utils/routinesManager'
@@ -440,6 +441,237 @@ describe('templateInstantiation', () => {
       await expect(instantiateTemplate(template)).rejects.toThrow(
         'Unknown template type: unknown'
       )
+    })
+  })
+
+  describe('instantiateTemplatesBatch', () => {
+    beforeEach(() => {
+      let counter = 0
+      uuidGenerator.generateSecureUUID.mockImplementation(() => {
+        counter++
+        return `test-uuid-${counter}`
+      })
+      routinesManager.createRoutineBatch.mockImplementation((routines) => {
+        return Promise.resolve(
+          routines.map((r, i) => `routine_batch_${Date.now()}_${i}`)
+        )
+      })
+    })
+
+    test('creates multiple tasks and routines in batch', async () => {
+      const templates = [
+        {
+          type: 'task',
+          title: 'Task 1',
+          quadrant: 'urgent_important'
+        },
+        {
+          type: 'task',
+          title: 'Task 2',
+          quadrant: 'not_urgent_important'
+        },
+        {
+          type: 'routine',
+          title: 'Routine 1',
+          steps: [{ label: 'Step 1', duration: 60 }]
+        },
+        {
+          type: 'routine',
+          title: 'Routine 2',
+          steps: [{ label: 'Step 1', duration: 120 }]
+        }
+      ]
+
+      const results = await instantiateTemplatesBatch(templates)
+
+      expect(results).toHaveLength(4)
+      expect(results[0].type).toBe('task')
+      expect(results[0].id).toBe('test-uuid-1')
+      expect(results[1].type).toBe('task')
+      expect(results[1].id).toBe('test-uuid-2')
+      expect(results[2].type).toBe('routine')
+      expect(results[3].type).toBe('routine')
+
+      // Verify tasks were saved to localStorage
+      const savedTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      expect(savedTasks.urgent_important).toHaveLength(1)
+      expect(savedTasks.not_urgent_important).toHaveLength(1)
+
+      // Verify batch routine creation was called
+      expect(routinesManager.createRoutineBatch).toHaveBeenCalledTimes(1)
+      expect(routinesManager.createRoutineBatch).toHaveBeenCalledWith([
+        expect.objectContaining({ name: 'Routine 1' }),
+        expect.objectContaining({ name: 'Routine 2' })
+      ])
+    })
+
+    test('handles only tasks', async () => {
+      const templates = [
+        { type: 'task', title: 'Task 1' },
+        { type: 'task', title: 'Task 2' },
+        { type: 'task', title: 'Task 3' }
+      ]
+
+      const results = await instantiateTemplatesBatch(templates)
+
+      expect(results).toHaveLength(3)
+      expect(results.every((r) => r.type === 'task')).toBe(true)
+      expect(routinesManager.createRoutineBatch).not.toHaveBeenCalled()
+    })
+
+    test('handles only routines', async () => {
+      const templates = [
+        {
+          type: 'routine',
+          title: 'Routine 1',
+          steps: [{ label: 'Step 1', duration: 60 }]
+        },
+        {
+          type: 'routine',
+          title: 'Routine 2',
+          steps: [{ label: 'Step 1', duration: 120 }]
+        }
+      ]
+
+      const results = await instantiateTemplatesBatch(templates)
+
+      expect(results).toHaveLength(2)
+      expect(results.every((r) => r.type === 'routine')).toBe(true)
+      expect(routinesManager.createRoutineBatch).toHaveBeenCalledTimes(1)
+    })
+
+    test('returns empty array for empty input', async () => {
+      const results = await instantiateTemplatesBatch([])
+      expect(results).toEqual([])
+    })
+
+    test('throws error for non-array input', async () => {
+      await expect(instantiateTemplatesBatch('not an array')).rejects.toThrow(
+        'Templates must be an array'
+      )
+    })
+
+    test('throws error for null template in array', async () => {
+      const templates = [
+        { type: 'task', title: 'Valid Task' },
+        null,
+        { type: 'routine', title: 'Valid Routine' }
+      ]
+
+      await expect(instantiateTemplatesBatch(templates)).rejects.toThrow(
+        'Template is required'
+      )
+    })
+
+    test('throws error for unknown template type', async () => {
+      const templates = [
+        { type: 'task', title: 'Valid Task' },
+        { type: 'unknown', title: 'Invalid' }
+      ]
+
+      await expect(instantiateTemplatesBatch(templates)).rejects.toThrow(
+        'Unknown template type: unknown'
+      )
+    })
+
+    test('saves all tasks in single localStorage write', async () => {
+      const templates = Array.from({ length: 10 }, (_, i) => ({
+        type: 'task',
+        title: `Task ${i + 1}`,
+        quadrant: 'urgent_important'
+      }))
+
+      const setItemSpy = jest.spyOn(Storage.prototype, 'setItem')
+
+      await instantiateTemplatesBatch(templates)
+
+      // Should only call setItem once for all tasks
+      expect(setItemSpy).toHaveBeenCalledTimes(1)
+      expect(setItemSpy).toHaveBeenCalledWith(
+        'aurorae_tasks',
+        expect.any(String)
+      )
+
+      setItemSpy.mockRestore()
+    })
+
+    test('uses batch routine creation for multiple routines', async () => {
+      const templates = Array.from({ length: 5 }, (_, i) => ({
+        type: 'routine',
+        title: `Routine ${i + 1}`,
+        steps: [{ label: 'Step 1', duration: 60 }]
+      }))
+
+      await instantiateTemplatesBatch(templates)
+
+      // Should call batch creation once with all routines
+      expect(routinesManager.createRoutineBatch).toHaveBeenCalledTimes(1)
+      expect(routinesManager.createRoutineBatch).toHaveBeenCalledWith(
+        expect.arrayContaining([
+          expect.objectContaining({ name: 'Routine 1' }),
+          expect.objectContaining({ name: 'Routine 2' }),
+          expect.objectContaining({ name: 'Routine 3' }),
+          expect.objectContaining({ name: 'Routine 4' }),
+          expect.objectContaining({ name: 'Routine 5' })
+        ])
+      )
+    })
+
+    test('validates all templates before processing', async () => {
+      const templates = [
+        { type: 'task', title: 'Valid Task' },
+        { type: 'routine' } // Missing required title field
+      ]
+
+      await expect(instantiateTemplatesBatch(templates)).rejects.toThrow(
+        'Invalid template data'
+      )
+
+      // Should not have called batch routine creation
+      expect(routinesManager.createRoutineBatch).not.toHaveBeenCalled()
+    })
+
+    test('handles mixed quadrants for tasks', async () => {
+      const templates = [
+        { type: 'task', title: 'Task 1', quadrant: 'urgent_important' },
+        { type: 'task', title: 'Task 2', quadrant: 'not_urgent_important' },
+        { type: 'task', title: 'Task 3', quadrant: 'urgent_not_important' },
+        {
+          type: 'task',
+          title: 'Task 4',
+          quadrant: 'not_urgent_not_important'
+        }
+      ]
+
+      await instantiateTemplatesBatch(templates)
+
+      const savedTasks = JSON.parse(localStorage.getItem('aurorae_tasks'))
+      expect(savedTasks.urgent_important).toHaveLength(1)
+      expect(savedTasks.not_urgent_important).toHaveLength(1)
+      expect(savedTasks.urgent_not_important).toHaveLength(1)
+      expect(savedTasks.not_urgent_not_important).toHaveLength(1)
+    })
+
+    test('throws error on localStorage quota exceeded', async () => {
+      const templates = Array.from({ length: 5 }, (_, i) => ({
+        type: 'task',
+        title: `Task ${i + 1}`
+      }))
+
+      // Mock quota exceeded error
+      const setItemSpy = jest
+        .spyOn(Storage.prototype, 'setItem')
+        .mockImplementation(() => {
+          const error = new Error('QuotaExceededError')
+          error.name = 'QuotaExceededError'
+          throw error
+        })
+
+      await expect(instantiateTemplatesBatch(templates)).rejects.toThrow(
+        'Storage quota exceeded'
+      )
+
+      setItemSpy.mockRestore()
     })
   })
 })
