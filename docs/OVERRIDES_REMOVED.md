@@ -106,9 +106,3 @@ Valid reasons to add overrides:
 ## Conclusion
 
 The removal of these overrides simplifies dependency management and allows npm to naturally resolve packages to their optimal versions. The project continues to maintain zero vulnerabilities and all functionality works correctly.
-
----
-
-**Date**: 2025-01-15  
-**PR**: <https://github.com/your-org/your-repo/pull/1234>  
-**Related Issue**: [nitpick] Review postcss override necessity

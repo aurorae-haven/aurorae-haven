@@ -166,7 +166,7 @@ Examples:
 
 ## Related Documentation
 
-- [Brain Dump Specifications (TAB-BDP)](./BRAIN_DUMP_SPECS.md)
+- [Notes Specifications (TAB-BDP)](./NOTES_SPECS.md)
 - [Tasks Specifications (TAB-TSK)](./TASKS_SPECS.md)
 - [ARC-APP Compliance Report](./ARC-APP-COMPLIANCE.md)
 - [Architecture Compliance (ARC-DAT)](./ARC-DAT-COMPLIANCE.md)

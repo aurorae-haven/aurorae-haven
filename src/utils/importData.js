@@ -20,10 +20,18 @@ export const IMPORT_SUCCESS_MESSAGE =
 
 /**
  * Reload page after a delay
- * @param {number} delay - Delay in milliseconds (default: 1500ms)
+ * @param {number} [delay=1500] - Delay in milliseconds (default: 1500ms)
+ * @param {Window|undefined} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
+ * @returns {void}
  */
-export function reloadPageAfterDelay(delay = 1500) {
-  setTimeout(() => window.location.reload(), delay)
+export function reloadPageAfterDelay(
+  delay = 1500,
+  windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined
+) {
+  if (windowObj && windowObj.location && typeof windowObj.location.reload === 'function') {
+    const setTimeoutFn = windowObj.setTimeout || globalThis.setTimeout;
+    setTimeoutFn(() => windowObj.location.reload(), delay);
+  }
 }
 
 /**

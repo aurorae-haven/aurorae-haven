@@ -597,7 +597,7 @@ This combination provides:
 ## References
 
 - [USER_MANUAL.md](../USER_MANUAL.md) - Full documentation
-- [BRAIN_DUMP_USAGE.md](./BRAIN_DUMP_USAGE.md) - Feature guide
+- [NOTES_USAGE.md](./NOTES_USAGE.md) - Feature guide
 - [TAB_APP_SPECS.md](./TAB_APP_SPECS.md) - Design system specs
 - [WCAG 2.2 Guidelines](https://www.w3.org/WAI/WCAG22/quickref/) - Accessibility standards
 

@@ -53,11 +53,11 @@ describe('Home Component', () => {
       expect(scheduleLink).toHaveAttribute('href', '/schedule')
     })
 
-    test('renders Sequences link', () => {
+    test('renders Routines link', () => {
       renderWithRouter(<Home />)
-      const sequencesLink = screen.getByRole('link', { name: /Sequences/i })
-      expect(sequencesLink).toBeInTheDocument()
-      expect(sequencesLink).toHaveAttribute('href', '/sequences')
+      const routinesLink = screen.getByRole('link', { name: /Routines/i })
+      expect(routinesLink).toBeInTheDocument()
+      expect(routinesLink).toHaveAttribute('href', '/routines')
     })
 
     test('renders Brain Dump link', () => {

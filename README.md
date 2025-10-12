@@ -210,7 +210,7 @@ The deployment workflow:
 ### User Guides
 
 - **[User Manual](./USER_MANUAL.md)**: Complete guide to LaTeX equations, images, and markdown formatting
-- **[Brain Dump Usage Guide](./docs/BRAIN_DUMP_USAGE.md)**: Feature walkthrough and examples
+- **[Notes Usage Guide](./docs/NOTES_USAGE.md)**: Feature walkthrough and examples
 
 ### Data Management
 
@@ -220,7 +220,7 @@ The deployment workflow:
 
 ### Feature Specifications
 
-- **[Brain Dump Specifications](./docs/BRAIN_DUMP_SPECS.md)**: Technical details about Brain Dump features
+- **[Notes Specifications](./docs/NOTES_SPECS.md)**: Technical details about Notes features
 - **[Tasks Specifications](./docs/TASKS_SPECS.md)**: Technical details about Tasks and Eisenhower Matrix
 - **[ARC-APP Compliance](./docs/ARC-APP-COMPLIANCE.md)**: PWA architecture compliance report
 

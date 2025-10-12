@@ -482,5 +482,5 @@ See also: [[Tomorrow's Plan]]
 For issues or questions:
 
 1. Check this guide first
-2. Review [BRAIN_DUMP_SPECS.md](./BRAIN_DUMP_SPECS.md) for technical details
-3. Open issue on GitHub with `brain-dump` label
+2. Review [NOTES_SPECS.md](./NOTES_SPECS.md) for technical details
+3. Open issue on GitHub with `notes` label

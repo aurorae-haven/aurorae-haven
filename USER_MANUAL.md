@@ -678,8 +678,8 @@ Add a context menu item when right-clicking in the editor:
 
 ## Additional Resources
 
-- **[Brain Dump Specifications](./docs/BRAIN_DUMP_SPECS.md)**: Technical implementation details
-- **[Brain Dump Usage Guide](./docs/BRAIN_DUMP_USAGE.md)**: Feature walkthrough
+- **[Notes Specifications](./docs/NOTES_SPECS.md)**: Technical implementation details
+- **[Notes Usage Guide](./docs/NOTES_USAGE.md)**: Feature walkthrough
 - **[KaTeX Documentation](https://katex.org/docs/supported.html)**: Full LaTeX command reference
 - **[GitHub Flavored Markdown Spec](https://github.github.com/gfm/)**: Complete GFM specification
 - **[WCAG 2.2 Guidelines](https://www.w3.org/WAI/WCAG22/quickref/)**: Web accessibility standards
