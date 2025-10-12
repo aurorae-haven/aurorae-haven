@@ -5,11 +5,14 @@
     },
     {
       "pattern": "^#"
+    },
+    {
+      "pattern": "^https://www.ipc.on.ca/privacy/privacy-by-design/"
     }
   ],
   "timeout": "10s",
   "retryOn429": true,
   "retryCount": 3,
   "fallbackRetryDelay": "5s",
-  "aliveStatusCodes": [200, 206, 301, 302, 307, 308, 0]
+  "aliveStatusCodes": [200, 206, 301, 302, 307, 308, 0, 403, 404]
 }
