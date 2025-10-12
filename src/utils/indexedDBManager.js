@@ -202,6 +202,9 @@ export async function putBatch(storeName, items) {
     const transaction = db.transaction(storeName, 'readwrite')
     const store = transaction.objectStore(storeName)
     // Pre-allocate results array to maintain input order across async operations.
+    // This is necessary because IndexedDB requests complete asynchronously and may finish out of order.
+    // By assigning each result to its corresponding index, we ensure the output array matches the input order.
+    // Using Promise.all or similar would not guarantee this ordering.
     const results = new Array(items.length)
 
     let completed = 0
