@@ -73,4 +73,20 @@ describe('reloadPageAfterDelay', () => {
     
     setTimeoutSpy.mockRestore()
   })
+
+  test('gracefully handles absence of window without throwing', () => {
+    // Save original window reference
+    const originalWindow = globalThis.window
+    
+    // Temporarily remove window to simulate non-browser environment
+    delete globalThis.window
+    
+    // Function should not throw when window is undefined
+    expect(() => {
+      reloadPageAfterDelay(1000, undefined)
+    }).not.toThrow()
+    
+    // Restore original window
+    globalThis.window = originalWindow
+  })
 })
