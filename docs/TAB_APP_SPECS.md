@@ -476,7 +476,7 @@ Each specification should be verified against the following checklist:
 
 ## Related Documentation
 
-- [Notes Specifications (TAB-NOT)](./NOTES_SPECS.md)
+- [Notes Specifications (TAB-BDP)](./NOTES_SPECS.md)
 - [Tasks Specifications (TAB-TSK)](./TASKS_SPECS.md)
 - [ARC-APP Compliance Report](./ARC-APP-COMPLIANCE.md)
 - [Architecture Compliance (ARC-DAT)](./ARC-DAT-COMPLIANCE.md)
