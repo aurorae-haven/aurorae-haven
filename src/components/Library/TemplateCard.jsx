@@ -6,7 +6,10 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { createLogger } from '../../utils/logger'
 import { sanitizeFilename } from '../../utils/fileHelpers'
+
+const logger = createLogger('TemplateCard')
 
 function TemplateCard({
   template,
@@ -49,8 +52,8 @@ function TemplateCard({
       a.download = `template-${sanitizeFilename(template.title, MAX_FILENAME_LEN)}.json`
       a.click()
       URL.revokeObjectURL(url)
-    } catch (error) {
-      console.error('Error exporting template:', error)
+    } catch (err) {
+      logger.error('Error exporting template:', err)
     }
   }
 

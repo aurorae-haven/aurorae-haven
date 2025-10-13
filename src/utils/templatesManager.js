@@ -7,6 +7,9 @@ import { openDB, isIndexedDBAvailable } from './indexedDBManager'
 import { generateSecureUUID } from './uuidGenerator'
 import { validateTemplateData } from './validation'
 import semver from 'semver'
+import { createLogger } from './logger'
+
+const logger = createLogger('Templates')
 
 const TEMPLATES_STORE = 'templates'
 
@@ -33,7 +36,7 @@ export async function initializeTemplates() {
 
   const db = await openDB()
   if (!db.objectStoreNames.contains(TEMPLATES_STORE)) {
-    console.warn('Templates store not found in IndexedDB')
+    logger.warn('Templates store not found in IndexedDB')
   }
 }
 
@@ -52,7 +55,7 @@ export async function getAllTemplates() {
     await tx.done
     return templates || []
   } catch (error) {
-    console.error('Error loading templates:', error)
+    logger.error('Error loading templates:', error)
     return []
   }
 }
@@ -73,7 +76,7 @@ export async function getTemplate(templateId) {
     await tx.done
     return template || null
   } catch (error) {
-    console.error('Error loading template:', error)
+    logger.error('Error loading template:', error)
     return null
   }
 }
@@ -123,7 +126,7 @@ export async function saveTemplate(template) {
     await tx.done
     return templateData.id
   } catch (error) {
-    console.error('Error saving template:', error)
+    logger.error('Error saving template:', error)
     throw error
   }
 }
@@ -165,7 +168,7 @@ export async function updateTemplate(templateId, updates) {
     await store.put(updated)
     await tx.done
   } catch (error) {
-    console.error('Error updating template:', error)
+    logger.error('Error updating template:', error)
     throw error
   }
 }
@@ -187,7 +190,7 @@ export async function deleteTemplate(templateId) {
     await store.delete(templateId)
     await tx.done
   } catch (error) {
-    console.error('Error deleting template:', error)
+    logger.error('Error deleting template:', error)
     throw error
   }
 }

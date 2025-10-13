@@ -1,5 +1,8 @@
 // TAB-BDP-FIL-01: OPFS file attachment management
 // Implements Origin Private File System storage for secure file attachments
+import { createLogger } from '../logger'
+
+const logger = createLogger('FileAttachments')
 
 /**
  * File Attachments Manager
@@ -19,7 +22,7 @@ export class FileAttachments {
    */
   async initialize() {
     if (!this.opfsSupported) {
-      console.warn('OPFS not supported in this browser')
+      logger.warn('OPFS not supported in this browser')
       return false
     }
 
@@ -27,7 +30,7 @@ export class FileAttachments {
       this.dirHandle = await navigator.storage.getDirectory()
       return true
     } catch (e) {
-      console.error('Failed to initialize OPFS:', e)
+      logger.error('Failed to initialize OPFS:', e)
       return false
     }
   }
@@ -65,7 +68,7 @@ export class FileAttachments {
         timestamp: Date.now()
       }
     } catch (e) {
-      console.error('Failed to save file:', e)
+      logger.error('Failed to save file:', e)
       throw e
     }
   }
@@ -85,7 +88,7 @@ export class FileAttachments {
       const file = await fileHandle.getFile()
       return file
     } catch (e) {
-      console.error('Failed to get file:', e)
+      logger.error('Failed to get file:', e)
       throw e
     }
   }
@@ -104,7 +107,7 @@ export class FileAttachments {
       await this.dirHandle.removeEntry(fileName)
       return true
     } catch (e) {
-      console.error('Failed to delete file:', e)
+      logger.error('Failed to delete file:', e)
       throw e
     }
   }
@@ -133,7 +136,7 @@ export class FileAttachments {
       }
       return files
     } catch (e) {
-      console.error('Failed to list files:', e)
+      logger.error('Failed to list files:', e)
       return []
     }
   }

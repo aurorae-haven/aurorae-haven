@@ -6,6 +6,9 @@ import {
 } from './indexedDBManager'
 import { getDataTemplate } from './exportData'
 import { MS_PER_DAY } from './timeConstants'
+import { createLogger } from './logger'
+
+const logger = createLogger('AutoBackup')
 
 // ARC-DAT-03: Automatic backup configuration
 const BACKUP_INTERVAL = MS_PER_DAY // 24 hours
@@ -19,7 +22,7 @@ const LAST_BACKUP_KEY = 'aurorae_last_backup'
  */
 export async function initAutoBackup() {
   if (!isIndexedDBAvailable()) {
-    console.log('Auto-backup: IndexedDB not available, skipping auto-backup')
+    logger.log('IndexedDB not available, skipping auto-backup')
     return
   }
 
@@ -33,8 +36,8 @@ export async function initAutoBackup() {
       const timeSinceBackup = now - lastBackupTime
 
       if (timeSinceBackup < BACKUP_INTERVAL) {
-        console.log(
-          `Auto-backup: Next backup in ${Math.round((BACKUP_INTERVAL - timeSinceBackup) / (60 * 60 * 1000))} hours`
+        logger.log(
+          `Next backup in ${Math.round((BACKUP_INTERVAL - timeSinceBackup) / (60 * 60 * 1000))} hours`
         )
         return
       }
@@ -43,7 +46,7 @@ export async function initAutoBackup() {
     // Perform automatic backup
     await performAutoBackup()
   } catch (e) {
-    console.error('Auto-backup initialization failed:', e)
+    logger.error('Initialization failed:', e)
   }
 }
 
@@ -57,9 +60,9 @@ async function performAutoBackup() {
     await saveBackup(data)
     await cleanOldBackups(MAX_BACKUPS)
     localStorage.setItem(LAST_BACKUP_KEY, Date.now().toString())
-    console.log('Auto-backup completed successfully')
+    logger.log('Backup completed successfully')
   } catch (e) {
-    console.error('Auto-backup failed:', e)
+    logger.error('Backup failed:', e)
   }
 }
 
@@ -77,7 +80,7 @@ export async function triggerManualBackup() {
     await performAutoBackup()
     return true
   } catch (e) {
-    console.error('Manual backup failed:', e)
+    logger.error('Manual backup failed:', e)
     throw new Error('Manual backup failed: ' + e.message)
   }
 }

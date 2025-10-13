@@ -1,6 +1,9 @@
 // IndexedDB Manager for Aurorae Haven
 // Implements ARC-DAT-01: Structured data storage in IndexedDB
 // Implements ARC-DAT-02: File attachment references
+import { createLogger } from './logger'
+
+const logger = createLogger('IndexedDB')
 
 const DB_NAME = 'aurorae_haven_db'
 const DB_VERSION = 2
@@ -541,7 +544,7 @@ export async function exportAllData() {
     const tasksStr = localStorage.getItem('aurorae_tasks')
     data.auroraeTasksData = tasksStr ? JSON.parse(tasksStr) : null
   } catch (e) {
-    console.warn('Failed to parse aurorae_tasks during export:', e)
+    logger.warn('Failed to parse aurorae_tasks during export:', e)
     data.auroraeTasksData = null
   }
 

@@ -22,6 +22,9 @@ import ContextMenu from '../components/Notes/ContextMenu'
 import ConfirmModal from '../components/common/ConfirmModal'
 import { useNotesState } from '../hooks/useNotesState'
 import { useToast } from '../hooks/useToast'
+import { createLogger } from '../utils/logger'
+
+const logger = createLogger('Notes')
 
 // Configure marked once at module level to avoid reconfiguration on re-renders
 // Error handling for KaTeX extension to gracefully handle load failures
@@ -33,7 +36,7 @@ try {
     })
   )
 } catch (error) {
-  console.warn(
+  logger.warn(
     'KaTeX extension failed to load. LaTeX rendering will be disabled.',
     error
   )
@@ -54,7 +57,7 @@ try {
     marked.use(markedOptions)
   }
 } catch (error) {
-  console.warn('Failed to configure marked options:', error)
+  logger.warn('Failed to configure marked options:', error)
 }
 
 function Notes() {

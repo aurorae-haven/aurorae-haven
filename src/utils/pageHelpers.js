@@ -6,6 +6,9 @@ import {
   IMPORT_SUCCESS_MESSAGE
 } from './dataManager'
 import { generateSecureUUID } from './uuidGenerator'
+import { createLogger } from './logger'
+
+const logger = createLogger('PageHelpers')
 ;(function () {
   let exported = false
   let suppressPrompt = false
@@ -40,7 +43,7 @@ import { generateSecureUUID } from './uuidGenerator'
       // Use shared utility function for page reload
       reloadPageAfterDelay(1500)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       toast('Import failed: ' + e.message)
     }
   }

@@ -1,5 +1,8 @@
 // TAB-BDP-VSH-01: Version history management
 // Implements auto-save snapshots, diff viewer, and restore functionality
+import { createLogger } from '../logger'
+
+const logger = createLogger('VersionHistory')
 
 /**
  * Version History Manager
@@ -45,7 +48,7 @@ export class VersionHistory {
       const data = localStorage.getItem(this.storageKey)
       return data ? JSON.parse(data) : []
     } catch (e) {
-      console.error('Error loading version history:', e)
+      logger.error('Error loading version history:', e)
       return []
     }
   }

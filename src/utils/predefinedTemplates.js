@@ -14,6 +14,9 @@
  */
 
 import { saveTemplate, getAllTemplates } from './templatesManager'
+import { createLogger } from './logger'
+
+const logger = createLogger('PredefinedTemplates')
 
 // Import all predefined template files
 // When adding a new template, add its import here
@@ -116,9 +119,9 @@ export async function seedPredefinedTemplates() {
     }
 
     return results
-  } catch (error) {
-    console.error('Failed to seed predefined templates:', error)
-    throw error
+  } catch (err) {
+    logger.error('Failed to seed predefined templates:', err)
+    throw err
   }
 }
 
@@ -134,8 +137,8 @@ export async function arePredefinedTemplatesSeeded() {
 
     // Check if any predefined template exists
     return existingTemplates.some((t) => predefinedIds.has(t.id))
-  } catch (error) {
-    console.error('Failed to check predefined templates:', error)
+  } catch (err) {
+    logger.error('Failed to check predefined templates:', err)
     return false
   }
 }
