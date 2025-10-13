@@ -46,8 +46,10 @@ export default defineConfig(({ mode }) => {
           ],
           // Configure navigation fallback to serve index.html for all navigation requests
           // This fixes the 404 issue when refreshing non-root pages
-          // Using relative path so service worker scope resolves correctly across environments
-          navigateFallback: 'index.html',
+          // Use base path to construct absolute fallback URL
+          // For production: '/aurorae-haven/' -> '/aurorae-haven/index.html'
+          // For offline: './' -> './index.html' or '/' -> '/index.html'
+          navigateFallback: base === './' ? './index.html' : `${base}index.html`,
           // Allow all navigation requests to be handled by the fallback
           // This works for both production (/aurorae-haven/*) and offline (/*) because
           // the service worker is registered with the correct scope
