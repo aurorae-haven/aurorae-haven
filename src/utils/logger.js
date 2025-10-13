@@ -1,28 +1,30 @@
 // Logger utility for Aurorae Haven
 // Provides conditional logging based on environment and user settings
+//
+// DESIGN NOTE: This module has no imports to avoid circular dependencies.
+// It uses a global flag (window.__AURORAE_DEBUG_MODE__) set by settingsManager
+// to determine if debug logging should be enabled.
 
 /* eslint-disable no-console */
 // This file is the logger utility itself, so it needs to use console
 
-import { getSetting } from './settingsManager.js'
-
 /**
  * Check if logging should be enabled
- * Logs are shown when debugMode is enabled in settings or in development
+ * Logs are shown when debugMode is enabled via global flag or in development
  * @returns {boolean} True if logging is enabled
  */
 function isLoggingEnabled() {
-  // In production, check user's debug mode setting
-  try {
-    const debugMode = getSetting('advanced.debugMode')
-    return debugMode === true
-  } catch {
-    // If settings aren't available, enable logging in development, disable in production
-    if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
-      return true
-    }
-    return false
+  // Check global debug flag (set by settings manager)
+  if (typeof window !== 'undefined' && window.__AURORAE_DEBUG_MODE__) {
+    return true
   }
+
+  // Enable in development mode
+  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
+    return true
+  }
+
+  return false
 }
 
 /**
