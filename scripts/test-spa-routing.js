@@ -13,7 +13,7 @@ import express from 'express'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { existsSync } from 'fs'
-
+import rateLimit from 'express-rate-limit'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
@@ -22,6 +22,16 @@ const BASE_PATH = '/aurorae-haven'
 const DIST_DIR = join(__dirname, '..', 'dist')
 
 const app = express()
+
+// Rate limiter: max 100 requests per 15 minutes per IP
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  standardHeaders: true, // Return rate limit info in the RateLimit-* headers
+  legacyHeaders: false, // Disable the X-RateLimit-* headers
+})
+
+app.use(limiter)
 
 // Log all requests for debugging
 app.use((req, res, next) => {
