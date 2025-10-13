@@ -28,6 +28,19 @@ When pressing F5 on a client-side route:
 3. Service worker wasn't explicitly configured with navigation fallback
 4. GitHub Pages 404.html mechanism worked but was a workaround
 
+### Issue 3: Dual Service Worker Registration (Discovered During Fix)
+
+The application had TWO service workers attempting to register:
+
+1. **VitePWA-generated** `sw.js` - Modern, with proper navigation fallback via Workbox
+2. **Manual** `public/service-worker.js` - Old implementation without navigation fallback
+
+**Problems:**
+- Both service workers tried to register simultaneously
+- The manual one (`/service-worker.js`) would sometimes register first, preventing the VitePWA one from working
+- The manual service worker lacked the `navigateFallback` configuration needed for SPA routing
+- This caused inconsistent behavior where F5 refresh worked sometimes (when VitePWA SW registered) but not always (when manual SW registered first)
+
 ## Solution Implemented
 
 ### 1. Modified `reloadPageAfterDelay()` Function
@@ -93,6 +106,23 @@ workbox: {
 - Added tests for GitHub Pages base path handling
 - Added tests for default root path behavior
 
+### 5. Removed Dual Service Worker Registration
+
+**Phase 2 Fix** - Eliminated the conflict between manual and VitePWA service workers:
+
+**Removed Files:**
+- `public/service-worker.js` - Manual service worker without navigation fallback
+- `src/serviceWorkerRegistration.js` - Manual registration logic
+
+**Updated Files:**
+- `src/index.jsx` - Removed manual `serviceWorkerRegistration.register()` call
+- `scripts/validate-pwa.cjs` - Updated to validate VitePWA configuration instead
+
+**Result:**
+- Only VitePWA-generated service worker (`sw.js`) is now used
+- Consistent behavior across all deployments
+- Proper navigation fallback guaranteed
+
 ## How It Works Now
 
 ### Scenario 1: JSON Import
@@ -152,11 +182,19 @@ curl -I http://localhost:4173/aurorae-haven/routines  # 200 OK ✓
 
 ## Files Changed
 
+### Phase 1: Initial Fix (Previous Commit)
 1. `src/utils/importData.js` - Modified reload function
 2. `src/index.jsx` - Updated caller with base URL
 3. `src/utils/pageHelpers.js` - Updated legacy caller
 4. `src/__tests__/reloadPageAfterDelay.test.js` - Updated tests
 5. `vite.config.js` - Added service worker config
+
+### Phase 2: Remove Dual Service Worker Registration (Current Fix)
+6. **REMOVED** `public/service-worker.js` - Old manual service worker (conflicted with VitePWA)
+7. **REMOVED** `src/serviceWorkerRegistration.js` - Manual registration code (no longer needed)
+8. `src/index.jsx` - Removed manual service worker registration call
+9. `scripts/validate-pwa.cjs` - Updated to validate VitePWA configuration instead of manual files
+10. `package.json` - Updated validate-pwa script to use .cjs extension
 
 ## Backwards Compatibility
 
