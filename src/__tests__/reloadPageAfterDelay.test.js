@@ -9,11 +9,11 @@ describe('reloadPageAfterDelay', () => {
   let reloadMock
 
   beforeEach(() => {
-    // Create a mock window object with location.assign
+    // Create a mock window object with location.reload
     reloadMock = jest.fn()
     mockWindow = {
       location: {
-        assign: reloadMock
+        reload: reloadMock
       }
     }
     jest.useFakeTimers()
@@ -24,46 +24,42 @@ describe('reloadPageAfterDelay', () => {
     jest.useRealTimers()
   })
 
-  test('navigates to base URL after default delay of 1500ms', () => {
-    reloadPageAfterDelay(undefined, mockWindow, '/')
+  test('reloads page after default delay of 1500ms', () => {
+    reloadPageAfterDelay(undefined, mockWindow)
 
-    // Should not navigate immediately
+    // Should not reload immediately
     expect(reloadMock).not.toHaveBeenCalled()
 
     // Fast-forward time by 1500ms
     jest.advanceTimersByTime(1500)
 
-    // Should navigate to base URL after delay
+    // Should reload after delay
     expect(reloadMock).toHaveBeenCalledTimes(1)
-    expect(reloadMock).toHaveBeenCalledWith('/')
   })
 
-  test('navigates to base URL after custom delay', () => {
-    reloadPageAfterDelay(3000, mockWindow, '/aurorae-haven/')
+  test('reloads page after custom delay', () => {
+    reloadPageAfterDelay(3000, mockWindow)
 
-    // Should not navigate before delay
+    // Should not reload before delay
     jest.advanceTimersByTime(2999)
     expect(reloadMock).not.toHaveBeenCalled()
 
-    // Should navigate after delay
+    // Should reload after delay
     jest.advanceTimersByTime(1)
     expect(reloadMock).toHaveBeenCalledTimes(1)
-    expect(reloadMock).toHaveBeenCalledWith('/aurorae-haven/')
   })
 
   test('can be called multiple times independently', () => {
-    reloadPageAfterDelay(1000, mockWindow, '/')
-    reloadPageAfterDelay(2000, mockWindow, '/aurorae-haven/')
+    reloadPageAfterDelay(1000, mockWindow)
+    reloadPageAfterDelay(2000, mockWindow)
 
-    // First navigation at 1000ms
+    // First reload at 1000ms
     jest.advanceTimersByTime(1000)
     expect(reloadMock).toHaveBeenCalledTimes(1)
-    expect(reloadMock).toHaveBeenNthCalledWith(1, '/')
 
-    // Second navigation at 2000ms (total)
+    // Second reload at 2000ms (total)
     jest.advanceTimersByTime(1000)
     expect(reloadMock).toHaveBeenCalledTimes(2)
-    expect(reloadMock).toHaveBeenNthCalledWith(2, '/aurorae-haven/')
   })
 
   test('schedules reload with default delay when no window object provided', () => {
@@ -79,16 +75,16 @@ describe('reloadPageAfterDelay', () => {
   })
 
   test('gracefully handles absence of window without throwing', () => {
-    // Pass an object without location.assign to simulate incompatible environment
+    // Pass an object without location.reload to simulate incompatible environment
     const invalidWindow = { location: {} }
     
     // Create setTimeout spy before invocation to avoid redundant calls
     const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
     
-    // Function should not throw when window.location.assign is not available
+    // Function should not throw when window.location.reload is not available
     // and setTimeout should not be called
     expect(() => {
-      reloadPageAfterDelay(1000, invalidWindow, '/')
+      reloadPageAfterDelay(1000, invalidWindow)
     }).not.toThrow()
     
     expect(setTimeoutSpy).not.toHaveBeenCalled()
@@ -101,7 +97,7 @@ describe('reloadPageAfterDelay', () => {
     const customSetTimeout = jest.fn()
     const windowWithCustomSetTimeout = {
       location: {
-        assign: jest.fn()
+        reload: jest.fn()
       },
       setTimeout: customSetTimeout
     }
@@ -109,34 +105,12 @@ describe('reloadPageAfterDelay', () => {
     // Spy on globalThis.setTimeout to verify it's NOT called
     const globalSetTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
     
-    reloadPageAfterDelay(2000, windowWithCustomSetTimeout, '/')
+    reloadPageAfterDelay(2000, windowWithCustomSetTimeout)
     
     // Verify that the custom setTimeout was called, not the global one
     expect(customSetTimeout).toHaveBeenCalledWith(expect.any(Function), 2000)
     expect(globalSetTimeoutSpy).not.toHaveBeenCalled()
     
     globalSetTimeoutSpy.mockRestore()
-  })
-
-  test('defaults to root path when no baseUrl provided', () => {
-    reloadPageAfterDelay(1500, mockWindow)
-
-    // Fast-forward time
-    jest.advanceTimersByTime(1500)
-
-    // Should navigate to default root path
-    expect(reloadMock).toHaveBeenCalledTimes(1)
-    expect(reloadMock).toHaveBeenCalledWith('/')
-  })
-
-  test('handles GitHub Pages base path correctly', () => {
-    reloadPageAfterDelay(1500, mockWindow, '/aurorae-haven/')
-
-    // Fast-forward time
-    jest.advanceTimersByTime(1500)
-
-    // Should navigate to GitHub Pages base path
-    expect(reloadMock).toHaveBeenCalledTimes(1)
-    expect(reloadMock).toHaveBeenCalledWith('/aurorae-haven/')
   })
 })

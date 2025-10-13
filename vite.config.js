@@ -44,9 +44,6 @@ export default defineConfig(({ mode }) => {
           globPatterns: [
             '**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp,woff,woff2}'
           ],
-          // Configure navigation fallback for SPA routing with base path
-          navigateFallback: 'index.html',
-          navigateFallbackDenylist: [/^\/api/, /\.[^/]+$/],
           // Runtime caching for external resources
           runtimeCaching: [
             {
