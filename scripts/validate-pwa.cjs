@@ -113,7 +113,7 @@ function validateIndexHTML() {
   const content = fs.readFileSync(indexPath, 'utf8')
 
   // Check for manifest link
-  // Note: VitePWA plugin automatically injects the manifest link during build
+  // (Manifest link is injected during build by VitePWA plugin; see output below)
   if (content.includes('rel="manifest"')) {
     console.log('✅ index.html links to manifest')
   } else {
