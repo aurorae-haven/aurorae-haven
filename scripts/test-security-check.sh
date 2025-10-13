@@ -2,7 +2,7 @@
 # Test script for CI/CD security check logic
 # This script validates that the security vulnerability detection works correctly
 
-set -uo pipefail
+set -euo pipefail
 
 echo "🔍 Testing CI/CD Security Check Logic"
 echo "========================================"
