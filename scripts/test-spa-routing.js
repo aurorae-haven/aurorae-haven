@@ -14,11 +14,14 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { existsSync } from 'fs'
 import rateLimit from 'express-rate-limit'
+import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../src/utils/configConstants.js'
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const PORT = process.env.PORT || 8080
-const BASE_PATH = '/aurorae-haven'
+// Remove trailing slash for use as base path in Express
+const BASE_PATH = DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1)
 const DIST_DIR = join(__dirname, '..', 'dist')
 
 const app = express()
@@ -73,7 +76,7 @@ app.listen(PORT, () => {
   console.log('━'.repeat(60))
   console.log('')
   console.log('📝 Test Instructions:')
-  console.log('1. Open http://localhost:8080/aurorae-haven/ in your browser')
+  console.log(`1. Open http://localhost:${PORT}${BASE_PATH}/ in your browser`)
   console.log('2. Navigate to different pages (Schedule, Tasks, etc.)')
   console.log('3. Press F5 to refresh the page')
   console.log('4. Check the browser console for [404.html] and [RedirectHandler] logs')
