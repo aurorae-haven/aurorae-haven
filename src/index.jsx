@@ -8,8 +8,6 @@ import {
   Navigate,
   useNavigate
 } from 'react-router-dom'
-import * as serviceWorkerRegistration from './serviceWorkerRegistration'
-
 // Styles
 import './assets/styles/styles.css'
 
@@ -147,12 +145,5 @@ root.render(
   </React.StrictMode>
 )
 
-// Register service worker for PWA functionality
-serviceWorkerRegistration.register({
-  onSuccess: () => {
-    console.log('[PWA] App is ready for offline use!')
-  },
-  onUpdate: () => {
-    console.log('[PWA] New version available! Please refresh to update.')
-  }
-})
+// Service worker is automatically registered by vite-plugin-pwa via registerSW.js
+// The plugin generates sw.js with proper navigation fallback configuration
