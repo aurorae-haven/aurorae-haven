@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Test script for CI/CD security check logic
 # This script validates that the security vulnerability detection works correctly
 
