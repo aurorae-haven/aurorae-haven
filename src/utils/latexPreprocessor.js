@@ -48,7 +48,7 @@ export function preprocessLatex(content) {
   // For display math, we preserve the opening/closing $$ on their own lines
   // but add \\ between content lines
   content = content.replace(
-    /\$\$((?:[^$]|\n)+?)\$\$/g,
+    /\$\$([^$]+?)\$\$/g,
     (match, mathContent) => {
       // Split by newlines, trim, and filter empty lines
       const lines = mathContent
