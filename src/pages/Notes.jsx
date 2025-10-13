@@ -5,6 +5,7 @@ import markedKatex from 'marked-katex-extension'
 import DOMPurify from 'dompurify'
 import 'katex/dist/katex.min.css'
 import { configureSanitization } from '../utils/sanitization'
+import { preprocessLatex } from '../utils/latexPreprocessor'
 import {
   createNewNote,
   createNoteFromImport,
@@ -100,10 +101,15 @@ function Notes() {
   // Security: Content is sanitized with DOMPurify before rendering
   useEffect(() => {
     const renderPreview = () => {
+      // Preprocess LaTeX to handle newlines within math blocks
+      const preprocessedContent = preprocessLatex(content)
       // Use enhanced sanitization configuration to prevent XSS
       const sanitizeConfig = configureSanitization(DOMPurify)
       // Parse markdown and sanitize HTML to remove any malicious content
-      const html = DOMPurify.sanitize(marked.parse(content), sanitizeConfig)
+      const html = DOMPurify.sanitize(
+        marked.parse(preprocessedContent),
+        sanitizeConfig
+      )
       setPreview(html)
     }
     renderPreview()

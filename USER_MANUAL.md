@@ -201,7 +201,11 @@ $$
 1. **Test your equations**: Preview your markdown to ensure equations render correctly
 2. **Use escape characters**: If you need literal dollar signs, escape them: `\$10.00`
 3. **Keep it simple**: Complex nested equations may not render well; break them into smaller parts
-4. **Error handling**: If an equation fails to render, check for:
+4. **Multi-line equations**: Natural newlines within math blocks are automatically converted to LaTeX line breaks
+   - In `$...$` blocks: newlines become `\\` for inline multi-line equations
+   - In `$$...$$` blocks: newlines become `\\` for display multi-line equations
+   - Example: `$\n\phi = x\n\alpha = y\n$` renders as two lines
+5. **Error handling**: If an equation fails to render, check for:
    - Unmatched braces `{}`
    - Missing backslashes before commands
    - Unsupported LaTeX commands (KaTeX supports most common commands)
