@@ -119,7 +119,7 @@ export async function seedPredefinedTemplates() {
     return results
   } catch (err) {
     error('Failed to seed predefined templates:', err)
-    throw error
+    throw err
   }
 }
 
