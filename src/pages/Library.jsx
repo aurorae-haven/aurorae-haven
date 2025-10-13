@@ -216,8 +216,8 @@ function Library() {
           : 'Template applied — Routine created'
       )
     } catch (error) {
-      logger.error('Failed to apply template:', error)
-      showToastNotification('Failed to apply template')
+      logger.error('Failed to use template:', error)
+      showToastNotification('Failed to use template')
     }
   }
 
