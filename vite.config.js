@@ -15,6 +15,11 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
+        // Automatically inject service worker registration code into the build
+        // This ensures immediate SW registration when the page loads, which is
+        // critical for fixing 404 refresh errors. The 'auto' mode generates
+        // registerSW.js that registers the service worker on page load, allowing
+        // subsequent page refreshes to be intercepted by the SW and served from cache.
         injectRegister: 'auto',
         includeAssets: ['icon-192x192.svg', 'icon-512x512.svg'],
         manifest: {

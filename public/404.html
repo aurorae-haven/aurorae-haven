@@ -15,6 +15,14 @@
       // and GitHub Pages serves this 404.html file.
 
       (function() {
+        // Delay before redirect to ensure sessionStorage write completes
+        // This value was chosen to prevent race conditions where the redirect
+        // happens before sessionStorage.setItem() completes, which would cause
+        // the redirectPath to be lost and result in 404 errors after redirect.
+        // 10ms is sufficient for sessionStorage operations while remaining
+        // imperceptible to users (well below the 100ms perception threshold).
+        var REDIRECT_DELAY_MS = 10
+
         // Debug logging
         console.log('[404.html] Current location:', location.href)
         console.log('[404.html] Pathname:', location.pathname)
@@ -46,13 +54,12 @@
         }
 
         console.log('[404.html] Computed base path:', basePath)
-        console.log('[404.html] Redirecting...')
+        console.log('[404.html] Redirecting in ' + REDIRECT_DELAY_MS + 'ms...')
 
-        // Use a small delay to ensure sessionStorage is written
-        // This prevents race conditions with the redirect
+        // Use the delay to ensure sessionStorage is written before redirect
         setTimeout(function() {
           location.replace(basePath)
-        }, 10)
+        }, REDIRECT_DELAY_MS)
       })()
     </script>
   </head>
