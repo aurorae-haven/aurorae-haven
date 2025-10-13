@@ -280,12 +280,15 @@ export async function instantiateTemplatesBatch(templates) {
     // Create all tasks after validation passes
     for (const template of taskTemplates) {
       const quadrant = template.quadrant || 'urgent_important'
+      const dueDate = template.dueOffset
+        ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
+        : null
       const task = {
         id: generateSecureUUID(),
         text: template.title,
         completed: false,
         createdAt: new Date().toISOString(),
-        dueDate: template.dueOffset ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString() : null,
+        dueDate: dueDate,
         completedAt: null
       }
 
