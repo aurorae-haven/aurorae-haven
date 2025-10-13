@@ -169,6 +169,8 @@ if ('serviceWorker' in navigator) {
           if (success) {
             console.log('[ServiceWorker] Successfully unregistered old SW')
           }
+        }).catch((error) => {
+          console.error('[ServiceWorker] Failed to unregister SW:', error)
         })
       } else {
         console.log('[ServiceWorker] SW scope is correct, keeping it')
@@ -196,6 +198,6 @@ if ('serviceWorker' in navigator) {
     console.log('[ServiceWorker] Scope:', registration.scope)
     console.log('[ServiceWorker] Active SW:', registration.active?.scriptURL)
   }).catch((error) => {
-    console.log('[ServiceWorker] No service worker is ready yet:', error.message)
+    console.error('[ServiceWorker] No service worker is ready yet:', error.message)
   })
 }
