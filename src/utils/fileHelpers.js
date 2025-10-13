@@ -24,7 +24,7 @@ export function sanitizeFilename(text, maxLength = 30) {
     return 'untitled'
   }
 
-  // Remove control characters (ASCII 0-31) and DEL (127)
+    // Remove control characters (ASCII 0-31) and DEL (127)
   // Control characters (ASCII 0-31 and DEL) are dangerous in filenames because they can cause issues with file system operations, display, and may pose security risks.
   // eslint-disable-next-line no-control-regex -- Intentionally using control characters in regex to sanitize filenames
   let sanitized = text.replace(/[\u0000-\u001F\u007F]/g, '')
