@@ -167,11 +167,4 @@ if ('serviceWorker' in navigator) {
     console.log('[ServiceWorker] Active SW:', registration.active?.scriptURL)
   })
   
-  navigator.serviceWorker.getRegistration().then((registration) => {
-    if (registration) {
-      console.log('[ServiceWorker] Current registration:', registration)
-    } else {
-      console.log('[ServiceWorker] No service worker registered yet')
-    }
-  })
 }
