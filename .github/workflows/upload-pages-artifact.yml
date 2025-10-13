@@ -63,9 +63,9 @@ jobs:
           cat audit-report.txt
 
           # Check if there are actual vulnerabilities (not "found 0 vulnerabilities")
-          # VULN_PATTERN matches lines like "found 3 vulnerabilities" (i.e., at least one vulnerability found)
-          VULN_PATTERN="found [1-9][0-9]* vulnerabilities"
-          if grep -qE "$VULN_PATTERN" audit-report.txt; then
+          # NONZERO_VULN_PATTERN matches lines like "found 3 vulnerabilities" (i.e., at least one vulnerability found)
+          NONZERO_VULN_PATTERN="found [1-9][0-9]* vulnerabilities"
+          if grep -qE "$NONZERO_VULN_PATTERN" audit-report.txt; then
             echo "⚠️ Security vulnerabilities detected!"
 
             # Check for known acceptable vulnerabilities (webpack-dev-server is dev-only)
