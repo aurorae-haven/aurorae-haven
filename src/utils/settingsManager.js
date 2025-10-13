@@ -48,7 +48,6 @@ export function getSettings() {
   } catch (e) {
     logger.error('Failed to load settings:', e)
   }
-  
   return { ...DEFAULT_SETTINGS }
 }
 
