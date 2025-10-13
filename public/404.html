@@ -20,10 +20,23 @@
         location.pathname + location.search + location.hash
       )
 
-      // Compute the base path (directory containing this 404.html) to redirect to index.html
-      // Example: /aurorae-haven/schedule -> /aurorae-haven/
-      var pathSegments = location.pathname.split('/').slice(0, -1)
-      var basePath = location.origin + pathSegments.join('/') + '/'
+      // Compute the base path by detecting the repository name from the pathname
+      // For GitHub Pages project sites, the URL structure is: /repo-name/route
+      // We need to extract 'repo-name' and construct the base path
+      var pathname = location.pathname
+      var segments = pathname.split('/').filter(function(s) { return s })
+      
+      // If we have segments, assume the first one is the repository name
+      // Otherwise, default to root
+      var basePath
+      if (segments.length > 0) {
+        // For /aurorae-haven/schedule -> first segment is 'aurorae-haven'
+        // For /aurorae-haven -> first segment is 'aurorae-haven'
+        basePath = location.origin + '/' + segments[0] + '/'
+      } else {
+        // For / -> redirect to root
+        basePath = location.origin + '/'
+      }
 
       // Redirect to the base path (index.html will handle the SPA routing)
       // The React app reads redirectPath from sessionStorage and navigates to the correct route
