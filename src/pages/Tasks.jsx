@@ -4,6 +4,8 @@ import { useTasksState } from '../hooks/useTasksState'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import TaskForm from '../components/Tasks/TaskForm'
 import TaskQuadrant from '../components/Tasks/TaskQuadrant'
+import { URL_REVOKE_TIMEOUT_MS } from '../utils/timeConstants'
+import { TASK_TEXT_MAX_LENGTH } from '../utils/validationConstants'
 
 function Tasks() {
   const {
@@ -85,7 +87,7 @@ function Tasks() {
       document.body.removeChild(a)
       setTimeout(() => {
         URL.revokeObjectURL(url)
-      }, 1000)
+      }, URL_REVOKE_TIMEOUT_MS)
     } catch (err) {
       showError('Failed to export tasks: ' + err.message)
     }
@@ -151,7 +153,7 @@ function Tasks() {
             seenIds.add(task.id)
 
             // Sanitize text to prevent potential XSS (extra safety layer)
-            if (task.text.length > 1000) {
+            if (task.text.length > TASK_TEXT_MAX_LENGTH) {
               showError('Invalid tasks file: Task text exceeds maximum length.')
               return
             }
