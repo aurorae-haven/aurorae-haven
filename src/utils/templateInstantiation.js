@@ -85,7 +85,7 @@ export function instantiateTaskFromTemplate(template) {
   try {
     localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
   } catch (err) {
-    logger.error('Failed to save task', err)
+    logger.error('Failed to save task:', err)
     // Check for quota exceeded error
     if (err.name === 'QuotaExceededError' || err.code === 22) {
       throw new Error(
