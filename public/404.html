@@ -15,6 +15,47 @@
       // and GitHub Pages serves this 404.html file.
 
       (function() {
+        // Shared utility functions for redirect logic (inlined from redirectHelpers.js)
+        // These match the implementation in src/utils/redirectHelpers.js to ensure consistency
+
+        /**
+         * Build the full redirect path including pathname, search, and hash
+         * @param {string} pathname - The pathname
+         * @param {string} search - The query string
+         * @param {string} hash - The hash fragment
+         * @returns {string} The complete redirect path
+         */
+        function buildRedirectPath(pathname, search, hash) {
+          return pathname + search + hash
+        }
+
+        /**
+         * Compute the base path for GitHub Pages project site redirect
+         * @param {string} pathname - The current pathname
+         * @param {string} origin - The origin URL
+         * @returns {string} The base path to redirect to
+         */
+        function computeBasePath(pathname, origin) {
+          // Filter out empty segments from pathname
+          var pathSegments = pathname.split('/').filter(function(s) {
+            return s !== ''
+          })
+
+          // For paths like /aurorae-haven/schedule, we want /aurorae-haven/
+          // For paths like /schedule, we want /schedule/
+          // This ensures we redirect to the first path segment (the app base)
+          var basePath
+          if (pathSegments.length > 0) {
+            // Use the first segment as the base
+            basePath = origin + '/' + pathSegments[0] + '/'
+          } else {
+            // Fallback to root for empty paths
+            basePath = origin + '/'
+          }
+
+          return basePath
+        }
+
         // Delay before redirect to ensure sessionStorage write completes
         // This value was chosen to prevent race conditions where the redirect
         // happens before sessionStorage.setItem() completes, which would cause
@@ -29,7 +70,12 @@
         console.log('[404.html] Origin:', location.origin)
 
         // Store the current path (including query and hash) so the SPA can restore it after redirect
-        var redirectPath = location.pathname + location.search + location.hash
+        // Use shared utility function for consistency
+        var redirectPath = buildRedirectPath(
+          location.pathname,
+          location.search,
+          location.hash
+        )
         
         try {
           sessionStorage.setItem('redirectPath', redirectPath)
@@ -38,20 +84,8 @@
           console.error('[404.html] Failed to store redirectPath:', e)
         }
 
-        // For GitHub Pages project sites, compute the base path dynamically
-        // by removing the last segment from the pathname
-        var pathSegments = location.pathname.split('/').filter(s => s !== '')
-        
-        // For paths like /aurorae-haven/schedule, we want /aurorae-haven/
-        // For paths like /aurorae-haven/, we want /aurorae-haven/
-        var basePath
-        if (pathSegments.length > 0) {
-          // Remove the last segment (e.g., 'schedule') to get the base
-          basePath = location.origin + '/' + pathSegments[0] + '/'
-        } else {
-          // Fallback to root
-          basePath = location.origin + '/'
-        }
+        // Compute the base path to redirect to using shared utility function
+        var basePath = computeBasePath(location.pathname, location.origin)
 
         console.log('[404.html] Computed base path:', basePath)
         console.log('[404.html] Redirecting in ' + REDIRECT_DELAY_MS + 'ms...')
