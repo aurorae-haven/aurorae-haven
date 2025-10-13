@@ -110,6 +110,10 @@ function RouterApp() {
   const baseUrl = import.meta.env.BASE_URL || '/'
   const basename = baseUrl === './' ? '/' : baseUrl
 
+  console.log('[RouterApp] BASE_URL:', import.meta.env.BASE_URL)
+  console.log('[RouterApp] baseUrl:', baseUrl)
+  console.log('[RouterApp] basename for BrowserRouter:', basename)
+
   return (
     <BrowserRouter basename={basename}>
       <RedirectHandler />
