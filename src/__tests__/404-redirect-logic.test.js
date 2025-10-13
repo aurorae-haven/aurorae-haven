@@ -5,15 +5,11 @@
 
 describe('404.html Redirect Logic', () => {
   // Simulate the redirect logic from public/404.html
+  // NOTE: The 404.html now uses a hardcoded repository name for reliability
   function simulateRedirect(pathname, origin) {
-    var segments = pathname.split('/').filter(function(s) { return s })
-    
-    var basePath
-    if (segments.length > 0) {
-      basePath = origin + '/' + segments[0] + '/'
-    } else {
-      basePath = origin + '/'
-    }
+    // Hardcoded repository name (matches public/404.html)
+    var repoName = 'aurorae-haven'
+    var basePath = origin + '/' + repoName + '/'
     
     return basePath
   }
@@ -63,9 +59,10 @@ describe('404.html Redirect Logic', () => {
   })
 
   describe('root path', () => {
-    test('redirects / to / (user site root)', () => {
+    test('redirects / to /aurorae-haven/ (hardcoded repo)', () => {
+      // With hardcoded repo name, even root redirects to /aurorae-haven/
       const result = simulateRedirect('/', origin)
-      expect(result).toBe('https://aurorae-haven.github.io/')
+      expect(result).toBe('https://aurorae-haven.github.io/aurorae-haven/')
     })
   })
 
@@ -84,8 +81,8 @@ describe('404.html Redirect Logic', () => {
 
   describe('bug fix validation', () => {
     test('verifies the fix prevents redirect to root domain', () => {
-      // Before fix: /aurorae-haven -> https://aurorae-haven.github.io/ (WRONG)
-      // After fix: /aurorae-haven -> https://aurorae-haven.github.io/aurorae-haven/ (CORRECT)
+      // Now using hardcoded repository name for reliability
+      // ALL paths redirect to /aurorae-haven/ regardless of input
       
       const pathWithoutSlash = '/aurorae-haven'
       const result = simulateRedirect(pathWithoutSlash, origin)
@@ -97,24 +94,20 @@ describe('404.html Redirect Logic', () => {
       expect(result).toBe('https://aurorae-haven.github.io/aurorae-haven/')
     })
 
-    test('documents the root cause of the issue', () => {
-      // Old logic:
-      // var pathSegments = location.pathname.split('/').slice(0, -1)
-      // For '/aurorae-haven': ['', 'aurorae-haven'].slice(0, -1) = ['']
-      // [''].join('/') = '' -> redirect to root!
+    test('documents the evolution of the fix', () => {
+      // First attempt: Extract first path segment
+      // Problem: Complex logic, edge cases
       
-      // New logic:
-      // var segments = pathname.split('/').filter(s => s)
-      // For '/aurorae-haven': ['aurorae-haven']
-      // Use first segment as repo name -> /aurorae-haven/
+      // Final solution: Hardcode repository name
+      // Benefit: Simple, reliable, always redirects to correct base
       
-      const rootCause = {
-        problem: '404.html redirect logic lost base path for URLs without trailing slash',
-        symptom: 'Redirect to https://aurorae-haven.github.io/ instead of /aurorae-haven/',
-        solution: 'Extract first path segment as repository name instead of slicing'
+      const solution = {
+        approach: 'Hardcode repository name in 404.html',
+        benefit: 'Guaranteed correct redirection regardless of URL',
+        code: "var repoName = 'aurorae-haven'; var basePath = origin + '/' + repoName + '/';"
       }
       
-      expect(rootCause.solution).toBe('Extract first path segment as repository name instead of slicing')
+      expect(solution.approach).toBe('Hardcode repository name in 404.html')
     })
   })
 
