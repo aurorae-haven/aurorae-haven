@@ -242,7 +242,7 @@ describe('404.html Redirect Improvements', () => {
       // Step 3: 404.html stores the path
       sessionStorage.setItem(
         'redirectPath',
-        requestedPath + '' + '' // pathname + search + hash
+        requestedPath // pathname only; add search/hash if needed
       )
 
       // Step 4: Compute base path
