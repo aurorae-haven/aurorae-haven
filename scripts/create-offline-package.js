@@ -46,36 +46,11 @@ async function copyEmbeddedServer() {
   const nodeServerDest = join(DIST_OFFLINE_DIR, 'embedded-server.js')
   copyFileSync(nodeServerSrc, nodeServerDest)
 
-  // Copy all launcher scripts
-  const launcherTemplates = [
-    'start-aurorae-haven.bat',
-    'start-aurorae-haven.sh',
-    'start-aurorae-haven.command',
-    'start-aurorae-haven-python.bat',
-    'start-aurorae-haven-python.sh',
-    'start-aurorae-haven-python.command'
-  ]
-
-  for (const launcher of launcherTemplates) {
-    const src = join(__dirname, 'launcher-templates', launcher)
-    const dest = join(DIST_OFFLINE_DIR, launcher)
-    if (existsSync(src)) {
-      copyFileSync(src, dest)
-
-      // Make shell scripts executable on Unix-like systems
-      if (
-        launcher.endsWith('.sh') ||
-        launcher.endsWith('.command') ||
-        launcher.endsWith('.py')
-      ) {
-        try {
-          chmodSync(dest, 0o755)
-        } catch (err) {
-          // Silently ignore chmod errors on Windows
-        }
-      }
-    }
-  }
+  // Note: Launcher scripts (.bat, .sh, .command) have been removed
+  // due to security concerns in some environments. Users should manually
+  // run the embedded servers directly:
+  // - node embedded-server.js
+  // - python3 embedded-server.py
 
   // Make embedded servers executable on Unix-like systems
   try {

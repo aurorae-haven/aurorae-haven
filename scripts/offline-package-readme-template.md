@@ -4,36 +4,9 @@ Welcome to the offline version of Aurorae Haven! This package contains everythin
 
 ## Quick Start
 
-### 🚀 Easy Start (Recommended)
+### 🚀 Starting the Server
 
-Choose the launcher based on what you have installed:
-
-#### Option A: Python Launchers (Python 3 required)
-
-- **Windows**: Double-click `start-aurorae-haven-python.bat`
-- **macOS**: Double-click `start-aurorae-haven-python.command` (or run `start-aurorae-haven-python.sh` in Terminal)
-- **Linux**: Run `./start-aurorae-haven-python.sh` in Terminal
-
-#### Option B: Node.js Launchers (Node.js required)
-
-- **Windows**: Double-click `start-aurorae-haven.bat`
-- **macOS**: Double-click `start-aurorae-haven.command` (or run `start-aurorae-haven.sh` in Terminal)
-- **Linux**: Run `./start-aurorae-haven.sh` in Terminal
-
-The launcher will automatically:
-
-1. Start a local web server
-2. Open Aurorae Haven in your default browser
-3. Keep running until you close the window (press Ctrl+C to stop)
-
-**Don't have Python or Node.js?**
-
-- Python: Download from [python.org](https://www.python.org/) (free and open source)
-- Node.js: Download from [nodejs.org](https://nodejs.org/) (free and open source)
-
-### 📌 Alternative: Manual Server Setup
-
-If you prefer manual control or have issues with the launcher:
+You need to run a local web server to use this offline package. Choose one of the following options:
 
 #### Option 1: Using the Python Embedded Server
 
@@ -88,6 +61,8 @@ php -S localhost:8000
 - **manifest.webmanifest**: PWA manifest
 - **icons**: App icons for PWA installation
 - **404.html**: Fallback page for routing
+- **embedded-server.js**: Node.js server for local development
+- **embedded-server.py**: Python server for local development
 
 The package is optimized and compressed for efficient downloading.
 
@@ -125,18 +100,6 @@ All your data is stored locally in your browser:
 **Privacy**: No data is sent to external servers. Everything stays on your device.
 
 ## Troubleshooting
-
-### Launcher doesn't work
-
-**Problem**: Double-clicking the launcher does nothing or shows an error.
-
-**Solutions**:
-
-1. **Try the Python launcher** if you have Python installed: Use `start-aurorae-haven-python.*` files
-2. **Try the Node.js launcher** if you have Node.js installed: Use `start-aurorae-haven.*` files (without -python)
-3. Install Python from <https://www.python.org/> or Node.js from <https://nodejs.org/>
-4. On Linux/macOS, make the script executable: `chmod +x start-aurorae-haven-python.sh`
-5. Try running manually: `python3 embedded-server.py` or `node embedded-server.js`
 
 ### Port already in use
 
