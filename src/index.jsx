@@ -105,7 +105,7 @@ function RouterApp() {
     [showToast]
   )
 
-  // Use import.meta.env.BASE_URL for Vite (GitHub Pages project site e.g., /repo-name/)
+  // Use import.meta.env.BASE_URL for Vite (GitHub Pages project site, see DEFAULT_GITHUB_PAGES_BASE_PATH in configConstants.js)
   // For offline builds with BASE_URL='./', normalize to '/' for React Router
   const baseUrl = import.meta.env.BASE_URL || '/'
   const basename = baseUrl === './' ? '/' : baseUrl
@@ -150,7 +150,7 @@ function RouterApp() {
 }
 
 // Clean up old service workers registered at wrong scope
-// This fixes the issue where an old SW at root scope (/) interferes with the new SW at /aurorae-haven/
+// This fixes the issue where an old SW at root scope (/) interferes with the new SW at the configured base path
 if ('serviceWorker' in navigator) {
   const expectedScope = new URL(import.meta.env.BASE_URL || '/', window.location.origin).href
   console.log('[ServiceWorker] Expected scope:', expectedScope)

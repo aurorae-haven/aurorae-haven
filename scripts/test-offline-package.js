@@ -11,6 +11,7 @@ import { existsSync, mkdirSync, rmSync, readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
+import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../src/utils/configConstants.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -174,7 +175,7 @@ function validateRelativePaths() {
   }
 
   // Check for absolute GitHub Pages paths
-  const hasAbsolutePaths = content.includes('/aurorae-haven/')
+  const hasAbsolutePaths = content.includes(DEFAULT_GITHUB_PAGES_BASE_PATH)
 
   if (hasAbsolutePaths) {
     console.log('  ✗ ERROR: Found GitHub Pages absolute paths in index.html')

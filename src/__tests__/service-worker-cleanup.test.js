@@ -1,3 +1,5 @@
+import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../utils/configConstants'
+
 /**
  * @fileoverview
  * Tests for service worker cleanup logic.
@@ -29,16 +31,16 @@ describe('Service Worker Cleanup', () => {
 
   describe('Scope URL Comparison', () => {
     test('correctly identifies matching scope URLs', () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
-      const registrationScope = 'https://aurorae-haven.github.io/aurorae-haven/'
+      const registrationScope = `https://aurorae-haven.github.io${DEFAULT_GITHUB_PAGES_BASE_PATH}`
 
       expect(registrationScope).toBe(expectedScope)
     })
 
     test('correctly identifies mismatched scope URLs (root vs subpath)', () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
       const registrationScope = 'https://aurorae-haven.github.io/'
@@ -47,7 +49,7 @@ describe('Service Worker Cleanup', () => {
     })
 
     test('correctly identifies mismatched scope URLs (different subpath)', () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
       const registrationScope = 'https://aurorae-haven.github.io/old-path/'
@@ -58,7 +60,7 @@ describe('Service Worker Cleanup', () => {
 
   describe('Service Worker Unregistration Logic', () => {
     test('unregisters service worker when scope does not match', async () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
 
@@ -82,7 +84,7 @@ describe('Service Worker Cleanup', () => {
     })
 
     test('does not unregister service worker when scope matches', async () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
 
@@ -106,7 +108,7 @@ describe('Service Worker Cleanup', () => {
     })
 
     test('handles multiple registrations correctly', async () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
 
@@ -157,7 +159,7 @@ describe('Service Worker Cleanup', () => {
     })
 
     test('handles unregister failure gracefully', async () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
 
@@ -192,7 +194,7 @@ describe('Service Worker Cleanup', () => {
 
   describe('Production Scenarios', () => {
     test('GitHub Pages production: unregisters root scope SW', async () => {
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const origin = 'https://aurorae-haven.github.io'
       const expectedScope = new URL(baseUrl, origin).href
 

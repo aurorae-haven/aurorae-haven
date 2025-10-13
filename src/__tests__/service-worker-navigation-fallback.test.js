@@ -1,3 +1,5 @@
+import { DEFAULT_GITHUB_PAGES_BASE_PATH, DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH } from '../utils/configConstants'
+
 /**
  * Tests for service worker navigation fallback configuration
  * Validates that the navigation fallback URL matches the precached index.html entry
@@ -11,7 +13,7 @@ describe('Service Worker Navigation Fallback', () => {
       const navigateFallback = 'index.html'
       
       expect(navigateFallback).toBe('index.html')
-      expect(navigateFallback).not.toContain('/aurorae-haven/')
+      expect(navigateFallback).not.toContain(DEFAULT_GITHUB_PAGES_BASE_PATH)
       expect(navigateFallback).not.toContain('./')
     })
 
@@ -26,7 +28,7 @@ describe('Service Worker Navigation Fallback', () => {
     test('navigateFallback should not include base path', () => {
       // The base path is handled by the service worker's scope
       // The navigateFallback should be relative to that scope
-      const base = '/aurorae-haven/'
+      const base = DEFAULT_GITHUB_PAGES_BASE_PATH
       const navigateFallback = 'index.html'
       
       // navigateFallback should NOT include the base path
@@ -41,12 +43,12 @@ describe('Service Worker Navigation Fallback', () => {
   describe('service worker scope and registration', () => {
     test('production build uses correct scope', () => {
       // For production (GitHub Pages)
-      const swPath = '/aurorae-haven/sw.js'
-      const swScope = '/aurorae-haven/'
+      const swPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH}/sw.js`
+      const swScope = DEFAULT_GITHUB_PAGES_BASE_PATH
       
       expect(swScope).toMatch(/^\//)
       expect(swScope).toMatch(/\/$/)
-      expect(swPath).toContain(swScope.slice(0, -1))
+      expect(swPath).toContain(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH)
     })
 
     test('offline build uses correct scope', () => {
@@ -61,8 +63,8 @@ describe('Service Worker Navigation Fallback', () => {
 
   describe('navigation fallback behavior', () => {
     test('should handle root path refresh', () => {
-      // When refreshing /aurorae-haven/ or /
-      const rootPath = '/aurorae-haven/'
+      // When refreshing DEFAULT_GITHUB_PAGES_BASE_PATH or /
+      const rootPath = DEFAULT_GITHUB_PAGES_BASE_PATH
       const fallbackUrl = 'index.html'
       
       // Service worker should serve index.html

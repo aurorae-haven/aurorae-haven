@@ -1,3 +1,5 @@
+import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../utils/configConstants'
+
 /**
  * Tests for improved 404.html redirect logic
  * Validates the bug fixes applied to prevent redirect race conditions
@@ -30,7 +32,7 @@ describe('404.html Redirect Improvements', () => {
   describe('Bug Fix: Meta Refresh Tag Removed', () => {
     test('documents that meta refresh tag was causing race condition', () => {
       // Before the fix, 404.html had:
-      // <meta http-equiv="refresh" content="0;url=/aurorae-haven/" />
+      // <meta http-equiv="refresh" content="0;url=DEFAULT_GITHUB_PAGES_BASE_PATH" />
       // This caused immediate redirect (0 seconds) before JavaScript could run
 
       const beforeFix = {
@@ -56,7 +58,7 @@ describe('404.html Redirect Improvements', () => {
 
   describe('SessionStorage with Error Handling', () => {
     test('stores redirectPath in sessionStorage with try-catch', () => {
-      const redirectPath = '/aurorae-haven/schedule'
+      const redirectPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`
 
       try {
         sessionStorage.setItem('redirectPath', redirectPath)
@@ -91,20 +93,20 @@ describe('404.html Redirect Improvements', () => {
     test('computes base path from pathname segments', () => {
       const testCases = [
         {
-          pathname: '/aurorae-haven/schedule',
-          expected: '/aurorae-haven/'
+          pathname: `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`,
+          expected: DEFAULT_GITHUB_PAGES_BASE_PATH
         },
         {
-          pathname: '/aurorae-haven/tasks',
-          expected: '/aurorae-haven/'
+          pathname: `${DEFAULT_GITHUB_PAGES_BASE_PATH}tasks`,
+          expected: DEFAULT_GITHUB_PAGES_BASE_PATH
         },
         {
-          pathname: '/aurorae-haven/routines',
-          expected: '/aurorae-haven/'
+          pathname: `${DEFAULT_GITHUB_PAGES_BASE_PATH}routines`,
+          expected: DEFAULT_GITHUB_PAGES_BASE_PATH
         },
         {
-          pathname: '/aurorae-haven/',
-          expected: '/aurorae-haven/'
+          pathname: DEFAULT_GITHUB_PAGES_BASE_PATH,
+          expected: DEFAULT_GITHUB_PAGES_BASE_PATH
         }
       ]
 
@@ -131,10 +133,10 @@ describe('404.html Redirect Improvements', () => {
       expect(base2).toBe('/')
 
       // Multiple segments
-      const deepPath = '/aurorae-haven/schedule/edit'
+      const deepPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule/edit`
       const segments3 = deepPath.split('/').filter(s => s !== '')
       const base3 = segments3.length > 0 ? '/' + segments3[0] + '/' : '/'
-      expect(base3).toBe('/aurorae-haven/')
+      expect(base3).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH)
     })
   })
 
@@ -153,7 +155,7 @@ describe('404.html Redirect Improvements', () => {
       let redirectTriggered = false
 
       // Store path (synchronous)
-      sessionStorage.setItem('redirectPath', '/aurorae-haven/schedule')
+      sessionStorage.setItem('redirectPath', `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`)
       sessionStorageWritten = true
 
       // Small delay before redirect (asynchronous)
@@ -164,7 +166,7 @@ describe('404.html Redirect Improvements', () => {
       // At this point, sessionStorage should be written
       expect(sessionStorageWritten).toBe(true)
       expect(sessionStorage.getItem('redirectPath')).toBe(
-        '/aurorae-haven/schedule'
+        `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`
       )
     })
   })
@@ -208,7 +210,7 @@ describe('404.html Redirect Improvements', () => {
   describe('Integration with React Router', () => {
     test('validates that redirectPath is read by RedirectHandler', () => {
       // 404.html stores the path
-      const originalPath = '/aurorae-haven/schedule'
+      const originalPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`
       sessionStorage.setItem('redirectPath', originalPath)
 
       // RedirectHandler in index.jsx reads it
@@ -222,11 +224,11 @@ describe('404.html Redirect Improvements', () => {
 
     test('validates path normalization for React Router', () => {
       // 404.html stores full path with base
-      const storedPath = '/aurorae-haven/schedule'
+      const storedPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`
       sessionStorage.setItem('redirectPath', storedPath)
 
       // RedirectHandler removes base and normalizes
-      const basename = '/aurorae-haven/'
+      const basename = DEFAULT_GITHUB_PAGES_BASE_PATH
       const path = storedPath.replace(basename, '/').replace(/^\/+/, '/')
 
       expect(path).toBe('/schedule')
@@ -235,8 +237,8 @@ describe('404.html Redirect Improvements', () => {
 
   describe('Complete Redirect Flow', () => {
     test('simulates complete 404 redirect flow', () => {
-      // Step 1: User navigates to /aurorae-haven/schedule
-      const requestedPath = '/aurorae-haven/schedule'
+      // Step 1: User navigates to DEFAULT_GITHUB_PAGES_BASE_PATH/schedule
+      const requestedPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`
 
       // Step 2: GitHub Pages serves 404.html
       // Step 3: 404.html stores the path
@@ -248,7 +250,7 @@ describe('404.html Redirect Improvements', () => {
       // Step 4: Compute base path
       const segments = requestedPath.split('/').filter(s => s !== '')
       const basePath = segments.length > 0 ? '/' + segments[0] + '/' : '/'
-      expect(basePath).toBe('/aurorae-haven/')
+      expect(basePath).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH)
 
       // Step 5: Redirect to base path (simulated with setTimeout)
       const redirectDelay = 10
@@ -263,7 +265,7 @@ describe('404.html Redirect Improvements', () => {
       sessionStorage.removeItem('redirectPath')
 
       // Step 9: Navigate to route
-      const basename = '/aurorae-haven/'
+      const basename = DEFAULT_GITHUB_PAGES_BASE_PATH
       const route = storedPath.replace(basename, '/').replace(/^\/+/, '/')
       expect(route).toBe('/schedule')
     })

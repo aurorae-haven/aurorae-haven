@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import { DEFAULT_GITHUB_PAGES_BASE_PATH } from './src/utils/configConstants.js'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -8,7 +9,7 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   // Use environment variable from process.env (set by CI) or .env file or default
   // Priority: process.env.VITE_BASE_URL > .env file > default
-  const base = process.env.VITE_BASE_URL || env.VITE_BASE_URL || '/aurorae-haven/'
+  const base = process.env.VITE_BASE_URL || env.VITE_BASE_URL || DEFAULT_GITHUB_PAGES_BASE_PATH
 
   return {
     base,
@@ -58,11 +59,11 @@ export default defineConfig(({ mode }) => {
           // This fixes the 404 issue when refreshing non-root pages
           // CRITICAL: Use simple 'index.html' to match the precached URL exactly
           // Workbox's createHandlerBoundToURL() requires the exact precached URL
-          // The service worker's scope (e.g., /aurorae-haven/) handles base path resolution
-          // Both production (/aurorae-haven/) and offline (./) builds use 'index.html'
+          // The service worker's scope (e.g., DEFAULT_GITHUB_PAGES_BASE_PATH) handles base path resolution
+          // Both production (DEFAULT_GITHUB_PAGES_BASE_PATH) and offline (./) builds use 'index.html'
           navigateFallback: 'index.html', // See above: must match precached URL exactly
           // Allow all navigation requests to be handled by the fallback
-          // This works for both production (/aurorae-haven/*) and offline (/*) because
+          // This works for both production (DEFAULT_GITHUB_PAGES_BASE_PATH/*) and offline (/*) because
           // the service worker is registered with the correct scope
           navigateFallbackAllowlist: [/.*/],
           // Deny list for URLs that should not use the fallback (e.g., API endpoints)
