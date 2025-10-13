@@ -61,7 +61,12 @@ export function computeBasePath(pathname, origin) {
  * normalizeRedirectPath('/aurorae-haven/', '/aurorae-haven/')
  * // Returns: '/'
  */
-// Escape special regex characters in a string for use in a RegExp
+/**
+ * Escapes special characters in a string for use in a regular expression.
+ *
+ * @param {string} string - The string to escape.
+ * @returns {string} The escaped string safe for use in RegExp constructors.
+ */
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
