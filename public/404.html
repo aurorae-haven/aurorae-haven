@@ -37,9 +37,7 @@
          */
         function computeBasePath(pathname, origin) {
           // Filter out empty segments from pathname
-          var pathSegments = pathname.split('/').filter(function(s) {
-            return s !== ''
-          })
+          var pathSegments = pathname.split('/').filter(s => s !== '')
 
           // For paths like /aurorae-haven/schedule, we want /aurorae-haven/
           // For paths like /schedule, we want /schedule/
