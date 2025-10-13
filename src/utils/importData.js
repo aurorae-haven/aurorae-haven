@@ -35,7 +35,7 @@ export const IMPORT_SUCCESS_MESSAGE =
  * Reload page after a delay
  * @param {number} [delay=1500] - Delay in milliseconds (default: 1500ms)
  * @param {Window|undefined} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
- * @param {string} [baseUrl='/'] - Base URL to navigate to (default: '/'). Should be the app's base path, e.g. '/' or '/aurorae-haven/'. The value should start and end with a slash.
+ * @param {string} [baseUrl='/'] - Base URL to navigate to (default: '/'). Should be the app's base path, e.g. '/', '/aurorae-haven', or '/aurorae-haven/'. The value should start with a slash and may optionally end with a slash.
  * @returns {void}
  */
 export function reloadPageAfterDelay(
