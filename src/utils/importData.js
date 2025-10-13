@@ -4,6 +4,9 @@ import {
   isIndexedDBAvailable,
   importAllData as importToIndexedDB
 } from './indexedDBManager'
+import { createLogger } from './logger'
+
+const logger = createLogger('ImportData')
 
 // Data schema field names
 const DATA_FIELDS = {
@@ -83,7 +86,7 @@ export async function importJSON(file) {
             resolve(true)
             return
           } catch (e) {
-            console.warn(
+            logger.warn(
               'IndexedDB import failed, falling back to localStorage:',
               e
             )
@@ -97,7 +100,7 @@ export async function importJSON(file) {
           resolve(true)
         }
       } catch (e) {
-        console.error('Import failed:', e)
+        logger.error('Import failed:', e)
         reject(new Error('Import failed: ' + e.message))
       }
     }

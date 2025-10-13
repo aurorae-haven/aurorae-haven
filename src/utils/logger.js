@@ -13,7 +13,7 @@ function isLoggingEnabled() {
   try {
     const debugMode = getSetting('advanced.debugMode')
     return debugMode === true
-  } catch (e) {
+  } catch {
     // If settings aren't available, disable logging in production
     // (development builds will have DEV mode enabled anyway)
     return false
