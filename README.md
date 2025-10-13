@@ -172,7 +172,7 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 
 ### Deployment
 
-The app is automatically deployed to GitHub Pages when changes are pushed to `main` or `feature-*` branches.
+The app is automatically deployed to GitHub Pages when changes are pushed to `main`, `feature-*`, or `hotfix-*` branches.
 The deployment workflow:
 
 1. Runs tests and security audits

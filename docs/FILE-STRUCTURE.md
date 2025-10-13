@@ -148,7 +148,7 @@ The repository contains a **fully React-based Progressive Web App** built with V
 
 **Result**: Production-ready SPA with PWA capabilities in `dist/` (~273KB total)
 
-**CI/CD**: GitHub Actions workflow automatically deploys to GitHub Pages on push to `main` or `feature-*` branches
+**CI/CD**: GitHub Actions workflow automatically deploys to GitHub Pages on push to `main`, `feature-*`, or `hotfix-*` branches
 
 ## Future Improvements
 

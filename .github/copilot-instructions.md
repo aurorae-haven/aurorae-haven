@@ -610,7 +610,7 @@ npm run format                  # All files including YAML/JSON (if Prettier ins
 
 ### Deployment
 
-- Changes to `main` or `feature-*` branches trigger GitHub Pages deployment
+- Changes to `main`, `feature-*`, or `hotfix-*` branches trigger GitHub Pages deployment
 - The workflow copies `index.html`, `public/`, and `src/` to `dist/`
 - Test in production after deployment
 

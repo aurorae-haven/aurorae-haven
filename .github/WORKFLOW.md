@@ -10,7 +10,7 @@ This repository uses GitHub Actions to automatically test, build, and deploy the
 
 ### Triggers
 
-- **Push** to `main` or `feature-*` branches
+- **Push** to `main`, `feature-*`, or `hotfix-*` branches
 - **Manual trigger** via workflow_dispatch
 
 ### Jobs

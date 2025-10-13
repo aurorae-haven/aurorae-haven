@@ -226,6 +226,7 @@ This command:
 
 - Push to `main` branch
 - Push to any `feature-*` branch
+- Push to any `hotfix-*` branch
 - Manual workflow dispatch
 
 **Deployment URL**: `https://aurorae-haven.github.io/aurorae-haven/`
