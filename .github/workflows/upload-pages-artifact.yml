@@ -62,8 +62,8 @@ jobs:
           # Display the audit report
           cat audit-report.txt
 
-          # Check if there are vulnerabilities
-          if grep -q "vulnerabilities" audit-report.txt; then
+          # Check if there are actual vulnerabilities (not "found 0 vulnerabilities")
+          if grep -qE "found [1-9][0-9]* vulnerabilities" audit-report.txt; then
             echo "⚠️ Security vulnerabilities detected!"
 
             # Check for known acceptable vulnerabilities (webpack-dev-server is dev-only)
