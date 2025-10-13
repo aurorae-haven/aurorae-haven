@@ -60,7 +60,7 @@ export default defineConfig(({ mode }) => {
           // Workbox's createHandlerBoundToURL() requires the exact precached URL
           // The service worker's scope (e.g., /aurorae-haven/) handles base path resolution
           // Both production (/aurorae-haven/) and offline (./) builds use 'index.html'
-          navigateFallback: 'index.html',
+          navigateFallback: 'index.html', // See above: must match precached URL exactly
           // Allow all navigation requests to be handled by the fallback
           // This works for both production (/aurorae-haven/*) and offline (/*) because
           // the service worker is registered with the correct scope
