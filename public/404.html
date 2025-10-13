@@ -60,6 +60,7 @@
         // the redirectPath to be lost and result in 404 errors after redirect.
         // 10ms is sufficient for sessionStorage operations while remaining
         // imperceptible to users (well below the 100ms perception threshold).
+        // 10ms chosen as it is well below the 100ms perception threshold for users.
         var REDIRECT_DELAY_MS = 10
 
         // Debug logging
