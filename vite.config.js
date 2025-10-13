@@ -6,8 +6,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 export default defineConfig(({ mode }) => {
   // Load environment variables from .env files
   const env = loadEnv(mode, process.cwd())
-  // Use environment variable or default for GitHub Pages
-  const base = env.VITE_BASE_URL || '/aurorae-haven/'
+  // Use environment variable from process.env (set by CI) or .env file or default
+  // Priority: process.env.VITE_BASE_URL > .env file > default
+  const base = process.env.VITE_BASE_URL || env.VITE_BASE_URL || '/aurorae-haven/'
 
   return {
     base,
