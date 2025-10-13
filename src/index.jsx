@@ -95,7 +95,7 @@ function RouterApp() {
     [showToast]
   )
 
-  // Use import.meta.env.BASE_URL for Vite (GitHub Pages project site /aurorae-haven/)
+  // Use import.meta.env.BASE_URL for Vite (GitHub Pages project site e.g., /repo-name/)
   // For offline builds with BASE_URL='./', normalize to '/' for React Router
   const baseUrl = import.meta.env.BASE_URL || '/'
   const basename = baseUrl === './' ? '/' : baseUrl

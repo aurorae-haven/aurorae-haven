@@ -7,27 +7,27 @@
  * Compute the base path for GitHub Pages project site redirect
  * Takes a full pathname and returns the base URL to redirect to
  *
- * For GitHub Pages project sites (e.g., /aurorae-haven/schedule),
+ * For GitHub Pages project sites (e.g., /repo-name/page),
  * this extracts the first path segment to redirect to the app root
  *
- * @param {string} pathname - The current pathname (e.g., '/aurorae-haven/schedule')
+ * @param {string} pathname - The current pathname (e.g., '/repo-name/page')
  * @param {string} origin - The origin URL (e.g., 'https://example.github.io')
- * @returns {string} The base path to redirect to (e.g., 'https://example.github.io/aurorae-haven/')
+ * @returns {string} The base path to redirect to (e.g., 'https://example.github.io/repo-name/')
  *
  * @example
- * computeBasePath('/aurorae-haven/schedule', 'https://example.github.io')
- * // Returns: 'https://example.github.io/aurorae-haven/'
+ * computeBasePath('/repo-name/page', 'https://example.github.io')
+ * // Returns: 'https://example.github.io/repo-name/'
  *
  * @example
- * computeBasePath('/schedule', 'https://example.github.io')
- * // Returns: 'https://example.github.io/schedule/'
+ * computeBasePath('/page', 'https://example.github.io')
+ * // Returns: 'https://example.github.io/page/'
  */
 export function computeBasePath(pathname, origin) {
   // Filter out empty segments from pathname
   const pathSegments = pathname.split('/').filter((s) => s !== '')
 
-  // For paths like /aurorae-haven/schedule, we want /aurorae-haven/
-  // For paths like /schedule, we want /schedule/
+  // For paths like /repo-name/page, we want /repo-name/
+  // For paths like /page, we want /page/
   // This ensures we redirect to the first path segment (the app base)
   let basePath
   if (pathSegments.length > 0) {
@@ -45,20 +45,20 @@ export function computeBasePath(pathname, origin) {
  * Normalize a redirect path by removing the base URL prefix
  * This converts an absolute path to a React Router compatible relative path
  *
- * @param {string} redirectPath - The full redirect path (e.g., '/aurorae-haven/schedule')
- * @param {string} basename - The base URL to remove (e.g., '/aurorae-haven/')
- * @returns {string} The normalized path for React Router (e.g., '/schedule')
+ * @param {string} redirectPath - The full redirect path (e.g., '/repo-name/page')
+ * @param {string} basename - The base URL to remove (e.g., '/repo-name/')
+ * @returns {string} The normalized path for React Router (e.g., '/page')
  *
  * @example
- * normalizeRedirectPath('/aurorae-haven/schedule', '/aurorae-haven/')
- * // Returns: '/schedule'
+ * normalizeRedirectPath('/repo-name/page', '/repo-name/')
+ * // Returns: '/page'
  *
  * @example
- * normalizeRedirectPath('/aurorae-haven/tasks?filter=urgent', '/aurorae-haven/')
+ * normalizeRedirectPath('/repo-name/tasks?filter=urgent', '/repo-name/')
  * // Returns: '/tasks?filter=urgent'
  *
  * @example
- * normalizeRedirectPath('/aurorae-haven/', '/aurorae-haven/')
+ * normalizeRedirectPath('/repo-name/', '/repo-name/')
  * // Returns: '/'
  */
 /**
@@ -73,7 +73,7 @@ function escapeRegExp(string) {
 
 export function normalizeRedirectPath(redirectPath, basename) {
   // Remove the basename from the redirectPath to get the route
-  // The first replacement removes the basename (e.g., '/aurorae-haven/' or './')
+  // The first replacement removes the basename (e.g., '/repo-name/' or './')
   // The second replacement normalizes multiple leading slashes to a single slash
   const escapedBasename = escapeRegExp(basename);
   const regex = new RegExp(`^${escapedBasename}`);
@@ -85,18 +85,18 @@ export function normalizeRedirectPath(redirectPath, basename) {
  * Build the full redirect path including pathname, search, and hash
  * This is used to store the complete URL state before redirecting
  *
- * @param {string} pathname - The pathname (e.g., '/aurorae-haven/schedule')
+ * @param {string} pathname - The pathname (e.g., '/repo-name/page')
  * @param {string} search - The query string (e.g., '?id=123')
  * @param {string} hash - The hash fragment (e.g., '#top')
  * @returns {string} The complete redirect path
  *
  * @example
- * buildRedirectPath('/aurorae-haven/schedule', '?id=123', '#top')
- * // Returns: '/aurorae-haven/schedule?id=123#top'
+ * buildRedirectPath('/repo-name/page', '?id=123', '#top')
+ * // Returns: '/repo-name/page?id=123#top'
  *
  * @example
- * buildRedirectPath('/aurorae-haven/schedule', '', '')
- * // Returns: '/aurorae-haven/schedule'
+ * buildRedirectPath('/repo-name/page', '', '')
+ * // Returns: '/repo-name/page'
  */
 export function buildRedirectPath(pathname, search, hash) {
   return pathname + search + hash
