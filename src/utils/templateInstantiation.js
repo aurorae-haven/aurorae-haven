@@ -66,7 +66,10 @@ export function instantiateTaskFromTemplate(template) {
           not_urgent_not_important: []
         }
   } catch (err) {
-    logger.error('Failed to parse saved tasks:', err)
+    logger.error(
+      `Error while instantiating task from template "${template.title || '[unknown title]'}": Failed to parse saved tasks from localStorage.`,
+      err
+    )
     tasks = {
       urgent_important: [],
       not_urgent_important: [],
