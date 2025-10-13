@@ -14,4 +14,4 @@
  * Example: If your repository is `aurorae-haven`, the base path should be `/aurorae-haven/`.
  * This matches the URL structure: https://username.github.io/aurorae-haven/
  */
-export const DEFAULT_GITHUB_PAGES_BASE_PATH = '/aurorae-haven/'
+export const DEFAULT_GITHUB_PAGES_BASE_PATH = process.env.VITE_GITHUB_PAGES_BASE_PATH || '/aurorae-haven/';
