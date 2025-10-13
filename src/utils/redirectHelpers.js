@@ -61,11 +61,17 @@ export function computeBasePath(pathname, origin) {
  * normalizeRedirectPath('/aurorae-haven/', '/aurorae-haven/')
  * // Returns: '/'
  */
+// Escape special regex characters in a string for use in a RegExp
+function escapeRegExp(string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export function normalizeRedirectPath(redirectPath, basename) {
   // Remove the basename from the redirectPath to get the route
   // The first replacement removes the basename (e.g., '/aurorae-haven/' or './')
   // The second replacement normalizes multiple leading slashes to a single slash
-  const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
+  const escapedBasename = escapeRegExp(basename);
+  const path = redirectPath.replace(new RegExp('^' + escapedBasename), '/').replace(/^\/+/, '/');
   return path
 }
 
