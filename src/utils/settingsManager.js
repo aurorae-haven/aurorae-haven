@@ -43,22 +43,10 @@ export function getSettings() {
     const stored = localStorage.getItem(SETTINGS_KEY)
     if (stored) {
       const settings = JSON.parse(stored)
-      const mergedSettings = { ...DEFAULT_SETTINGS, ...settings }
-      
-      // Initialize debug mode flag for logger
-      if (typeof window !== 'undefined') {
-        window.__AURORAE_DEBUG_MODE__ = mergedSettings.advanced?.debugMode === true
-      }
-      
-      return mergedSettings
+      return { ...DEFAULT_SETTINGS, ...settings }
     }
   } catch (e) {
     logger.error('Failed to load settings:', e)
-  }
-  
-  // Initialize debug mode flag with default settings
-  if (typeof window !== 'undefined') {
-    window.__AURORAE_DEBUG_MODE__ = DEFAULT_SETTINGS.advanced?.debugMode === true
   }
   
   return { ...DEFAULT_SETTINGS }
@@ -252,11 +240,6 @@ export function applySettings(settings) {
   // Accessibility
   if (settings.accessibility) {
     applyAccessibilitySettings(settings.accessibility)
-  }
-
-  // Debug mode (set global flag for logger)
-  if (typeof window !== 'undefined') {
-    window.__AURORAE_DEBUG_MODE__ = settings.advanced?.debugMode === true
   }
 
   // TODO: Apply other settings

@@ -2,26 +2,35 @@
 // Provides conditional logging based on environment and user settings
 //
 // DESIGN NOTE: This module has no imports to avoid circular dependencies.
-// It uses a global flag (window.__AURORAE_DEBUG_MODE__) set by settingsManager
-// to determine if debug logging should be enabled.
+// It reads settings directly from localStorage on each call, making it stateless
+// and avoiding tight coupling with other modules. This approach eliminates race
+// conditions during initialization and follows clean architecture principles.
 
 /* eslint-disable no-console */
 // This file is the logger utility itself, so it needs to use console
 
 /**
  * Check if logging should be enabled
- * Logs are shown when debugMode is enabled via global flag or in development
+ * Logs are shown when debugMode is enabled in settings or in development
  * @returns {boolean} True if logging is enabled
  */
 function isLoggingEnabled() {
-  // Check global debug flag (set by settings manager)
-  if (typeof window !== 'undefined' && window.__AURORAE_DEBUG_MODE__) {
-    return true
-  }
-
   // Enable in development mode
   if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
     return true
+  }
+
+  // Check debug mode from settings in localStorage (avoids circular dependency)
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const settings = localStorage.getItem('aurorae_settings')
+      if (settings) {
+        const parsed = JSON.parse(settings)
+        return parsed.advanced?.debugMode === true
+      }
+    } catch {
+      // Silently fail if localStorage is unavailable or settings are corrupted
+    }
   }
 
   return false
