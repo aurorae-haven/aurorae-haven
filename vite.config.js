@@ -15,6 +15,12 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
+        // Automatically inject service worker registration code into the build
+        // This ensures immediate SW registration when the page loads, which is
+        // critical for fixing 404 refresh errors. The 'auto' mode generates
+        // registerSW.js that registers the service worker on page load, allowing
+        // subsequent page refreshes to be intercepted by the SW and served from cache.
+        injectRegister: 'auto',
         includeAssets: ['icon-192x192.svg', 'icon-512x512.svg'],
         manifest: {
           name: 'Aurorae Haven',
@@ -44,6 +50,9 @@ export default defineConfig(({ mode }) => {
           globPatterns: [
             '**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp,woff,woff2}'
           ],
+          // Ensure service worker activates immediately and takes control of clients
+          skipWaiting: true,
+          clientsClaim: true,
           // Configure navigation fallback to serve index.html for all navigation requests
           // This fixes the 404 issue when refreshing non-root pages
           // Use simple 'index.html' to match the precached URL

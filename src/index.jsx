@@ -33,6 +33,7 @@ import {
   reloadPageAfterDelay,
   IMPORT_SUCCESS_MESSAGE
 } from './utils/dataManager'
+import { normalizeRedirectPath } from './utils/redirectHelpers'
 
 // Component to handle GitHub Pages 404 redirect
 function RedirectHandler() {
@@ -43,12 +44,8 @@ function RedirectHandler() {
     if (redirectPath) {
       sessionStorage.removeItem('redirectPath')
       const basename = import.meta.env.BASE_URL || '/'
-      // Remove the basename from the redirectPath to get the route.
-      // The first replacement removes the basename (e.g., '/aurorae-haven/' or './') from the redirectPath,
-      // ensuring we get the route relative to the app root. The second replacement normalizes the result
-      // so it starts with a single leading slash, handling cases where the removal may leave multiple slashes
-      // or no leading slash at all. This ensures React Router receives a properly formatted route.
-      const path = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
+      // Use shared utility to normalize the redirect path
+      const path = normalizeRedirectPath(redirectPath, basename)
       // Navigate to the correct route
       navigate(path, { replace: true })
     }
