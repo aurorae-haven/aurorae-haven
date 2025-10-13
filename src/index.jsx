@@ -40,14 +40,24 @@ function RedirectHandler() {
   const navigate = useNavigate()
 
   useEffect(() => {
+    console.log('[RedirectHandler] Checking for redirectPath in sessionStorage...')
     const redirectPath = sessionStorage.getItem('redirectPath')
+    console.log('[RedirectHandler] redirectPath:', redirectPath)
+    
     if (redirectPath) {
       sessionStorage.removeItem('redirectPath')
       const basename = import.meta.env.BASE_URL || '/'
+      console.log('[RedirectHandler] basename:', basename)
+      
       // Use shared utility to normalize the redirect path
       const path = normalizeRedirectPath(redirectPath, basename)
+      console.log('[RedirectHandler] Normalized path:', path)
+      
       // Navigate to the correct route
+      console.log('[RedirectHandler] Navigating to:', path)
       navigate(path, { replace: true })
+    } else {
+      console.log('[RedirectHandler] No redirectPath found, normal page load')
     }
   }, [navigate])
 
@@ -100,6 +110,10 @@ function RouterApp() {
   const baseUrl = import.meta.env.BASE_URL || '/'
   const basename = baseUrl === './' ? '/' : baseUrl
 
+  console.log('[RouterApp] BASE_URL:', import.meta.env.BASE_URL)
+  console.log('[RouterApp] baseUrl:', baseUrl)
+  console.log('[RouterApp] basename for BrowserRouter:', basename)
+
   return (
     <BrowserRouter basename={basename}>
       <RedirectHandler />
@@ -144,3 +158,13 @@ root.render(
 
 // Service worker is automatically registered by vite-plugin-pwa via registerSW.js
 // The plugin generates sw.js with proper navigation fallback configuration
+
+// Log service worker status for debugging
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.ready.then((registration) => {
+    console.log('[ServiceWorker] Service worker is active and ready')
+    console.log('[ServiceWorker] Scope:', registration.scope)
+    console.log('[ServiceWorker] Active SW:', registration.active?.scriptURL)
+  })
+  
+}
