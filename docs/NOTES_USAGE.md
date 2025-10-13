@@ -89,6 +89,7 @@ $$
 
 - Preview your equations to ensure they render correctly
 - For literal dollar signs, escape them: `\$10.00`
+- Multi-line equations: Natural newlines within `$...$` or `$$...$$` blocks are automatically converted to LaTeX line breaks (`\\`)
 - See [USER_MANUAL.md](../USER_MANUAL.md) for complete LaTeX reference
 
 ### Embedding Images
