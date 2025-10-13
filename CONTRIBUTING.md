@@ -233,7 +233,7 @@ Runs on every pull request and checks:
 
 ### Build & Deploy (`.github/workflows/upload-pages-artifact.yml`)
 
-Runs on push to `main` or `feature-*` branches:
+Runs on push to `main`, `feature-*`, or `hotfix-*` branches:
 
 1. **Test**: Run linters, tests, and security audits
 2. **Build**: Create production bundle in `dist/`
