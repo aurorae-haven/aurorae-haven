@@ -38,7 +38,8 @@ import { generateSecureUUID } from './uuidGenerator'
       toast(IMPORT_SUCCESS_MESSAGE)
 
       // Use shared utility function for page reload
-      reloadPageAfterDelay(1500)
+      // Navigate to root to avoid 404 errors on client-side routes
+      reloadPageAfterDelay(1500, window, '/')
     } catch (e) {
       console.error(e)
       toast('Import failed: ' + e.message)
