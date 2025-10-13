@@ -411,12 +411,14 @@ export async function saveBackup(data) {
   return put(STORES.BACKUPS, backup)
 }
 
+import { DEFAULT_BACKUP_LIMIT } from './uiConstants'
+
 /**
  * ARC-DAT-03: Get recent backups
  * @param {number} limit
  * @returns {Promise<Array>}
  */
-export async function getRecentBackups(limit = 10) {
+export async function getRecentBackups(limit = DEFAULT_BACKUP_LIMIT) {
   const backups = await getAll(STORES.BACKUPS)
   return backups.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit)
 }
@@ -426,7 +428,7 @@ export async function getRecentBackups(limit = 10) {
  * @param {number} keepCount
  * @returns {Promise<void>}
  */
-export async function cleanOldBackups(keepCount = 10) {
+export async function cleanOldBackups(keepCount = DEFAULT_BACKUP_LIMIT) {
   const backups = await getAll(STORES.BACKUPS)
   const sorted = backups.sort((a, b) => b.timestamp - a.timestamp)
 

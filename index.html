@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Theme color matches THEME_COLOR_PRIMARY from src/utils/themeConstants.js -->
     <meta name="theme-color" content="#1a1a2e" />
     <meta
       name="description"
@@ -14,6 +15,12 @@
   </head>
   <body>
     <noscript>
+      <!-- 
+        Inline styles below match theme constants from src/utils/themeConstants.js:
+        - Background: THEME_COLOR_BACKGROUND (#0f0f1e) and THEME_COLOR_PRIMARY (#1a1a2e)
+        - Text: THEME_COLOR_TEXT (#e0e0ff)
+        Inline styles are required here since CSS files are not loaded in noscript context
+      -->
       <div
         style="
           display: flex;

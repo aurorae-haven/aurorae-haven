@@ -2,6 +2,18 @@
 // TODO: Implement full schedule functionality with time blocking
 
 import { put, getAll, getByIndex, deleteById, STORES } from './indexedDBManager'
+import {
+  DEFAULT_EVENT_DURATION_MINUTES,
+  BUSINESS_HOURS_START,
+  BUSINESS_HOURS_END,
+  MINUTES_PER_HOUR,
+  HOURS_PER_DAY
+} from './scheduleConstants'
+import { ISO_DATE_START_INDEX, ISO_DATE_END_INDEX } from './timeConstants'
+
+// Number of padding digits for time formatting
+const TIME_PADDING_LENGTH = 2
+const PADDING_CHAR = '0'
 
 /**
  * Create a schedule event
@@ -16,7 +28,9 @@ export async function createEvent(event) {
     timestamp: Date.now(),
     createdAt: new Date().toISOString(),
     type: event.type || 'task', // 'task', 'routine', 'break', 'meeting'
-    day: event.day || new Date().toISOString().split('T')[0],
+    day:
+      event.day ||
+      new Date().toISOString().slice(ISO_DATE_START_INDEX, ISO_DATE_END_INDEX),
     startTime: event.startTime,
     endTime: event.endTime,
     duration:
@@ -109,7 +123,7 @@ export async function moveEvent(id, newDay, newStartTime) {
     throw new Error('Event not found')
   }
 
-  const duration = event.duration || 60
+  const duration = event.duration || DEFAULT_EVENT_DURATION_MINUTES
   const newEndTime = addMinutes(newStartTime, duration)
 
   const updated = {
@@ -161,7 +175,10 @@ export async function checkConflicts(
  * @param {number} duration - Minimum duration needed (minutes)
  * @returns {Promise<Array>} Array of available slots
  */
-export async function getAvailableSlots(day, duration = 60) {
+export async function getAvailableSlots(
+  day,
+  duration = DEFAULT_EVENT_DURATION_MINUTES
+) {
   // TODO: Implement slot calculation with business hours
   const events = await getEventsForDay(day)
   const slots = []
@@ -171,8 +188,8 @@ export async function getAvailableSlots(day, duration = 60) {
     a.startTime.localeCompare(b.startTime)
   )
 
-  let currentTime = '08:00' // Start of day
-  const endOfDay = '22:00'
+  let currentTime = BUSINESS_HOURS_START
+  const endOfDay = BUSINESS_HOURS_END
 
   for (const event of sortedEvents) {
     const gapDuration = calculateDuration(currentTime, event.startTime)
@@ -216,8 +233,8 @@ function calculateDuration(startTime, endTime) {
   const [startHour, startMin] = startTime.split(':').map(Number)
   const [endHour, endMin] = endTime.split(':').map(Number)
 
-  const startMinutes = startHour * 60 + startMin
-  const endMinutes = endHour * 60 + endMin
+  const startMinutes = startHour * MINUTES_PER_HOUR + startMin
+  const endMinutes = endHour * MINUTES_PER_HOUR + endMin
 
   return endMinutes - startMinutes
 }
@@ -230,11 +247,11 @@ function calculateDuration(startTime, endTime) {
  */
 function addMinutes(time, minutes) {
   const [hour, min] = time.split(':').map(Number)
-  const totalMinutes = hour * 60 + min + minutes
-  const newHour = Math.floor(totalMinutes / 60) % 24
-  const newMin = totalMinutes % 60
+  const totalMinutes = hour * MINUTES_PER_HOUR + min + minutes
+  const newHour = Math.floor(totalMinutes / MINUTES_PER_HOUR) % HOURS_PER_DAY
+  const newMin = totalMinutes % MINUTES_PER_HOUR
 
-  return `${String(newHour).padStart(2, '0')}:${String(newMin).padStart(2, '0')}`
+  return `${String(newHour).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(newMin).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
 /**
