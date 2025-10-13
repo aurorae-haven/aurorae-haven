@@ -1,6 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { warn } from '../../utils/logger'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger('Icon')
 
 /**
  * Common icon component for SVG icons
@@ -108,7 +110,7 @@ function Icon({ name, className = 'icon', ...props }) {
   const iconPath = icons[name]
 
   if (!iconPath) {
-    warn(`Icon "${name}" not found`)
+    logger.warn(`Icon "${name}" not found`)
     return null
   }
 

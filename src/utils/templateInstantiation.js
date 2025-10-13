@@ -7,7 +7,9 @@ import { generateSecureUUID } from './uuidGenerator'
 import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
 import { MS_PER_DAY } from './timeConstants'
-import { error } from './logger'
+import { createLogger } from './logger'
+
+const logger = createLogger('TemplateInstantiation')
 
 /**
  * Instantiate a task from a task template
@@ -64,7 +66,7 @@ export function instantiateTaskFromTemplate(template) {
           not_urgent_not_important: []
         }
   } catch (err) {
-    error('Failed to parse saved tasks:', err)
+    logger.error('Failed to parse saved tasks:', err)
     tasks = {
       urgent_important: [],
       not_urgent_important: [],
@@ -83,7 +85,7 @@ export function instantiateTaskFromTemplate(template) {
   try {
     localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
   } catch (err) {
-    error('Failed to save task', err)
+    logger.error('Failed to save task', err)
     // Check for quota exceeded error
     if (err.name === 'QuotaExceededError' || err.code === 22) {
       throw new Error(
@@ -269,7 +271,7 @@ export async function instantiateTemplatesBatch(templates) {
             not_urgent_not_important: []
           }
     } catch (err) {
-      error('Failed to parse saved tasks:', err)
+      logger.error('Failed to parse saved tasks:', err)
       tasks = {
         urgent_important: [],
         not_urgent_important: [],
@@ -310,7 +312,7 @@ export async function instantiateTemplatesBatch(templates) {
     try {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
     } catch (err) {
-      error('Failed to save tasks:', err)
+      logger.error('Failed to save tasks:', err)
       if (err.name === 'QuotaExceededError' || err.code === 22) {
         throw new Error(
           'Storage quota exceeded. Please free up space by deleting old tasks.'

@@ -6,8 +6,10 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { error } from '../../utils/logger'
+import { createLogger } from '../../utils/logger'
 import { sanitizeFilename } from '../../utils/fileHelpers'
+
+const logger = createLogger('TemplateCard')
 
 function TemplateCard({
   template,
@@ -51,7 +53,7 @@ function TemplateCard({
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
-      error('Error exporting template:', err)
+      logger.error('Error exporting template:', err)
     }
   }
 
