@@ -30,7 +30,7 @@ export function preprocessLatex(content) {
   // Match $...$ blocks that span multiple lines
   // Avoid matching $$ blocks by using negative lookahead/lookbehind
   content = content.replace(
-    /(?<!\$)\$(?!\$)((?:[^$]|\n)+?)\$(?!\$)/g,
+    /(?<!\$)\$(?!\$)([^$]+?)\$(?!\$)/g,
     (match, mathContent) => {
       // Convert newlines to LaTeX line breaks (\\)
       // But only if the line doesn't already end with \\
