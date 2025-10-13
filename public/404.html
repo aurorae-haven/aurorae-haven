@@ -11,7 +11,7 @@
     -->
     <script>
       // GitHub Pages SPA redirect logic
-      // This script runs when a user navigates directly to a route (e.g., /aurorae-haven/schedule)
+      // This script runs when a user navigates directly to a route (e.g., /repo-name/page)
       // and GitHub Pages serves this 404.html file.
 
       (function() {
@@ -39,8 +39,8 @@
           // Filter out empty segments from pathname
           var pathSegments = pathname.split('/').filter(s => s !== '')
 
-          // For paths like /aurorae-haven/schedule, we want /aurorae-haven/
-          // For paths like /schedule, we want /schedule/
+          // For paths like /repo-name/page, we want /repo-name/
+          // For paths like /page, we want /page/
           // This ensures we redirect to the first path segment (the app base)
           var basePath
           if (pathSegments.length > 0) {
