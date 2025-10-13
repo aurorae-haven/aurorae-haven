@@ -26,9 +26,9 @@ jest.mock('../pages/Notes', () => {
   }
 })
 
-jest.mock('../pages/Sequences', () => {
-  return function MockSequences() {
-    return <div data-testid='sequences-page'>Sequences Page</div>
+jest.mock('../pages/Routines', () => {
+  return function MockRoutines() {
+    return <div data-testid='routines-page'>Routines Page</div>
   }
 })
 

@@ -3,18 +3,19 @@
 // Implements ARC-DAT-02: File attachment references
 
 const DB_NAME = 'aurorae_haven_db'
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 // Object store names
 export const STORES = {
   TASKS: 'tasks',
-  SEQUENCES: 'sequences',
+  ROUTINES: 'routines',
   HABITS: 'habits',
   DUMPS: 'dumps',
   SCHEDULE: 'schedule',
   STATS: 'stats',
   FILE_REFS: 'file_refs',
-  BACKUPS: 'backups'
+  BACKUPS: 'backups',
+  TEMPLATES: 'templates'
 }
 
 /**
@@ -42,11 +43,11 @@ export function openDB() {
         taskStore.createIndex('status', 'status', { unique: false })
       }
 
-      if (!db.objectStoreNames.contains(STORES.SEQUENCES)) {
-        const seqStore = db.createObjectStore(STORES.SEQUENCES, {
+      if (!db.objectStoreNames.contains(STORES.ROUTINES)) {
+        const routineStore = db.createObjectStore(STORES.ROUTINES, {
           keyPath: 'id'
         })
-        seqStore.createIndex('timestamp', 'timestamp', { unique: false })
+        routineStore.createIndex('timestamp', 'timestamp', { unique: false })
       }
 
       if (!db.objectStoreNames.contains(STORES.HABITS)) {
@@ -105,6 +106,17 @@ export function openDB() {
           autoIncrement: true
         })
         backupStore.createIndex('timestamp', 'timestamp', { unique: false })
+      }
+
+      // TAB-LIB: Template storage
+      if (!db.objectStoreNames.contains(STORES.TEMPLATES)) {
+        const templateStore = db.createObjectStore(STORES.TEMPLATES, {
+          keyPath: 'id'
+        })
+        templateStore.createIndex('type', 'type', { unique: false })
+        templateStore.createIndex('title', 'title', { unique: false })
+        templateStore.createIndex('createdAt', 'createdAt', { unique: false })
+        templateStore.createIndex('lastUsed', 'lastUsed', { unique: false })
       }
     }
   })
@@ -166,6 +178,69 @@ export async function put(storeName, item) {
     request.onsuccess = () => resolve(request.result)
 
     transaction.oncomplete = () => db.close()
+  })
+}
+
+/**
+ * Generic batch add or update items
+ * More efficient than multiple put() calls as it uses a single transaction
+ * @param {string} storeName
+ * @param {Array} items - Array of items to add/update
+ * @returns {Promise<Array>} Array of generated IDs/keys
+ */
+export async function putBatch(storeName, items) {
+  if (!Array.isArray(items)) {
+    throw new Error('Items must be an array')
+  }
+
+  if (items.length === 0) {
+    return []
+  }
+
+  const db = await openDB()
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(storeName, 'readwrite')
+    const store = transaction.objectStore(storeName)
+    // Pre-allocate results array to maintain input order across async operations.
+    // This is necessary because IndexedDB requests complete asynchronously and may finish out of order.
+    // By assigning each result to its corresponding index, we ensure the output array matches the input order.
+    // Using Promise.all or similar would not guarantee this ordering.
+    const results = new Array(items.length)
+
+    let completed = 0
+    let hasError = false
+
+    items.forEach((item, index) => {
+      const request = store.put(item)
+
+      request.onsuccess = () => {
+        if (!hasError) {
+          // Assign result to specific index to maintain order regardless of completion order
+          results[index] = request.result
+          completed++
+
+          if (completed === items.length) {
+            resolve(results)
+          }
+        }
+      }
+
+      request.onerror = () => {
+        if (!hasError) {
+          hasError = true
+          reject(request.error)
+        }
+      }
+    })
+
+    transaction.oncomplete = () => db.close()
+    transaction.onerror = () => {
+      db.close()
+      if (!hasError) {
+        hasError = true
+        reject(transaction.error)
+      }
+    }
   })
 }
 
@@ -383,12 +458,12 @@ export async function migrateFromLocalStorage() {
         migrationReport.migrated.tasks = mainData.tasks.length
       }
 
-      // Migrate sequences
+      // Migrate routines (previously called sequences)
       if (Array.isArray(mainData.sequences)) {
-        for (const seq of mainData.sequences) {
-          await put(STORES.SEQUENCES, seq)
+        for (const routine of mainData.sequences) {
+          await put(STORES.ROUTINES, routine)
         }
-        migrationReport.migrated.sequences = mainData.sequences.length
+        migrationReport.migrated.routines = mainData.sequences.length
       }
 
       // Migrate habits
@@ -445,7 +520,7 @@ export async function exportAllData() {
     version: 1,
     exportedAt: new Date().toISOString(),
     tasks: await getAll(STORES.TASKS),
-    sequences: await getAll(STORES.SEQUENCES),
+    routines: await getAll(STORES.ROUTINES),
     habits: await getAll(STORES.HABITS),
     dumps: await getAll(STORES.DUMPS),
     schedule: await getAll(STORES.SCHEDULE),
@@ -470,6 +545,9 @@ export async function exportAllData() {
     data.auroraeTasksData = null
   }
 
+  // Backward compatibility: include sequences field as alias for routines
+  data.sequences = data.routines || []
+
   return data
 }
 
@@ -488,7 +566,7 @@ export async function importAllData(data) {
   try {
     // Clear existing data
     await clear(STORES.TASKS)
-    await clear(STORES.SEQUENCES)
+    await clear(STORES.ROUTINES)
     await clear(STORES.HABITS)
     await clear(STORES.DUMPS)
     await clear(STORES.SCHEDULE)
@@ -503,12 +581,18 @@ export async function importAllData(data) {
       importReport.imported.tasks = data.tasks.length
     }
 
-    // Import sequences
-    if (Array.isArray(data.sequences)) {
-      for (const seq of data.sequences) {
-        await put(STORES.SEQUENCES, seq)
+    // Import routines (also accepts legacy "sequences" field)
+    if (Array.isArray(data.routines)) {
+      for (const routine of data.routines) {
+        await put(STORES.ROUTINES, routine)
       }
-      importReport.imported.sequences = data.sequences.length
+      importReport.imported.routines = data.routines.length
+    } else if (Array.isArray(data.sequences)) {
+      // Legacy support for old exports
+      for (const routine of data.sequences) {
+        await put(STORES.ROUTINES, routine)
+      }
+      importReport.imported.routines = data.sequences.length
     }
 
     // Import habits

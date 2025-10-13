@@ -27,8 +27,8 @@ The offline package is automatically generated and uploaded to multiple location
 **Access**:
 
 - Branch: <https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases>
-- Direct download: <https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz>
-- Direct download: <https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip>
+- Direct download (tar.gz): [https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz)
+- Direct download (zip): [https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip)
 
 **Benefits**:
 
@@ -193,13 +193,18 @@ The release workflow uses `softprops/action-gh-release@v2`:
 **Download latest build:**
 
 ```bash
+# Set version (check offline-releases branch for available versions)
+VERSION="1.0.0"  # Replace with actual version
+
 # From offline-releases branch
-wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz
-wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip
+wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz
+# or
+wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip
 
 # Extract
-tar -xzf aurorae-haven-offline-v1.0.0.tar.gz
-unzip aurorae-haven-offline-v1.0.0.zip
+tar -xzf aurorae-haven-offline-v${VERSION}.tar.gz
+# or
+unzip aurorae-haven-offline-v${VERSION}.zip
 
 # Open in browser
 open index.html  # macOS

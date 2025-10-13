@@ -28,7 +28,7 @@
 | Store Name | Key Path | Indexes                                   | Auto-Increment |
 | ---------- | -------- | ----------------------------------------- | -------------- |
 | tasks      | id       | timestamp, status                         | Yes            |
-| sequences  | id       | timestamp                                 | No             |
+| routines   | id       | timestamp                                 | No             |
 | habits     | id       | timestamp, paused                         | Yes            |
 | dumps      | id       | timestamp                                 | Yes            |
 | schedule   | id       | day, timestamp                            | Yes            |
@@ -63,6 +63,7 @@
 - **File Storage**: OPFS (Origin Private File System)
 - **Metadata Storage**: IndexedDB `file_refs` store
 - **Reference Schema**:
+
   ```javascript
   {
     id: number,              // Auto-generated
@@ -213,7 +214,7 @@ backups.forEach((b) => {
 **Stats Page**:
 
 - Enhanced Stats.jsx to display statistics
-- Shows task completions, habit streaks, routine times
+- Shows task completions, habit streaks, routine execution times
 - Ready for v2.0 dashboard visualizations
 
 **Verification**:
@@ -308,14 +309,14 @@ console.log(`January stats: ${jan2025.length}`)
 
 **IndexedDB Manager**:
 
-```
+```text
 File                    | % Stmts | % Branch | % Funcs | % Lines
 indexedDBManager.js     |   90.58 |    63.09 |   86.53 |   93.03
 ```
 
 **Data Manager**:
 
-```
+```text
 File                    | % Stmts | % Branch | % Funcs | % Lines
 dataManager.js          |   62.85 |    69.11 |   42.85 |   62.85
 ```
@@ -514,21 +515,21 @@ const filtered = all.filter((t) => t.status === 'pending')
 
 ### For Existing Users
 
-**Option 1: Automatic (Default)**
+#### Option 1: Automatic (Default)
 
 - No action required
 - New data uses IndexedDB
 - Old data stays in localStorage
 - Both work seamlessly together
 
-**Option 2: Manual Migration**
+#### Option 2: Manual Migration
 
 - Run `migrateFromLocalStorage()` in console
 - All data moved to IndexedDB
 - Automatic backups enabled
 - Better performance
 
-**Option 3: Fresh Start**
+#### Option 3: Fresh Start
 
 - Export current data
 - Clear browser storage

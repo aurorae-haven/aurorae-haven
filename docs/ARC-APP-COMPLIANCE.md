@@ -100,7 +100,7 @@ src/
 │   ├── Home.jsx                # Landing page
 │   ├── BrainDump.jsx           # Markdown notes
 │   ├── Schedule.jsx            # Time blocking
-│   ├── Sequences.jsx           # Routines
+│   ├── Routines.jsx           # Routines
 │   ├── Tasks.jsx               # Task management
 │   ├── Habits.jsx              # Habit tracking
 │   ├── Stats.jsx               # Analytics

@@ -1981,7 +1981,9 @@ _Section_: Tab Appearance
 
 #### TAB-RTN-09
 
-**Requirement**: The runner card shall present the global progress bar along the top edge; underneath, a 3-panel step triptych aligned horizontally: Previous (left, 60–70% scale, 50% opacity), Current (center, 100% scale, glow ring), Next (right, 85% scale, 80% opacity).
+**Requirement**: The runner card shall present the global progress bar along the top edge; underneath, a 3-panel step triptych
+aligned horizontally: Previous (left, 60–70% scale, 50% opacity), Current (center, 100% scale, glow ring),
+Next (right, 85% scale, 80% opacity).
 
 _Section_: Tab Appearance
 
@@ -2113,7 +2115,9 @@ _Section_: Tab Appearance
 
 #### TAB-RTN-31
 
-**Requirement**: The summary modal shall include: Routine Title, Duration planned vs actual, Steps completed/skipped list, On-time %, XP breakdown (base steps, on-time bonuses, routine bonus, perfect bonus), and actions [Save as Template], [View Log], [Close].
+**Requirement**: The summary modal shall include: Routine Title, Duration planned vs actual, Steps completed/skipped list,
+On-time %, XP breakdown (base steps, on-time bonuses, routine bonus, perfect bonus), and actions [Save as Template],
+[View Log], [Close].
 
 _Section_: Tab Appearance
 
@@ -2365,7 +2369,7 @@ _Section_: Tab Appearance
 
 #### TAB-SCH-14
 
-**Requirement**: New events shall be created only from existing entities: Task, Routine (sequence), Habit (reminder), Note (reference).
+**Requirement**: New events shall be created only from existing entities: Task, Routine, Habit (reminder), Note (reference).
 
 _Section_: Tab Appearance
 
@@ -3889,7 +3893,8 @@ _Section_: Tab Appearance
 
 #### TAB-TSK-54
 
-**Requirement**: Conflicting actions (e.g., moving a task that no longer exists) shall show a non-blocking toast error and auto-refresh the view to reconcile state.
+**Requirement**: Conflicting actions (e.g., moving a task that no longer exists) shall show a non-blocking toast error
+and auto-refresh the view to reconcile state.
 
 _Section_: Tab Appearance
 

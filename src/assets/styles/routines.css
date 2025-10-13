@@ -1,4 +1,4 @@
-/* ===== Sequences (runner top with bigger current) ===== */
+/* ===== Routines (runner top with bigger current) ===== */
 
 /* TAB-RTN-01: Routine Management Toolbar */
 .routine-toolbar {
@@ -29,7 +29,7 @@
   grid-template-rows: auto auto;
   gap: 10px;
 }
-.seq-time {
+.routine-time {
   display: flex;
   align-items: center;
   justify-content: space-between;

@@ -42,7 +42,7 @@ export function useTasksState() {
       id: generateSecureUUID(),
       text: text.trim(),
       completed: false,
-      createdAt: Date.now(),
+      createdAt: new Date().toISOString(),
       dueDate: null,
       completedAt: null
     }

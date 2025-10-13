@@ -54,8 +54,8 @@ Added 6 new comprehensive tests for **all tabs**:
    - Verifies Tasks tab data restoration
    - Tests `aurorae_tasks` localStorage key
 
-3. **Test: Restore deleted Sequences after import**
-   - Verifies Sequences (routines) restoration
+3. **Test: Restore deleted Routines after import**
+   - Verifies Routines restoration
 
 4. **Test: Restore deleted Habits after import**
    - Verifies Habits tracking data restoration
@@ -72,7 +72,7 @@ Added 6 new comprehensive tests for **all tabs**:
 
 ### 3. Test Results
 
-```
+```text
 Test Suites: 18 passed, 18 total
 Tests:       54 todo, 428 passed, 482 total
 Snapshots:   0 total

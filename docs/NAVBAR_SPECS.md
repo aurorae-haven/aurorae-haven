@@ -18,7 +18,7 @@ The navbar is divided into three distinct zones:
 2. **Center Zone**: Primary navigation tabs
 3. **Right Zone**: Global actions (search, theme, export/import)
 
-```
+```text
 ┌────────────────────────────────────────────────────────────┐
 │ [Logo] Brand │ [Tasks] [Routines] ... [Settings] │ [Actions] │
 └────────────────────────────────────────────────────────────┘
@@ -56,7 +56,7 @@ The navbar is divided into three distinct zones:
 Seven primary navigation tabs:
 
 1. **Tasks** - Task management with Eisenhower matrix
-2. **Routines** - Sequences/routines with timers
+2. **Routines** - Routines with timers
 3. **Habits** - Habit tracking and streaks
 4. **Schedule** - Daily schedule and time blocks
 5. **Brain Dump** - Quick note capture

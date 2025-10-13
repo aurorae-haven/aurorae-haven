@@ -1,0 +1,12 @@
+{
+  "id": "task-meal-prep",
+  "type": "task",
+  "title": "Weekly Meal Preparation",
+  "tags": ["health", "food", "planning"],
+  "category": "Health",
+  "quadrant": "not_urgent_important",
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

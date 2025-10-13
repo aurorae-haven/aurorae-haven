@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Sequences() {
+function Routines() {
   return (
     <>
       {/* TAB-RTN-01: Toolbar with Routine Management Buttons */}
@@ -40,8 +40,8 @@ function Sequences() {
           <div className='routine-progress-bar' style={{ width: '33%' }}></div>
         </div>
         <div className='card-b runner-top'>
-          <div className='seq-time'>
-            <div className='small'>Sequence timer</div>
+          <div className='routine-time'>
+            <div className='small'>Routine timer</div>
             <div style={{ fontWeight: '700' }}>00:07:42</div>
           </div>
           {/* TAB-RTN-03: Step triptych with Previous (dim), Current (enlarged with glow), Next (preview) */}
@@ -91,7 +91,7 @@ function Sequences() {
       <div className='bottom-split'>
         <div className='card'>
           <div className='card-h'>
-            <strong>Sequence details</strong>
+            <strong>Routine details</strong>
             <span className='small'>Reorder or move steps</span>
           </div>
           <div className='card-b'>
@@ -196,4 +196,4 @@ function Sequences() {
   )
 }
 
-export default Sequences
+export default Routines

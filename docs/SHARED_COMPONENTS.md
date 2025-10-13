@@ -249,13 +249,13 @@ The CSS has been refactored into focused modules:
 
 ### File Structure
 
-```
+```text
 src/assets/styles/
 ├── styles.css           # Main file (19 lines) - imports all modules
 ├── base.css             # Variables, reset, body (80 lines)
 ├── navigation.css       # App bar, tabs, menu (504 lines)
 ├── schedule.css         # Schedule page (106 lines)
-├── sequences.css        # Sequences page (202 lines)
+├── routines.css        # Routines page (202 lines)
 ├── brain-dump.css       # Brain Dump page (485 lines)
 ├── tasks.css            # Tasks page (322 lines)
 ├── modal.css            # Modal components (351 lines)
@@ -279,7 +279,7 @@ The main `styles.css` imports in this order:
 
 1. Base (variables, reset)
 2. Navigation (global UI)
-3. Feature-specific (schedule, sequences, brain-dump, tasks)
+3. Feature-specific (schedule, routines, brain-dump, tasks)
 4. Common components (modals)
 
 ## Migration Guide

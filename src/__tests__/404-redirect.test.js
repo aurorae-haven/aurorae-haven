@@ -15,9 +15,8 @@ describe('404.html Redirect Logic', () => {
   })
 
   afterEach(() => {
-    // Restore original location
-    delete window.location
-    window.location = originalLocation
+    // Restore mocks
+    jest.restoreAllMocks()
 
     // Clear sessionStorage
     sessionStorage.clear()
@@ -25,9 +24,8 @@ describe('404.html Redirect Logic', () => {
 
   describe('Path Storage', () => {
     test('stores full path with pathname, search, and hash in sessionStorage', () => {
-      // Mock location
-      delete window.location
-      window.location = {
+      // Simulate location values
+      const mockLocation = {
         pathname: '/aurorae-haven/schedule',
         search: '?id=123',
         hash: '#top',
@@ -35,10 +33,8 @@ describe('404.html Redirect Logic', () => {
       }
 
       // Simulate 404.html logic
-      sessionStorage.setItem(
-        'redirectPath',
-        window.location.pathname + window.location.search + window.location.hash
-      )
+      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
         '/aurorae-haven/schedule?id=123#top'
@@ -46,18 +42,15 @@ describe('404.html Redirect Logic', () => {
     })
 
     test('stores pathname only when no search or hash', () => {
-      delete window.location
-      window.location = {
+      const mockLocation = {
         pathname: '/aurorae-haven/schedule',
         search: '',
         hash: '',
         origin: 'https://example.github.io'
       }
 
-      sessionStorage.setItem(
-        'redirectPath',
-        window.location.pathname + window.location.search + window.location.hash
-      )
+      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
         '/aurorae-haven/schedule'
@@ -65,18 +58,15 @@ describe('404.html Redirect Logic', () => {
     })
 
     test('stores pathname with search but no hash', () => {
-      delete window.location
-      window.location = {
+      const mockLocation = {
         pathname: '/aurorae-haven/tasks',
         search: '?filter=urgent',
         hash: '',
         origin: 'https://example.github.io'
       }
 
-      sessionStorage.setItem(
-        'redirectPath',
-        window.location.pathname + window.location.search + window.location.hash
-      )
+      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
         '/aurorae-haven/tasks?filter=urgent'
@@ -84,18 +74,15 @@ describe('404.html Redirect Logic', () => {
     })
 
     test('stores pathname with hash but no search', () => {
-      delete window.location
-      window.location = {
+      const mockLocation = {
         pathname: '/aurorae-haven/braindump',
         search: '',
         hash: '#notes',
         origin: 'https://example.github.io'
       }
 
-      sessionStorage.setItem(
-        'redirectPath',
-        window.location.pathname + window.location.search + window.location.hash
-      )
+      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
         '/aurorae-haven/braindump#notes'
@@ -178,8 +165,7 @@ describe('404.html Redirect Logic', () => {
   describe('Integration Scenarios', () => {
     test('handles complete redirect flow for /aurorae-haven/schedule', () => {
       // Setup
-      delete window.location
-      window.location = {
+      const mockLocation = {
         pathname: '/aurorae-haven/schedule',
         search: '',
         hash: '',
@@ -188,13 +174,12 @@ describe('404.html Redirect Logic', () => {
       }
 
       // Simulate 404.html logic
-      const redirectPath =
-        window.location.pathname + window.location.search + window.location.hash
+      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       const basePath =
-        window.location.origin +
-        window.location.pathname.split('/').slice(0, -1).join('/') +
+        mockLocation.origin +
+        mockLocation.pathname.split('/').slice(0, -1).join('/') +
         '/'
 
       // Verify storage
@@ -208,8 +193,7 @@ describe('404.html Redirect Logic', () => {
 
     test('handles complete redirect flow with query and hash', () => {
       // Setup
-      delete window.location
-      window.location = {
+      const mockLocation = {
         pathname: '/aurorae-haven/tasks',
         search: '?filter=urgent',
         hash: '#list',
@@ -218,13 +202,12 @@ describe('404.html Redirect Logic', () => {
       }
 
       // Simulate 404.html logic
-      const redirectPath =
-        window.location.pathname + window.location.search + window.location.hash
+      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       const basePath =
-        window.location.origin +
-        window.location.pathname.split('/').slice(0, -1).join('/') +
+        mockLocation.origin +
+        mockLocation.pathname.split('/').slice(0, -1).join('/') +
         '/'
 
       // Verify storage

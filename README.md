@@ -11,6 +11,7 @@
 - **Progressive Web App (PWA)**: Install on any device, works offline
 - **Routines**: Create, edit, and run daily routines with timers
 - **Tasks**: Prioritise using the Eisenhower matrix
+- **Template Library**: 13+ predefined task and routine templates to get started quickly
 - **Habits**: Track streaks and small wins
 - **Notes & Brain Dump**: Markdown-ready with comprehensive import/export (`.json` for full backup, `.md` for content only)
 - **Stats Foundation**: Track routine time and structured progress with IndexedDB
@@ -209,7 +210,7 @@ The deployment workflow:
 ### User Guides
 
 - **[User Manual](./USER_MANUAL.md)**: Complete guide to LaTeX equations, images, and markdown formatting
-- **[Brain Dump Usage Guide](./docs/BRAIN_DUMP_USAGE.md)**: Feature walkthrough and examples
+- **[Notes Usage Guide](./docs/NOTES_USAGE.md)**: Feature walkthrough and examples
 
 ### Data Management
 
@@ -219,7 +220,7 @@ The deployment workflow:
 
 ### Feature Specifications
 
-- **[Brain Dump Specifications](./docs/BRAIN_DUMP_SPECS.md)**: Technical details about Brain Dump features
+- **[Notes Specifications](./docs/NOTES_SPECS.md)**: Technical details about Notes features
 - **[Tasks Specifications](./docs/TASKS_SPECS.md)**: Technical details about Tasks and Eisenhower Matrix
 - **[ARC-APP Compliance](./docs/ARC-APP-COMPLIANCE.md)**: PWA architecture compliance report
 
@@ -233,3 +234,12 @@ The deployment workflow:
 ## 🙌 Contributing
 
 Contributions, feedback, and ideas are welcome!
+
+### Adding Templates
+
+Want to contribute task or routine templates? We welcome community contributions!
+
+- See **[Contributing Templates Guide](./docs/CONTRIBUTING_TEMPLATES.md)** for detailed instructions
+- Templates are stored in `src/data/templates/` as JSON files
+- 13+ predefined templates already included to help users get started
+- Easy to add: just follow the schema, test locally, and submit a PR

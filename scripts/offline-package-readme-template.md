@@ -109,7 +109,7 @@ Once you've opened the app in your browser:
 ## Features
 
 - 📅 **Schedule**: Plan your day with time blocks
-- ⏱️ **Sequences**: Run daily routines with step-by-step timers
+- ⏱️ **Routines**: Run daily routines with step-by-step timers
 - 📝 **Brain Dump**: Quickly capture thoughts and ideas
 - ✓ **Tasks**: Prioritize using the Eisenhower matrix
 - 🌱 **Habits**: Track streaks and celebrate small wins
@@ -119,7 +119,7 @@ Once you've opened the app in your browser:
 
 All your data is stored locally in your browser:
 
-- **IndexedDB**: Tasks, sequences, habits, statistics
+- **IndexedDB**: Tasks, routines, habits, statistics
 - **LocalStorage**: Brain dump notes, settings
 
 **Privacy**: No data is sent to external servers. Everything stays on your device.
@@ -134,7 +134,7 @@ All your data is stored locally in your browser:
 
 1. **Try the Python launcher** if you have Python installed: Use `start-aurorae-haven-python.*` files
 2. **Try the Node.js launcher** if you have Node.js installed: Use `start-aurorae-haven.*` files (without -python)
-3. Install Python from https://www.python.org/ or Node.js from https://nodejs.org/
+3. Install Python from <https://www.python.org/> or Node.js from <https://nodejs.org/>
 4. On Linux/macOS, make the script executable: `chmod +x start-aurorae-haven-python.sh`
 5. Try running manually: `python3 embedded-server.py` or `node embedded-server.js`
 
@@ -180,8 +180,8 @@ To backup or transfer your data:
 
 For issues or questions:
 
-- GitHub: https://github.com/aurorae-haven/aurorae-haven/issues
-- Documentation: https://github.com/aurorae-haven/aurorae-haven/tree/main/docs
+- GitHub: <https://github.com/aurorae-haven/aurorae-haven/issues>
+- Documentation: <https://github.com/aurorae-haven/aurorae-haven/tree/main/docs>
 
 ---
 

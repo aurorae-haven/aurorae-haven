@@ -5,57 +5,112 @@
 import { reloadPageAfterDelay } from '../utils/dataManager'
 
 describe('reloadPageAfterDelay', () => {
-  let originalLocation
+  let mockWindow
+  let reloadMock
 
   beforeEach(() => {
-    // Mock window.location.reload
-    originalLocation = window.location
-    delete window.location
-    window.location = { reload: jest.fn() }
+    // Create a mock window object with location.reload
+    reloadMock = jest.fn()
+    mockWindow = {
+      location: {
+        reload: reloadMock
+      }
+    }
     jest.useFakeTimers()
   })
 
   afterEach(() => {
-    // Restore window.location
-    window.location = originalLocation
+    jest.clearAllTimers()
     jest.useRealTimers()
   })
 
   test('reloads page after default delay of 1500ms', () => {
-    reloadPageAfterDelay()
+    reloadPageAfterDelay(undefined, mockWindow)
 
     // Should not reload immediately
-    expect(window.location.reload).not.toHaveBeenCalled()
+    expect(reloadMock).not.toHaveBeenCalled()
 
     // Fast-forward time by 1500ms
     jest.advanceTimersByTime(1500)
 
     // Should reload after delay
-    expect(window.location.reload).toHaveBeenCalledTimes(1)
+    expect(reloadMock).toHaveBeenCalledTimes(1)
   })
 
   test('reloads page after custom delay', () => {
-    reloadPageAfterDelay(3000)
+    reloadPageAfterDelay(3000, mockWindow)
 
     // Should not reload before delay
     jest.advanceTimersByTime(2999)
-    expect(window.location.reload).not.toHaveBeenCalled()
+    expect(reloadMock).not.toHaveBeenCalled()
 
     // Should reload after delay
     jest.advanceTimersByTime(1)
-    expect(window.location.reload).toHaveBeenCalledTimes(1)
+    expect(reloadMock).toHaveBeenCalledTimes(1)
   })
 
   test('can be called multiple times independently', () => {
-    reloadPageAfterDelay(1000)
-    reloadPageAfterDelay(2000)
+    reloadPageAfterDelay(1000, mockWindow)
+    reloadPageAfterDelay(2000, mockWindow)
 
     // First reload at 1000ms
     jest.advanceTimersByTime(1000)
-    expect(window.location.reload).toHaveBeenCalledTimes(1)
+    expect(reloadMock).toHaveBeenCalledTimes(1)
 
     // Second reload at 2000ms (total)
     jest.advanceTimersByTime(1000)
-    expect(window.location.reload).toHaveBeenCalledTimes(2)
+    expect(reloadMock).toHaveBeenCalledTimes(2)
+  })
+
+  test('schedules reload with default delay when no window object provided', () => {
+    // This test verifies backward compatibility by checking setTimeout is called with default delay
+    const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
+    
+    reloadPageAfterDelay()
+    
+    // Verify setTimeout was called with correct default delay (1500ms)
+    expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 1500)
+    
+    setTimeoutSpy.mockRestore()
+  })
+
+  test('gracefully handles absence of window without throwing', () => {
+    // Pass an object without location.reload to simulate incompatible environment
+    const invalidWindow = { location: {} }
+    
+    // Create setTimeout spy before invocation to avoid redundant calls
+    const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
+    
+    // Function should not throw when window.location.reload is not available
+    // and setTimeout should not be called
+    expect(() => {
+      reloadPageAfterDelay(1000, invalidWindow)
+    }).not.toThrow()
+    
+    expect(setTimeoutSpy).not.toHaveBeenCalled()
+    
+    setTimeoutSpy.mockRestore()
+  })
+
+  test('uses windowObj.setTimeout when provided', () => {
+    // Create a custom setTimeout mock
+    const customSetTimeout = jest.fn()
+    const windowWithCustomSetTimeout = {
+      location: {
+        reload: jest.fn()
+      },
+      setTimeout: customSetTimeout
+    }
+    
+    // Spy on globalThis.setTimeout to verify it's NOT called
+    const globalSetTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
+    
+    reloadPageAfterDelay(2000, windowWithCustomSetTimeout)
+    
+    // Verify that the custom setTimeout was called, not the global one
+    expect(customSetTimeout).toHaveBeenCalledWith(expect.any(Function), 2000)
+    expect(globalSetTimeoutSpy).not.toHaveBeenCalled()
+    
+    globalSetTimeoutSpy.mockRestore()
   })
 })

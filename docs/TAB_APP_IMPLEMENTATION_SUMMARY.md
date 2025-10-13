@@ -52,7 +52,7 @@ The original task was:
 **Key Features**:
 
 - Follows the same pattern as existing specs (TAB-BDP, TAB-TSK)
-- Covers all 8 tabs in the application (Home, Schedule, Sequences, Brain Dump, Tasks, Habits,
+- Covers all 8 tabs in the application (Home, Schedule, Routines, Brain Dump, Tasks, Habits,
   Stats, Settings)
 - Ensures WCAG 2.2 AA accessibility compliance
 - Maintains neurodivergent-friendly design principles
@@ -328,7 +328,7 @@ Future enhancements to improve user experience and polish.
 
 This specification follows the same pattern as:
 
-- **TAB-BDP** (Tab - Brain Dump): [BRAIN_DUMP_SPECS.md](./BRAIN_DUMP_SPECS.md)
+- **TAB-BDP** (Tab - Notes): [NOTES_SPECS.md](./NOTES_SPECS.md)
   - TAB-BDP-FIL-01 (File Management)
   - TAB-BDP-BLK-01 (Backlinks)
   - TAB-BDP-VSH-01 (Version History)
@@ -398,7 +398,7 @@ TAB-APP complements these by defining cross-cutting UI/UX standards that apply t
 - Main Specification: [TAB_APP_SPECS.md](./TAB_APP_SPECS.md)
 - Sub-Issues Document: [TAB_APP_SUB_ISSUES.md](./TAB_APP_SUB_ISSUES.md)
 - Documentation Guide: [TAB_APP_README.md](./TAB_APP_README.md)
-- Brain Dump Specs: [BRAIN_DUMP_SPECS.md](./BRAIN_DUMP_SPECS.md)
+- Notes Specs: [NOTES_SPECS.md](./NOTES_SPECS.md)
 - Tasks Specs: [TASKS_SPECS.md](./TASKS_SPECS.md)
 
 ---

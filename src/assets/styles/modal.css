@@ -249,6 +249,53 @@
   border-top: 1px solid var(--line);
 }
 
+/* Confirm Modal Specific Styles */
+.confirm-modal-content {
+  max-width: 450px;
+}
+
+.confirm-modal-content .modal-body p {
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Destructive action button styling per TAB-SEC-25 */
+.btn-destructive {
+  background: var(--alert, #ff5555);
+  color: white;
+  border: 1px solid var(--alert, #ff5555);
+}
+
+.btn-destructive:hover {
+  background: #ff3333;
+  border-color: #ff3333;
+}
+
+.btn-destructive:focus {
+  outline: 3px solid var(--alert, #ff5555);
+  outline-offset: 2px;
+}
+
+/* Secondary button for cancel actions */
+.btn-secondary {
+  background: transparent;
+  color: var(--dim);
+  border: 1px solid var(--line);
+}
+
+.btn-secondary:hover {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--ink);
+  border-color: var(--mint);
+}
+
+.btn-secondary:focus {
+  outline: 3px solid var(--mint);
+  outline-offset: 2px;
+}
+
 /* Filter Sections */
 .filter-section {
   margin-bottom: 16px;

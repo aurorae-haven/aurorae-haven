@@ -5,9 +5,10 @@ import {
   cleanOldBackups
 } from './indexedDBManager'
 import { getDataTemplate } from './exportData'
+import { MS_PER_DAY } from './timeConstants'
 
 // ARC-DAT-03: Automatic backup configuration
-const BACKUP_INTERVAL = 24 * 60 * 60 * 1000 // 24 hours
+const BACKUP_INTERVAL = MS_PER_DAY // 24 hours
 const MAX_BACKUPS = 10
 const LAST_BACKUP_KEY = 'aurorae_last_backup'
 

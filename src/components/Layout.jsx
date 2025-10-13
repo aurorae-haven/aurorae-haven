@@ -88,7 +88,7 @@ function Layout({ children, onExport, onImport }) {
       icon: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01'
     },
     {
-      path: '/sequences',
+      path: '/routines',
       label: 'Routines',
       icon: 'M12 13m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0M12 9v5l3 2M9 2h6'
     },
@@ -108,9 +108,9 @@ function Layout({ children, onExport, onImport }) {
       icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z'
     },
     {
-      path: '/stats',
+      path: '/library',
       label: 'Library',
-      icon: 'M3 3v18h18M7 12h3v6H7zM12 9h3v9h-3zM17 5h3v13h-3z'
+      icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M20 17v-5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v5M20 17v5H6.5A2.5 2.5 0 0 1 4 19.5M8 7h8M8 11h4'
     },
     {
       path: '/settings',

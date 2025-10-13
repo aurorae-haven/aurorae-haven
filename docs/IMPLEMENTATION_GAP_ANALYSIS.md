@@ -24,28 +24,28 @@ The following pages currently exist in `src/pages/`:
 - **Habits.jsx**
 - **Home.jsx**
 - **Schedule.jsx**
-- **Sequences.jsx**
+- **Routines.jsx**
 - **Settings.jsx**
 - **Stats.jsx**
 - **Tasks.jsx**
 
 ## Feature Mapping: Specifications → Implementation
 
-| Category | Specs | Mapped Page/Component   | Implementation Status                              |
-| -------- | ----- | ----------------------- | -------------------------------------------------- |
-| TAB-BDP  | 61    | BrainDump               | ✅ Implemented                                     |
-| TAB-HAB  | 52    | Habits                  | 🔄 Partial (basic structure exists)                |
-| TAB-IEX  | 32    | Layout (Export/Import)  | ✅ Implemented (in Layout component)               |
-| TAB-LIB  | 39    | N/A                     | ❌ Not Implemented (Library/Templates tab missing) |
-| TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)               |
-| TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                     |
-| TAB-RTN  | 58    | Sequences               | 🔄 Partial (sequences = routines)                  |
-| TAB-SCH  | 52    | Schedule                | 🔄 Partial (basic structure exists)                |
-| TAB-SEC  | 42    | Settings (Security)     | ❌ Not Implemented (security features missing)     |
-| TAB-SET  | 44    | Settings                | 🔄 Partial (basic structure exists)                |
-| TAB-SPG  | 29    | Home (Static Pages)     | 🔄 Partial (Home exists)                           |
-| TAB-STT  | 42    | Stats                   | 🔄 Partial (basic structure exists)                |
-| TAB-TSK  | 62    | Tasks                   | ✅ Implemented                                     |
+| Category | Specs | Mapped Page/Component   | Implementation Status                           |
+| -------- | ----- | ----------------------- | ----------------------------------------------- |
+| TAB-BDP  | 61    | BrainDump               | ✅ Implemented                                  |
+| TAB-HAB  | 52    | Habits                  | 🔄 Partial (basic structure exists)             |
+| TAB-IEX  | 32    | Layout (Export/Import)  | ✅ Implemented (in Layout component)            |
+| TAB-LIB  | 39    | Library (partial)       | 🔄 Partial (template instantiation implemented) |
+| TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)            |
+| TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                  |
+| TAB-RTN  | 58    | Sequences               | 🔄 Partial (routines)               |
+| TAB-SCH  | 52    | Schedule                | 🔄 Partial (basic structure exists)             |
+| TAB-SEC  | 42    | Settings (Security)     | ❌ Not Implemented (security features missing)  |
+| TAB-SET  | 44    | Settings                | 🔄 Partial (basic structure exists)             |
+| TAB-SPG  | 29    | Home (Static Pages)     | 🔄 Partial (Home exists)                        |
+| TAB-STT  | 42    | Stats                   | 🔄 Partial (basic structure exists)             |
+| TAB-TSK  | 62    | Tasks                   | ✅ Implemented                                  |
 
 ## Implementation Status Details
 
@@ -77,6 +77,8 @@ These features are substantially complete:
 
 These features exist but need significant enhancements:
 
+#### TAB-LIB: Library/Templates (39 specifications)
+
 #### TAB-HAB: Habits (52 specifications)
 
 - ✅ Basic habit tracking exists
@@ -87,7 +89,7 @@ These features exist but need significant enhancements:
 
 #### TAB-RTN: Sequences (Routines) (58 specifications)
 
-- ✅ Basic sequence runner exists
+- ✅ Basic routine runner exists
 - ❌ Missing: Step templates and library
 - ❌ Missing: Advanced timing options
 - ❌ Missing: Routine scheduling
@@ -137,19 +139,25 @@ These features exist but need significant enhancements:
 
 These features are completely missing from the current implementation:
 
-#### TAB-LIB: Library/Templates (39 specifications)
+**Status**: Partially Implemented (Core functionality complete)
 
-**Required**: A new tab for managing task and routine templates
+**Implemented Features** (as of 2025-10-11):
+
+- ✅ Template library page (Library.jsx)
+- ✅ Task template management (CRUD operations)
+- ✅ Routine template management (CRUD operations)
+- ✅ Template search and filtering
+- ✅ Template import/export
+- ✅ One-click template instantiation (TAB-LIB-13)
+- ✅ Template duplication
+- ✅ Last used tracking
 
 **Missing Features**:
 
-- Template library page
-- Task template management
-- Routine template management
-- Template categories and tags
-- Template search and filtering
-- Template import/export
-- One-click template instantiation
+- ❌ Template categories (partial - tags implemented)
+- ❌ Advanced template versioning
+- ❌ Template sharing/collaboration
+- ❌ Template analytics and usage statistics
 
 #### TAB-SEC: Security (42 specifications)
 
@@ -247,41 +255,41 @@ The following categories have specifications but no implementation:
    - Reason: Core productivity feature
    - Estimated Effort: 2 weeks
 
-3. **Complete TAB-RTN (Routines/Sequences)** - 58 specs
+3. **Complete TAB-RTN (Routines)** - 58 specs
    - Priority: HIGH
    - Reason: Core productivity feature
    - Estimated Effort: 2-3 weeks
 
 ### Phase 2: Feature Enhancement (v1.2)
 
-4. **TAB-LIB (Library/Templates)** - 39 specs
+1. **TAB-LIB (Library/Templates)** - 39 specs
    - Priority: MEDIUM
    - Reason: Improves workflow efficiency
    - Estimated Effort: 2 weeks
 
-5. **Complete TAB-SCH (Schedule)** - 52 specs
+2. **Complete TAB-SCH (Schedule)** - 52 specs
    - Priority: MEDIUM
    - Reason: Time management feature
    - Estimated Effort: 2-3 weeks
 
-6. **Complete TAB-STT (Stats)** - 42 specs
+3. **Complete TAB-STT (Stats)** - 42 specs
    - Priority: MEDIUM
    - Reason: User engagement and gamification
    - Estimated Effort: 2 weeks
 
 ### Phase 3: Polish & Documentation (v1.3)
 
-7. **TAB-SPG (Static Pages)** - 29 specs
+1. **TAB-SPG (Static Pages)** - 29 specs
    - Priority: LOW
    - Reason: Legal and informational content
    - Estimated Effort: 1 week
 
-8. **TAB-SET (Settings Enhancement)** - 44 specs
+2. **TAB-SET (Settings Enhancement)** - 44 specs
    - Priority: LOW
    - Reason: Advanced customization
    - Estimated Effort: 1-2 weeks
 
-9. **TAB-POP (Popup System)** - 30 specs
+3. **TAB-POP (Popup System)** - 30 specs
    - Priority: LOW
    - Reason: UI consistency
    - Estimated Effort: 1 week
@@ -291,8 +299,8 @@ The following categories have specifications but no implementation:
 | Status                   | Categories | Specifications | Percentage |
 | ------------------------ | ---------- | -------------- | ---------- |
 | ✅ Fully Implemented     | 3          | ~180           | 28%        |
-| 🔄 Partially Implemented | 7          | ~350           | 55%        |
-| ❌ Not Implemented       | 2          | ~80            | 13%        |
+| 🔄 Partially Implemented | 8          | ~390           | 61%        |
+| ❌ Not Implemented       | 1          | ~40            | 6%         |
 | 📋 New Categories        | 16         | ~30            | 5%         |
 | **Total**                | **28**     | **640**        | **100%**   |
 
@@ -307,4 +315,4 @@ The following categories have specifications but no implementation:
 
 ---
 
-_This analysis was generated from AuroraeHaven_Specs.docx and current codebase inspection_
+**Note:** This analysis was generated from AuroraeHaven_Specs.docx and current codebase inspection

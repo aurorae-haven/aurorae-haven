@@ -15,7 +15,7 @@ export async function createEvent(event) {
     id: event.id || Date.now(),
     timestamp: Date.now(),
     createdAt: new Date().toISOString(),
-    type: event.type || 'task', // 'task', 'sequence', 'break', 'meeting'
+    type: event.type || 'task', // 'task', 'routine', 'break', 'meeting'
     day: event.day || new Date().toISOString().split('T')[0],
     startTime: event.startTime,
     endTime: event.endTime,

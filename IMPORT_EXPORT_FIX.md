@@ -14,7 +14,7 @@ Created `validateImportData()` and `validateExportData()` functions in `src/util
 **Import Validation:**
 
 - **Version field**: Must exist and be a number
-- **Array fields**: If present, must be arrays (tasks, sequences, habits, dumps, schedule)
+- **Array fields**: If present, must be arrays (tasks, routines, habits, dumps, schedule)
 - **BrainDump object**: If present, must be an object with correct structure
   - `content`: Must be a string if present
   - `tags`: Must be a string if present
@@ -31,7 +31,7 @@ Created `validateImportData()` and `validateExportData()` functions in `src/util
 
 **Import Errors:**
 
-```
+```text
 "Import failed: Invalid schema: Missing required field: version"
 "Import failed: Invalid schema: Invalid type for tasks: expected array"
 "Import failed: Invalid schema: Invalid type for version: expected number"
@@ -39,7 +39,7 @@ Created `validateImportData()` and `validateExportData()` functions in `src/util
 
 **Export Errors:**
 
-```
+```text
 "Export failed: Export validation failed: Export data missing version field"
 "Export failed: Export data contains circular references or non-serializable values"
 ```
@@ -59,14 +59,14 @@ Added 6 new test cases:
 
 Test results:
 
-```
+```text
 Test Suites: 16 passed, 16 total
 Tests:       337 passed, 391 total
 ```
 
 Specific dataManager tests:
 
-```
+```text
 Test Suites: 1 passed, 1 total
 Tests:       22 passed, 22 total
 ```
@@ -106,7 +106,7 @@ Tests:       22 passed, 22 total
 {
   "version": 1,
   "tasks": [],
-  "sequences": [],
+  "routines": [],
   "brainDump": {
     "content": "# Notes",
     "tags": "",

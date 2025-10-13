@@ -375,8 +375,6 @@ describe('Notes Component', () => {
 
   describe('Delete functionality', () => {
     test('deletes note on delete button click with confirmation', async () => {
-      window.confirm = jest.fn(() => true)
-
       const mockEntries = [
         {
           id: 'test-id',
@@ -398,6 +396,17 @@ describe('Notes Component', () => {
       const deleteButton = screen.getByRole('button', { name: /delete/i })
       fireEvent.click(deleteButton)
 
+      // Wait for confirmation modal to appear
+      await waitFor(() => {
+        expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+        expect(screen.getByText('Delete Note')).toBeInTheDocument()
+      })
+
+      // Click the confirm button in the modal (get all Delete buttons and use the last one which is in the modal)
+      const deleteButtons = screen.getAllByRole('button', { name: /Delete/i })
+      const confirmButton = deleteButtons[deleteButtons.length - 1]
+      fireEvent.click(confirmButton)
+
       // After deleting the last note, a new empty note is automatically created
       await waitFor(() => {
         const textarea = screen.getByPlaceholderText(
@@ -414,9 +423,7 @@ describe('Notes Component', () => {
       expect(entries[0].content).toBe('')
     })
 
-    test('does not delete note if user cancels confirmation', () => {
-      window.confirm = jest.fn(() => false)
-
+    test('does not delete note if user cancels confirmation', async () => {
       const mockEntries = [
         {
           id: 'test-id',
@@ -436,6 +443,16 @@ describe('Notes Component', () => {
       const deleteButton = screen.getByRole('button', { name: /delete/i })
       fireEvent.click(deleteButton)
 
+      // Wait for confirmation modal to appear
+      await waitFor(() => {
+        expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      })
+
+      // Click the cancel button in the modal
+      const cancelButton = screen.getByRole('button', { name: /Cancel/i })
+      fireEvent.click(cancelButton)
+
+      // Content should still be there
       expect(textarea).toHaveValue('Some content')
       const entries = JSON.parse(
         localStorage.getItem('brainDumpEntries') || '[]'
@@ -680,8 +697,6 @@ describe('Notes Component', () => {
       })
 
       // Step 2: Delete the second note
-      window.confirm = jest.fn(() => true)
-
       // Click on second note to select it
       const secondNoteItem = screen.getByText('Second Note')
       fireEvent.click(secondNoteItem)
@@ -697,6 +712,16 @@ describe('Notes Component', () => {
       // Click delete button
       const deleteButton = screen.getByRole('button', { name: /delete/i })
       fireEvent.click(deleteButton)
+
+      // Wait for confirmation modal to appear
+      await waitFor(() => {
+        expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+      })
+
+      // Click the confirm button in the modal (get all Delete buttons and use the last one which is in the modal)
+      const deleteButtons = screen.getAllByRole('button', { name: /Delete/i })
+      const confirmButton = deleteButtons[deleteButtons.length - 1]
+      fireEvent.click(confirmButton)
 
       // Wait for toast to appear (indicates delete completed)
       await waitFor(() => {

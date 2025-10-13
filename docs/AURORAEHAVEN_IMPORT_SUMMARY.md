@@ -47,7 +47,7 @@ Three comprehensive markdown documents were created in the `docs/` folder:
 
 - **Partially Implemented** (55%): 7 categories (~350 specs)
   - TAB-HAB (Habits) - needs advanced features
-  - TAB-RTN (Routines/Sequences) - needs templates
+  - TAB-RTN (Routines) - needs templates
   - TAB-SCH (Schedule) - needs full calendar
   - TAB-STT (Stats) - needs dashboards
   - TAB-SET (Settings) - needs categories
@@ -180,7 +180,7 @@ Use `IMPLEMENTATION_GAP_ANALYSIS.md` to:
 
 ### New Files
 
-```
+```text
 docs/
 ├── COMPLETE_SPECIFICATIONS.md          (New - 128 KB)
 ├── IMPLEMENTATION_GAP_ANALYSIS.md      (New - 15 KB)
@@ -210,4 +210,4 @@ The next step is to create the GitHub issues and begin implementing the critical
 
 ---
 
-_Generated from AuroraeHaven_Specs.docx analysis_
+**Note:** Generated from AuroraeHaven_Specs.docx analysis

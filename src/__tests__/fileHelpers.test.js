@@ -12,7 +12,7 @@ describe('fileHelpers', () => {
   describe('sanitizeFilename', () => {
     test('converts text to lowercase and replaces special characters with underscores', () => {
       expect(sanitizeFilename('Project Ideas')).toBe('project_ideas')
-      expect(sanitizeFilename('Meeting Notes #1')).toBe('meeting_notes__1')
+      expect(sanitizeFilename('Meeting Notes #1')).toBe('meeting_notes_1')
       expect(sanitizeFilename('Test/File@Name')).toBe('test_file_name')
     })
 
@@ -39,6 +39,63 @@ describe('fileHelpers', () => {
 
     test('preserves alphanumeric characters', () => {
       expect(sanitizeFilename('ABC123xyz')).toBe('abc123xyz')
+    })
+
+    test('removes Windows reserved characters', () => {
+      expect(sanitizeFilename('file<name')).toBe('file_name')
+      expect(sanitizeFilename('file>name')).toBe('file_name')
+      expect(sanitizeFilename('file:name')).toBe('file_name')
+      expect(sanitizeFilename('file"name')).toBe('file_name')
+      expect(sanitizeFilename('file/name')).toBe('file_name')
+      expect(sanitizeFilename('file\\name')).toBe('file_name')
+      expect(sanitizeFilename('file|name')).toBe('file_name')
+      expect(sanitizeFilename('file?name')).toBe('file_name')
+      expect(sanitizeFilename('file*name')).toBe('file_name')
+    })
+
+    test('removes control characters', () => {
+      expect(sanitizeFilename('file\x00name')).toBe('filename')
+      expect(sanitizeFilename('file\x1Fname')).toBe('filename')
+      expect(sanitizeFilename('file\x7Fname')).toBe('filename')
+    })
+
+    test('blocks path traversal attempts', () => {
+      expect(sanitizeFilename('../etc/passwd')).toBe('etc_passwd')
+      expect(sanitizeFilename('..\\windows\\system32')).toBe('windows_system32')
+      expect(sanitizeFilename('test/../file')).toBe('test_file')
+    })
+
+    test('handles Windows reserved names', () => {
+      expect(sanitizeFilename('CON')).toBe('file_con')
+      expect(sanitizeFilename('PRN')).toBe('file_prn')
+      expect(sanitizeFilename('AUX')).toBe('file_aux')
+      expect(sanitizeFilename('NUL')).toBe('file_nul')
+      expect(sanitizeFilename('COM1')).toBe('file_com1')
+      expect(sanitizeFilename('LPT9')).toBe('file_lpt9')
+    })
+
+    test('removes leading and trailing special characters', () => {
+      expect(sanitizeFilename('...filename...')).toBe('filename')
+      expect(sanitizeFilename('___filename___')).toBe('filename')
+      expect(sanitizeFilename('  filename  ')).toBe('filename')
+      expect(sanitizeFilename('.filename')).toBe('filename')
+      expect(sanitizeFilename('_filename')).toBe('filename')
+    })
+
+    test('collapses multiple consecutive underscores', () => {
+      expect(sanitizeFilename('file___name')).toBe('file_name')
+      expect(sanitizeFilename('a____b____c')).toBe('a_b_c')
+    })
+
+    test('handles empty result after sanitization', () => {
+      expect(sanitizeFilename('...')).toBe('untitled')
+      expect(sanitizeFilename('___')).toBe('untitled')
+      expect(sanitizeFilename('<<<>>>')).toBe('untitled')
+    })
+
+    test('handles mixed dangerous characters', () => {
+      expect(sanitizeFilename('My<File>:Name?.txt')).toBe('my_file_name_txt')
+      expect(sanitizeFilename('Report|2024*Final')).toBe('report_2024_final')
     })
   })
 

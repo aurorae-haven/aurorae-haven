@@ -9,7 +9,7 @@ import {
 // Data schema field names - centralized to prevent drift
 const DATA_FIELDS = {
   TASKS: 'tasks',
-  SEQUENCES: 'sequences',
+  ROUTINES: 'routines',
   HABITS: 'habits',
   DUMPS: 'dumps',
   SCHEDULE: 'schedule'
@@ -18,7 +18,7 @@ const DATA_FIELDS = {
 // Schedule event types - used for type field in schedule blocks
 export const SCHEDULE_EVENT_TYPES = {
   TASK: 'task',
-  SEQUENCE: 'sequence',
+  ROUTINE: 'routine',
   BREAK: 'break',
   MEETING: 'meeting'
 }
@@ -36,7 +36,7 @@ export async function getDataTemplate() {
       if (
         indexedDBData &&
         (indexedDBData.tasks?.length > 0 ||
-          indexedDBData.sequences?.length > 0 ||
+          indexedDBData.routines?.length > 0 ||
           indexedDBData.habits?.length > 0 ||
           indexedDBData.dumps?.length > 0 ||
           indexedDBData.schedule?.length > 0)
@@ -63,6 +63,18 @@ export async function getDataTemplate() {
       console.error(`Error loading ${field} from localStorage:`, e)
       data[field] = []
     }
+  }
+
+  // Backward compatibility: check for old 'sequences' localStorage key
+  try {
+    if (!data.routines || data.routines.length === 0) {
+      const sequencesStr = localStorage.getItem('sequences')
+      if (sequencesStr) {
+        data.routines = JSON.parse(sequencesStr)
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to parse sequences from localStorage:', e)
   }
 
   // Also check for aurorae_tasks (Eisenhower matrix format)
@@ -110,7 +122,7 @@ export async function getDataTemplate() {
     console.warn('Failed to parse brainDumpVersions during export:', e)
     versions = []
   }
-  
+
   // Include brain dump data for backward compatibility
   data.brainDump = {
     content: localStorage.getItem('brainDumpContent') || '',
@@ -118,6 +130,9 @@ export async function getDataTemplate() {
     versions,
     entries
   }
+
+  // Backward compatibility: include sequences field as alias for routines
+  data.sequences = data.routines || []
 
   return data
 }

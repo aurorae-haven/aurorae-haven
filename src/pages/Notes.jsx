@@ -18,6 +18,7 @@ import NotesList from '../components/Notes/NotesList'
 import NoteEditor from '../components/Notes/NoteEditor'
 import FilterModal from '../components/Notes/FilterModal'
 import ContextMenu from '../components/Notes/ContextMenu'
+import ConfirmModal from '../components/common/ConfirmModal'
 import { useNotesState } from '../hooks/useNotesState'
 import { useToast } from '../hooks/useToast'
 
@@ -87,6 +88,8 @@ function Notes() {
   const [showFilterModal, setShowFilterModal] = useState(false)
   const [showHelpModal, setShowHelpModal] = useState(false)
   const [contextMenu, setContextMenu] = useState(null)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [noteToDelete, setNoteToDelete] = useState(null)
 
   // Configure sanitization on mount
   useEffect(() => {
@@ -110,31 +113,36 @@ function Notes() {
   const handleDelete = (noteId = currentNoteId) => {
     if (!noteId) return
 
-    const noteToDelete = notes.find((n) => n.id === noteId)
+    const note = notes.find((n) => n.id === noteId)
 
     // Check if note is locked - show toast instead of alert
-    if (noteToDelete?.locked) {
+    if (note?.locked) {
       showToastNotification(
         '🔒 This note is locked. Unlock it before deleting.'
       )
       return
     }
 
-    // Use window.confirm for compatibility with tests
-    if (!window.confirm(`Delete "${noteToDelete?.title || 'this note'}"?`))
-      return
+    // Show accessible confirmation modal
+    setNoteToDelete(note)
+    setShowDeleteConfirm(true)
+  }
+
+  // Confirmed delete action
+  const handleConfirmDelete = () => {
+    if (!noteToDelete) return
 
     // Clear any pending autosave to prevent it from restoring the deleted note
     clearAutosaveTimeout()
 
     // Execute delete
-    const updatedNotes = deleteNoteUtil(notes, noteId)
+    const updatedNotes = deleteNoteUtil(notes, noteToDelete.id)
 
     // Update storage immediately to prevent autosave from restoring deleted note
     updateNotes(updatedNotes)
 
     // Load next note or create new empty note if the deleted note was current
-    if (noteId === currentNoteId) {
+    if (noteToDelete.id === currentNoteId) {
       if (updatedNotes.length > 0) {
         updateNotes(updatedNotes)
         loadNote(updatedNotes[0])
@@ -155,9 +163,24 @@ function Notes() {
       updateNotes(updatedNotes)
     }
 
+    // Close modal and reset state
+    setShowDeleteConfirm(false)
+    setNoteToDelete(null)
+
     // Close context menu if open
     setContextMenu(null)
+
+    // Show success notification
     showToastNotification('✓ Note deleted successfully')
+  }
+
+  // Cancel delete action
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false)
+    setNoteToDelete(null)
+
+    // Close context menu if open
+    setContextMenu(null)
   }
 
   // Toggle lock status of a note
@@ -297,6 +320,18 @@ function Notes() {
 
       {/* Help Modal */}
       {showHelpModal && <HelpModal onClose={() => setShowHelpModal(false)} />}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showDeleteConfirm}
+        title='Delete Note'
+        message={`Are you sure you want to delete "${noteToDelete?.title || 'this note'}"? This action cannot be undone.`}
+        confirmText='Delete'
+        cancelText='Cancel'
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        isDestructive
+      />
     </div>
   )
 }
