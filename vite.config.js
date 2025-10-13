@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
+        injectRegister: 'auto',
         includeAssets: ['icon-192x192.svg', 'icon-512x512.svg'],
         manifest: {
           name: 'Aurorae Haven',
@@ -44,6 +45,9 @@ export default defineConfig(({ mode }) => {
           globPatterns: [
             '**/*.{js,css,html,svg,png,jpg,jpeg,gif,webp,woff,woff2}'
           ],
+          // Ensure service worker activates immediately and takes control of clients
+          skipWaiting: true,
+          clientsClaim: true,
           // Configure navigation fallback to serve index.html for all navigation requests
           // This fixes the 404 issue when refreshing non-root pages
           // Use simple 'index.html' to match the precached URL
