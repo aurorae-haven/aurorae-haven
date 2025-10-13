@@ -27,6 +27,9 @@ import TemplateEditor from '../components/Library/TemplateEditor'
 import TemplateToolbar from '../components/Library/TemplateToolbar'
 import FilterModal from '../components/Library/FilterModal'
 import ConfirmModal from '../components/common/ConfirmModal'
+import { createLogger } from '../utils/logger'
+
+const logger = createLogger('Library')
 
 function Library() {
   const [templates, setTemplates] = useState([])
@@ -73,7 +76,7 @@ function Library() {
         if (!isSeeded) {
           const seedResults = await seedPredefinedTemplates()
           if (seedResults.added > 0) {
-            console.log(`Seeded ${seedResults.added} predefined templates`)
+            logger.log(`Seeded ${seedResults.added} predefined templates`)
           }
         }
 
@@ -81,7 +84,7 @@ function Library() {
         const allTemplates = await getAllTemplates()
         setTemplates(allTemplates)
       } catch (error) {
-        console.error('Failed to load templates:', error)
+        logger.error('Failed to load templates:', error)
         showToastNotification('Failed to load templates')
       } finally {
         setLoading(false)
@@ -146,7 +149,7 @@ function Library() {
       setShowEditor(false)
       setEditingTemplate(null)
     } catch (error) {
-      console.error('Failed to save template:', error)
+      logger.error('Failed to save template:', error)
       showToastNotification('Failed to save template')
     }
   }
@@ -169,7 +172,7 @@ function Library() {
       const allTemplates = await getAllTemplates()
       setTemplates(allTemplates)
     } catch (error) {
-      console.error('Failed to delete template:', error)
+      logger.error('Failed to delete template:', error)
       showToastNotification('Failed to delete template')
     }
 
@@ -193,7 +196,7 @@ function Library() {
       const allTemplates = await getAllTemplates()
       setTemplates(allTemplates)
     } catch (error) {
-      console.error('Failed to duplicate template:', error)
+      logger.error('Failed to duplicate template:', error)
       showToastNotification('Failed to duplicate template')
     }
   }
@@ -213,8 +216,8 @@ function Library() {
           : 'Template applied — Routine created'
       )
     } catch (error) {
-      console.error('Failed to use template:', error)
-      showToastNotification('Failed to use template')
+      logger.error('Failed to use template:', error)
+      showToastNotification('Failed to apply template')
     }
   }
 
@@ -232,7 +235,7 @@ function Library() {
       URL.revokeObjectURL(url)
       showToastNotification('Templates exported')
     } catch (error) {
-      console.error('Failed to export templates:', error)
+      logger.error('Failed to export templates:', error)
       showToastNotification('Failed to export templates')
     }
   }
@@ -253,7 +256,7 @@ function Library() {
         `Imported ${results.imported} templates (${results.skipped} skipped)`
       )
     } catch (error) {
-      console.error('Failed to import templates:', error)
+      logger.error('Failed to import templates:', error)
       showToastNotification('Import failed: Invalid schema')
     }
   }
