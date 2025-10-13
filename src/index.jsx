@@ -149,6 +149,38 @@ function RouterApp() {
   )
 }
 
+// Clean up old service workers registered at wrong scope
+// This fixes the issue where an old SW at root scope (/) interferes with the new SW at /aurorae-haven/
+if ('serviceWorker' in navigator) {
+  const expectedScope = new URL(import.meta.env.BASE_URL || '/', window.location.origin).href
+  console.log('[ServiceWorker] Expected scope:', expectedScope)
+  
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    console.log('[ServiceWorker] Found', registrations.length, 'registered service worker(s)')
+    
+    registrations.forEach((registration) => {
+      const scopeUrl = registration.scope
+      console.log('[ServiceWorker] Checking SW with scope:', scopeUrl)
+      
+      // Unregister service workers with wrong scope
+      if (scopeUrl !== expectedScope) {
+        console.log('[ServiceWorker] Unregistering SW with wrong scope:', scopeUrl)
+        registration.unregister().then((success) => {
+          if (success) {
+            console.log('[ServiceWorker] Successfully unregistered old SW')
+          }
+        }).catch((error) => {
+          console.error('[ServiceWorker] Failed to unregister SW:', error)
+        })
+      } else {
+        console.log('[ServiceWorker] SW scope is correct, keeping it')
+      }
+    })
+  }).catch((error) => {
+    console.error('[ServiceWorker] Error checking registrations:', error)
+  })
+}
+
 const root = createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
@@ -165,6 +197,7 @@ if ('serviceWorker' in navigator) {
     console.log('[ServiceWorker] Service worker is active and ready')
     console.log('[ServiceWorker] Scope:', registration.scope)
     console.log('[ServiceWorker] Active SW:', registration.active?.scriptURL)
+  }).catch((error) => {
+    console.error('[ServiceWorker] No service worker is ready yet:', error.message)
   })
-  
 }
