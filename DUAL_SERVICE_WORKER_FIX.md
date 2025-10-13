@@ -12,18 +12,18 @@ The application had both:
 
 ### Symptoms
 
-- F5 refresh on pages like `/schedule`, `/tasks`, etc. would sometimes work and sometimes return 404
-- Behavior was inconsistent between deployments
-- Offline mode had different behavior than online mode
-- User reported: "offline, refreshing the home page works OK, but not refreshing the other pages"
+- **GitHub Pages (deployed)**: F5 refresh on pages like `/schedule`, `/tasks`, etc. consistently returned 404 errors
+- **Offline mode**: Home page refresh worked, but refreshing other pages returned 404
+- Behavior was inconsistent between local development and deployed versions
+- User reported: "On GitHub Pages, it never works. Offline, refreshing the home page works OK, but not refreshing the other pages"
 
 ### Root Cause
 
-Race condition between two service workers:
-- If **manual SW** registered first: No navigation fallback → 404 on refresh
-- If **VitePWA SW** registered first: Navigation fallback works → Refresh successful
+The application was attempting to register two service workers simultaneously, creating a conflict:
+- **Manual SW** (`service-worker.js`): Registered first in most cases, lacked navigation fallback → Consistent 404 on refresh
+- **VitePWA SW** (`sw.js`): Attempted to register but often blocked by the already-registered manual SW
 
-The manual service worker lacked the critical `navigateFallback` configuration needed for SPA routing.
+The manual service worker consistently took precedence on GitHub Pages deployment because it was explicitly registered in the application code, while the VitePWA service worker registration was injected later in the build process. This meant the manual service worker (without `navigateFallback`) was almost always active, causing consistent 404 errors on page refresh.
 
 ## Solution
 

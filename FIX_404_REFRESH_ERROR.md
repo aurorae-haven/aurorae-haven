@@ -37,9 +37,10 @@ The application had TWO service workers attempting to register:
 
 **Problems:**
 - Both service workers tried to register simultaneously
-- The manual one (`/service-worker.js`) would sometimes register first, preventing the VitePWA one from working
+- The manual service worker (`/service-worker.js`) was explicitly registered in application code, so it consistently took precedence
 - The manual service worker lacked the `navigateFallback` configuration needed for SPA routing
-- This caused inconsistent behavior where F5 refresh worked sometimes (when VitePWA SW registered) but not always (when manual SW registered first)
+- On GitHub Pages deployment: The manual SW consistently registered first → F5 refresh never worked on non-home routes
+- In offline mode: Partial navigation fallback via embedded server → Home page refresh worked, other pages failed
 
 ## Solution Implemented
 
