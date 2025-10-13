@@ -4,9 +4,8 @@ This document contains all specifications extracted from the AuroraeHaven_Specs.
 
 **Generated**: 2025-10-08
 **Source**: docs/AuroraeHaven_Specs.docx
-**Total Specifications**: 642
+**Total Specifications**: 640
 **Categories**: 31
-**Last Updated**: 2025-10-13 (Added ARC-APP-05 and ARC-APP-06 for SPA routing)
 
 ---
 
@@ -14,7 +13,7 @@ This document contains all specifications extracted from the AuroraeHaven_Specs.
 
 ### Architecture (ARC)
 
-- ✅ [ARC-APP](#arcapp) (6 specifications)
+- ✅ [ARC-APP](#arcapp) (4 specifications)
 - 📋 [ARC-BCK](#arcbck) (5 specifications)
 - ✅ [ARC-DAT](#arcdat) (4 specifications)
 - 📋 [ARC-FSC](#arcfsc) (4 specifications)
@@ -66,7 +65,7 @@ This document contains all specifications extracted from the AuroraeHaven_Specs.
 
 ### ARC-APP - ✅ Already Documented
 
-**Total Specifications**: 6
+**Total Specifications**: 4
 
 **Category**: Application Architecture
 
@@ -93,26 +92,6 @@ _Section_: Architecture Overview (ARC)
 **Requirement**: The application shall be installable as a PWA on supported browsers.
 
 _Section_: Architecture Overview (ARC)
-
-#### ARC-APP-05
-
-**Requirement**: The application shall support client-side routing with proper handling of page refreshes and direct URL access on all client-side routes.
-
-_Section_: Architecture Overview (ARC)
-
-**Implementation**: The application uses React Router with BrowserRouter for client-side navigation. When users refresh the browser (F5) or directly access a route URL, the service worker serves `index.html` via navigation fallback, preserving the URL and allowing React Router to handle the routing. For first-time visitors before the service worker is active, a GitHub Pages 404.html redirect mechanism ensures proper routing. Offline packages use an embedded server with SPA fallback support.
-
-**Verification**: All routes return HTTP 200 OK when accessed directly or refreshed, and users remain on the current page after F5 refresh.
-
-#### ARC-APP-06
-
-**Requirement**: The application shall navigate users to the home page after importing data, ensuring a consistent and predictable user experience.
-
-_Section_: Architecture Overview (ARC)
-
-**Implementation**: After successful JSON data import, the `reloadPageAfterDelay()` function navigates to the application's base URL (home page) using `window.location.assign(baseUrl)` instead of reloading the current URL. This prevents 404 errors on client-side routes and provides a better UX by showing users their newly imported data on the home page.
-
-**Verification**: After importing JSON data from any route, users are redirected to the home page where they can see their imported data.
 
 ---
 

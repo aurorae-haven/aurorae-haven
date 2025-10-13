@@ -35,13 +35,11 @@ export const IMPORT_SUCCESS_MESSAGE =
  * Reload page after a delay
  * @param {number} [delay=1500] - Delay in milliseconds (default: 1500ms)
  * @param {Window|undefined} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
- * @param {string} [baseUrl='/'] - Base URL to navigate to (default: '/'). Should be the app's base path, e.g. '/', '/aurorae-haven', or '/aurorae-haven/'. The value should start with a slash and may optionally end with a slash.
  * @returns {void}
  */
 export function reloadPageAfterDelay(
   delay = 1500,
-  windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined,
-  baseUrl = '/'
+  windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined
 ) {
   // Early return if no window object available
   if (!windowObj) return
@@ -49,14 +47,11 @@ export function reloadPageAfterDelay(
   // Early return if location is not available
   if (!windowObj.location) return
 
-  // Early return if assign function is not available
-  if (typeof windowObj.location.assign !== 'function') return
+  // Early return if reload function is not available
+  if (typeof windowObj.location.reload !== 'function') return
 
   const setTimeoutFn = windowObj.setTimeout || globalThis.setTimeout
-  // Navigate to the app's base path instead of reloading current URL
-  // This avoids 404 errors when reloading from a client-side route (e.g., after JSON import)
-  // The base path is guaranteed to exist and will load the SPA correctly
-  setTimeoutFn(() => windowObj.location.assign(baseUrl), delay)
+  setTimeoutFn(() => windowObj.location.reload(), delay)
 }
 
 /**
