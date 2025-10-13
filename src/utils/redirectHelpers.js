@@ -76,7 +76,8 @@ export function normalizeRedirectPath(redirectPath, basename) {
   // The first replacement removes the basename (e.g., '/aurorae-haven/' or './')
   // The second replacement normalizes multiple leading slashes to a single slash
   const escapedBasename = escapeRegExp(basename);
-  const path = redirectPath.replace(new RegExp('^' + escapedBasename), '/').replace(/^\/+/, '/');
+  const regex = new RegExp(`^${escapedBasename}`);
+  const path = redirectPath.replace(regex, '/').replace(/^\/+/, '/');
   return path
 }
 
