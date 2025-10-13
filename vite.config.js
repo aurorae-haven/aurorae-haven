@@ -55,8 +55,10 @@ export default defineConfig(({ mode }) => {
           clientsClaim: true,
           // Configure navigation fallback to serve index.html for all navigation requests
           // This fixes the 404 issue when refreshing non-root pages
-          // Use simple 'index.html' to match the precached URL
-          // Workbox resolves this relative to the service worker's scope automatically
+          // CRITICAL: Use simple 'index.html' to match the precached URL exactly
+          // Workbox's createHandlerBoundToURL() requires the exact precached URL
+          // The service worker's scope (e.g., /aurorae-haven/) handles base path resolution
+          // Both production (/aurorae-haven/) and offline (./) builds use 'index.html'
           navigateFallback: 'index.html',
           // Allow all navigation requests to be handled by the fallback
           // This works for both production (/aurorae-haven/*) and offline (/*) because
