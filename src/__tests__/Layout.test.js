@@ -122,7 +122,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
   })
 
   describe('TAB-NAV-06 & TAB-NAV-07: Primary tabs styling', () => {
-    test('all seven primary tabs are present', () => {
+    test('all eight primary tabs are present', () => {
       renderWithRouter(
         <Layout onExport={mockOnExport} onImport={mockOnImport}>
           <div>Content</div>
@@ -130,7 +130,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       )
 
       const tabs = screen.getAllByRole('tab')
-      expect(tabs).toHaveLength(7)
+      expect(tabs).toHaveLength(8)
     })
 
     test('tabs have proper structure with icons and text', () => {
@@ -387,7 +387,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
 
       await waitFor(() => {
         const menuItems = screen.getAllByRole('menuitem')
-        expect(menuItems).toHaveLength(7)
+        expect(menuItems).toHaveLength(8)
       })
     })
 
