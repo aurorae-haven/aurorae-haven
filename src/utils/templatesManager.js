@@ -20,7 +20,8 @@ const CURRENT_VERSION = '1.0'
  * @returns {boolean}
  */
 function isSupportedVersion(version) {
-  return semver.satisfies(semver.coerce(version), SUPPORTED_VERSION_RANGE)
+  const coercedVersion = semver.coerce(version)
+  return coercedVersion && semver.satisfies(coercedVersion, SUPPORTED_VERSION_RANGE)
 }
 
 /**

@@ -600,5 +600,16 @@ describe('templatesManager', () => {
       expect(result.errors).toHaveLength(1)
       expect(result.errors[0].error).toContain('must be an array')
     })
+
+    test('throws error for invalid version string that cannot be coerced', async () => {
+      const importData = {
+        version: 'invalid-version-string',
+        templates: [{ id: '1', type: 'task', title: 'Task 1' }]
+      }
+
+      await expect(importTemplates(importData)).rejects.toThrow(
+        /Incompatible version.*invalid-version-string/
+      )
+    })
   })
 })

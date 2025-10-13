@@ -87,12 +87,11 @@ function ConfirmModal({
 
   // Prevent body scroll when modal is open
   useEffect(() => {
-    const prevOverflow = document.body.style.overflow
     if (isOpen) {
       document.body.style.overflow = 'hidden'
     }
     return () => {
-      document.body.style.overflow = prevOverflow
+      document.body.style.overflow = 'unset'
     }
   }, [isOpen])
 
