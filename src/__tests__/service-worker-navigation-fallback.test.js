@@ -1,4 +1,4 @@
-import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../utils/configConstants'
+import { DEFAULT_GITHUB_PAGES_BASE_PATH, DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH } from '../utils/configConstants'
 
 /**
  * Tests for service worker navigation fallback configuration
@@ -43,12 +43,12 @@ describe('Service Worker Navigation Fallback', () => {
   describe('service worker scope and registration', () => {
     test('production build uses correct scope', () => {
       // For production (GitHub Pages)
-      const swPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1)}/sw.js`
+      const swPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH}/sw.js`
       const swScope = DEFAULT_GITHUB_PAGES_BASE_PATH
       
       expect(swScope).toMatch(/^\//)
       expect(swScope).toMatch(/\/$/)
-      expect(swPath).toContain(swScope.slice(0, -1))
+      expect(swPath).toContain(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH)
     })
 
     test('offline build uses correct scope', () => {

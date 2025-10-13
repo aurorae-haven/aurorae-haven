@@ -14,17 +14,16 @@ import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 import { existsSync } from 'fs'
 import rateLimit from 'express-rate-limit'
-import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../src/utils/configConstants.js'
+import { DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH } from '../src/utils/configConstants.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const PORT = process.env.PORT || 8080
-// Remove trailing slash for use as base path in Express.
+// Use base path without trailing slash for Express routes.
 // Express treats paths with and without trailing slashes differently when mounting middleware.
-// If the base path ends with a slash, it can cause routing issues (e.g., double slashes in URLs,
-// or middleware not matching as intended). Removing the trailing slash ensures correct routing behavior.
-const BASE_PATH = DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1)
+// Using the constant without trailing slash ensures correct routing behavior.
+const BASE_PATH = DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH
 const DIST_DIR = join(__dirname, '..', 'dist')
 
 const app = express()

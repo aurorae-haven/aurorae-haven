@@ -1,4 +1,4 @@
-import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../utils/configConstants'
+import { DEFAULT_GITHUB_PAGES_BASE_PATH, DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH } from '../utils/configConstants'
 
 /**
  * Tests for basename normalization in React Router
@@ -146,10 +146,10 @@ describe('Basename Normalization for Offline Builds', () => {
 
     test('handles basename without trailing slash', () => {
       // Test with path similar to DEFAULT_GITHUB_PAGES_BASE_PATH but without trailing slash
-      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1)
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH
       const basename = baseUrl === './' ? '/' : baseUrl
 
-      expect(basename).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1))
+      expect(basename).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH)
     })
   })
 })

@@ -15,3 +15,15 @@
  * This matches the URL structure: https://username.github.io/aurorae-haven/
  */
 export const DEFAULT_GITHUB_PAGES_BASE_PATH = process.env.VITE_GITHUB_PAGES_BASE_PATH || '/aurorae-haven/';
+
+/**
+ * Base path without trailing slash.
+ *
+ * Useful for contexts that require paths without trailing slashes:
+ * - Express routes: Express treats paths with/without trailing slashes differently
+ * - URL construction: Building URLs that should not have double slashes
+ * - Test assertions: Comparing paths without trailing slashes
+ *
+ * Derived from DEFAULT_GITHUB_PAGES_BASE_PATH by removing the trailing slash.
+ */
+export const DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH = DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1);
