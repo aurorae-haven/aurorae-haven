@@ -11,6 +11,9 @@
     },
     {
       "pattern": "\\$%7B.*?%7D"
+    },
+    {
+      "pattern": "^https://aurorae-haven\\.github\\.io/aurorae-haven/"
     }
   ],
   "timeout": "10s",
