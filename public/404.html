@@ -40,7 +40,7 @@
 
         // For GitHub Pages project sites, compute the base path dynamically
         // by removing the last segment from the pathname
-        var pathSegments = location.pathname.match(/[^\/]+/g) || []
+        var pathSegments = location.pathname.split('/').filter(s => s !== '')
         
         // For paths like /aurorae-haven/schedule, we want /aurorae-haven/
         // For paths like /aurorae-haven/, we want /aurorae-haven/
