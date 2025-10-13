@@ -38,7 +38,7 @@ app.use(BASE_PATH, (req, res, next) => {
   const filePath = join(DIST_DIR, req.path)
   
   // If it's a file request (has extension), let it 404 naturally
-  if (req.path.includes('.')) {
+  if (/\.[^/]+$/.test(req.path)) {
     console.log(`  → File request: ${req.path}`)
     return next()
   }
