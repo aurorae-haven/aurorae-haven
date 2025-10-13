@@ -88,7 +88,10 @@ function RouterApp() {
           await importJSON(file)
           showToast(IMPORT_SUCCESS_MESSAGE)
           // Use shared utility function for page reload
-          reloadPageAfterDelay(1500)
+          // Navigate to base URL to avoid 404 errors on client-side routes
+          const baseUrl = import.meta.env.BASE_URL || '/'
+          const basename = baseUrl === './' ? '/' : baseUrl
+          reloadPageAfterDelay(1500, undefined, basename)
         } catch (error) {
           console.error('Import failed:', error)
           showToast('Import failed: ' + error.message)
