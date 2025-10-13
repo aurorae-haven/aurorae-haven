@@ -1,6 +1,7 @@
 /**
- * Tests for service worker cleanup logic
- * Validates that old service workers registered at wrong scope are properly unregistered
+ * @fileoverview
+ * Tests for service worker cleanup logic.
+ * Validates that old service workers registered at wrong scope are properly unregistered.
  */
 
 describe('Service Worker Cleanup', () => {
