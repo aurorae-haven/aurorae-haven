@@ -7,6 +7,7 @@ import { generateSecureUUID } from './uuidGenerator'
 import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
 import { MS_PER_DAY } from './timeConstants'
+import { error } from './logger'
 
 /**
  * Instantiate a task from a task template
@@ -62,8 +63,8 @@ export function instantiateTaskFromTemplate(template) {
           urgent_not_important: [],
           not_urgent_not_important: []
         }
-  } catch (error) {
-    console.error('Failed to parse saved tasks:', error)
+  } catch (err) {
+    error('Failed to parse saved tasks:', err)
     tasks = {
       urgent_important: [],
       not_urgent_important: [],
@@ -81,10 +82,10 @@ export function instantiateTaskFromTemplate(template) {
   // Save back to localStorage
   try {
     localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
-  } catch (error) {
-    console.error('Failed to save task')
+  } catch (err) {
+    error('Failed to save task', err)
     // Check for quota exceeded error
-    if (error.name === 'QuotaExceededError' || error.code === 22) {
+    if (err.name === 'QuotaExceededError' || err.code === 22) {
       throw new Error(
         'Storage quota exceeded. Please free up space by deleting old tasks.'
       )
@@ -267,8 +268,8 @@ export async function instantiateTemplatesBatch(templates) {
             urgent_not_important: [],
             not_urgent_not_important: []
           }
-    } catch (error) {
-      console.error('Failed to parse saved tasks:', error)
+    } catch (err) {
+      error('Failed to parse saved tasks:', err)
       tasks = {
         urgent_important: [],
         not_urgent_important: [],
@@ -308,9 +309,9 @@ export async function instantiateTemplatesBatch(templates) {
     // Save all tasks once
     try {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
-    } catch (error) {
-      console.error('Failed to save tasks:', error)
-      if (error.name === 'QuotaExceededError' || error.code === 22) {
+    } catch (err) {
+      error('Failed to save tasks:', err)
+      if (err.name === 'QuotaExceededError' || err.code === 22) {
         throw new Error(
           'Storage quota exceeded. Please free up space by deleting old tasks.'
         )

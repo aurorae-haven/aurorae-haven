@@ -86,7 +86,7 @@ function RouterApp() {
       await exportJSON()
       showToast('Data exported successfully')
     } catch (error) {
-      console.error('Export failed:', error)
+      swLogger.error('Export failed:', error)
       showToast('Export failed: ' + error.message)
     }
   }, [showToast])
@@ -101,7 +101,7 @@ function RouterApp() {
           // Use shared utility function for page reload
           reloadPageAfterDelay(1500)
         } catch (error) {
-          console.error('Import failed:', error)
+          swLogger.error('Import failed:', error)
           showToast('Import failed: ' + error.message)
         }
         // allow re-selecting the same file next time

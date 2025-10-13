@@ -1,6 +1,9 @@
 // Logger utility for Aurorae Haven
 // Provides conditional logging based on environment and user settings
 
+/* eslint-disable no-console */
+// This file is the logger utility itself, so it needs to use console
+
 import { getSetting } from './settingsManager.js'
 
 /**

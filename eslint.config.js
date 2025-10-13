@@ -75,7 +75,7 @@ export default [
       ...reactHooks.configs.recommended.rules,
       ...a11y.configs.recommended.rules,
       'no-unused-vars': 'error', // Changed from 'warn' to 'error'
-      'no-console': 'off',
+      'no-console': 'warn', // Warn on console usage - use logger utility instead
       'react/react-in-jsx-scope': 'off' // Not needed in React 17+
     }
   }
