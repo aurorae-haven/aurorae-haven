@@ -91,7 +91,7 @@ function RouterApp() {
           // Use shared utility function for page reload
           // Navigate to base URL to avoid 404 errors on client-side routes
           const basename = normalizeBaseUrl(import.meta.env.BASE_URL || '/')
-          reloadPageAfterDelay(1500, undefined, basename)
+          reloadPageAfterDelay(1500, globalThis.window, basename)
         } catch (error) {
           console.error('Import failed:', error)
           showToast('Import failed: ' + error.message)
