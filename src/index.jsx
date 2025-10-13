@@ -35,6 +35,7 @@ import {
   reloadPageAfterDelay,
   IMPORT_SUCCESS_MESSAGE
 } from './utils/dataManager'
+import { normalizeBaseUrl } from './utils/routingHelpers'
 
 // Component to handle GitHub Pages 404 redirect
 function RedirectHandler() {
@@ -89,8 +90,7 @@ function RouterApp() {
           showToast(IMPORT_SUCCESS_MESSAGE)
           // Use shared utility function for page reload
           // Navigate to base URL to avoid 404 errors on client-side routes
-          const baseUrl = import.meta.env.BASE_URL || '/'
-          const basename = baseUrl === './' ? '/' : baseUrl
+          const basename = normalizeBaseUrl(import.meta.env.BASE_URL || '/')
           reloadPageAfterDelay(1500, undefined, basename)
         } catch (error) {
           console.error('Import failed:', error)
@@ -105,8 +105,7 @@ function RouterApp() {
 
   // Use import.meta.env.BASE_URL for Vite (GitHub Pages project site /aurorae-haven/)
   // For offline builds with BASE_URL='./', normalize to '/' for React Router
-  const baseUrl = import.meta.env.BASE_URL || '/'
-  const basename = baseUrl === './' ? '/' : baseUrl
+  const basename = normalizeBaseUrl(import.meta.env.BASE_URL || '/')
 
   return (
     <BrowserRouter basename={basename}>
