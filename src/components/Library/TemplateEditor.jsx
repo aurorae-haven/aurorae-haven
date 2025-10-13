@@ -183,7 +183,7 @@ function TemplateEditor({ template, onSave, onClose }) {
               placeholder='Template title'
               required
               aria-describedby={errors.title ? 'title-error' : undefined}
-              aria-invalid={!!errors.title}
+              aria-invalid={errors.title ? "true" : "false"}
             />
             {errors.title && (
               <span id='title-error' className='error-message' role='alert'>
