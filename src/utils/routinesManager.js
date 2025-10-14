@@ -361,3 +361,105 @@ export async function startRoutine(routineId) {
     startedAt: Date.now()
   }
 }
+
+/**
+ * Export routines to JSON format
+ * TAB-RTN-47: Export routine data including id, title, tags, steps, etc.
+ * @param {Array<string>} routineIds - Routine IDs to export (empty = all)
+ * @returns {Promise<Object>} Export data with version, date, and routines array
+ */
+export async function exportRoutines(routineIds = []) {
+  const allRoutines = await getAll(STORES.ROUTINES)
+  const routinesToExport =
+    routineIds.length > 0
+      ? allRoutines.filter((r) => routineIds.includes(r.id))
+      : allRoutines
+
+  return {
+    version: '1.0',
+    exportDate: new Date().toISOString(),
+    routines: routinesToExport
+  }
+}
+
+/**
+ * Import routines from JSON format
+ * TAB-RTN-48: Import with validation and ID collision handling
+ * TAB-RTN-49: Lossless round-trip for definitions (regenerate IDs on collision)
+ * @param {Object} data - Import data with version and routines array
+ * @returns {Promise<Object>} Import results with counts and errors
+ */
+export async function importRoutines(data) {
+  // Validate data structure
+  if (!data || typeof data !== 'object') {
+    throw new Error('Invalid import data: data must be an object')
+  }
+
+  // Validate version field
+  if (!data.version) {
+    throw new Error('Invalid import data: missing version field')
+  }
+
+  // Validate routines array
+  if (!data.routines || !Array.isArray(data.routines)) {
+    throw new Error('Invalid import data: missing routines array')
+  }
+
+  const results = {
+    imported: 0,
+    skipped: 0,
+    errors: []
+  }
+
+  for (const routine of data.routines) {
+    try {
+      // Validate routine has required fields
+      if (!routine.name && !routine.title) {
+        throw new Error('Routine must have a name or title')
+      }
+
+      // Generate ID if missing or check for collision
+      let routineToSave = routine
+      const timestamp = Date.now()
+
+      if (!routine.id) {
+        // Generate new ID if missing
+        routineToSave = {
+          ...routine,
+          id: `routine_${timestamp}_${results.imported}`
+        }
+      } else {
+        // Check for ID collision
+        const existing = await getById(STORES.ROUTINES, routine.id)
+        if (existing) {
+          // Regenerate ID on collision while preserving all other data
+          routineToSave = {
+            ...routine,
+            id: `routine_${timestamp}_${results.imported}`,
+            importedAt: new Date().toISOString()
+          }
+        }
+      }
+
+      // Ensure routine has required structure
+      const normalizedRoutine = {
+        ...routineToSave,
+        steps: routineToSave.steps || [],
+        totalDuration: calculateTotalDuration(routineToSave.steps || []),
+        timestamp: routineToSave.timestamp || new Date().toISOString(),
+        createdAt: routineToSave.createdAt || new Date().toISOString()
+      }
+
+      await put(STORES.ROUTINES, normalizedRoutine)
+      results.imported++
+    } catch (error) {
+      results.errors.push({
+        routine: routine.name || routine.title || 'Unknown',
+        error: error.message
+      })
+      results.skipped++
+    }
+  }
+
+  return results
+}
