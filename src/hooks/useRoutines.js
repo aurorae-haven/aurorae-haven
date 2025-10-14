@@ -9,6 +9,10 @@ import {
   cloneRoutine
 } from '../utils/routinesManager'
 import { getAllTemplates } from '../utils/templatesManager'
+import {
+  seedPredefinedTemplates,
+  arePredefinedTemplatesSeeded
+} from '../utils/predefinedTemplates'
 import { createLogger } from '../utils/logger'
 
 const logger = createLogger('useRoutines')
@@ -32,6 +36,16 @@ export function useRoutines() {
     try {
       setIsLoading(true)
       setError(null)
+
+      // Check if predefined templates need to be seeded
+      const isSeeded = await arePredefinedTemplatesSeeded()
+      if (!isSeeded) {
+        logger.info('Seeding predefined templates...')
+        const seedResults = await seedPredefinedTemplates()
+        if (seedResults.added > 0) {
+          logger.info(`Seeded ${seedResults.added} predefined templates`)
+        }
+      }
 
       // Get stored routines from database
       const storedRoutines = await getRoutines({ sortBy, order: sortOrder })
