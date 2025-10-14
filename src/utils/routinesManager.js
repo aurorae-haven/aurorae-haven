@@ -67,11 +67,42 @@ export async function createRoutineBatch(routines) {
 
 /**
  * Get all routines
+ * @param {Object} options - Query options
+ * @param {string} options.sortBy - Sort field: 'title', 'lastUsed', 'duration', 'timestamp'
+ * @param {string} options.order - Sort order: 'asc' or 'desc'
  * @returns {Promise<Array>} Array of routines
  */
-export async function getRoutines() {
-  // TODO: Implement sorting by recently used, name, or duration
-  return await getAll(STORES.ROUTINES)
+export async function getRoutines(options = {}) {
+  const routines = await getAll(STORES.ROUTINES)
+
+  // Apply sorting if requested - TAB-RTN-07
+  if (options.sortBy) {
+    routines.sort((a, b) => {
+      let aVal = a[options.sortBy]
+      let bVal = b[options.sortBy]
+
+      // Handle null/undefined values
+      if (aVal === null || aVal === undefined) aVal = ''
+      if (bVal === null || bVal === undefined) bVal = ''
+
+      // String comparison for title
+      if (options.sortBy === 'title' || options.sortBy === 'name') {
+        const titleA = (a.title || a.name || '').toLowerCase()
+        const titleB = (b.title || b.name || '').toLowerCase()
+        return options.order === 'desc'
+          ? titleB.localeCompare(titleA)
+          : titleA.localeCompare(titleB)
+      }
+
+      // Numeric comparison for duration and timestamps
+      if (options.order === 'desc') {
+        return bVal - aVal
+      }
+      return aVal - bVal
+    })
+  }
+
+  return routines
 }
 
 /**
@@ -244,6 +275,66 @@ export function getRoutineState(routineId) {
     elapsedTime: 0,
     startedAt: null
   }
+}
+
+/**
+ * Filter routines by criteria
+ * TAB-RTN-06: Filter by Tag, Duration range, Last Used, Energy tags
+ * @param {Array} routines - Array of routines to filter
+ * @param {Object} filters - Filter criteria
+ * @param {Array} filters.tags - Tags to filter by
+ * @param {number} filters.minDuration - Minimum duration in seconds
+ * @param {number} filters.maxDuration - Maximum duration in seconds
+ * @param {string} filters.energyTag - Energy level: 'low', 'medium', 'high'
+ * @param {boolean} filters.recentlyUsed - Only recently used routines
+ * @returns {Array} Filtered routines
+ */
+export function filterRoutines(routines, filters = {}) {
+  let filtered = [...routines]
+
+  // Filter by tags
+  if (filters.tags && filters.tags.length > 0) {
+    filtered = filtered.filter((routine) => {
+      const routineTags = routine.tags || []
+      return filters.tags.some((tag) => routineTags.includes(tag))
+    })
+  }
+
+  // Filter by duration range
+  if (filters.minDuration !== undefined) {
+    filtered = filtered.filter(
+      (routine) =>
+        (routine.totalDuration || routine.estimatedDuration || 0) >=
+        filters.minDuration
+    )
+  }
+  if (filters.maxDuration !== undefined) {
+    filtered = filtered.filter(
+      (routine) =>
+        (routine.totalDuration || routine.estimatedDuration || 0) <=
+        filters.maxDuration
+    )
+  }
+
+  // Filter by energy tag
+  if (filters.energyTag) {
+    filtered = filtered.filter(
+      (routine) => routine.energyTag === filters.energyTag
+    )
+  }
+
+  // Filter by recently used (within last 7 days)
+  if (filters.recentlyUsed) {
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000
+    filtered = filtered.filter((routine) => {
+      const lastUsed = routine.lastUsed
+        ? new Date(routine.lastUsed).getTime()
+        : 0
+      return lastUsed > sevenDaysAgo
+    })
+  }
+
+  return filtered
 }
 
 /**

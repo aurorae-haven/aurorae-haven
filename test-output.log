@@ -1,0 +1,8 @@
+
+Error: Cannot find package '@playwright/test' imported from /home/runner/work/aurorae-haven/aurorae-haven/e2e/routine-workflow.spec.js
+
+Error: No tests found.
+Make sure that arguments are regular expressions matching test files.
+You may need to escape symbols like "$" or "*" and quote the arguments.
+
+
