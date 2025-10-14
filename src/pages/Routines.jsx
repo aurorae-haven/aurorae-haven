@@ -6,6 +6,7 @@ import { exportRoutines, importRoutines } from '../utils/routinesManager'
 import { saveTemplate } from '../utils/templatesManager'
 import { createLogger } from '../utils/logger'
 import ConfirmModal from '../components/common/ConfirmModal'
+import Icon from '../components/common/Icon'
 
 const logger = createLogger('Routines')
 
@@ -248,14 +249,7 @@ function Routines() {
               onClick={handleExportRoutines}
               aria-label='Export all routine data'
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path
-                  d='M12 15V3M8 7l4-4 4 4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  fill='none'
-                />
-              </svg>
+              <Icon name='download' />
               Export Routines
             </button>
             <button
@@ -263,14 +257,7 @@ function Routines() {
               onClick={() => fileInputRef.current?.click()}
               aria-label='Import routine data'
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path
-                  d='M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2'
-                  stroke='currentColor'
-                  strokeWidth='2'
-                  fill='none'
-                />
-              </svg>
+              <Icon name='upload' />
               Import Routines
             </button>
             <input
@@ -374,9 +361,7 @@ function Routines() {
                     aria-label='Complete current step'
                     disabled={!runner.state.isRunning}
                   >
-                    <svg className='icon' viewBox='0 0 24 24'>
-                      <path d='M20 6L9 17l-5-5' />
-                    </svg>
+                    <Icon name='check' />
                     Complete
                   </button>
                   <button
@@ -386,16 +371,7 @@ function Routines() {
                       runner.state.isPaused ? 'Resume routine' : 'Pause routine'
                     }
                   >
-                    <svg className='icon' viewBox='0 0 24 24'>
-                      {runner.state.isPaused ? (
-                        <polygon points='5 3 19 12 5 21 5 3' />
-                      ) : (
-                        <>
-                          <rect x='6' y='4' width='4' height='16' />
-                          <rect x='14' y='4' width='4' height='16' />
-                        </>
-                      )}
-                    </svg>
+                    <Icon name={runner.state.isPaused ? 'play' : 'pause'} />
                     {runner.state.isPaused ? 'Resume' : 'Pause'}
                   </button>
                   <button
@@ -404,10 +380,7 @@ function Routines() {
                     aria-label='Skip current step'
                     disabled={!runner.state.isRunning}
                   >
-                    <svg className='icon' viewBox='0 0 24 24'>
-                      <polygon points='5 4 15 12 5 20 5 4' />
-                      <rect x='17' y='4' width='2' height='16' />
-                    </svg>
+                    <Icon name='skip' />
                     Skip
                   </button>
                   <button
@@ -419,9 +392,7 @@ function Routines() {
                       color: 'var(--alert)'
                     }}
                   >
-                    <svg className='icon' viewBox='0 0 24 24'>
-                      <path d='M18 6L6 18M6 6l12 12' />
-                    </svg>
+                    <Icon name='x' />
                     Cancel
                   </button>
                 </div>
@@ -472,9 +443,7 @@ function Routines() {
                 Select a routine from the Library to get started
               </p>
               <Link to='/library' className='btn btn-primary'>
-                <svg className='icon' viewBox='0 0 24 24'>
-                  <path d='M3 3h18v18H3zM7 7h10M7 11h10M7 15h10' />
-                </svg>
+                <Icon name='file' />
                 Browse Routines
               </Link>
             </div>
@@ -525,9 +494,7 @@ function Routines() {
                 }}
                 aria-label='Close summary'
               >
-                <svg className='icon' viewBox='0 0 24 24'>
-                  <path d='M18 6L6 18M6 6l12 12' />
-                </svg>
+                <Icon name='x' />
               </button>
             </div>
             <div
@@ -642,11 +609,7 @@ function Routines() {
                   onClick={handleSaveAsTemplate}
                   aria-label='Save routine as template'
                 >
-                  <svg className='icon' viewBox='0 0 24 24'>
-                    <path d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z' />
-                    <polyline points='17 21 17 13 7 13 7 21' />
-                    <polyline points='7 3 7 8 15 8' />
-                  </svg>
+                  <Icon name='file' />
                   Save as Template
                 </button>
                 <div style={{ display: 'flex', gap: '8px' }}>
