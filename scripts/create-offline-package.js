@@ -17,10 +17,8 @@ import {
   writeFileSync
 } from 'fs'
 import { join } from 'path'
+import { DIST_DIR, DIST_OFFLINE_DIR, OUTPUT_DIR } from './buildConstants.js'
 
-const DIST_DIR = 'dist'
-const DIST_OFFLINE_DIR = 'dist-offline-build'
-const OUTPUT_DIR = 'dist-offline'
 const VERSION = JSON.parse(readFileSync('package.json', 'utf-8')).version
 
 /**
