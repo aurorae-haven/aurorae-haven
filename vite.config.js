@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
-import { DEFAULT_GITHUB_PAGES_BASE_PATH } from './config/buildConstants.js'
+import { DEFAULT_GITHUB_PAGES_BASE_PATH } from './src/utils/configConstants.js'
 import {
   THEME_COLOR_PRIMARY,
   THEME_COLOR_BACKGROUND,
