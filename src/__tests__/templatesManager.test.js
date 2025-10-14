@@ -72,24 +72,30 @@ describe('templatesManager', () => {
       })
     }
 
-    const mockTransaction = {
-      objectStore: jest.fn().mockReturnValue(mockStore),
-      oncomplete: null,
-      onerror: null,
-      abort: jest.fn()
+    const createMockTransaction = () => {
+      const transaction = {
+        objectStore: jest.fn().mockReturnValue(mockStore),
+        oncomplete: null,
+        onerror: null,
+        abort: jest.fn()
+      }
+
+      // Trigger oncomplete after a brief delay
+      // Note: In real IndexedDB, oncomplete fires when all requests succeed
+      // We trigger it even on errors for testing simplicity
+      setTimeout(() => {
+        if (transaction.oncomplete) {
+          transaction.oncomplete()
+        }
+      }, 10)
+
+      return transaction
     }
 
-    // Trigger oncomplete after a brief delay
-    // Note: In real IndexedDB, oncomplete fires when all requests succeed
-    // We trigger it even on errors for testing simplicity
-    setTimeout(() => {
-      if (mockTransaction.oncomplete) {
-        mockTransaction.oncomplete()
-      }
-    }, 10)
+    const mockTransaction = createMockTransaction()
 
     mockDB = {
-      transaction: jest.fn().mockReturnValue(mockTransaction),
+      transaction: jest.fn().mockImplementation(() => createMockTransaction()),
       close: jest.fn(),
       mockStore,
       mockTransaction,
@@ -254,15 +260,21 @@ describe('templatesManager', () => {
         title: 'Old Title'
       }
 
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(existingTemplate))
+      // Store the template in the mock data store
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await updateTemplate('test-id', { title: 'New Title' })
 
       expect(mockDB.transaction).toHaveBeenCalledWith('templates', 'readwrite')
+
+      // Verify the update happened
+      const updated = mockDB.mockDataStore.get('test-id')
+      expect(updated.title).toBe('New Title')
     })
 
     test('throws error when template not found', async () => {
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
+      // Ensure the template doesn't exist in mock data store
+      mockDB.mockDataStore.clear()
 
       await expect(updateTemplate('non-existent', {})).rejects.toThrow(
         'Template not found'
@@ -276,7 +288,7 @@ describe('templatesManager', () => {
         title: 'Old Title'
       }
 
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(existingTemplate))
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await expect(updateTemplate('test-id', { title: '' })).rejects.toThrow(
         'Invalid template data'
@@ -290,7 +302,7 @@ describe('templatesManager', () => {
         title: 'Test Title'
       }
 
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(existingTemplate))
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await expect(
         updateTemplate('test-id', { type: 'invalid' })
@@ -315,7 +327,7 @@ describe('templatesManager', () => {
         tags: ['work']
       }
 
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(originalTemplate))
+      mockDB.mockDataStore.set('original-id', originalTemplate)
 
       const newId = await duplicateTemplate('original-id')
 
@@ -324,7 +336,7 @@ describe('templatesManager', () => {
     })
 
     test('throws error when template not found', async () => {
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
+      mockDB.mockDataStore.clear()
 
       await expect(duplicateTemplate('non-existent')).rejects.toThrow(
         'Template not found'
@@ -340,7 +352,7 @@ describe('templatesManager', () => {
         title: 'Test'
       }
 
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(existingTemplate))
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await markTemplateUsed('test-id')
 
@@ -468,7 +480,7 @@ describe('templatesManager', () => {
     test('exports all templates', async () => {
       const mockTemplates = [{ id: '1', type: 'task', title: 'Test' }]
 
-      mockDB.mockStore.getAll.mockReturnValue(createMockRequest(mockTemplates))
+      mockDB.mockDataStore.set('1', mockTemplates[0])
 
       const result = await exportTemplates()
 
@@ -484,7 +496,8 @@ describe('templatesManager', () => {
         { id: '2', type: 'task', title: 'Test 2' }
       ]
 
-      mockDB.mockStore.getAll.mockReturnValue(createMockRequest(mockTemplates))
+      mockDB.mockDataStore.set('1', mockTemplates[0])
+      mockDB.mockDataStore.set('2', mockTemplates[1])
 
       const result = await exportTemplates(['1'])
 
@@ -500,10 +513,8 @@ describe('templatesManager', () => {
         templates: [{ id: 'import-1', type: 'task', title: 'Imported Task' }]
       }
 
-      // Mock get to return null (no collision)
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
-      // Mock put to succeed
-      mockDB.mockStore.put.mockReturnValue(createMockRequest('import-1'))
+      // Ensure no collision by clearing the store
+      mockDB.mockDataStore.clear()
 
       const result = await importTemplates(importData)
 
@@ -518,16 +529,12 @@ describe('templatesManager', () => {
         templates: [{ id: 'existing-id', type: 'task', title: 'Imported Task' }]
       }
 
-      // Mock get to return existing template (collision)
-      mockDB.mockStore.get.mockReturnValue(
-        createMockRequest({
-          id: 'existing-id',
-          title: 'Existing',
-          type: 'task'
-        })
-      )
-      // Mock put to succeed with new ID
-      mockDB.mockStore.put.mockReturnValue(createMockRequest('new-uuid'))
+      // Mock an existing template with collision
+      mockDB.mockDataStore.set('existing-id', {
+        id: 'existing-id',
+        title: 'Existing',
+        type: 'task'
+      })
 
       const result = await importTemplates(importData)
 
@@ -594,10 +601,7 @@ describe('templatesManager', () => {
         ]
       }
 
-      // Mock get to return null (no collision)
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
-      // Mock put to succeed for valid template
-      mockDB.mockStore.put.mockReturnValue(createMockRequest('1'))
+      mockDB.mockDataStore.clear()
 
       const result = await importTemplates(importData)
 
@@ -616,10 +620,7 @@ describe('templatesManager', () => {
         ]
       }
 
-      // Mock get to return null (no collision)
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
-      // Mock put to succeed for valid template
-      mockDB.mockStore.put.mockReturnValue(createMockRequest('1'))
+      mockDB.mockDataStore.clear()
 
       const result = await importTemplates(importData)
 
