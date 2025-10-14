@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
 import { generateSecureUUID } from '../utils/uuidGenerator'
+import { createLogger } from '../utils/logger'
+
+const logger = createLogger('useTasksState')
 
 /**
  * Custom hook for managing tasks state in Eisenhower Matrix
@@ -20,7 +23,7 @@ export function useTasksState() {
       try {
         setTasks(JSON.parse(savedTasks))
       } catch (e) {
-        console.error('Failed to parse saved tasks:', e)
+        logger.error('Failed to parse saved tasks:', e)
       }
     }
   }, [])
@@ -30,7 +33,7 @@ export function useTasksState() {
     try {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
     } catch (e) {
-      console.error('Failed to save tasks:', e)
+      logger.error('Failed to save tasks:', e)
       // Note: Errors are logged but don't throw to avoid breaking the component
       // The parent component should handle showing error messages to users
     }

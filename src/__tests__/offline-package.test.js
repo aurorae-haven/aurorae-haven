@@ -13,10 +13,15 @@
 import { execSync } from 'child_process'
 import { existsSync, readFileSync, statSync, readdirSync } from 'fs'
 import { join } from 'path'
+import {
+  DIST_DIR,
+  DIST_OFFLINE_DIR,
+  OUTPUT_DIR
+} from '../../scripts/buildConstants.js'
 
 describe('Offline Package - Build Process', () => {
-  const distOfflineDir = 'dist-offline-build'
-  const outputDir = 'dist-offline'
+  const distOfflineDir = DIST_OFFLINE_DIR
+  const outputDir = OUTPUT_DIR
 
   // Note: These tests validate the build configuration and expected output
   // The actual build is performed by CI/CD workflows
@@ -49,7 +54,8 @@ describe('Offline Package - Build Process', () => {
     )
     // Verify the script checks for dist directory existence
     expect(scriptContent).toMatch(/existsSync\s*\(\s*DIST_DIR\s*\)/)
-    expect(scriptContent).toMatch(/DIST_DIR\s*=\s*(['"])\s*dist\s*\1/)
+    // Verify the script imports DIST_DIR from buildConstants
+    expect(scriptContent).toMatch(/import.*DIST_DIR.*from.*buildConstants/)
   })
 
   test('offline build uses relative base path', () => {

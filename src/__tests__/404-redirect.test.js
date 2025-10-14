@@ -33,7 +33,8 @@ describe('404.html Redirect Logic', () => {
       }
 
       // Simulate 404.html logic
-      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      const redirectPath =
+        mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
@@ -49,7 +50,8 @@ describe('404.html Redirect Logic', () => {
         origin: 'https://example.github.io'
       }
 
-      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      const redirectPath =
+        mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
@@ -65,7 +67,8 @@ describe('404.html Redirect Logic', () => {
         origin: 'https://example.github.io'
       }
 
-      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      const redirectPath =
+        mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
@@ -81,7 +84,8 @@ describe('404.html Redirect Logic', () => {
         origin: 'https://example.github.io'
       }
 
-      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      const redirectPath =
+        mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       expect(sessionStorage.getItem('redirectPath')).toBe(
@@ -174,7 +178,8 @@ describe('404.html Redirect Logic', () => {
       }
 
       // Simulate 404.html logic
-      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      const redirectPath =
+        mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       const basePath =
@@ -202,7 +207,8 @@ describe('404.html Redirect Logic', () => {
       }
 
       // Simulate 404.html logic
-      const redirectPath = mockLocation.pathname + mockLocation.search + mockLocation.hash
+      const redirectPath =
+        mockLocation.pathname + mockLocation.search + mockLocation.hash
       sessionStorage.setItem('redirectPath', redirectPath)
 
       const basePath =

@@ -65,30 +65,30 @@ describe('reloadPageAfterDelay', () => {
   test('schedules reload with default delay when no window object provided', () => {
     // This test verifies backward compatibility by checking setTimeout is called with default delay
     const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
-    
+
     reloadPageAfterDelay()
-    
+
     // Verify setTimeout was called with correct default delay (1500ms)
     expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), 1500)
-    
+
     setTimeoutSpy.mockRestore()
   })
 
   test('gracefully handles absence of window without throwing', () => {
     // Pass an object without location.reload to simulate incompatible environment
     const invalidWindow = { location: {} }
-    
+
     // Create setTimeout spy before invocation to avoid redundant calls
     const setTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
-    
+
     // Function should not throw when window.location.reload is not available
     // and setTimeout should not be called
     expect(() => {
       reloadPageAfterDelay(1000, invalidWindow)
     }).not.toThrow()
-    
+
     expect(setTimeoutSpy).not.toHaveBeenCalled()
-    
+
     setTimeoutSpy.mockRestore()
   })
 
@@ -101,16 +101,16 @@ describe('reloadPageAfterDelay', () => {
       },
       setTimeout: customSetTimeout
     }
-    
+
     // Spy on globalThis.setTimeout to verify it's NOT called
     const globalSetTimeoutSpy = jest.spyOn(globalThis, 'setTimeout')
-    
+
     reloadPageAfterDelay(2000, windowWithCustomSetTimeout)
-    
+
     // Verify that the custom setTimeout was called, not the global one
     expect(customSetTimeout).toHaveBeenCalledWith(expect.any(Function), 2000)
     expect(globalSetTimeoutSpy).not.toHaveBeenCalled()
-    
+
     globalSetTimeoutSpy.mockRestore()
   })
 })

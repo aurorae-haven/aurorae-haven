@@ -11,23 +11,92 @@
     -->
     <script>
       // GitHub Pages SPA redirect logic
-      // This script runs when a user navigates directly to a route (e.g., /aurorae-haven/schedule)
+      // This script runs when a user navigates directly to a route (e.g., /repo-name/page)
       // and GitHub Pages serves this 404.html file.
 
-      // Store the current path (including query and hash) so the SPA can restore it after redirect
-      sessionStorage.setItem(
-        'redirectPath',
-        location.pathname + location.search + location.hash
-      )
+      ;(function () {
+        // Shared utility functions for redirect logic (inlined from redirectHelpers.js)
+        // These match the implementation in src/utils/redirectHelpers.js to ensure consistency
 
-      // Compute the base path (directory containing this 404.html) to redirect to index.html
-      // Example: /aurorae-haven/schedule -> /aurorae-haven/
-      var pathSegments = location.pathname.split('/').slice(0, -1)
-      var basePath = location.origin + pathSegments.join('/') + '/'
+        /**
+         * Build the full redirect path including pathname, search, and hash
+         * @param {string} pathname - The pathname
+         * @param {string} search - The query string
+         * @param {string} hash - The hash fragment
+         * @returns {string} The complete redirect path
+         */
+        function buildRedirectPath(pathname, search, hash) {
+          return pathname + search + hash
+        }
 
-      // Redirect to the base path (index.html will handle the SPA routing)
-      // The React app reads redirectPath from sessionStorage and navigates to the correct route
-      location.replace(basePath)
+        /**
+         * Compute the base path for GitHub Pages project site redirect
+         * @param {string} pathname - The current pathname
+         * @param {string} origin - The origin URL
+         * @returns {string} The base path to redirect to
+         */
+        function computeBasePath(pathname, origin) {
+          // Filter out empty segments from pathname
+          var pathSegments = pathname.split('/').filter((s) => s !== '')
+
+          // For paths like /repo-name/page, we want /repo-name/
+          // For paths like /page, we want /page/
+          // This ensures we redirect to the first path segment (the app base)
+          var basePath
+          if (pathSegments.length > 0) {
+            // Use the first segment as the base
+            basePath = origin + '/' + pathSegments[0] + '/'
+          } else {
+            // Fallback to root for empty paths
+            basePath = origin + '/'
+          }
+
+          return basePath
+        }
+
+        // Delay before redirect to ensure sessionStorage write completes
+        // This value was chosen to prevent race conditions where the redirect
+        // happens before sessionStorage.setItem() completes, which would cause
+        // the redirectPath to be lost and result in 404 errors after redirect.
+        // 10ms is sufficient for sessionStorage operations while remaining
+        // imperceptible to users (well below the 100ms perception threshold).
+        // 10ms chosen as it is well below the 100ms perception threshold for users.
+        var REDIRECT_DELAY_MS = 10
+
+        // Debug logging
+        console.log('[404.html] Current location:', location.href)
+        console.log('[404.html] Pathname:', location.pathname)
+        console.log('[404.html] Origin:', location.origin)
+
+        // Store the current path (including query and hash) so the SPA can restore it after redirect
+        // Use shared utility function for consistency
+        var redirectPath = buildRedirectPath(
+          location.pathname,
+          location.search,
+          location.hash
+        )
+
+        try {
+          sessionStorage.setItem('redirectPath', redirectPath)
+          console.log(
+            '[404.html] Stored redirectPath:',
+            sessionStorage.getItem('redirectPath')
+          )
+        } catch (e) {
+          console.error('[404.html] Failed to store redirectPath:', e)
+        }
+
+        // Compute the base path to redirect to using shared utility function
+        var basePath = computeBasePath(location.pathname, location.origin)
+
+        console.log('[404.html] Computed base path:', basePath)
+        console.log('[404.html] Redirecting in ' + REDIRECT_DELAY_MS + 'ms...')
+
+        // Use the delay to ensure sessionStorage is written before redirect
+        setTimeout(function () {
+          location.replace(basePath)
+        }, REDIRECT_DELAY_MS)
+      })()
     </script>
   </head>
   <body>

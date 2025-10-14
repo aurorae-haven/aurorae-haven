@@ -4,6 +4,10 @@ import {
   isIndexedDBAvailable,
   importAllData as importToIndexedDB
 } from './indexedDBManager'
+import { createLogger } from './logger'
+import { PAGE_RELOAD_DELAY_MS } from './uiConstants'
+
+const logger = createLogger('ImportData')
 
 // Data schema field names
 const DATA_FIELDS = {
@@ -33,12 +37,12 @@ export const IMPORT_SUCCESS_MESSAGE =
 
 /**
  * Reload page after a delay
- * @param {number} [delay=1500] - Delay in milliseconds (default: 1500ms)
+ * @param {number} [delay=PAGE_RELOAD_DELAY_MS] - Delay in milliseconds (default: PAGE_RELOAD_DELAY_MS)
  * @param {Window|undefined} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
  * @returns {void}
  */
 export function reloadPageAfterDelay(
-  delay = 1500,
+  delay = PAGE_RELOAD_DELAY_MS,
   windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined
 ) {
   // Early return if no window object available
@@ -83,7 +87,7 @@ export async function importJSON(file) {
             resolve(true)
             return
           } catch (e) {
-            console.warn(
+            logger.warn(
               'IndexedDB import failed, falling back to localStorage:',
               e
             )
@@ -97,7 +101,7 @@ export async function importJSON(file) {
           resolve(true)
         }
       } catch (e) {
-        console.error('Import failed:', e)
+        logger.error('Import failed:', e)
         reject(new Error('Import failed: ' + e.message))
       }
     }

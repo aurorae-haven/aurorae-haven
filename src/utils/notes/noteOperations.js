@@ -3,6 +3,9 @@ import {
   generateBrainDumpFilename,
   extractTitleFromFilename
 } from '../fileHelpers'
+import { createLogger } from '../logger'
+
+const logger = createLogger('NoteOperations')
 
 /**
  * Create a new note object
@@ -136,7 +139,7 @@ export function loadNotesFromStorage() {
     // JSON.parse with error handling to prevent injection attacks
     return entriesData ? JSON.parse(entriesData) : []
   } catch (e) {
-    console.warn('Failed to parse brainDumpEntries:', e)
+    logger.warn('Failed to parse brainDumpEntries:', e)
     return []
   }
 }

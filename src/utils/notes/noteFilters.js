@@ -2,6 +2,15 @@
  * Utilities for filtering and organizing notes in Brain Dump
  */
 
+import { FILTER_RECENT_DAYS } from '../scheduleConstants'
+
+// Number of days for "latest" filter
+const LATEST_FILTER_DAYS = 7
+
+// Month/year date indices
+const MONTH_START_DAY = 1
+const YEAR_START_MONTH = 0
+
 /**
  * Get unique categories from all notes
  * @param {Array} notes - Array of note objects
@@ -31,21 +40,29 @@ export function applyDateFilter(note, filterOptions) {
     case 'latest': {
       // Last 7 days
       const sevenDaysAgo = new Date(now)
-      sevenDaysAgo.setDate(now.getDate() - 7)
+      sevenDaysAgo.setDate(now.getDate() - LATEST_FILTER_DAYS)
       return noteDate >= sevenDaysAgo
     }
     case 'oldest': {
       // Older than 30 days
       const thirtyDaysAgo = new Date(now)
-      thirtyDaysAgo.setDate(now.getDate() - 30)
+      thirtyDaysAgo.setDate(now.getDate() - FILTER_RECENT_DAYS)
       return noteDate < thirtyDaysAgo
     }
     case 'year': {
-      const startOfYear = new Date(now.getFullYear(), 0, 1)
+      const startOfYear = new Date(
+        now.getFullYear(),
+        YEAR_START_MONTH,
+        MONTH_START_DAY
+      )
       return noteDate >= startOfYear
     }
     case 'month': {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+      const startOfMonth = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        MONTH_START_DAY
+      )
       return noteDate >= startOfMonth
     }
     case 'day': {

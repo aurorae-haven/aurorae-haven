@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { getStatsByType, isIndexedDBAvailable } from '../utils/indexedDBManager'
+import { createLogger } from '../utils/logger'
+
+const logger = createLogger('Stats')
 
 function Stats() {
   const [stats, setStats] = useState({
@@ -34,7 +37,7 @@ function Stats() {
           routineTimes: routineStats
         })
       } catch (e) {
-        console.error('Failed to load stats:', e)
+        logger.error('Failed to load stats:', e)
       } finally {
         setLoading(false)
       }

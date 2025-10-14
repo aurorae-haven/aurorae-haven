@@ -1,6 +1,9 @@
 // Markdown Sanitization Configuration for Brain Dump
 // Configures DOMPurify to safely render user-generated markdown content
 // Prevents XSS attacks while allowing safe HTML and KaTeX math rendering
+import { createLogger } from './logger'
+
+const logger = createLogger('Sanitization')
 
 // Track if hooks have been registered to prevent duplicate registration
 const HOOK_REGISTERED = Symbol.for('aurorae_haven_sanitization_hook')
@@ -15,7 +18,7 @@ export function configureSanitization(DOMPurifyInstance) {
   const DOMPurify = DOMPurifyInstance || window.DOMPurify
 
   if (!DOMPurify) {
-    console.error('DOMPurify not loaded')
+    logger.error('DOMPurify not loaded')
     return null
   }
 

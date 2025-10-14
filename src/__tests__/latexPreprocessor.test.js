@@ -110,7 +110,9 @@ $$`
 \\beta = z
 $$`
         const result = preprocessLatex(content)
-        expect(result).toBe('$$\n\\phi = x \\\\ \\alpha = y \\\\ \\beta = z\n$$')
+        expect(result).toBe(
+          '$$\n\\phi = x \\\\ \\alpha = y \\\\ \\beta = z\n$$'
+        )
       })
 
       test('handles empty lines in display math', () => {

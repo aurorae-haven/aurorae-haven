@@ -1,3 +1,8 @@
+import {
+  DEFAULT_GITHUB_PAGES_BASE_PATH,
+  DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH
+} from '../utils/configConstants'
+
 /**
  * Tests for basename normalization in React Router
  * Validates that offline builds with BASE_URL='./' are normalized to '/' for React Router
@@ -14,12 +19,12 @@ describe('Basename Normalization for Offline Builds', () => {
       expect(basename).not.toBe('./')
     })
 
-    test('preserves absolute paths like "/aurorae-haven/" for production', () => {
+    test('preserves absolute paths like DEFAULT_GITHUB_PAGES_BASE_PATH for production', () => {
       // Production build should keep the full path
-      const baseUrl = '/aurorae-haven/'
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH
       const basename = baseUrl === './' ? '/' : baseUrl
 
-      expect(basename).toBe('/aurorae-haven/')
+      expect(basename).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH)
       expect(basename).not.toBe('./')
     })
 
@@ -54,8 +59,8 @@ describe('Basename Normalization for Offline Builds', () => {
       expect(isValidReactRouterBasename).toBe(true)
     })
 
-    test('validates that "/aurorae-haven/" is a valid React Router basename', () => {
-      const validBasename = '/aurorae-haven/'
+    test('validates that DEFAULT_GITHUB_PAGES_BASE_PATH is a valid React Router basename', () => {
+      const validBasename = DEFAULT_GITHUB_PAGES_BASE_PATH
       const isValidReactRouterBasename = validBasename.startsWith('/')
 
       expect(isValidReactRouterBasename).toBe(true)
@@ -76,16 +81,16 @@ describe('Basename Normalization for Offline Builds', () => {
       expect(basename).not.toBe('./')
     })
 
-    test('simulates production build with VITE_BASE_URL="/aurorae-haven/"', () => {
+    test('simulates production build with VITE_BASE_URL=DEFAULT_GITHUB_PAGES_BASE_PATH', () => {
       // Mock import.meta.env.BASE_URL for production build
-      const VITE_BASE_URL = '/aurorae-haven/'
+      const VITE_BASE_URL = DEFAULT_GITHUB_PAGES_BASE_PATH
 
       // Apply the same normalization logic from src/index.jsx
       const baseUrl = VITE_BASE_URL || '/'
       const basename = baseUrl === './' ? '/' : baseUrl
 
       // Verify no normalization needed
-      expect(basename).toBe('/aurorae-haven/')
+      expect(basename).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH)
       expect(basename).not.toBe('./')
     })
   })
@@ -143,10 +148,11 @@ describe('Basename Normalization for Offline Builds', () => {
     })
 
     test('handles basename without trailing slash', () => {
-      const baseUrl = '/aurorae-haven'
+      // Test with path similar to DEFAULT_GITHUB_PAGES_BASE_PATH but without trailing slash
+      const baseUrl = DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH
       const basename = baseUrl === './' ? '/' : baseUrl
 
-      expect(basename).toBe('/aurorae-haven')
+      expect(basename).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH)
     })
   })
 })

@@ -6,6 +6,15 @@ import {
   IMPORT_SUCCESS_MESSAGE
 } from './dataManager'
 import { generateSecureUUID } from './uuidGenerator'
+import { createLogger } from './logger'
+import {
+  PAGE_RELOAD_DELAY_MS,
+  TOAST_DISPLAY_DURATION_MS,
+  NAV_PROMPT_SUPPRESS_WINDOW_MS
+} from './uiConstants'
+import { ISO_DATE_START_INDEX, ISO_DATE_END_INDEX } from './timeConstants'
+
+const logger = createLogger('PageHelpers')
 ;(function () {
   let exported = false
   let suppressPrompt = false
@@ -16,7 +25,9 @@ import { generateSecureUUID } from './uuidGenerator'
     const url = URL.createObjectURL(blob)
 
     // Generate filename: aurorae_YYYY-MM-DD_UUID.json
-    const date = new Date().toISOString().split('T')[0]
+    const date = new Date()
+      .toISOString()
+      .slice(ISO_DATE_START_INDEX, ISO_DATE_END_INDEX)
     const uuid = generateSecureUUID()
     const filename = `aurorae_${date}_${uuid}.json`
 
@@ -38,9 +49,9 @@ import { generateSecureUUID } from './uuidGenerator'
       toast(IMPORT_SUCCESS_MESSAGE)
 
       // Use shared utility function for page reload
-      reloadPageAfterDelay(1500)
+      reloadPageAfterDelay(PAGE_RELOAD_DELAY_MS)
     } catch (e) {
-      console.error(e)
+      logger.error(e)
       toast('Import failed: ' + e.message)
     }
   }
@@ -52,7 +63,7 @@ import { generateSecureUUID } from './uuidGenerator'
     t.style.display = 'block'
     setTimeout(() => {
       t.style.display = 'none'
-    }, 3800)
+    }, TOAST_DISPLAY_DURATION_MS)
   }
 
   // Detect internal navigation and suppress the prompt for that event
@@ -60,7 +71,7 @@ import { generateSecureUUID } from './uuidGenerator'
     suppressPrompt = true
     setTimeout(() => {
       suppressPrompt = false
-    }, 2000) // safety window
+    }, NAV_PROMPT_SUPPRESS_WINDOW_MS)
   }
 
   window.AuroraeIO = { exportJSON, importJSON }

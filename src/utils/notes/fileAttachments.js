@@ -1,5 +1,12 @@
 // TAB-BDP-FIL-01: OPFS file attachment management
 // Implements Origin Private File System storage for secure file attachments
+import { createLogger } from '../logger'
+import { BYTES_PER_KILOBYTE } from '../themeConstants'
+
+const logger = createLogger('FileAttachments')
+
+// Precision for file size display (decimal places)
+const FILE_SIZE_PRECISION = 100
 
 /**
  * File Attachments Manager
@@ -19,7 +26,7 @@ export class FileAttachments {
    */
   async initialize() {
     if (!this.opfsSupported) {
-      console.warn('OPFS not supported in this browser')
+      logger.warn('OPFS not supported in this browser')
       return false
     }
 
@@ -27,7 +34,7 @@ export class FileAttachments {
       this.dirHandle = await navigator.storage.getDirectory()
       return true
     } catch (e) {
-      console.error('Failed to initialize OPFS:', e)
+      logger.error('Failed to initialize OPFS:', e)
       return false
     }
   }
@@ -65,7 +72,7 @@ export class FileAttachments {
         timestamp: Date.now()
       }
     } catch (e) {
-      console.error('Failed to save file:', e)
+      logger.error('Failed to save file:', e)
       throw e
     }
   }
@@ -85,7 +92,7 @@ export class FileAttachments {
       const file = await fileHandle.getFile()
       return file
     } catch (e) {
-      console.error('Failed to get file:', e)
+      logger.error('Failed to get file:', e)
       throw e
     }
   }
@@ -104,7 +111,7 @@ export class FileAttachments {
       await this.dirHandle.removeEntry(fileName)
       return true
     } catch (e) {
-      console.error('Failed to delete file:', e)
+      logger.error('Failed to delete file:', e)
       throw e
     }
   }
@@ -133,7 +140,7 @@ export class FileAttachments {
       }
       return files
     } catch (e) {
-      console.error('Failed to list files:', e)
+      logger.error('Failed to list files:', e)
       return []
     }
   }
@@ -145,10 +152,16 @@ export class FileAttachments {
    */
   formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes'
-    const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+    const i = Math.floor(Math.log(bytes) / Math.log(BYTES_PER_KILOBYTE))
+    return (
+      Math.round(
+        (bytes / Math.pow(BYTES_PER_KILOBYTE, i)) * FILE_SIZE_PRECISION
+      ) /
+        FILE_SIZE_PRECISION +
+      ' ' +
+      sizes[i]
+    )
   }
 
   /**

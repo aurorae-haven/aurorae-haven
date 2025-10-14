@@ -221,9 +221,7 @@ describe('templateInstantiation', () => {
 
   describe('instantiateRoutineFromTemplate', () => {
     beforeEach(() => {
-      routinesManager.createRoutine.mockResolvedValue(
-        'test-routine-uuid-456'
-      )
+      routinesManager.createRoutine.mockResolvedValue('test-routine-uuid-456')
     })
 
     test('creates a routine from a routine template', async () => {
@@ -399,9 +397,7 @@ describe('templateInstantiation', () => {
 
   describe('instantiateTemplate', () => {
     beforeEach(() => {
-      routinesManager.createRoutine.mockResolvedValue(
-        'test-routine-uuid-456'
-      )
+      routinesManager.createRoutine.mockResolvedValue('test-routine-uuid-456')
     })
 
     test('instantiates task template', async () => {

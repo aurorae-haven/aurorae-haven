@@ -3,6 +3,9 @@
  * Handles filename sanitization and formatting
  */
 
+import { FILENAME_MAX_LENGTH } from './uiConstants'
+import { ISO_DATE_START_INDEX, ISO_DATE_END_INDEX } from './timeConstants'
+
 /**
  * Regex to match Windows reserved device names:
  *   - CON, PRN, AUX, NUL, COM1-9, LPT1-9
@@ -12,14 +15,18 @@
  */
 const WINDOWS_RESERVED_NAMES = /^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i
 
+// Number of padding digits for time formatting
+const TIME_PADDING_LENGTH = 2
+const PADDING_CHAR = '0'
+
 /**
  * Sanitizes a string to be safe for use as a filename
  * Removes dangerous characters, handles OS-specific issues, and limits length
  * @param {string} text - The text to sanitize
- * @param {number} maxLength - Maximum length of the sanitized string (default: 30)
+ * @param {number} maxLength - Maximum length of the sanitized string (default: FILENAME_MAX_LENGTH)
  * @returns {string} - Sanitized filename-safe string
  */
-export function sanitizeFilename(text, maxLength = 30) {
+export function sanitizeFilename(text, maxLength = FILENAME_MAX_LENGTH) {
   if (!text || typeof text !== 'string') {
     return 'untitled'
   }
@@ -47,9 +54,9 @@ export function sanitizeFilename(text, maxLength = 30) {
   sanitized = sanitized.toLowerCase()
 
   // Check for Windows reserved names as base filename (before any extension or underscore)
-  const baseName = sanitized.split('_')[0].split('.')[0];
+  const baseName = sanitized.split('_')[0].split('.')[0]
   if (WINDOWS_RESERVED_NAMES.test(baseName)) {
-    sanitized = `file_${sanitized}`;
+    sanitized = `file_${sanitized}`
   }
 
   // Handle empty result after sanitization
@@ -69,8 +76,11 @@ export function sanitizeFilename(text, maxLength = 30) {
  */
 export function generateBrainDumpFilename(title) {
   const now = new Date()
-  const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '')
-  const timeStr = `${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`
+  const dateStr = now
+    .toISOString()
+    .slice(ISO_DATE_START_INDEX, ISO_DATE_END_INDEX)
+    .replace(/-/g, '')
+  const timeStr = `${String(now.getHours()).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}${String(now.getMinutes()).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
   const safeTitle = sanitizeFilename(title)
 
   return `braindump_${safeTitle}_${dateStr}_${timeStr}.md`

@@ -1,6 +1,10 @@
 // IndexedDB Manager for Aurorae Haven
 // Implements ARC-DAT-01: Structured data storage in IndexedDB
 // Implements ARC-DAT-02: File attachment references
+import { createLogger } from './logger'
+import { DEFAULT_BACKUP_LIMIT } from './uiConstants'
+
+const logger = createLogger('IndexedDB')
 
 const DB_NAME = 'aurorae_haven_db'
 const DB_VERSION = 2
@@ -413,7 +417,7 @@ export async function saveBackup(data) {
  * @param {number} limit
  * @returns {Promise<Array>}
  */
-export async function getRecentBackups(limit = 10) {
+export async function getRecentBackups(limit = DEFAULT_BACKUP_LIMIT) {
   const backups = await getAll(STORES.BACKUPS)
   return backups.sort((a, b) => b.timestamp - a.timestamp).slice(0, limit)
 }
@@ -423,7 +427,7 @@ export async function getRecentBackups(limit = 10) {
  * @param {number} keepCount
  * @returns {Promise<void>}
  */
-export async function cleanOldBackups(keepCount = 10) {
+export async function cleanOldBackups(keepCount = DEFAULT_BACKUP_LIMIT) {
   const backups = await getAll(STORES.BACKUPS)
   const sorted = backups.sort((a, b) => b.timestamp - a.timestamp)
 
@@ -541,7 +545,7 @@ export async function exportAllData() {
     const tasksStr = localStorage.getItem('aurorae_tasks')
     data.auroraeTasksData = tasksStr ? JSON.parse(tasksStr) : null
   } catch (e) {
-    console.warn('Failed to parse aurorae_tasks during export:', e)
+    logger.warn('Failed to parse aurorae_tasks during export:', e)
     data.auroraeTasksData = null
   }
 

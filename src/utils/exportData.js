@@ -5,6 +5,9 @@ import {
   isIndexedDBAvailable,
   exportAllData as exportFromIndexedDB
 } from './indexedDBManager'
+import { createLogger } from './logger'
+
+const logger = createLogger('ExportData')
 
 // Data schema field names - centralized to prevent drift
 const DATA_FIELDS = {
@@ -44,7 +47,7 @@ export async function getDataTemplate() {
         return indexedDBData
       }
     } catch (e) {
-      console.warn('IndexedDB export failed, falling back to localStorage:', e)
+      logger.warn('IndexedDB export failed, falling back to localStorage:', e)
     }
   }
 
@@ -60,7 +63,7 @@ export async function getDataTemplate() {
       const raw = localStorage.getItem(field)
       data[field] = raw ? JSON.parse(raw) : []
     } catch (e) {
-      console.error(`Error loading ${field} from localStorage:`, e)
+      logger.error(`Error loading ${field} from localStorage:`, e)
       data[field] = []
     }
   }
@@ -74,7 +77,7 @@ export async function getDataTemplate() {
       }
     }
   } catch (e) {
-    console.warn('Failed to parse sequences from localStorage:', e)
+    logger.warn('Failed to parse sequences from localStorage:', e)
   }
 
   // Also check for aurorae_tasks (Eisenhower matrix format)
@@ -85,16 +88,13 @@ export async function getDataTemplate() {
       if (auroraeTasksData) {
         data.auroraeTasksData = auroraeTasksData
         // Also flatten to tasks array for backward compatibility
-        data.tasks = []
-        for (const quadrant of Object.values(auroraeTasksData)) {
-          if (Array.isArray(quadrant)) {
-            data.tasks.push(...quadrant)
-          }
-        }
+        data.tasks = Object.values(auroraeTasksData).flatMap((quadrant) =>
+          Array.isArray(quadrant) ? quadrant : []
+        )
       }
     }
   } catch (e) {
-    console.warn('Failed to parse aurorae_tasks during export:', e)
+    logger.warn('Failed to parse aurorae_tasks during export:', e)
   }
 
   // Parse brainDumpEntries once for both dumps override and brainDump.entries
@@ -109,7 +109,7 @@ export async function getDataTemplate() {
       }
     }
   } catch (e) {
-    console.warn('Failed to parse brainDumpEntries during export:', e)
+    logger.warn('Failed to parse brainDumpEntries during export:', e)
     entries = []
   }
 
@@ -119,7 +119,7 @@ export async function getDataTemplate() {
     const versionsStr = localStorage.getItem('brainDumpVersions')
     versions = versionsStr ? JSON.parse(versionsStr) : []
   } catch (e) {
-    console.warn('Failed to parse brainDumpVersions during export:', e)
+    logger.warn('Failed to parse brainDumpVersions during export:', e)
     versions = []
   }
 
@@ -176,7 +176,7 @@ export async function exportJSON() {
     URL.revokeObjectURL(url)
     return true
   } catch (e) {
-    console.error('Export failed:', e)
+    logger.error('Export failed:', e)
     throw new Error('Export failed: ' + e.message)
   }
 }

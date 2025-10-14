@@ -7,6 +7,9 @@ import { generateSecureUUID } from './uuidGenerator'
 import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
 import { MS_PER_DAY } from './timeConstants'
+import { createLogger } from './logger'
+
+const logger = createLogger('TemplateInstantiation')
 
 /**
  * Instantiate a task from a task template
@@ -62,8 +65,11 @@ export function instantiateTaskFromTemplate(template) {
           urgent_not_important: [],
           not_urgent_not_important: []
         }
-  } catch (error) {
-    console.error('Failed to parse saved tasks:', error)
+  } catch (err) {
+    logger.error(
+      `Error while instantiating task from template "${template.title || '[unknown title]'}": Failed to parse saved tasks from localStorage.`,
+      err
+    )
     tasks = {
       urgent_important: [],
       not_urgent_important: [],
@@ -81,10 +87,10 @@ export function instantiateTaskFromTemplate(template) {
   // Save back to localStorage
   try {
     localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
-  } catch (error) {
-    console.error('Failed to save task')
+  } catch (err) {
+    logger.error('Failed to save task:', err)
     // Check for quota exceeded error
-    if (error.name === 'QuotaExceededError' || error.code === 22) {
+    if (err.name === 'QuotaExceededError' || err.code === 22) {
       throw new Error(
         'Storage quota exceeded. Please free up space by deleting old tasks.'
       )
@@ -241,7 +247,9 @@ export async function instantiateTemplatesBatch(templates) {
     for (const template of taskTemplates) {
       const validation = validateTemplateData(template)
       if (!validation.valid) {
-        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+        throw new Error(
+          `Invalid template data: ${validation.errors.join('; ')}`
+        )
       }
 
       // Validate dueOffset if present
@@ -267,8 +275,8 @@ export async function instantiateTemplatesBatch(templates) {
             urgent_not_important: [],
             not_urgent_not_important: []
           }
-    } catch (error) {
-      console.error('Failed to parse saved tasks:', error)
+    } catch (err) {
+      logger.error('Failed to parse saved tasks:', err)
       tasks = {
         urgent_important: [],
         not_urgent_important: [],
@@ -308,9 +316,9 @@ export async function instantiateTemplatesBatch(templates) {
     // Save all tasks once
     try {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
-    } catch (error) {
-      console.error('Failed to save tasks:', error)
-      if (error.name === 'QuotaExceededError' || error.code === 22) {
+    } catch (err) {
+      logger.error('Failed to save tasks:', err)
+      if (err.name === 'QuotaExceededError' || err.code === 22) {
         throw new Error(
           'Storage quota exceeded. Please free up space by deleting old tasks.'
         )
@@ -327,7 +335,9 @@ export async function instantiateTemplatesBatch(templates) {
       // Validate template data
       const validation = validateTemplateData(template)
       if (!validation.valid) {
-        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+        throw new Error(
+          `Invalid template data: ${validation.errors.join('; ')}`
+        )
       }
 
       // Additional validation for routine-specific fields
