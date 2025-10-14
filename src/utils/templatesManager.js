@@ -55,13 +55,15 @@ export async function getAllTemplates() {
     const store = tx.objectStore(TEMPLATES_STORE)
     const templates = await store.getAll()
     await tx.done
-    
+
     // Ensure we always return an array
     if (!Array.isArray(templates)) {
-      logger.warn('getAllTemplates: store.getAll() did not return an array, returning empty array')
+      logger.warn(
+        'getAllTemplates: store.getAll() did not return an array, returning empty array'
+      )
       return []
     }
-    
+
     return templates
   } catch (error) {
     logger.error('Error loading templates:', error)
