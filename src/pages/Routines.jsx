@@ -1,9 +1,11 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useRoutineRunner } from '../hooks/useRoutineRunner'
 import { formatTime } from '../utils/routineRunner'
 import { Link } from 'react-router-dom'
 import { exportRoutines, importRoutines } from '../utils/routinesManager'
+import { saveTemplate } from '../utils/templatesManager'
 import { createLogger } from '../utils/logger'
+import ConfirmModal from '../components/common/ConfirmModal'
 
 const logger = createLogger('Routines')
 
@@ -12,8 +14,61 @@ function Routines() {
   const [toastMessage, setToastMessage] = useState('')
   const [showToast, setShowToast] = useState(false)
   const fileInputRef = useRef(null)
+  
+  // TAB-RTN-18: Cancel confirmation modal state
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+  
+  // TAB-RTN-45: Reduced motion detection
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
   const runner = useRoutineRunner(selectedRoutine)
+
+  // TAB-RTN-45: Detect reduced motion preference
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    setPrefersReducedMotion(mediaQuery.matches)
+    
+    const handleChange = (e) => setPrefersReducedMotion(e.matches)
+    mediaQuery.addEventListener('change', handleChange)
+    
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [])
+
+  // TAB-RTN-44: Keyboard shortcuts
+  useEffect(() => {
+    if (!runner.state || !runner.state.isRunning) return
+
+    const handleKeyPress = (e) => {
+      // Ignore if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+        return
+      }
+
+      switch (e.key.toLowerCase()) {
+        case ' ':
+          e.preventDefault()
+          if (runner.complete) runner.complete()
+          break
+        case 'p':
+          e.preventDefault()
+          if (runner.togglePause) runner.togglePause()
+          break
+        case 's':
+          e.preventDefault()
+          if (runner.skip) runner.skip()
+          break
+        case 'escape':
+          e.preventDefault()
+          handleCancelRoutine()
+          break
+        default:
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyPress)
+    return () => window.removeEventListener('keydown', handleKeyPress)
+  }, [runner])
 
   // Start runner when selectedRoutine and runner are ready
   React.useEffect(() => {
@@ -35,10 +90,23 @@ function Routines() {
     setTimeout(() => setShowToast(false), 3000)
   }
 
-  // Stop/Cancel routine - TAB-RTN-18
+  // TAB-RTN-18: Stop/Cancel routine with confirmation
   const handleCancelRoutine = () => {
+    setShowCancelConfirm(true)
+  }
+
+  const confirmCancel = (keepProgress) => {
+    if (keepProgress) {
+      // Keep partial progress - logs and XP are preserved in runner state
+      logger.log('Routine cancelled - progress preserved')
+    } else {
+      // Discard progress
+      if (runner.reset) runner.reset()
+      logger.log('Routine cancelled - progress discarded')
+    }
     if (runner.cancel) runner.cancel()
     setSelectedRoutine(null)
+    setShowCancelConfirm(false)
   }
 
   // Handle routine data export - TAB-RTN-47
@@ -84,6 +152,29 @@ function Routines() {
     } catch (error) {
       logger.error('Failed to import routines:', error)
       showToastNotification('Import failed: ' + error.message)
+    }
+  }
+
+  // TAB-RTN-32: Save routine as template
+  const handleSaveAsTemplate = async () => {
+    if (!runner.state || !runner.state.routine) return
+
+    try {
+      const routine = runner.state.routine
+      const template = {
+        type: 'routine',
+        title: routine.name || routine.title,
+        tags: routine.tags || [],
+        steps: routine.steps || [],
+        estimatedDuration: routine.totalDuration || 0,
+        energyTag: routine.energyTag
+      }
+
+      await saveTemplate(template)
+      showToastNotification('Routine saved as template')
+    } catch (error) {
+      logger.error('Failed to save template:', error)
+      showToastNotification('Failed to save template')
     }
   }
 
@@ -369,7 +460,15 @@ function Routines() {
             aria-labelledby='summary-title'
           >
             <div className='modal-header'>
-              <h2 id='summary-title'>🎉 Routine Complete!</h2>
+              <h2
+                id='summary-title'
+                style={{
+                  // TAB-RTN-45: Reduced motion - disable text animations
+                  animation: prefersReducedMotion ? 'none' : undefined
+                }}
+              >
+                🎉 Routine Complete!
+              </h2>
               <button
                 className='btn'
                 onClick={() => {
@@ -383,7 +482,13 @@ function Routines() {
                 </svg>
               </button>
             </div>
-            <div className='modal-body'>
+            <div
+              className='modal-body'
+              style={{
+                // TAB-RTN-45: Reduced motion - disable slide-in animations
+                animation: prefersReducedMotion ? 'none' : undefined
+              }}
+            >
               <h3>{runner.summary.routineTitle}</h3>
 
               {/* Duration comparison */}
@@ -476,32 +581,46 @@ function Routines() {
                 </div>
               </div>
 
-              {/* Actions */}
+              {/* Actions - TAB-RTN-32: Added Save as Template */}
               <div
                 style={{
                   display: 'flex',
                   gap: '8px',
-                  justifyContent: 'flex-end'
+                  justifyContent: 'space-between'
                 }}
               >
                 <button
                   className='btn'
-                  onClick={() => {
-                    runner.reset()
-                    setSelectedRoutine(null)
-                  }}
+                  onClick={handleSaveAsTemplate}
+                  aria-label='Save routine as template'
                 >
-                  Close
+                  <svg className='icon' viewBox='0 0 24 24'>
+                    <path d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z' />
+                    <polyline points='17 21 17 13 7 13 7 21' />
+                    <polyline points='7 3 7 8 15 8' />
+                  </svg>
+                  Save as Template
                 </button>
-                <button
-                  className='btn btn-primary'
-                  onClick={() => {
-                    runner.reset()
-                    // Keep routine selected for another run
-                  }}
-                >
-                  Run Again
-                </button>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button
+                    className='btn'
+                    onClick={() => {
+                      runner.reset()
+                      setSelectedRoutine(null)
+                    }}
+                  >
+                    Close
+                  </button>
+                  <button
+                    className='btn btn-primary'
+                    onClick={() => {
+                      runner.reset()
+                      // Keep routine selected for another run
+                    }}
+                  >
+                    Run Again
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -526,6 +645,19 @@ function Routines() {
         >
           {toastMessage}
         </div>
+      )}
+
+      {/* TAB-RTN-18: Cancel confirmation modal */}
+      {showCancelConfirm && (
+        <ConfirmModal
+          title='Cancel Routine?'
+          message='Would you like to keep your partial progress (logs and XP)?'
+          confirmText='Keep Progress'
+          cancelText='Discard All'
+          onConfirm={() => confirmCancel(true)}
+          onCancel={() => confirmCancel(false)}
+          onClose={() => setShowCancelConfirm(false)}
+        />
       )}
     </>
   )
