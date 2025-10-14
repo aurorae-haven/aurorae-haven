@@ -14,6 +14,9 @@ import {
   formatTime
 } from '../utils/routineRunner'
 
+// Timer tick interval in milliseconds (1 second for countdown)
+const TIMER_TICK_INTERVAL_MS = 1000
+
 /**
  * Custom hook for managing routine execution
  * @param {Object} routine - Routine data to run
@@ -46,7 +49,7 @@ export function useRoutineRunner(routine) {
       const elapsed = now - lastTick
 
       // Only tick once per second for countdown
-      if (elapsed >= 1000) {
+      if (elapsed >= TIMER_TICK_INTERVAL_MS) {
         setState((prevState) => {
           const newState = tickTimer(prevState)
 

@@ -17,6 +17,59 @@ const TEMPLATES_STORE = 'templates'
 const SUPPORTED_VERSION_RANGE = '>=1.0 <2.0'
 const CURRENT_VERSION = '1.0'
 
+// Database connection management
+// Keep a single connection open for reuse to improve performance
+let dbConnection = null
+let connectionPromise = null
+
+/**
+ * Get or create database connection
+ * Reuses existing connection to avoid frequent open/close cycles
+ * @returns {Promise<IDBDatabase>}
+ */
+async function getDBConnection() {
+  if (dbConnection) {
+    return dbConnection
+  }
+
+  if (connectionPromise) {
+    return connectionPromise
+  }
+
+  connectionPromise = openDB()
+    .then((db) => {
+      dbConnection = db
+      connectionPromise = null
+      
+      // Handle connection close/error events
+      db.onclose = () => {
+        dbConnection = null
+      }
+      db.onerror = () => {
+        dbConnection = null
+      }
+      
+      return db
+    })
+    .catch((error) => {
+      connectionPromise = null
+      throw error
+    })
+
+  return connectionPromise
+}
+
+/**
+ * Close database connection
+ * Should only be called when application unloads or no longer needs DB access
+ */
+export function closeDBConnection() {
+  if (dbConnection) {
+    dbConnection.close()
+    dbConnection = null
+  }
+}
+
 /**
  * Check if a template version is supported
  * @param {string} version
@@ -36,7 +89,7 @@ function isSupportedVersion(version) {
 export async function initializeTemplates() {
   if (!isIndexedDBAvailable()) return
 
-  const db = await openDB()
+  const db = await getDBConnection()
   if (!db.objectStoreNames.contains(TEMPLATES_STORE)) {
     logger.warn('Templates store not found in IndexedDB')
   }
@@ -50,7 +103,7 @@ export async function getAllTemplates() {
   if (!isIndexedDBAvailable()) return []
 
   try {
-    const db = await openDB()
+    const db = await getDBConnection()
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(TEMPLATES_STORE, 'readonly')
       const store = transaction.objectStore(TEMPLATES_STORE)
@@ -75,7 +128,7 @@ export async function getAllTemplates() {
         }
       }
 
-      transaction.oncomplete = () => db.close()
+      // Note: DB connection is kept open for reuse, not closed after transaction
     })
   } catch (error) {
     logger.error('Error loading templates:', error)
@@ -92,7 +145,7 @@ export async function getTemplate(templateId) {
   if (!isIndexedDBAvailable()) return null
 
   try {
-    const db = await openDB()
+    const db = await getDBConnection()
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(TEMPLATES_STORE, 'readonly')
       const store = transaction.objectStore(TEMPLATES_STORE)
@@ -101,7 +154,7 @@ export async function getTemplate(templateId) {
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve(request.result || null)
 
-      transaction.oncomplete = () => db.close()
+      // Note: DB connection is kept open for reuse
     })
   } catch (error) {
     logger.error('Error loading template:', error)
@@ -126,7 +179,7 @@ export async function saveTemplate(template) {
   }
 
   try {
-    const db = await openDB()
+    const db = await getDBConnection()
 
     const templateData = {
       id: template.id || generateSecureUUID(),
@@ -156,7 +209,7 @@ export async function saveTemplate(template) {
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve(templateData.id)
 
-      transaction.oncomplete = () => db.close()
+      // Note: DB connection is kept open for reuse
     })
   } catch (error) {
     logger.error('Error saving template:', error)
@@ -176,7 +229,7 @@ export async function updateTemplate(templateId, updates) {
   }
 
   try {
-    const db = await openDB()
+    const db = await getDBConnection()
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
       const store = transaction.objectStore(TEMPLATES_STORE)
@@ -210,7 +263,7 @@ export async function updateTemplate(templateId, updates) {
         putRequest.onsuccess = () => resolve()
       }
 
-      transaction.oncomplete = () => db.close()
+      // Note: DB connection is kept open for reuse
     })
   } catch (error) {
     logger.error('Error updating template:', error)
@@ -229,7 +282,7 @@ export async function deleteTemplate(templateId) {
   }
 
   try {
-    const db = await openDB()
+    const db = await getDBConnection()
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
       const store = transaction.objectStore(TEMPLATES_STORE)
@@ -238,7 +291,7 @@ export async function deleteTemplate(templateId) {
       request.onerror = () => reject(request.error)
       request.onsuccess = () => resolve()
 
-      transaction.oncomplete = () => db.close()
+      // Note: DB connection is kept open for reuse
     })
   } catch (error) {
     logger.error('Error deleting template:', error)
