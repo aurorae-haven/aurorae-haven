@@ -106,8 +106,11 @@ export function validateExportData(data) {
 
   // Check required fields exist and are arrays
   errors.push(
-    ...validateArrayFields(data, ARRAY_FIELDS, VALIDATION_TYPES.ARRAY)
-  )
+    ...validateArrayFields(
+      data,
+      ARRAY_FIELDS,
+      VALIDATION_TYPES.ARRAY
+    ),
 
   // Validate BrainDump structure if dumps exist
   if (data.dumps && Array.isArray(data.dumps)) {
