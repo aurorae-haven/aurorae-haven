@@ -22,10 +22,8 @@ function Routines() {
   }
 
   // Handle routine selection (would come from Library via state/context in production)
-  const handleSelectRoutine = () => {
-    // For now, user needs to go to Library to select a routine
-    // In future, could open a modal to select from available routines
-  }
+  // For now, user needs to go to Library to select a routine
+  // In future, could open a modal to select from available routines
 
   return (
     <>

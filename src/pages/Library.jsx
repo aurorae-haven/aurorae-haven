@@ -308,30 +308,83 @@ function Library() {
         viewMode={viewMode}
       />
 
-      {/* TAB-LIB-01: Template grid/list */}
-      <div
-        className={`template-${viewMode}`}
-        role={viewMode === 'grid' ? 'grid' : 'list'}
-      >
-        {filteredTemplates.length === 0 ? (
-          <div className='empty-state'>
-            <p>No templates found.</p>
-            <p className='small'>Create your first template to get started!</p>
-          </div>
-        ) : (
-          filteredTemplates.map((template) => (
-            <TemplateCard
-              key={template.id}
-              template={template}
-              viewMode={viewMode}
-              onUse={() => handleUseTemplate(template)}
-              onEdit={() => handleEditTemplate(template)}
-              onDelete={() => handleDeleteTemplate(template.id)}
-              onDuplicate={() => handleDuplicateTemplate(template.id)}
-            />
-          ))
-        )}
-      </div>
+      {/* TAB-LIB-01: Template grid/list with separated sections */}
+      {filteredTemplates.length === 0 ? (
+        <div className='empty-state'>
+          <p>No templates found.</p>
+          <p className='small'>Create your first template to get started!</p>
+        </div>
+      ) : (
+        <>
+          {/* Routine Templates Section */}
+          {filteredTemplates.filter((t) => t.type === 'routine').length > 0 && (
+            <div className='template-section'>
+              <div className='template-section-header'>
+                <h2>Routines</h2>
+                <span className='small'>
+                  {filteredTemplates.filter((t) => t.type === 'routine').length}{' '}
+                  {filteredTemplates.filter((t) => t.type === 'routine')
+                    .length === 1
+                    ? 'routine'
+                    : 'routines'}
+                </span>
+              </div>
+              <div
+                className={`template-${viewMode}`}
+                role={viewMode === 'grid' ? 'grid' : 'list'}
+              >
+                {filteredTemplates
+                  .filter((t) => t.type === 'routine')
+                  .map((template) => (
+                    <TemplateCard
+                      key={template.id}
+                      template={template}
+                      viewMode={viewMode}
+                      onUse={() => handleUseTemplate(template)}
+                      onEdit={() => handleEditTemplate(template)}
+                      onDelete={() => handleDeleteTemplate(template.id)}
+                      onDuplicate={() => handleDuplicateTemplate(template.id)}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+
+          {/* Task Templates Section */}
+          {filteredTemplates.filter((t) => t.type === 'task').length > 0 && (
+            <div className='template-section'>
+              <div className='template-section-header'>
+                <h2>Tasks</h2>
+                <span className='small'>
+                  {filteredTemplates.filter((t) => t.type === 'task').length}{' '}
+                  {filteredTemplates.filter((t) => t.type === 'task').length ===
+                  1
+                    ? 'task'
+                    : 'tasks'}
+                </span>
+              </div>
+              <div
+                className={`template-${viewMode}`}
+                role={viewMode === 'grid' ? 'grid' : 'list'}
+              >
+                {filteredTemplates
+                  .filter((t) => t.type === 'task')
+                  .map((template) => (
+                    <TemplateCard
+                      key={template.id}
+                      template={template}
+                      viewMode={viewMode}
+                      onUse={() => handleUseTemplate(template)}
+                      onEdit={() => handleEditTemplate(template)}
+                      onDelete={() => handleDeleteTemplate(template.id)}
+                      onDuplicate={() => handleDuplicateTemplate(template.id)}
+                    />
+                  ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Template Editor Modal */}
       {showEditor && (
