@@ -5,6 +5,7 @@ import {
   importAllData as importToIndexedDB
 } from './indexedDBManager'
 import { createLogger } from './logger'
+import { PAGE_RELOAD_DELAY_MS } from './uiConstants'
 
 const logger = createLogger('ImportData')
 
@@ -33,9 +34,6 @@ export function importToLocalStorage(data) {
 // Import success message constant
 export const IMPORT_SUCCESS_MESSAGE =
   'Data imported successfully. Page will reload...'
-
-// Import UI constants
-import { PAGE_RELOAD_DELAY_MS } from './uiConstants'
 
 /**
  * Reload page after a delay
