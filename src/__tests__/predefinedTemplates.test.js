@@ -152,13 +152,11 @@ describe('Predefined Templates', () => {
 
   describe('arePredefinedTemplatesSeeded', () => {
     test('returns true when predefined templates exist', async () => {
-      const predefinedTemplate = {
-        id: 'task-morning-review',
-        type: 'task',
-        title: 'Morning Email Review'
-      }
+      // After the fix, arePredefinedTemplatesSeeded() checks that ALL predefined templates exist
+      // So we need to mock ALL of them being present
+      const allPredefinedTemplates = getPredefinedTemplates()
 
-      templatesManager.getAllTemplates.mockResolvedValue([predefinedTemplate])
+      templatesManager.getAllTemplates.mockResolvedValue(allPredefinedTemplates)
 
       const result = await arePredefinedTemplatesSeeded()
 
