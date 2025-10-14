@@ -363,10 +363,26 @@ export async function startRoutine(routineId) {
 }
 
 /**
- * Export routines to JSON format
+ * Export routines to JSON format.
  * TAB-RTN-47: Export routine data including id, title, tags, steps, etc.
- * @param {Array<string>} routineIds - Routine IDs to export (empty = all)
- * @returns {Promise<Object>} Export data with version, date, and routines array
+ * 
+ * @param {Array<string>} routineIds - Routine IDs to export (empty = all routines)
+ * @returns {Promise<Object>} Resolves to an object with the following properties:
+ *   - version {string}: Export format version (e.g., "1.0")
+ *   - exportDate {string}: ISO date string of export time
+ *   - routines {Array<Object>}: Array of exported routine objects
+ * 
+ * @throws {Error} If routines cannot be retrieved from the database
+ * 
+ * Example return value:
+ * {
+ *   version: "1.0",
+ *   exportDate: "2024-06-01T12:34:56.789Z",
+ *   routines: [
+ *     { id: "routine_123", title: "Morning Routine", steps: [...] },
+ *     ...
+ *   ]
+ * }
  */
 export async function exportRoutines(routineIds = []) {
   const allRoutines = await getAll(STORES.ROUTINES)
