@@ -149,6 +149,30 @@ function Icon({ name, className = 'icon', ...props }) {
         <path d='M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z' />
         <polyline points='13 2 13 9 20 9' />
       </>
+    ),
+    grid: (
+      <>
+        <rect x='3' y='3' width='7' height='7' />
+        <rect x='14' y='3' width='7' height='7' />
+        <rect x='3' y='14' width='7' height='7' />
+        <rect x='14' y='14' width='7' height='7' />
+      </>
+    ),
+    list: (
+      <>
+        <line x1='8' y1='6' x2='21' y2='6' />
+        <line x1='8' y1='12' x2='21' y2='12' />
+        <line x1='8' y1='18' x2='21' y2='18' />
+        <line x1='3' y1='6' x2='3.01' y2='6' />
+        <line x1='3' y1='12' x2='3.01' y2='12' />
+        <line x1='3' y1='18' x2='3.01' y2='18' />
+      </>
+    ),
+    settings: (
+      <>
+        <circle cx='12' cy='12' r='3' />
+        <path d='M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24' />
+      </>
     )
   }
 
