@@ -88,12 +88,9 @@ export async function getDataTemplate() {
       if (auroraeTasksData) {
         data.auroraeTasksData = auroraeTasksData
         // Also flatten to tasks array for backward compatibility
-        data.tasks = []
-        for (const quadrant of Object.values(auroraeTasksData)) {
-          if (Array.isArray(quadrant)) {
-            data.tasks.push(...quadrant)
-          }
-        }
+        data.tasks = Object.values(auroraeTasksData).flatMap((quadrant) =>
+          Array.isArray(quadrant) ? quadrant : []
+        )
       }
     }
   } catch (e) {
