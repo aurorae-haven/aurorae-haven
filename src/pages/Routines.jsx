@@ -34,6 +34,54 @@ function Routines() {
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
+  // TAB-RTN-37, TAB-RTN-39: Touch gesture handling for mobile swipe navigation
+  useEffect(() => {
+    if (!runner.state || !runner.state.isRunning) return
+
+    let touchStartX = 0
+    let touchEndX = 0
+    const minSwipeDistance = 50
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.changedTouches[0].screenX
+    }
+
+    const handleTouchEnd = (e) => {
+      touchEndX = e.changedTouches[0].screenX
+      handleSwipeGesture()
+    }
+
+    const handleSwipeGesture = () => {
+      const swipeDistance = touchEndX - touchStartX
+      
+      // Swipe left to skip step
+      if (swipeDistance < -minSwipeDistance && runner.skip) {
+        // TAB-RTN-41: Trigger haptic feedback if available
+        if (navigator.vibrate) {
+          navigator.vibrate(10)
+        }
+        runner.skip()
+      }
+      
+      // Swipe right to complete step
+      if (swipeDistance > minSwipeDistance && runner.complete) {
+        // TAB-RTN-41: Trigger haptic feedback if available
+        if (navigator.vibrate) {
+          navigator.vibrate([10, 50, 10])
+        }
+        runner.complete()
+      }
+    }
+
+    document.addEventListener('touchstart', handleTouchStart)
+    document.addEventListener('touchend', handleTouchEnd)
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+  }, [runner])
+
   // TAB-RTN-44: Keyboard shortcuts
   useEffect(() => {
     if (!runner.state || !runner.state.isRunning) return
