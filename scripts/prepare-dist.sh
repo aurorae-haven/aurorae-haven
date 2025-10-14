@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 # Prepare distribution folder from build
+# NOTE: The 'dist' directory name is defined in scripts/buildConstants.js
+# If changing the directory name, update both files to maintain consistency.
 
 echo "📦 Preparing dist folder..."
 
