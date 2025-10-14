@@ -11,13 +11,17 @@ function Routines() {
 
   const runner = useRoutineRunner(selectedRoutine)
 
+  // Start runner when selectedRoutine and runner are ready
+  React.useEffect(() => {
+    if (selectedRoutine && runner && runner.start && runner.state && !runner.state.isRunning) {
+      runner.start()
+    }
+  }, [selectedRoutine, runner])
+
   // Start a routine - TAB-RTN-04: Start button
   const handleStartRoutine = (routine) => {
     setSelectedRoutine(routine)
     // Runner will auto-initialize when selectedRoutine changes
-    setTimeout(() => {
-      if (runner.start) runner.start()
-    }, 100)
   }
 
   // Stop/Cancel routine - TAB-RTN-18
