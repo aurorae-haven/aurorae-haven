@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../common/Icon'
 
 /**
  * Modal showing detailed metadata for a note
@@ -27,10 +28,7 @@ function NoteDetailsModal({ note, title, category, content, onClose }) {
         <div className='modal-header'>
           <h2 id='details-modal-title'>Note Details</h2>
           <button className='btn btn-icon' onClick={onClose} aria-label='Close'>
-            <svg className='icon' viewBox='0 0 24 24'>
-              <line x1='18' y1='6' x2='6' y2='18' />
-              <line x1='6' y1='6' x2='18' y2='18' />
-            </svg>
+            <Icon name='x' />
           </button>
         </div>
         <div className='modal-body'>
