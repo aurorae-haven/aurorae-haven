@@ -15,8 +15,8 @@
  * @returns {boolean} True if logging is enabled
  */
 function isLoggingEnabled() {
-  // Enable in development mode
-  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
+  // Enable in development mode (Vite)
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV) {
     return true
   }
 
