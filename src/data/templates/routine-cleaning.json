@@ -1,0 +1,49 @@
+{
+  "id": "routine-cleaning",
+  "type": "routine",
+  "title": "House Cleaning Routine",
+  "tags": ["cleaning", "home", "maintenance"],
+  "steps": [
+    {
+      "label": "Gather supplies",
+      "duration": 180,
+      "description": "Collect cleaning supplies and equipment"
+    },
+    {
+      "label": "Declutter surfaces",
+      "duration": 600,
+      "description": "Put items back in their places"
+    },
+    {
+      "label": "Dust and wipe",
+      "duration": 900,
+      "description": "Dust surfaces and wipe down counters"
+    },
+    {
+      "label": "Vacuum and sweep",
+      "duration": 900,
+      "description": "Vacuum carpets and sweep floors"
+    },
+    {
+      "label": "Mop floors",
+      "duration": 600,
+      "description": "Mop hard surface floors"
+    },
+    {
+      "label": "Clean bathrooms",
+      "duration": 900,
+      "description": "Clean sinks, toilets, and showers"
+    },
+    {
+      "label": "Take out trash",
+      "duration": 180,
+      "description": "Empty trash bins and replace bags"
+    }
+  ],
+  "energyTag": "medium",
+  "estimatedDuration": 4260,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

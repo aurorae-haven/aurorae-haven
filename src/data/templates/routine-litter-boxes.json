@@ -1,0 +1,44 @@
+{
+  "id": "routine-litter-boxes",
+  "type": "routine",
+  "title": "Clean Litter Boxes",
+  "tags": ["pets", "cleaning", "maintenance"],
+  "steps": [
+    {
+      "label": "Gather supplies",
+      "duration": 60,
+      "description": "Get scooper, bags, and fresh litter"
+    },
+    {
+      "label": "Remove waste",
+      "duration": 300,
+      "description": "Scoop out solid waste and clumps"
+    },
+    {
+      "label": "Top up litter",
+      "duration": 120,
+      "description": "Add fresh litter as needed"
+    },
+    {
+      "label": "Dispose of waste",
+      "duration": 180,
+      "description": "Seal bags and dispose in outdoor trash"
+    },
+    {
+      "label": "Clean area",
+      "duration": 180,
+      "description": "Sweep around litter boxes"
+    },
+    {
+      "label": "Wash hands",
+      "duration": 60,
+      "description": "Thoroughly wash hands"
+    }
+  ],
+  "energyTag": "low",
+  "estimatedDuration": 900,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

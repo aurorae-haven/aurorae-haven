@@ -211,6 +211,28 @@ describe('Predefined Templates', () => {
       })
     })
 
+    test('new default task templates are present', () => {
+      const tasks = getPredefinedTasks()
+      const taskIds = tasks.map((t) => t.id)
+
+      // Verify all new task templates are included
+      expect(taskIds).toContain('task-papers')
+      expect(taskIds).toContain('task-laundry')
+      expect(taskIds).toContain('task-dishes')
+      expect(taskIds).toContain('task-pet-care')
+      expect(taskIds).toContain('task-calls')
+    })
+
+    test('new default routine templates are present', () => {
+      const routines = getPredefinedRoutines()
+      const routineIds = routines.map((r) => r.id)
+
+      // Verify all new routine templates are included
+      expect(routineIds).toContain('routine-cleaning')
+      expect(routineIds).toContain('routine-litter-boxes')
+      expect(routineIds).toContain('routine-pomodoro')
+    })
+
     test('all templates have non-empty tags', () => {
       const templates = getPredefinedTemplates()
 

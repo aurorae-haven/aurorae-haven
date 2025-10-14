@@ -28,6 +28,11 @@ import taskCodeReview from '../data/templates/task-code-review.json'
 import taskJournal from '../data/templates/task-journal.json'
 import taskReading from '../data/templates/task-reading.json'
 import taskWaterPlants from '../data/templates/task-water-plants.json'
+import taskPapers from '../data/templates/task-papers.json'
+import taskLaundry from '../data/templates/task-laundry.json'
+import taskDishes from '../data/templates/task-dishes.json'
+import taskPetCare from '../data/templates/task-pet-care.json'
+import taskCalls from '../data/templates/task-calls.json'
 
 // Routine templates
 import routineMorningLaunch from '../data/templates/routine-morning-launch.json'
@@ -36,6 +41,9 @@ import routineEveningWindDown from '../data/templates/routine-evening-wind-down.
 import routineQuickReset from '../data/templates/routine-quick-reset.json'
 import routineCreativeWarmUp from '../data/templates/routine-creative-warm-up.json'
 import routineWeeklyReview from '../data/templates/routine-weekly-review.json'
+import routineCleaning from '../data/templates/routine-cleaning.json'
+import routineLitterBoxes from '../data/templates/routine-litter-boxes.json'
+import routinePomodoro from '../data/templates/routine-pomodoro.json'
 
 // Collect all templates in a single array
 const allTemplates = [
@@ -47,13 +55,21 @@ const allTemplates = [
   taskJournal,
   taskReading,
   taskWaterPlants,
+  taskPapers,
+  taskLaundry,
+  taskDishes,
+  taskPetCare,
+  taskCalls,
   // Routines
   routineMorningLaunch,
   routineFocusSession,
   routineEveningWindDown,
   routineQuickReset,
   routineCreativeWarmUp,
-  routineWeeklyReview
+  routineWeeklyReview,
+  routineCleaning,
+  routineLitterBoxes,
+  routinePomodoro
 ]
 
 /**
@@ -132,13 +148,15 @@ export async function seedPredefinedTemplates() {
 export async function arePredefinedTemplatesSeeded() {
   try {
     const existingTemplates = await getAllTemplates()
-    
+
     // Defensive check: ensure we have an array
     if (!Array.isArray(existingTemplates)) {
-      logger.warn('arePredefinedTemplatesSeeded: getAllTemplates did not return an array')
+      logger.warn(
+        'arePredefinedTemplatesSeeded: getAllTemplates did not return an array'
+      )
       return false
     }
-    
+
     const predefined = getPredefinedTemplates()
     const predefinedIds = new Set(predefined.map((t) => t.id))
 

@@ -1,0 +1,12 @@
+{
+  "id": "task-calls",
+  "type": "task",
+  "title": "Make Phone Calls",
+  "tags": ["communication", "calls", "admin"],
+  "category": "Personal",
+  "quadrant": "urgent_not_important",
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}

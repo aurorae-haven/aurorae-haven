@@ -86,7 +86,7 @@ function TemplateEditor({ template, onSave, onClose }) {
       ...formData,
       dueOffset: convertToNumberOrNull(formData.dueOffset),
       estimatedDuration: convertToNumberOrNull(formData.estimatedDuration),
-      steps: formData.steps.map(step => ({
+      steps: formData.steps.map((step) => ({
         ...step,
         duration: convertToNumberOrNull(step.duration)
       }))

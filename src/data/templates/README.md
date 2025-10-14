@@ -15,7 +15,7 @@ Each template is stored as a **separate JSON file**. Adding a new template is as
 
 ## Current Templates
 
-### Tasks (7 templates)
+### Tasks (12 templates)
 
 1. **Morning Email Review** - Start the day checking important messages
 2. **30-Minute Exercise Session** - Daily fitness routine
@@ -24,8 +24,13 @@ Each template is stored as a **separate JSON file**. Adding a new template is as
 5. **Daily Reflection Journal** - Evening mindfulness practice
 6. **Read for 20 Minutes** - Personal growth and learning
 7. **Water Indoor Plants** - Home maintenance task
+8. **Sort and File Papers** - Organize paperwork
+9. **Do Laundry** - Household laundry tasks
+10. **Wash Dishes** - Kitchen cleaning task
+11. **Pet Care Tasks** - General pet maintenance
+12. **Make Phone Calls** - Communication and admin calls
 
-### Routines (6 templates)
+### Routines (9 templates)
 
 1. **Morning Launch Routine** - 14-minute energizing start (stretch, hydrate, plan)
 2. **Deep Focus Work Session** - 36-minute productivity block
@@ -33,6 +38,9 @@ Each template is stored as a **separate JSON file**. Adding a new template is as
 4. **5-Minute Reset Break** - Quick energy refresh
 5. **Creative Warm-Up Routine** - 20-minute inspiration boost
 6. **Weekly Planning & Review** - 35-minute planning session
+7. **House Cleaning Routine** - 71-minute comprehensive cleaning
+8. **Clean Litter Boxes** - 15-minute pet care routine
+9. **Pomodoro Work Session** - 32-minute focused work block
 
 ## Adding New Templates
 

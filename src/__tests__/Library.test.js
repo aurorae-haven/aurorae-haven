@@ -82,7 +82,9 @@ describe('Library Page', () => {
     })
     templatesManager.getAllTemplates.mockResolvedValue([])
     templatesManager.saveTemplate.mockResolvedValue('new-template-id')
-    templatesManager.filterTemplates.mockImplementation((templates) => templates)
+    templatesManager.filterTemplates.mockImplementation(
+      (templates) => templates
+    )
     templatesManager.sortTemplates.mockImplementation((templates) => templates)
   })
 
@@ -108,7 +110,9 @@ describe('Library Page', () => {
 
     // Wait for initial load to complete
     await waitFor(() => {
-      expect(screen.queryByText('Loading your template library...')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Loading your template library...')
+      ).not.toBeInTheDocument()
     })
 
     // Verify empty state is shown
@@ -137,10 +141,17 @@ describe('Library Page', () => {
     })
 
     // Verify the new template appears in the list using testid
-    await waitFor(() => {
-      expect(screen.getByTestId('template-new-template-id')).toBeInTheDocument()
-      expect(screen.getByTestId('template-new-template-id')).toHaveTextContent('New Template')
-    }, { timeout: 3000 })
+    await waitFor(
+      () => {
+        expect(
+          screen.getByTestId('template-new-template-id')
+        ).toBeInTheDocument()
+        expect(
+          screen.getByTestId('template-new-template-id')
+        ).toHaveTextContent('New Template')
+      },
+      { timeout: 3000 }
+    )
 
     // Verify empty state is no longer shown
     expect(screen.queryByText('No templates found.')).not.toBeInTheDocument()
@@ -208,7 +219,9 @@ describe('Library Page', () => {
 
     // Wait for initial load
     await waitFor(() => {
-      expect(screen.queryByText('Loading your template library...')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('Loading your template library...')
+      ).not.toBeInTheDocument()
     })
 
     // Create a mock TemplateEditor that submits with string numeric values
@@ -236,7 +249,10 @@ describe('Library Page', () => {
     }
 
     // Override the mock to use our custom editor
-    jest.doMock('../components/Library/TemplateEditor', () => MockEditorWithStringValues)
+    jest.doMock(
+      '../components/Library/TemplateEditor',
+      () => MockEditorWithStringValues
+    )
 
     // Note: We can't test this directly without remounting, so let's just verify
     // that the TemplateEditor component handles conversion

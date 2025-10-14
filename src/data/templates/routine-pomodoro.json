@@ -1,0 +1,29 @@
+{
+  "id": "routine-pomodoro",
+  "type": "routine",
+  "title": "Pomodoro Work Session",
+  "tags": ["productivity", "focus", "work"],
+  "steps": [
+    {
+      "label": "Clear workspace",
+      "duration": 120,
+      "description": "Remove distractions and prepare materials"
+    },
+    {
+      "label": "Focus work",
+      "duration": 1500,
+      "description": "Work on single task without interruptions"
+    },
+    {
+      "label": "Short break",
+      "duration": 300,
+      "description": "Step away, stretch, or walk"
+    }
+  ],
+  "energyTag": "high",
+  "estimatedDuration": 1920,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": true
+}
