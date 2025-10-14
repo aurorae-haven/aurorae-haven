@@ -318,65 +318,74 @@ function Library() {
         <>
           {/* Routine Templates Section */}
           {(() => {
-            const routineTemplates = filteredTemplates.filter((t) => t.type === 'routine')
+            const routineTemplates = filteredTemplates.filter(
+              (t) => t.type === 'routine'
+            )
             const routineCount = routineTemplates.length
-            return routineCount > 0 && (
-              <div className='template-section'>
-                <div className='template-section-header'>
-                  <h2>Routines</h2>
-                  <span className='small'>
-                    {routineCount} {routineCount === 1 ? 'routine' : 'routines'}
-                  </span>
+            return (
+              routineCount > 0 && (
+                <div className='template-section'>
+                  <div className='template-section-header'>
+                    <h2>Routines</h2>
+                    <span className='small'>
+                      {routineCount}{' '}
+                      {routineCount === 1 ? 'routine' : 'routines'}
+                    </span>
+                  </div>
+                  <div
+                    className={`template-${viewMode}`}
+                    role={viewMode === 'grid' ? 'grid' : 'list'}
+                  >
+                    {routineTemplates.map((template) => (
+                      <TemplateCard
+                        key={template.id}
+                        template={template}
+                        viewMode={viewMode}
+                        onUse={() => handleUseTemplate(template)}
+                        onEdit={() => handleEditTemplate(template)}
+                        onDelete={() => handleDeleteTemplate(template.id)}
+                        onDuplicate={() => handleDuplicateTemplate(template.id)}
+                      />
+                    ))}
+                  </div>
                 </div>
-              <div
-                className={`template-${viewMode}`}
-                role={viewMode === 'grid' ? 'grid' : 'list'}
-              >
-                {routineTemplates.map((template) => (
-                    <TemplateCard
-                      key={template.id}
-                      template={template}
-                      viewMode={viewMode}
-                      onUse={() => handleUseTemplate(template)}
-                      onEdit={() => handleEditTemplate(template)}
-                      onDelete={() => handleDeleteTemplate(template.id)}
-                      onDuplicate={() => handleDuplicateTemplate(template.id)}
-                    />
-                  ))}
-              </div>
-            </div>
+              )
             )
           })()}
 
           {/* Task Templates Section */}
           {(() => {
-            const taskTemplates = filteredTemplates.filter((t) => t.type === 'task')
+            const taskTemplates = filteredTemplates.filter(
+              (t) => t.type === 'task'
+            )
             const taskCount = taskTemplates.length
-            return taskCount > 0 && (
-              <div className='template-section'>
-                <div className='template-section-header'>
-                  <h2>Tasks</h2>
-                  <span className='small'>
-                    {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
-                  </span>
+            return (
+              taskCount > 0 && (
+                <div className='template-section'>
+                  <div className='template-section-header'>
+                    <h2>Tasks</h2>
+                    <span className='small'>
+                      {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
+                    </span>
+                  </div>
+                  <div
+                    className={`template-${viewMode}`}
+                    role={viewMode === 'grid' ? 'grid' : 'list'}
+                  >
+                    {taskTemplates.map((template) => (
+                      <TemplateCard
+                        key={template.id}
+                        template={template}
+                        viewMode={viewMode}
+                        onUse={() => handleUseTemplate(template)}
+                        onEdit={() => handleEditTemplate(template)}
+                        onDelete={() => handleDeleteTemplate(template.id)}
+                        onDuplicate={() => handleDuplicateTemplate(template.id)}
+                      />
+                    ))}
+                  </div>
                 </div>
-              <div
-                className={`template-${viewMode}`}
-                role={viewMode === 'grid' ? 'grid' : 'list'}
-              >
-                {taskTemplates.map((template) => (
-                    <TemplateCard
-                      key={template.id}
-                      template={template}
-                      viewMode={viewMode}
-                      onUse={() => handleUseTemplate(template)}
-                      onEdit={() => handleEditTemplate(template)}
-                      onDelete={() => handleDeleteTemplate(template.id)}
-                      onDuplicate={() => handleDuplicateTemplate(template.id)}
-                    />
-                  ))}
-              </div>
-            </div>
+              )
             )
           })()}
         </>

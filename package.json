@@ -22,7 +22,9 @@
     "build:offline": "node scripts/create-offline-package.js",
     "test:offline": "node scripts/test-offline-package.js",
     "preview": "vite preview",
-    "validate-pwa": "node scripts/validate-pwa.cjs"
+    "validate-pwa": "node scripts/validate-pwa.cjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",
@@ -41,6 +43,7 @@
     "@babel/preset-env": "^7.28.3",
     "@babel/preset-react": "^7.27.1",
     "@eslint/js": "^9.37.0",
+    "@playwright/test": "^1.56.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@vitejs/plugin-react": "^5.0.4",

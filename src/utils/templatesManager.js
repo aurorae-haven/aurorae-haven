@@ -42,7 +42,7 @@ class TemplatesDBManager {
       .then((db) => {
         this.dbConnection = db
         this.connectionPromise = null
-        
+
         // Handle connection close/error events with proper cleanup
         const handleDisconnect = () => {
           // Remove event handlers to prevent memory leaks
@@ -52,10 +52,10 @@ class TemplatesDBManager {
           }
           this.dbConnection = null
         }
-        
+
         db.onclose = handleDisconnect
         db.onerror = handleDisconnect
-        
+
         return db
       })
       .catch((error) => {
@@ -146,7 +146,7 @@ export async function getAllTemplates() {
 
       request.onsuccess = () => {
         const templates = request.result || []
-        
+
         // Ensure we always return an array
         if (!Array.isArray(templates)) {
           logger.warn(
@@ -265,7 +265,7 @@ export async function updateTemplate(templateId, updates) {
       const store = transaction.objectStore(TEMPLATES_STORE)
 
       const getRequest = store.get(templateId)
-      
+
       getRequest.onerror = () => reject(getRequest.error)
       getRequest.onsuccess = () => {
         const existing = getRequest.result
@@ -284,7 +284,9 @@ export async function updateTemplate(templateId, updates) {
         // Validate the updated template data
         const validation = validateTemplateData(updated)
         if (!validation.valid) {
-          reject(new Error(`Invalid template data: ${validation.errors.join('; ')}`))
+          reject(
+            new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+          )
           return
         }
 

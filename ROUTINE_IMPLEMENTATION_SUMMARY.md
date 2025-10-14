@@ -3,6 +3,7 @@
 ## What's Been Implemented
 
 ### Core Logic (✅ Complete)
+
 - **routineRunner.js**: Complete timer and execution state management
   - XP calculation (base, on-time bonus, routine bonus, perfect bonus)
   - Step progression (complete, skip, pause/resume, advance)
@@ -12,6 +13,7 @@
   - 28 passing tests with 100% coverage
 
 ### React Integration (✅ Complete)
+
 - **useRoutineRunner hook**: React state management for routine execution
   - Timer integration with React lifecycle
   - Auto-advance on step completion
@@ -24,6 +26,7 @@
   - CRUD operations (delete, duplicate)
 
 ### UI Components (✅ Complete)
+
 - **Routines.jsx**: Full UI implementation
   - Toolbar with all buttons (TAB-RTN-05)
   - Current Routine runner with step triptych (TAB-RTN-03, TAB-RTN-09)
@@ -35,6 +38,7 @@
   - Empty states with helpful messages
 
 ### Accessibility (✅ Partial)
+
 - ARIA labels on progress bar
 - aria-live regions for timer updates
 - Keyboard navigation for modal (Escape key)
@@ -43,37 +47,38 @@
 
 ### Specifications Implemented
 
-| Spec | Description | Status |
-|------|-------------|--------|
-| TAB-RTN-01 | Screen layout (toolbar, runner, library) | ✅ |
-| TAB-RTN-02 | Visual design (frosted glass, colors) | ✅ |
-| TAB-RTN-03 | Runner with progress bar and triptych | ✅ |
-| TAB-RTN-04 | Library cards with actions | ✅ |
-| TAB-RTN-05 | Toolbar buttons | ✅ |
-| TAB-RTN-06 | Filter functionality | ✅ (logic) |
-| TAB-RTN-07 | Sort functionality | ✅ (logic) |
-| TAB-RTN-09 | Step triptych layout | ✅ |
-| TAB-RTN-10 | Current step display | ✅ |
-| TAB-RTN-11 | Control buttons | ✅ |
-| TAB-RTN-13 | Complete step logic | ✅ |
-| TAB-RTN-14 | Skip step logic | ✅ |
-| TAB-RTN-15 | Pause/Resume logic | ✅ |
-| TAB-RTN-22 | Base step XP (1 XP) | ✅ |
-| TAB-RTN-23 | On-time bonus (+1 XP) | ✅ |
-| TAB-RTN-25 | Routine completion bonus | ✅ |
-| TAB-RTN-26 | Perfect bonus (+2 XP) | ✅ |
-| TAB-RTN-27 | XP tally display | ✅ |
-| TAB-RTN-31 | Completion summary modal | ✅ |
-| TAB-RTN-33 | Progress bar styling | ✅ |
-| TAB-RTN-34 | Current step glow | ✅ |
-| TAB-RTN-42 | Progress ARIA attributes | ✅ |
-| TAB-RTN-43 | Timer aria-live | ✅ |
-| TAB-RTN-51 | Skeleton loading | ✅ |
-| TAB-RTN-52 | 60 FPS timer | ✅ |
+| Spec       | Description                              | Status     |
+| ---------- | ---------------------------------------- | ---------- |
+| TAB-RTN-01 | Screen layout (toolbar, runner, library) | ✅         |
+| TAB-RTN-02 | Visual design (frosted glass, colors)    | ✅         |
+| TAB-RTN-03 | Runner with progress bar and triptych    | ✅         |
+| TAB-RTN-04 | Library cards with actions               | ✅         |
+| TAB-RTN-05 | Toolbar buttons                          | ✅         |
+| TAB-RTN-06 | Filter functionality                     | ✅ (logic) |
+| TAB-RTN-07 | Sort functionality                       | ✅ (logic) |
+| TAB-RTN-09 | Step triptych layout                     | ✅         |
+| TAB-RTN-10 | Current step display                     | ✅         |
+| TAB-RTN-11 | Control buttons                          | ✅         |
+| TAB-RTN-13 | Complete step logic                      | ✅         |
+| TAB-RTN-14 | Skip step logic                          | ✅         |
+| TAB-RTN-15 | Pause/Resume logic                       | ✅         |
+| TAB-RTN-22 | Base step XP (1 XP)                      | ✅         |
+| TAB-RTN-23 | On-time bonus (+1 XP)                    | ✅         |
+| TAB-RTN-25 | Routine completion bonus                 | ✅         |
+| TAB-RTN-26 | Perfect bonus (+2 XP)                    | ✅         |
+| TAB-RTN-27 | XP tally display                         | ✅         |
+| TAB-RTN-31 | Completion summary modal                 | ✅         |
+| TAB-RTN-33 | Progress bar styling                     | ✅         |
+| TAB-RTN-34 | Current step glow                        | ✅         |
+| TAB-RTN-42 | Progress ARIA attributes                 | ✅         |
+| TAB-RTN-43 | Timer aria-live                          | ✅         |
+| TAB-RTN-51 | Skeleton loading                         | ✅         |
+| TAB-RTN-52 | 60 FPS timer                             | ✅         |
 
 ## What Remains
 
 ### High Priority
+
 1. **Template Loading Issue** ⚠️
    - Templates not appearing in browser UI
    - IndexedDB initialization or async seeding needs debugging
@@ -93,6 +98,7 @@
    - ID conflict resolution
 
 ### Medium Priority
+
 4. **Enhanced Keyboard Shortcuts** (TAB-RTN-44)
    - Space = Complete
    - P = Pause/Resume
@@ -117,6 +123,7 @@
    - XP preservation
 
 ### Low Priority
+
 8. **Mobile Enhancements** (TAB-RTN-37, TAB-RTN-38, TAB-RTN-39)
    - Horizontal swipe between steps
    - Sticky bottom control bar
@@ -144,16 +151,19 @@
 ## Testing Status
 
 ### Unit Tests
+
 - ✅ routineRunner.test.js: 28/28 passing
 - ✅ routinesManager.test.js: All passing
 - ⏳ UI component tests: Not yet implemented
 
 ### Integration Tests
+
 - ⏳ End-to-end routine flow: Pending template loading fix
 - ⏳ XP calculation in full context: Pending
 - ⏳ Timer accuracy: Pending
 
 ### Manual Testing
+
 - ✅ Code builds successfully
 - ✅ Linter passes
 - ⏳ UI renders but templates don't load
@@ -181,12 +191,14 @@
 ## Files Changed
 
 ### New Files
+
 - `src/utils/routineRunner.js` - Core execution logic
 - `src/__tests__/routineRunner.test.js` - Test suite
 - `src/hooks/useRoutineRunner.js` - React hook for execution
 - `src/hooks/useRoutines.js` - React hook for library management
 
 ### Modified Files
+
 - `src/pages/Routines.jsx` - Complete UI implementation
 - `src/utils/routinesManager.js` - Added filtering and sorting
 - `src/assets/styles/routines.css` - Already had needed styles

@@ -117,8 +117,12 @@ export async function seedPredefinedTemplates() {
     // Get all predefined templates
     const predefined = getPredefinedTemplates()
     logger.log(`Predefined templates to seed: ${predefined.length}`)
-    logger.log(`Predefined routines: ${predefined.filter(t => t.type === 'routine').length}`)
-    logger.log(`Predefined tasks: ${predefined.filter(t => t.type === 'task').length}`)
+    logger.log(
+      `Predefined routines: ${predefined.filter((t) => t.type === 'routine').length}`
+    )
+    logger.log(
+      `Predefined tasks: ${predefined.filter((t) => t.type === 'task').length}`
+    )
 
     // Add templates that don't already exist
     for (const template of predefined) {
@@ -142,7 +146,9 @@ export async function seedPredefinedTemplates() {
       }
     }
 
-    logger.log(`Seeding complete: ${results.added} added, ${results.skipped} skipped, ${results.errors.length} errors`)
+    logger.log(
+      `Seeding complete: ${results.added} added, ${results.skipped} skipped, ${results.errors.length} errors`
+    )
     return results
   } catch (err) {
     logger.error('Failed to seed predefined templates:', err)
@@ -172,12 +178,12 @@ export async function arePredefinedTemplatesSeeded() {
     // Check if ALL predefined templates exist (changed from "any" to "all")
     // This ensures we reseed if new templates are added to the codebase
     const allExist = predefined.every((t) => existingIds.has(t.id))
-    
+
     if (!allExist) {
       const missing = predefined.filter((t) => !existingIds.has(t.id))
       logger.log(`Missing ${missing.length} predefined templates, will reseed`)
     }
-    
+
     return allExist
   } catch (err) {
     logger.error('Failed to check predefined templates:', err)
