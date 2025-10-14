@@ -50,7 +50,11 @@ export function applyDateFilter(note, filterOptions) {
       return noteDate < thirtyDaysAgo
     }
     case 'year': {
-      const startOfYear = new Date(now.getFullYear(), YEAR_START_MONTH, MONTH_START_DAY)
+      const startOfYear = new Date(
+        now.getFullYear(),
+        YEAR_START_MONTH,
+        MONTH_START_DAY
+      )
       return noteDate >= startOfYear
     }
     case 'month': {

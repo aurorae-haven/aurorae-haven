@@ -3,6 +3,7 @@
 ## Problem Statement
 
 Users report that manually refreshing pages (F5) causes 404 errors:
+
 - **GitHub Pages**: All pages show 404 on refresh
 - **Offline mode**: Home page works, other pages show 404
 
@@ -21,17 +22,20 @@ The code appears correct according to documentation and best practices.
 ### 2. Added Debug Logging
 
 **In `src/index.jsx`**:
+
 - RedirectHandler now logs every step of the redirect process
 - Service worker status is logged when the app loads
 - Shows: sessionStorage content, basename, path normalization, navigation
 
 **Existing in `public/404.html`**:
+
 - Already has comprehensive logging
 - Shows: current location, pathname, stored path, computed base path, redirect timing
 
 ### 3. Created Test Infrastructure
 
 **Test server (`scripts/test-spa-routing.js`)**:
+
 - Mimics GitHub Pages behavior exactly
 - Serves 404.html for non-existent routes
 - Logs all requests
@@ -40,6 +44,7 @@ The code appears correct according to documentation and best practices.
 ### 4. Created Documentation
 
 **`DEBUGGING_404_ISSUE.md`**:
+
 - Complete architecture explanation
 - Expected behavior documentation
 - Potential issues and how to diagnose them
@@ -48,6 +53,7 @@ The code appears correct according to documentation and best practices.
 - Alternative solutions if current approach doesn't work
 
 **`TESTING_404_FIX.md`**:
+
 - Step-by-step testing instructions
 - Expected console output examples
 - Common issues and solutions
@@ -57,18 +63,21 @@ The code appears correct according to documentation and best practices.
 ## Current Configuration
 
 ### Production Build (GitHub Pages)
+
 - `BASE_URL`: `/aurorae-haven/`
 - Service Worker Scope: `/aurorae-haven/`
 - React Router Basename: `/aurorae-haven/`
 - Navigation Fallback: `index.html`
 
 ### Offline Build
+
 - `BASE_URL`: `./` (relative)
 - Service Worker Scope: `./` (normalized to `/` by browser)
 - React Router Basename: `/` (normalized from `./`)
 - Navigation Fallback: `index.html`
 
 ### Service Worker Configuration
+
 ```javascript
 workbox: {
   skipWaiting: true,         // Activate immediately
@@ -147,21 +156,25 @@ Once we have the logs, we'll be able to see exactly where the flow breaks:
 Based on the diagnosis, we'll implement a targeted fix:
 
 **If SW not installing:**
+
 - Check browser compatibility
 - Verify HTTPS is working
 - Check for registration errors
 
 **If SW not activating:**
+
 - Force SW update on deploy
 - Clear old SW cache
 - Verify skipWaiting/clientsClaim config
 
 **If navigation fallback not working:**
+
 - Fix navigateFallback URL to match precache exactly
 - Adjust denylist patterns
 - Consider using different Workbox config
 
 **If basename mismatch:**
+
 - Fix path normalization logic
 - Ensure BASE_URL matches deployment
 - Update basename computation
@@ -169,6 +182,7 @@ Based on the diagnosis, we'll implement a targeted fix:
 ### Alternative Solutions (If Current Approach Fails)
 
 1. **Hash Router**:
+
    ```javascript
    // Use HashRouter instead of BrowserRouter
    import { HashRouter } from 'react-router-dom'
@@ -177,6 +191,7 @@ Based on the diagnosis, we'll implement a targeted fix:
    ```
 
 2. **Server-side config**:
+
    ```javascript
    // Configure GitHub Actions to always serve index.html
    // More reliable than 404.html trick
@@ -220,7 +235,7 @@ Total: ~6 hours from user testing to verified fix
 The fix will be considered successful when:
 
 1. ✅ GitHub Pages: Refreshing any page works without 404
-2. ✅ Offline: Refreshing any page works without 404  
+2. ✅ Offline: Refreshing any page works without 404
 3. ✅ First visit: 404.html redirect works correctly
 4. ✅ Subsequent visits: Service worker intercepts and serves from cache
 5. ✅ All existing tests continue to pass

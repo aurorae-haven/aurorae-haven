@@ -24,7 +24,9 @@ const CURRENT_VERSION = '1.0'
  */
 function isSupportedVersion(version) {
   const coercedVersion = semver.coerce(version)
-  return coercedVersion && semver.satisfies(coercedVersion, SUPPORTED_VERSION_RANGE)
+  return (
+    coercedVersion && semver.satisfies(coercedVersion, SUPPORTED_VERSION_RANGE)
+  )
 }
 
 /**
@@ -380,7 +382,7 @@ export async function importTemplates(data) {
 
       // Re-ID on collision
       const existing = await getTemplate(template.id)
-      let templateToSave = template;
+      let templateToSave = template
       if (existing) {
         templateToSave = { ...template, id: generateSecureUUID() }
       }

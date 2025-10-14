@@ -8,24 +8,28 @@ After deploying to GitHub Pages at `https://aurorae-haven.github.io/aurorae-have
 2. **Refresh Fails**: Refreshing the page shows a 404 error page from GitHub
 3. **Service Worker Error**: Console shows:
    ```
-   Uncaught (in promise) TypeError: ServiceWorker script at 
-   https://aurorae-haven.github.io/sw.js for scope 
+   Uncaught (in promise) TypeError: ServiceWorker script at
+   https://aurorae-haven.github.io/sw.js for scope
    https://aurorae-haven.github.io/ encountered an error during installation.
    ```
 
 ## Root Cause Analysis
 
 ### The Issue
+
 The service worker (SW) was registered at the **root scope** (`/`) instead of the correct **subpath scope** (`/aurorae-haven/`).
 
 ### Why This Happened
+
 1. **Service Worker Persistence**: Once a service worker is registered, it persists across browser sessions and deployments
 2. **Old Deployment**: A previous deployment may have registered a SW at root scope
 3. **Scope Mismatch**: The new deployment tries to register at `/aurorae-haven/` but the old SW at `/` takes precedence
 4. **Navigation Interception**: The old SW intercepts navigation requests but can't serve them correctly, causing 404 errors
 
 ### Console Evidence
+
 From the user's screenshot:
+
 - `[RouterApp] BASE_URL: /.` - Incorrect BASE_URL value (should be `/aurorae-haven/`)
 - Service worker trying to load from `https://aurorae-haven.github.io/sw.js` (root) instead of `/aurorae-haven/sw.js`
 - 404 error on page refresh
@@ -39,35 +43,49 @@ Added code to **unregister old service workers** with wrong scopes before the Re
 ```javascript
 // Clean up old service workers registered at wrong scope
 if ('serviceWorker' in navigator) {
-  const expectedScope = new URL(import.meta.env.BASE_URL || '/', window.location.origin).href
+  const expectedScope = new URL(
+    import.meta.env.BASE_URL || '/',
+    window.location.origin
+  ).href
   console.log('[ServiceWorker] Expected scope:', expectedScope)
-  
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    console.log('[ServiceWorker] Found', registrations.length, 'registered service worker(s)')
-    
-    registrations.forEach((registration) => {
-      const scopeUrl = registration.scope
-      console.log('[ServiceWorker] Checking SW with scope:', scopeUrl)
-      
-      // Unregister service workers with wrong scope
-      if (scopeUrl !== expectedScope) {
-        console.log('[ServiceWorker] Unregistering SW with wrong scope:', scopeUrl)
-        registration.unregister().then((success) => {
-          if (success) {
-            console.log('[ServiceWorker] Successfully unregistered old SW')
-          }
-        })
-      } else {
-        console.log('[ServiceWorker] SW scope is correct, keeping it')
-      }
+
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((registrations) => {
+      console.log(
+        '[ServiceWorker] Found',
+        registrations.length,
+        'registered service worker(s)'
+      )
+
+      registrations.forEach((registration) => {
+        const scopeUrl = registration.scope
+        console.log('[ServiceWorker] Checking SW with scope:', scopeUrl)
+
+        // Unregister service workers with wrong scope
+        if (scopeUrl !== expectedScope) {
+          console.log(
+            '[ServiceWorker] Unregistering SW with wrong scope:',
+            scopeUrl
+          )
+          registration.unregister().then((success) => {
+            if (success) {
+              console.log('[ServiceWorker] Successfully unregistered old SW')
+            }
+          })
+        } else {
+          console.log('[ServiceWorker] SW scope is correct, keeping it')
+        }
+      })
     })
-  }).catch((error) => {
-    console.error('[ServiceWorker] Error checking registrations:', error)
-  })
+    .catch((error) => {
+      console.error('[ServiceWorker] Error checking registrations:', error)
+    })
 }
 ```
 
 **How It Works:**
+
 1. Calculates the expected scope based on `BASE_URL` (e.g., `https://aurorae-haven.github.io/aurorae-haven/`)
 2. Gets all registered service workers
 3. Compares each SW's scope with the expected scope
@@ -87,6 +105,7 @@ const base = process.env.VITE_BASE_URL || env.VITE_BASE_URL || '/aurorae-haven/'
 ```
 
 **Why This Matters:**
+
 - `loadEnv()` only reads from `.env` files
 - Environment variables set in GitHub Actions are available via `process.env`
 - The new priority ensures CI-set variables take precedence
@@ -108,6 +127,7 @@ Added 11 test cases in `src/__tests__/service-worker-cleanup.test.js`:
 ## Expected Behavior After Fix
 
 ### First Visit After Deployment
+
 1. User visits `https://aurorae-haven.github.io/aurorae-haven/schedule`
 2. Old SW at root scope (`/`) is detected
 3. Old SW is unregistered
@@ -122,6 +142,7 @@ Added 11 test cases in `src/__tests__/service-worker-cleanup.test.js`:
    ```
 
 ### Subsequent Visits
+
 1. Cleanup code detects correct SW scope
 2. Keeps the SW registered
 3. Console shows:
@@ -133,6 +154,7 @@ Added 11 test cases in `src/__tests__/service-worker-cleanup.test.js`:
    ```
 
 ### Page Refreshes
+
 1. User navigates to any route (e.g., `/schedule`)
 2. User refreshes the page
 3. Service worker intercepts the request
@@ -145,6 +167,7 @@ Added 11 test cases in `src/__tests__/service-worker-cleanup.test.js`:
 ### Manual Testing on GitHub Pages
 
 1. **Clear Browser State** (to simulate fresh user):
+
    ```
    - Open DevTools (F12)
    - Go to Application tab
@@ -185,22 +208,26 @@ Added 11 test cases in `src/__tests__/service-worker-cleanup.test.js`:
 ### Automated Testing
 
 Run the test suite:
+
 ```bash
 npm test -- --watchAll=false
 ```
 
 Expected output:
+
 ```
 Test Suites: 35 passed, 35 total
 Tests:       775 passed, 829 total
 ```
 
 Run only service worker cleanup tests:
+
 ```bash
 npm test -- service-worker-cleanup.test.js --watchAll=false
 ```
 
 Expected output:
+
 ```
 PASS src/__tests__/service-worker-cleanup.test.js
   Service Worker Cleanup
@@ -240,6 +267,7 @@ Tests: 11 passed, 11 total
    - New SW should register at correct scope
 
 4. **Verify Build Configuration**:
+
    ```bash
    # Check that built files reference correct base path
    grep -r "aurorae-haven" dist/index.html
@@ -247,8 +275,11 @@ Tests: 11 passed, 11 total
    ```
 
    Should show:
+
    ```javascript
-   navigator.serviceWorker.register('/aurorae-haven/sw.js', { scope: '/aurorae-haven/' })
+   navigator.serviceWorker.register('/aurorae-haven/sw.js', {
+     scope: '/aurorae-haven/'
+   })
    ```
 
 ## Prevention
@@ -279,7 +310,6 @@ A service worker's **scope** determines which URLs it can intercept:
 
 - Root scope (`/`): Intercepts ALL URLs on the domain
   - Example: `https://aurorae-haven.github.io/*`
-  
 - Subpath scope (`/aurorae-haven/`): Intercepts only matching subpaths
   - Example: `https://aurorae-haven.github.io/aurorae-haven/*`
 
@@ -292,11 +322,13 @@ Users who visit the site will have the old SW cached. Simply deploying a new ver
 ### VitePWA Navigation Fallback
 
 The VitePWA plugin configures the service worker with:
+
 ```javascript
 navigateFallback: 'index.html'
 ```
 
 This means:
+
 1. Any navigation request (e.g., `/schedule`) is intercepted by the SW
 2. The SW serves `index.html` instead of trying to fetch `/schedule` from the server
 3. React Router handles the routing client-side

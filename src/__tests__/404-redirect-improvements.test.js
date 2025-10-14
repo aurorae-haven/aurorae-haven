@@ -111,7 +111,7 @@ describe('404.html Redirect Improvements', () => {
       ]
 
       testCases.forEach(({ pathname, expected }) => {
-        const pathSegments = pathname.split('/').filter(s => s !== '')
+        const pathSegments = pathname.split('/').filter((s) => s !== '')
         const basePath =
           pathSegments.length > 0 ? '/' + pathSegments[0] + '/' : '/'
 
@@ -122,19 +122,19 @@ describe('404.html Redirect Improvements', () => {
     test('handles edge cases in base path computation', () => {
       // Empty pathname
       const emptyPath = ''
-      const segments1 = emptyPath.split('/').filter(s => s !== '')
+      const segments1 = emptyPath.split('/').filter((s) => s !== '')
       const base1 = segments1.length > 0 ? '/' + segments1[0] + '/' : '/'
       expect(base1).toBe('/')
 
       // Root pathname
       const rootPath = '/'
-      const segments2 = rootPath.split('/').filter(s => s !== '')
+      const segments2 = rootPath.split('/').filter((s) => s !== '')
       const base2 = segments2.length > 0 ? '/' + segments2[0] + '/' : '/'
       expect(base2).toBe('/')
 
       // Multiple segments
       const deepPath = `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule/edit`
-      const segments3 = deepPath.split('/').filter(s => s !== '')
+      const segments3 = deepPath.split('/').filter((s) => s !== '')
       const base3 = segments3.length > 0 ? '/' + segments3[0] + '/' : '/'
       expect(base3).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH)
     })
@@ -155,7 +155,10 @@ describe('404.html Redirect Improvements', () => {
       let redirectTriggered = false
 
       // Store path (synchronous)
-      sessionStorage.setItem('redirectPath', `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`)
+      sessionStorage.setItem(
+        'redirectPath',
+        `${DEFAULT_GITHUB_PAGES_BASE_PATH}schedule`
+      )
       sessionStorageWritten = true
 
       // Small delay before redirect (asynchronous)
@@ -201,7 +204,7 @@ describe('404.html Redirect Improvements', () => {
       ]
 
       // Each log should be present in the 404.html file
-      debugLogs.forEach(log => {
+      debugLogs.forEach((log) => {
         expect(log).toContain('[404.html]')
       })
     })
@@ -248,7 +251,7 @@ describe('404.html Redirect Improvements', () => {
       )
 
       // Step 4: Compute base path
-      const segments = requestedPath.split('/').filter(s => s !== '')
+      const segments = requestedPath.split('/').filter((s) => s !== '')
       const basePath = segments.length > 0 ? '/' + segments[0] + '/' : '/'
       expect(basePath).toBe(DEFAULT_GITHUB_PAGES_BASE_PATH)
 

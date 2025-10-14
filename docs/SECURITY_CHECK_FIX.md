@@ -54,13 +54,13 @@ The new pattern uses Extended Regular Expressions (`-E`) to match:
 
 **Examples:**
 
-| Input                        | Match | Reason                              |
-| ---------------------------- | ----- | ----------------------------------- |
-| `found 0 vulnerabilities`    | ❌ No | Starts with 0                       |
-| `found 1 vulnerabilities`    | ✅ Yes | Non-zero number                     |
-| `found 5 vulnerabilities`    | ✅ Yes | Non-zero number                     |
-| `found 10 vulnerabilities`   | ✅ Yes | Non-zero number (two digits)        |
-| `found 123 vulnerabilities`  | ✅ Yes | Non-zero number (three digits)      |
+| Input                       | Match  | Reason                         |
+| --------------------------- | ------ | ------------------------------ |
+| `found 0 vulnerabilities`   | ❌ No  | Starts with 0                  |
+| `found 1 vulnerabilities`   | ✅ Yes | Non-zero number                |
+| `found 5 vulnerabilities`   | ✅ Yes | Non-zero number                |
+| `found 10 vulnerabilities`  | ✅ Yes | Non-zero number (two digits)   |
+| `found 123 vulnerabilities` | ✅ Yes | Non-zero number (three digits) |
 
 ## Testing
 

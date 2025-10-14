@@ -3,7 +3,8 @@
 ## Current Status
 
 **Issue**: Manual page refresh (F5) causes 404 errors
-- **GitHub Pages**: All pages show 404 on refresh  
+
+- **GitHub Pages**: All pages show 404 on refresh
 - **Offline**: Home page works, other pages show 404
 
 ## Investigation Steps
@@ -16,12 +17,10 @@ The app uses a multi-layered approach to handle SPA routing:
    - GitHub Pages serves this when a route doesn't exist as a file
    - JavaScript stores the requested path in `sessionStorage`
    - Redirects to the app base path (`/aurorae-haven/`)
-   
 2. **Service Worker** (Second line of defense - After first visit)
    - Intercepts navigation requests
    - Serves cached `index.html` directly
    - Bypasses GitHub Pages 404.html completely
-   
 3. **RedirectHandler** (React component)
    - Reads `sessionStorage` for the original path
    - Uses React Router to navigate to the correct route
@@ -29,6 +28,7 @@ The app uses a multi-layered approach to handle SPA routing:
 ### 2. What We've Added for Debugging
 
 **In `src/index.jsx`:**
+
 ```javascript
 // RedirectHandler now logs:
 console.log('[RedirectHandler] Checking for redirectPath in sessionStorage...')
@@ -44,10 +44,14 @@ console.log('[ServiceWorker] Active SW:', registration.active?.scriptURL)
 ```
 
 **In `public/404.html` (already present):**
+
 ```javascript
 console.log('[404.html] Current location:', location.href)
 console.log('[404.html] Pathname:', location.pathname)
-console.log('[404.html] Stored redirectPath:', sessionStorage.getItem('redirectPath'))
+console.log(
+  '[404.html] Stored redirectPath:',
+  sessionStorage.getItem('redirectPath')
+)
 console.log('[404.html] Computed base path:', basePath)
 ```
 
@@ -67,6 +71,7 @@ open http://localhost:8080/aurorae-haven/
 ```
 
 **Test server features:**
+
 - Serves static files from `dist/`
 - Returns `404.html` for non-existent routes (like GitHub Pages)
 - Logs all requests for debugging
@@ -115,6 +120,7 @@ open http://localhost:8080/aurorae-haven/
 9. User sees the Schedule page immediately ✅
 
 **Network tab shows:**
+
 ```
 /aurorae-haven/schedule  | (from ServiceWorker) | 200 OK
 ```
@@ -124,20 +130,23 @@ open http://localhost:8080/aurorae-haven/
 #### Issue A: Service Worker Not Installing
 
 **Symptoms:**
+
 - Every refresh shows 404.html and redirects (slow)
 - Never see "(from ServiceWorker)" in Network tab
 - Console doesn't show service worker logs
 
 **Causes:**
+
 - Service worker registration failing
 - Browser not supporting service workers
 - HTTPS not enabled (GitHub Pages provides this)
 - Service worker file not being served correctly
 
 **Check:**
+
 ```javascript
 // In browser console
-navigator.serviceWorker.getRegistration().then(reg => {
+navigator.serviceWorker.getRegistration().then((reg) => {
   console.log('Registration:', reg)
   if (reg) {
     console.log('Scope:', reg.scope)
@@ -150,16 +159,19 @@ navigator.serviceWorker.getRegistration().then(reg => {
 #### Issue B: Service Worker Not Activating
 
 **Symptoms:**
+
 - Service worker installs but doesn't activate
 - Old service worker still active
 - Changes not taking effect
 
 **Causes:**
+
 - `skipWaiting` not working
 - Multiple tabs open with old SW
 - Browser caching issues
 
 **Fix:**
+
 1. Close all tabs with the app
 2. Open DevTools → Application → Service Workers
 3. Click "Unregister" on old SW
@@ -169,38 +181,49 @@ navigator.serviceWorker.getRegistration().then(reg => {
 #### Issue C: Navigation Fallback Not Working
 
 **Symptoms:**
+
 - Service worker is active
 - But navigation requests still go to network
 - 404.html is still being served
 
 **Causes:**
+
 - `navigateFallback` URL doesn't match precached URL
 - Navigation route not registered correctly
 - Workbox version mismatch
 
 **Check:**
+
 ```javascript
 // In service worker context (DevTools → Application → Service Workers → inspect)
-caches.open('workbox-precache-v2-https://domain.com/aurorae-haven/').then(cache => {
-  cache.keys().then(keys => {
-    console.log('Precached URLs:', keys.map(k => k.url))
+caches
+  .open('workbox-precache-v2-https://domain.com/aurorae-haven/')
+  .then((cache) => {
+    cache.keys().then((keys) => {
+      console.log(
+        'Precached URLs:',
+        keys.map((k) => k.url)
+      )
+    })
   })
-})
 ```
 
 #### Issue D: Basename Mismatch
 
 **Symptoms:**
+
 - 404.html redirects work
 - But React Router shows wrong page
 - URL doesn't match page content
 
 **Causes:**
+
 - `import.meta.env.BASE_URL` doesn't match actual deployment path
 - `basename` in `BrowserRouter` is wrong
 - `normalizeRedirectPath` logic has bug
 
 **Check:**
+
 ```javascript
 // In browser console
 console.log('BASE_URL:', import.meta.env.BASE_URL)
@@ -231,8 +254,8 @@ When deployed to GitHub Pages:
 
 ```javascript
 // In browser console
-navigator.serviceWorker.getRegistrations().then(function(registrations) {
-  for(let registration of registrations) {
+navigator.serviceWorker.getRegistrations().then(function (registrations) {
+  for (let registration of registrations) {
     registration.unregister()
   }
 })
@@ -251,7 +274,7 @@ location.reload()
 
 ```javascript
 // In browser console
-navigator.serviceWorker.getRegistration().then(registration => {
+navigator.serviceWorker.getRegistration().then((registration) => {
   if (registration) {
     registration.update()
   }
@@ -273,6 +296,7 @@ If the issue persists after adding debug logging:
 If the current approach doesn't work, we can try:
 
 **Option A: Hash Router**
+
 - Use `HashRouter` instead of `BrowserRouter`
 - URLs become `#/schedule` instead of `/schedule`
 - No server configuration needed
@@ -280,12 +304,14 @@ If the current approach doesn't work, we can try:
 - Downside: Less clean URLs, no SSR possible
 
 **Option B: Server-Side Redirect**
+
 - Configure GitHub Pages to always serve `index.html`
 - Requires `.nojekyll` file (already present)
 - May need custom GitHub Action workflow
 - More reliable than 404.html trick
 
 **Option C: Workbox NavigationRoute with Explicit URLs**
+
 - Instead of `navigateFallback: 'index.html'`
 - Manually register routes in service worker
 - More control but more code

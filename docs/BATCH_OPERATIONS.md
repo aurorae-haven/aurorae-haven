@@ -14,11 +14,13 @@ Batch operations allow you to create multiple tasks or routines in a single oper
 ## Performance Benefits
 
 **Single Item Operations:**
+
 - Each operation opens and closes the database connection
 - Each task requires a separate localStorage write
 - N operations = N database transactions
 
 **Batch Operations:**
+
 - One database connection for all operations
 - Single transaction for all items
 - Single localStorage write for all tasks
@@ -46,12 +48,14 @@ const results = await putBatch(STORES.TASKS, items)
 ```
 
 **Parameters:**
+
 - `storeName` (string): Name of the IndexedDB object store
 - `items` (Array): Array of items to insert/update
 
 **Returns:** `Promise<Array>` - Array of generated IDs/keys
 
 **Throws:**
+
 - Error with message `'Items must be an array'` if `items` is not an array
 - Error with message `'Transaction failed: <reason>'` if the transaction fails
 
@@ -88,11 +92,13 @@ const routineIds = await createRoutineBatch(routines)
 ```
 
 **Parameters:**
+
 - `routines` (Array): Array of routine objects with `name` and optional `steps`
 
 **Returns:** `Promise<Array<string>>` - Array of created routine IDs
 
 **Features:**
+
 - Automatically generates unique IDs
 - Calculates total duration for each routine
 - Adds timestamps and creation dates
@@ -140,6 +146,7 @@ const results = await instantiateTemplatesBatch(templates)
 ```
 
 **Parameters:**
+
 - `templates` (Array): Array of template objects (task or routine)
 
 **Returns:** `Promise<Array<Object>>` - Array of created entity details
@@ -147,6 +154,7 @@ const results = await instantiateTemplatesBatch(templates)
 **Template Structure:**
 
 Task Template:
+
 ```javascript
 {
   type: 'task',
@@ -157,6 +165,7 @@ Task Template:
 ```
 
 Routine Template:
+
 ```javascript
 {
   type: 'routine',
@@ -169,6 +178,7 @@ Routine Template:
 ```
 
 **Features:**
+
 - Validates all templates before processing
 - Separates tasks and routines for optimal batching
 - Single localStorage write for all tasks
@@ -188,12 +198,12 @@ import { instantiateTemplatesBatch } from './utils/templateInstantiation'
 async function importTemplates(templateData) {
   try {
     const results = await instantiateTemplatesBatch(templateData)
-    
-    const taskCount = results.filter(r => r.type === 'task').length
-    const routineCount = results.filter(r => r.type === 'routine').length
-    
+
+    const taskCount = results.filter((r) => r.type === 'task').length
+    const routineCount = results.filter((r) => r.type === 'routine').length
+
     console.log(`Created ${taskCount} tasks and ${routineCount} routines`)
-    
+
     return results
   } catch (error) {
     console.error('Import failed:', error)
@@ -234,10 +244,10 @@ async function createProjectRoutines(projectName) {
       ]
     }
   ]
-  
+
   const ids = await createRoutineBatch(routines)
   console.log(`Created ${ids.length} routines for ${projectName}`)
-  
+
   return ids
 }
 ```
@@ -270,10 +280,10 @@ async function createWeeklyTasks() {
       quadrant: 'not_urgent_not_important'
     }
   ]
-  
+
   const results = await instantiateTemplatesBatch(templates)
   console.log(`Created ${results.length} weekly tasks`)
-  
+
   return results
 }
 ```
@@ -314,6 +324,7 @@ try {
 If you're currently using single-item operations, here's how to migrate:
 
 **Before:**
+
 ```javascript
 for (const template of templates) {
   await instantiateTemplate(template)
@@ -321,6 +332,7 @@ for (const template of templates) {
 ```
 
 **After:**
+
 ```javascript
 const results = await instantiateTemplatesBatch(templates)
 ```
@@ -328,6 +340,7 @@ const results = await instantiateTemplatesBatch(templates)
 ## Testing
 
 Comprehensive tests are available in:
+
 - `src/__tests__/indexedDBManager.test.js` - Tests for `putBatch()`
 - `src/__tests__/routinesManager.test.js` - Tests for `createRoutineBatch()`
 - `src/__tests__/templateInstantiation.test.js` - Tests for `instantiateTemplatesBatch()`
@@ -336,11 +349,11 @@ Comprehensive tests are available in:
 
 Based on testing with fake-indexeddb:
 
-| Operation | Single (10 items) | Batch (10 items) | Improvement |
-|-----------|-------------------|------------------|-------------|
-| Database opens | 10 | 1 | 90% reduction |
-| Transactions | 10 | 1 | 90% reduction |
-| localStorage writes | 10 | 1 | 90% reduction |
+| Operation           | Single (10 items) | Batch (10 items) | Improvement   |
+| ------------------- | ----------------- | ---------------- | ------------- |
+| Database opens      | 10                | 1                | 90% reduction |
+| Transactions        | 10                | 1                | 90% reduction |
+| localStorage writes | 10                | 1                | 90% reduction |
 
 Real-world performance improvements will vary based on device and browser.
 

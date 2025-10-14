@@ -2,7 +2,7 @@
 
 /**
  * Test SPA Routing Script
- * 
+ *
  * This script starts an HTTP server that mimics GitHub Pages behavior:
  * - Serves static files from dist/
  * - Returns 404.html for non-existent routes
@@ -34,7 +34,7 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   standardHeaders: true, // Return rate limit info in the RateLimit-* headers
-  legacyHeaders: false, // Disable the X-RateLimit-* headers
+  legacyHeaders: false // Disable the X-RateLimit-* headers
 })
 
 app.use(limiter)
@@ -52,13 +52,13 @@ app.use(BASE_PATH, express.static(DIST_DIR))
 // This mimics GitHub Pages behavior
 app.use(BASE_PATH, (req, res, next) => {
   const filePath = join(DIST_DIR, req.path)
-  
+
   // If it's a file request (has extension), let it 404 naturally
   if (/\.[^/]+$/.test(req.path)) {
     console.log(`  → File request: ${req.path}`)
     return next()
   }
-  
+
   // For navigation requests, serve 404.html
   console.log(`  → Navigation request: ${req.path}`)
   console.log(`  → Serving 404.html`)
@@ -82,13 +82,21 @@ app.listen(PORT, () => {
   console.log(`1. Open http://localhost:${PORT}${BASE_PATH}/ in your browser`)
   console.log('2. Navigate to different pages (Schedule, Tasks, etc.)')
   console.log('3. Press F5 to refresh the page')
-  console.log('4. Check the browser console for [404.html] and [RedirectHandler] logs')
-  console.log('5. Check the Network tab to see if service worker is intercepting requests')
+  console.log(
+    '4. Check the browser console for [404.html] and [RedirectHandler] logs'
+  )
+  console.log(
+    '5. Check the Network tab to see if service worker is intercepting requests'
+  )
   console.log('')
   console.log('🔍 What to look for:')
   console.log('• First refresh: Should serve 404.html → redirect → load page')
-  console.log('• After service worker activates: Should serve from cache (no 404.html)')
-  console.log('• Check "from ServiceWorker" in Network tab for cached responses')
+  console.log(
+    '• After service worker activates: Should serve from cache (no 404.html)'
+  )
+  console.log(
+    '• Check "from ServiceWorker" in Network tab for cached responses'
+  )
   console.log('')
   console.log('Press Ctrl+C to stop the server')
   console.log('━'.repeat(60))

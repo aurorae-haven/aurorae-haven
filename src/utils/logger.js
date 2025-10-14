@@ -16,7 +16,11 @@
  */
 function isLoggingEnabled() {
   // Enable in development mode
-  if (typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development') {
+  if (
+    typeof process !== 'undefined' &&
+    process.env &&
+    process.env.NODE_ENV === 'development'
+  ) {
     return true
   }
 

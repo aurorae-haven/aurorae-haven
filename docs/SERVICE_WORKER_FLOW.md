@@ -93,6 +93,7 @@ navigateFallbackAllowlist: [/.*/]
 ```
 
 **Matches:**
+
 - `/` - Root path
 - `/home` - Home page
 - `/schedule` - Schedule page
@@ -109,11 +110,13 @@ navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
 ```
 
 **Pattern 1: `/^\/_/`** (paths starting with underscore)
+
 - `/_api/data` ❌ Denied
 - `/_internal/cache` ❌ Denied
 - `/schedule` ✅ Allowed (doesn't start with `_`)
 
 **Pattern 2: `/\/[^/?]+\.[^/]+$/`** (files with extensions)
+
 - `/assets/index.js` ❌ Denied (has `.js` extension)
 - `/icon-192x192.svg` ❌ Denied (has `.svg` extension)
 - `/manifest.json` ❌ Denied (has `.json` extension)
@@ -147,6 +150,7 @@ React Router handles /schedule
 ### Service Worker Scope
 
 **Production (GitHub Pages):**
+
 ```javascript
 navigator.serviceWorker.register('/aurorae-haven/sw.js', {
   scope: '/aurorae-haven/'
@@ -154,6 +158,7 @@ navigator.serviceWorker.register('/aurorae-haven/sw.js', {
 ```
 
 **Offline:**
+
 ```javascript
 navigator.serviceWorker.register('./sw.js', {
   scope: './'
@@ -178,29 +183,27 @@ VitePWA({
 ```javascript
 // dist/sw.js (minified)
 registerRoute(
-  new NavigationRoute(
-    createHandlerBoundToURL("index.html"),
-    {
-      allowlist: [/.*/],
-      denylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
-    }
-  )
+  new NavigationRoute(createHandlerBoundToURL('index.html'), {
+    allowlist: [/.*/],
+    denylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
+  })
 )
 ```
 
 ## Benefits Summary
 
-| Scenario | Before Fix | After Fix |
-|----------|-----------|-----------|
-| First visit to `/schedule` | ✅ Works (404.html redirect) | ✅ Works (404.html redirect) |
-| Refresh `/schedule` | ❌ 404 Error | ✅ Works (SW serves index.html) |
-| Offline refresh | ❌ 404 Error | ✅ Works (SW cache) |
-| Static files | ✅ Load normally | ✅ Load normally |
-| Network requests | Multiple conflicts | Single, clean SW |
+| Scenario                   | Before Fix                   | After Fix                       |
+| -------------------------- | ---------------------------- | ------------------------------- |
+| First visit to `/schedule` | ✅ Works (404.html redirect) | ✅ Works (404.html redirect)    |
+| Refresh `/schedule`        | ❌ 404 Error                 | ✅ Works (SW serves index.html) |
+| Offline refresh            | ❌ 404 Error                 | ✅ Works (SW cache)             |
+| Static files               | ✅ Load normally             | ✅ Load normally                |
+| Network requests           | Multiple conflicts           | Single, clean SW                |
 
 ## Browser Support
 
 All modern browsers that support Service Workers:
+
 - ✅ Chrome 40+
 - ✅ Firefox 44+
 - ✅ Safari 11.1+

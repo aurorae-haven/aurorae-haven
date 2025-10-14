@@ -21,11 +21,13 @@
 ### Test Offline Mode
 
 1. **Build the offline package**:
+
    ```bash
    npm run build:offline
    ```
 
 2. **Extract the package**:
+
    ```bash
    cd dist-offline
    tar -xzf aurorae-haven-offline-v*.tar.gz
@@ -33,22 +35,25 @@
    ```
 
 3. **Start a local server** (choose one):
-   
+
    **Option A: Node.js**
+
    ```bash
    node embedded-server.js
    # or
    ./start-aurorae-haven.sh
    ```
-   
+
    **Option B: Python**
+
    ```bash
    python3 embedded-server.py
    # or
    ./start-aurorae-haven-python.sh
    ```
-   
+
    **Option C: Any HTTP server**
+
    ```bash
    npx http-server -p 8080
    # or
@@ -96,6 +101,7 @@
 ### Expected Network Tab
 
 **First refresh (before SW is active):**
+
 - `https://username.github.io/aurorae-haven/schedule` - Status: 404
 - `https://username.github.io/aurorae-haven/404.html` - Status: 404
 - Redirect to `https://username.github.io/aurorae-haven/`
@@ -103,6 +109,7 @@
 - Assets loaded normally
 
 **Subsequent refreshes (after SW is active):**
+
 - `https://username.github.io/aurorae-haven/schedule` - **(from ServiceWorker)** - Status: 200
 - Assets loaded from cache
 
@@ -111,11 +118,13 @@
 ### Issue: Service Worker Not Installing
 
 **Symptoms:**
+
 - Console doesn't show `[ServiceWorker]` logs
 - Network tab never shows `(from ServiceWorker)`
 - Every refresh goes through 404.html redirect
 
 **Solution:**
+
 1. Check if service workers are supported:
    ```javascript
    console.log('SW supported:', 'serviceWorker' in navigator)
@@ -127,10 +136,12 @@
 ### Issue: Old Service Worker Stuck
 
 **Symptoms:**
+
 - Changes not taking effect
 - Old version still running
 
 **Solution:**
+
 1. Close all tabs with the app
 2. Open DevTools → Application → Service Workers
 3. Click "Unregister" on all service workers
@@ -140,11 +151,13 @@
 ### Issue: 404 Every Time
 
 **Symptoms:**
+
 - Service worker logs appear
 - But still seeing 404.html on every refresh
 
 **Solution:**
 This suggests the service worker is active but the navigation fallback isn't working. Please share:
+
 1. Full console output
 2. Network tab screenshot
 3. Service worker status from DevTools
@@ -152,16 +165,18 @@ This suggests the service worker is active but the navigation fallback isn't wor
 ### Issue: Works on Home, Not on Other Pages
 
 **Symptoms:**
+
 - Refreshing `/` works fine
 - Refreshing `/schedule` shows 404
 
 **Solution:**
 This might be a service worker scope or navigation route issue. Please share:
+
 1. Console logs when refreshing `/schedule`
 2. Service worker scope from `[ServiceWorker]` logs
 3. Precache URLs from service worker (run in console):
    ```javascript
-   caches.keys().then(keys => console.log('Cache names:', keys))
+   caches.keys().then((keys) => console.log('Cache names:', keys))
    ```
 
 ## Debugging Commands
@@ -170,7 +185,7 @@ Run these in the browser console to gather information:
 
 ```javascript
 // Check service worker registration
-navigator.serviceWorker.getRegistration().then(reg => {
+navigator.serviceWorker.getRegistration().then((reg) => {
   if (reg) {
     console.log('Registration:', {
       scope: reg.scope,
@@ -185,11 +200,16 @@ navigator.serviceWorker.getRegistration().then(reg => {
 })
 
 // Check precached URLs
-caches.open('workbox-precache-v2-' + location.origin + location.pathname).then(cache => {
-  cache.keys().then(keys => {
-    console.log('Precached URLs:', keys.map(k => k.url))
+caches
+  .open('workbox-precache-v2-' + location.origin + location.pathname)
+  .then((cache) => {
+    cache.keys().then((keys) => {
+      console.log(
+        'Precached URLs:',
+        keys.map((k) => k.url)
+      )
+    })
   })
-})
 
 // Check current BASE_URL
 console.log('BASE_URL:', import.meta.env.BASE_URL)

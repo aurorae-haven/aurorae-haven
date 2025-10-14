@@ -3,6 +3,7 @@
 ## Problem
 
 Users reported 404 errors when refreshing pages:
+
 - **GitHub Pages (production)**: All pages returned 404 on refresh
 - **Offline mode**: Home page worked, but other pages returned 404 on refresh
 
@@ -27,6 +28,7 @@ navigateFallback: base === './' ? './index.html' : `${base}index.html`,
 ```
 
 This ensures:
+
 - **Production builds** (`VITE_BASE_URL=/aurorae-haven/`): `navigateFallback: '/aurorae-haven/index.html'`
 - **Offline builds** (`VITE_BASE_URL=./`): `navigateFallback: './index.html'`
 
@@ -56,21 +58,23 @@ This ensures:
 The `NavigationRoute` in Workbox uses `createHandlerBoundToURL()` to create a handler that serves a specific URL for navigation requests.
 
 **Before the fix:**
+
 ```javascript
 e.registerRoute(
   new e.NavigationRoute(
-    e.createHandlerBoundToURL("index.html"),  // ❌ Relative path
-    {allowlist:[/.*/],denylist:[/^\/_/,/\/[^/?]+\.[^/]+$/]}
+    e.createHandlerBoundToURL('index.html'), // ❌ Relative path
+    { allowlist: [/.*/], denylist: [/^\/_/, /\/[^/?]+\.[^/]+$/] }
   )
 )
 ```
 
 **After the fix:**
+
 ```javascript
 e.registerRoute(
   new e.NavigationRoute(
-    e.createHandlerBoundToURL("/aurorae-haven/index.html"),  // ✅ Absolute path
-    {allowlist:[/.*/],denylist:[/^\/_/,/\/[^/?]+\.[^/]+$/]}
+    e.createHandlerBoundToURL('/aurorae-haven/index.html'), // ✅ Absolute path
+    { allowlist: [/.*/], denylist: [/^\/_/, /\/[^/?]+\.[^/]+$/] }
   )
 )
 ```
@@ -80,22 +84,25 @@ e.registerRoute(
 The service worker is registered with the correct scope:
 
 **Production:**
+
 ```javascript
-navigator.serviceWorker.register('/aurorae-haven/sw.js', { 
-  scope: '/aurorae-haven/' 
+navigator.serviceWorker.register('/aurorae-haven/sw.js', {
+  scope: '/aurorae-haven/'
 })
 ```
 
 **Offline:**
+
 ```javascript
-navigator.serviceWorker.register('./sw.js', { 
-  scope: './' 
+navigator.serviceWorker.register('./sw.js', {
+  scope: './'
 })
 ```
 
 ### URL Resolution
 
 With the correct absolute path:
+
 - Workbox can properly resolve the fallback URL within the service worker scope
 - Navigation requests are correctly intercepted and served
 - React Router receives the correct HTML and handles client-side routing

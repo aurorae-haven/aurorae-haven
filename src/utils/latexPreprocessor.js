@@ -47,26 +47,23 @@ export function preprocessLatex(content) {
   // Process double $$ blocks (display math)
   // For display math, we preserve the opening/closing $$ on their own lines
   // but add \\ between content lines
-  content = content.replace(
-    /\$\$([^$]+?)\$\$/g,
-    (match, mathContent) => {
-      // Split by newlines, trim, and filter empty lines
-      const lines = mathContent
-        .split('\n')
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0)
+  content = content.replace(/\$\$([^$]+?)\$\$/g, (match, mathContent) => {
+    // Split by newlines, trim, and filter empty lines
+    const lines = mathContent
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0)
 
-      // If there's only one line, return as-is
-      if (lines.length <= 1) {
-        return match
-      }
-
-      // Join lines with \\ for multi-line display math
-      const processedContent = lines.join(' \\\\ ')
-
-      return `$$\n${processedContent}\n$$`
+    // If there's only one line, return as-is
+    if (lines.length <= 1) {
+      return match
     }
-  )
+
+    // Join lines with \\ for multi-line display math
+    const processedContent = lines.join(' \\\\ ')
+
+    return `$$\n${processedContent}\n$$`
+  })
 
   return content
 }

@@ -13,6 +13,7 @@ This document summarizes the refactoring work done to eliminate magic numbers an
 ## New Configuration Files Created
 
 ### 1. `src/utils/uiConstants.js`
+
 Centralized UI-related constants for timing, delays, and display settings:
 
 - `TOAST_DISPLAY_DURATION_MS = 3800` - Toast notification display duration
@@ -22,6 +23,7 @@ Centralized UI-related constants for timing, delays, and display settings:
 - `DEFAULT_BACKUP_LIMIT = 10` - Default number of backups to keep
 
 ### 2. `src/utils/scheduleConstants.js`
+
 Centralized schedule and calendar-related constants:
 
 - `DEFAULT_EVENT_DURATION_MINUTES = 60` - Default event duration
@@ -32,6 +34,7 @@ Centralized schedule and calendar-related constants:
 - `FILTER_RECENT_DAYS = 30` - Filter time range for "recent" items
 
 ### 3. `src/utils/themeConstants.js`
+
 Centralized theme colors and styling constants:
 
 - `THEME_COLOR_PRIMARY = '#1a1a2e'` - Primary theme color
@@ -44,6 +47,7 @@ Centralized theme colors and styling constants:
 - `BYTES_PER_KILOBYTE = 1024` - File size calculation constant
 
 ### 4. Updates to `src/utils/timeConstants.js`
+
 Added date format constants:
 
 - `ISO_DATE_START_INDEX = 0` - Start index for ISO date slice
@@ -106,21 +110,25 @@ Added date format constants:
 ## Benefits
 
 ### Maintainability
+
 - All configuration values are now centralized in dedicated constant files
 - Changes to values only need to be made in one location
 - Clear naming makes the purpose of each value explicit
 
 ### Readability
+
 - Code is more self-documenting with named constants
 - Developers can quickly understand what values represent
 - Reduces cognitive load when reading code
 
 ### Consistency
+
 - Same values used across multiple files are guaranteed to be identical
 - Theme colors and timing values are consistent throughout the application
 - Reduces risk of inconsistencies from manual value entry
 
 ### Flexibility
+
 - Easy to adjust timing, colors, and limits for different environments
 - Constants can be easily exported for use in tests
 - Foundation for future environment-based configuration
@@ -130,11 +138,13 @@ Added date format constants:
 All changes have been validated:
 
 1. **Linting**: ✅ No ESLint errors or warnings
+
    ```bash
    npm run lint
    ```
 
 2. **Build**: ✅ Successful production build
+
    ```bash
    npm run build
    ```
@@ -170,6 +180,7 @@ For developers working on this codebase:
 This refactoring successfully eliminates magic numbers throughout the codebase, replacing them with well-organized, centralized constants. The changes improve code maintainability, readability, and consistency while maintaining full backward compatibility and functionality.
 
 All changes follow established coding guidelines and best practices, including:
+
 - Google Engineering Practices Guide
 - Clean Code principles (Robert C. Martin)
 - ISO/IEC 25010 Software Quality Model

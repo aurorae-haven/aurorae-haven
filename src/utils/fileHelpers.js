@@ -54,9 +54,9 @@ export function sanitizeFilename(text, maxLength = FILENAME_MAX_LENGTH) {
   sanitized = sanitized.toLowerCase()
 
   // Check for Windows reserved names as base filename (before any extension or underscore)
-  const baseName = sanitized.split('_')[0].split('.')[0];
+  const baseName = sanitized.split('_')[0].split('.')[0]
   if (WINDOWS_RESERVED_NAMES.test(baseName)) {
-    sanitized = `file_${sanitized}`;
+    sanitized = `file_${sanitized}`
   }
 
   // Handle empty result after sanitization

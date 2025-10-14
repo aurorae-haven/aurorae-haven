@@ -173,23 +173,21 @@ END: App Ready
 if ('serviceWorker' in navigator) {
   // Step 1: Calculate expected scope
   const expectedScope = new URL(
-    import.meta.env.BASE_URL || '/', 
+    import.meta.env.BASE_URL || '/',
     window.location.origin
   ).href
   // Result: https://aurorae-haven.github.io/aurorae-haven/
 
   // Step 2: Get all registrations
-  navigator.serviceWorker.getRegistrations()
-    .then((registrations) => {
-      
-      // Step 3: Check each registration
-      registrations.forEach((registration) => {
-        if (registration.scope !== expectedScope) {
-          // Step 4: Unregister wrong scope
-          registration.unregister()
-        }
-      })
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    // Step 3: Check each registration
+    registrations.forEach((registration) => {
+      if (registration.scope !== expectedScope) {
+        // Step 4: Unregister wrong scope
+        registration.unregister()
+      }
     })
+  })
 }
 
 // After cleanup:
@@ -202,11 +200,11 @@ root.render(<App />)
 ```javascript
 // Generated in dist/registerSW.js:
 
-if('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register(
-      '/aurorae-haven/sw.js',        // ← Correct path
-      { scope: '/aurorae-haven/' }   // ← Correct scope
+      '/aurorae-haven/sw.js', // ← Correct path
+      { scope: '/aurorae-haven/' } // ← Correct scope
     )
   })
 }
@@ -248,14 +246,14 @@ T=20ms   │ Page renders correctly ✅
 
 ## Comparison Table
 
-| Aspect | Before Fix | After Fix |
-|--------|-----------|-----------|
-| **SW Scope** | `https://aurorae-haven.github.io/` (root) | `https://aurorae-haven.github.io/aurorae-haven/` (subpath) |
-| **SW Script** | `/sw.js` (tries to load from root) | `/aurorae-haven/sw.js` (correct path) |
-| **Page Refresh** | ❌ 404 Error | ✅ Works correctly |
-| **Initial Navigation** | ✅ Works (no SW interference) | ✅ Works (correct SW) |
-| **Console Errors** | ⚠️ "ServiceWorker script encountered an error" | ✅ Clean console logs |
-| **User Experience** | 😞 Broken on refresh | 😊 Seamless navigation |
+| Aspect                 | Before Fix                                     | After Fix                                                  |
+| ---------------------- | ---------------------------------------------- | ---------------------------------------------------------- |
+| **SW Scope**           | `https://aurorae-haven.github.io/` (root)      | `https://aurorae-haven.github.io/aurorae-haven/` (subpath) |
+| **SW Script**          | `/sw.js` (tries to load from root)             | `/aurorae-haven/sw.js` (correct path)                      |
+| **Page Refresh**       | ❌ 404 Error                                   | ✅ Works correctly                                         |
+| **Initial Navigation** | ✅ Works (no SW interference)                  | ✅ Works (correct SW)                                      |
+| **Console Errors**     | ⚠️ "ServiceWorker script encountered an error" | ✅ Clean console logs                                      |
+| **User Experience**    | 😞 Broken on refresh                           | 😊 Seamless navigation                                     |
 
 ## Environment Variable Flow
 
@@ -335,6 +333,7 @@ Future Deployments
 ---
 
 **Legend:**
+
 - ✅ = Success / Correct behavior
 - ❌ = Error / Incorrect behavior
 - ⚠️ = Warning / Potential issue

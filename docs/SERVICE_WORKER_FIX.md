@@ -28,6 +28,7 @@ These two service workers were conflicting, and the manual one didn't have prope
 ### 1. Removed Duplicate Service Worker Registration
 
 **Removed:**
+
 - `public/service-worker.js` - Old manual service worker file
 - Service worker registration code from `src/index.jsx`
 - Import of `serviceWorkerRegistration.js`

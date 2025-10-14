@@ -78,7 +78,10 @@ describe('redirectHelpers', () => {
     })
 
     test('handles localhost origin', () => {
-      const result = computeBasePath('/aurorae-haven/schedule', 'http://localhost:3000')
+      const result = computeBasePath(
+        '/aurorae-haven/schedule',
+        'http://localhost:3000'
+      )
       expect(result).toBe('http://localhost:3000/aurorae-haven/')
     })
   })
@@ -125,10 +128,7 @@ describe('redirectHelpers', () => {
     })
 
     test('handles root path correctly', () => {
-      const result = normalizeRedirectPath(
-        '/aurorae-haven/',
-        '/aurorae-haven/'
-      )
+      const result = normalizeRedirectPath('/aurorae-haven/', '/aurorae-haven/')
       expect(result).toBe('/')
     })
 

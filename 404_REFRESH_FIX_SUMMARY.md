@@ -3,6 +3,7 @@
 ## Issue
 
 Manual page refresh (F5) was causing 404 errors in both GitHub Pages and offline mode:
+
 - **GitHub Pages**: All pages showed 404 on refresh (including home)
 - **Offline**: Home page refresh worked, but other pages showed 404
 
@@ -21,23 +22,25 @@ This tag executed **immediately** (0 seconds delay) and redirected to the base p
 ### 1. Removed Meta Refresh Tag
 
 **Before:**
+
 ```html
 <meta http-equiv="refresh" content="0;url=/aurorae-haven/" />
 <script>
-  sessionStorage.setItem('redirectPath', location.pathname);
-  location.replace(basePath);
+  sessionStorage.setItem('redirectPath', location.pathname)
+  location.replace(basePath)
 </script>
 ```
 
 **Problem:** The meta refresh and JavaScript redirect competed, causing unpredictable behavior.
 
 **After:**
+
 ```html
 <script>
-  sessionStorage.setItem('redirectPath', location.pathname);
-  setTimeout(function() {
-    location.replace(basePath);
-  }, 10);
+  sessionStorage.setItem('redirectPath', location.pathname)
+  setTimeout(function () {
+    location.replace(basePath)
+  }, 10)
 </script>
 ```
 
@@ -46,6 +49,7 @@ This tag executed **immediately** (0 seconds delay) and redirected to the base p
 ### 2. Improved 404.html Redirect Logic
 
 **Changes:**
+
 - ✅ Wrapped in IIFE to prevent global scope pollution
 - ✅ Added try-catch for sessionStorage (handles privacy mode)
 - ✅ Dynamic base path computation (not hardcoded)
@@ -53,43 +57,51 @@ This tag executed **immediately** (0 seconds delay) and redirected to the base p
 - ✅ Enhanced debug logging
 
 **Code:**
+
 ```javascript
-(function() {
-  console.log('[404.html] Current location:', location.href);
-  
-  var redirectPath = location.pathname + location.search + location.hash;
-  
+;(function () {
+  console.log('[404.html] Current location:', location.href)
+
+  var redirectPath = location.pathname + location.search + location.hash
+
   try {
-    sessionStorage.setItem('redirectPath', redirectPath);
-    console.log('[404.html] Stored redirectPath:', sessionStorage.getItem('redirectPath'));
+    sessionStorage.setItem('redirectPath', redirectPath)
+    console.log(
+      '[404.html] Stored redirectPath:',
+      sessionStorage.getItem('redirectPath')
+    )
   } catch (e) {
-    console.error('[404.html] Failed to store redirectPath:', e);
+    console.error('[404.html] Failed to store redirectPath:', e)
   }
 
-  var pathSegments = location.pathname.split('/').filter(function(s) { return s !== '' });
-  var basePath = pathSegments.length > 0 
-    ? location.origin + '/' + pathSegments[0] + '/' 
-    : location.origin + '/';
+  var pathSegments = location.pathname.split('/').filter(function (s) {
+    return s !== ''
+  })
+  var basePath =
+    pathSegments.length > 0
+      ? location.origin + '/' + pathSegments[0] + '/'
+      : location.origin + '/'
 
-  console.log('[404.html] Computed base path:', basePath);
-  console.log('[404.html] Redirecting...');
+  console.log('[404.html] Computed base path:', basePath)
+  console.log('[404.html] Redirecting...')
 
-  setTimeout(function() {
-    location.replace(basePath);
-  }, 10);
+  setTimeout(function () {
+    location.replace(basePath)
+  }, 10)
 })()
 ```
 
 ### 3. Enhanced Service Worker Configuration
 
 **Changes in `vite.config.js`:**
+
 ```javascript
 VitePWA({
   registerType: 'autoUpdate',
   injectRegister: 'auto', // More reliable registration
   workbox: {
-    skipWaiting: true,      // Activate immediately
-    clientsClaim: true,     // Take control of clients immediately
+    skipWaiting: true, // Activate immediately
+    clientsClaim: true, // Take control of clients immediately
     navigateFallback: 'index.html',
     navigateFallbackAllowlist: [/.*/],
     navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
@@ -98,6 +110,7 @@ VitePWA({
 ```
 
 **Why this helps:**
+
 - `skipWaiting: true` ensures the service worker activates immediately after installation
 - `clientsClaim: true` ensures the service worker takes control of all pages immediately
 - This means subsequent page refreshes will be intercepted by the service worker, which serves cached `index.html`
@@ -183,6 +196,7 @@ npm run preview
 ## Migration Notes
 
 No migration required for existing users. The changes are transparent:
+
 - Service worker will auto-update on next visit
 - 404.html changes apply immediately on GitHub Pages
 - No data loss or compatibility issues

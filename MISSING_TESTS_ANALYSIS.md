@@ -18,13 +18,13 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 ### Pages (5 pages - 0% coverage)
 
-| Page            | Status      | Lines | Priority | Notes                                     |
-| --------------- | ----------- | ----- | -------- | ----------------------------------------- |
-| `Habits.jsx`    | ❌ No tests | 20    | Medium   | Stub implementation - "coming soon"       |
-| `Schedule.jsx`  | ❌ No tests | 165   | **HIGH** | Full implementation with state management |
+| Page           | Status      | Lines | Priority | Notes                                     |
+| -------------- | ----------- | ----- | -------- | ----------------------------------------- |
+| `Habits.jsx`   | ❌ No tests | 20    | Medium   | Stub implementation - "coming soon"       |
+| `Schedule.jsx` | ❌ No tests | 165   | **HIGH** | Full implementation with state management |
 | `Routines.jsx` | ❌ No tests | ~50   | **HIGH** | Full implementation                       |
-| `Settings.jsx`  | ❌ No tests | ~100  | **HIGH** | Full implementation                       |
-| `Stats.jsx`     | ❌ No tests | 82    | **HIGH** | Full implementation with IndexedDB        |
+| `Settings.jsx` | ❌ No tests | ~100  | **HIGH** | Full implementation                       |
+| `Stats.jsx`    | ❌ No tests | 82    | **HIGH** | Full implementation with IndexedDB        |
 
 **Specifications Coverage:**
 
@@ -231,12 +231,12 @@ This document identifies components, pages, utilities, and hooks that are **miss
 
 Tests marked as `test.todo()` or `it.todo()` that need implementation:
 
-| File                       | TODO Count | Examples                                               |
-| -------------------------- | ---------- | ------------------------------------------------------ |
+| File                      | TODO Count | Examples                                               |
+| ------------------------- | ---------- | ------------------------------------------------------ |
 | `routinesManager.test.js` | 16         | Routine execution, progress tracking, completion logic |
-| `habitsManager.test.js`    | 14         | Streak tracking, habit completion, reset logic         |
-| `settingsManager.test.js`  | 12         | Settings migration, validation, storage errors         |
-| `scheduleManager.test.js`  | 12         | Event validation, conflict detection, recurring events |
+| `habitsManager.test.js`   | 14         | Streak tracking, habit completion, reset logic         |
+| `settingsManager.test.js` | 12         | Settings migration, validation, storage errors         |
+| `scheduleManager.test.js` | 12         | Event validation, conflict detection, recurring events |
 
 **Total TODO tests**: 54
 

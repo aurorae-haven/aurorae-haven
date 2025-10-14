@@ -20,6 +20,7 @@ Computes the base path for GitHub Pages project site redirects.
 **Purpose**: Used by 404.html to determine where to redirect when a user hits a direct URL.
 
 **Example**:
+
 ```javascript
 computeBasePath('/aurorae-haven/schedule', 'https://example.github.io')
 // Returns: 'https://example.github.io/aurorae-haven/'
@@ -32,6 +33,7 @@ Normalizes a redirect path by removing the base URL prefix.
 **Purpose**: Used by index.jsx's RedirectHandler to convert absolute paths to React Router compatible relative paths.
 
 **Example**:
+
 ```javascript
 normalizeRedirectPath('/aurorae-haven/schedule', '/aurorae-haven/')
 // Returns: '/schedule'
@@ -44,6 +46,7 @@ Builds the full redirect path including pathname, search, and hash.
 **Purpose**: Used by 404.html to construct the complete URL state before redirecting.
 
 **Example**:
+
 ```javascript
 buildRedirectPath('/aurorae-haven/schedule', '?id=123', '#top')
 // Returns: '/aurorae-haven/schedule?id=123#top'
@@ -69,11 +72,19 @@ Since 404.html is a plain HTML file that cannot use ES6 imports, the utility fun
 
 ```javascript
 // Inlined functions matching redirectHelpers.js
-function buildRedirectPath(pathname, search, hash) { /* ... */ }
-function computeBasePath(pathname, origin) { /* ... */ }
+function buildRedirectPath(pathname, search, hash) {
+  /* ... */
+}
+function computeBasePath(pathname, origin) {
+  /* ... */
+}
 
 // Usage
-var redirectPath = buildRedirectPath(location.pathname, location.search, location.hash)
+var redirectPath = buildRedirectPath(
+  location.pathname,
+  location.search,
+  location.hash
+)
 var basePath = computeBasePath(location.pathname, location.origin)
 ```
 
@@ -106,16 +117,19 @@ redirectHelpers.js     |     100 |      100 |     100 |     100 |
 ## Files Changed
 
 ### Added
+
 - `src/utils/redirectHelpers.js` - Shared utility functions (100 lines)
 - `src/__tests__/redirectHelpers.test.js` - Comprehensive test suite (336 lines)
 
 ### Modified
+
 - `public/404.html` - Now uses inlined versions of utility functions
 - `src/index.jsx` - Now imports and uses `normalizeRedirectPath`
 
 ## Backward Compatibility
 
 ✅ **No breaking changes** - All existing functionality preserved:
+
 - All existing tests pass
 - Build succeeds without errors
 - No changes to runtime behavior
