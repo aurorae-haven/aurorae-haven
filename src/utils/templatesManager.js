@@ -51,20 +51,32 @@ export async function getAllTemplates() {
 
   try {
     const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readonly')
-    const store = tx.objectStore(TEMPLATES_STORE)
-    const templates = await store.getAll()
-    await tx.done
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readonly')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.getAll()
 
-    // Ensure we always return an array
-    if (!Array.isArray(templates)) {
-      logger.warn(
-        'getAllTemplates: store.getAll() did not return an array, returning empty array'
-      )
-      return []
-    }
+      request.onerror = () => {
+        logger.error('Error loading templates:', request.error)
+        reject(request.error)
+      }
 
-    return templates
+      request.onsuccess = () => {
+        const templates = request.result || []
+        
+        // Ensure we always return an array
+        if (!Array.isArray(templates)) {
+          logger.warn(
+            'getAllTemplates: store.getAll() did not return an array, returning empty array'
+          )
+          resolve([])
+        } else {
+          resolve(templates)
+        }
+      }
+
+      transaction.oncomplete = () => db.close()
+    })
   } catch (error) {
     logger.error('Error loading templates:', error)
     return []
@@ -81,11 +93,16 @@ export async function getTemplate(templateId) {
 
   try {
     const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readonly')
-    const store = tx.objectStore(TEMPLATES_STORE)
-    const template = await store.get(templateId)
-    await tx.done
-    return template || null
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readonly')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.get(templateId)
+
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(request.result || null)
+
+      transaction.oncomplete = () => db.close()
+    })
   } catch (error) {
     logger.error('Error loading template:', error)
     return null
@@ -110,8 +127,6 @@ export async function saveTemplate(template) {
 
   try {
     const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readwrite')
-    const store = tx.objectStore(TEMPLATES_STORE)
 
     const templateData = {
       id: template.id || generateSecureUUID(),
@@ -133,9 +148,16 @@ export async function saveTemplate(template) {
       pinned: template.pinned || false
     }
 
-    await store.put(templateData)
-    await tx.done
-    return templateData.id
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.put(templateData)
+
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(templateData.id)
+
+      transaction.oncomplete = () => db.close()
+    })
   } catch (error) {
     logger.error('Error saving template:', error)
     throw error
@@ -155,29 +177,41 @@ export async function updateTemplate(templateId, updates) {
 
   try {
     const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readwrite')
-    const store = tx.objectStore(TEMPLATES_STORE)
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
+      const store = transaction.objectStore(TEMPLATES_STORE)
 
-    const existing = await store.get(templateId)
-    if (!existing) {
-      throw new Error('Template not found')
-    }
+      const getRequest = store.get(templateId)
+      
+      getRequest.onerror = () => reject(getRequest.error)
+      getRequest.onsuccess = () => {
+        const existing = getRequest.result
+        if (!existing) {
+          reject(new Error('Template not found'))
+          return
+        }
 
-    const updated = {
-      ...existing,
-      ...updates,
-      id: templateId, // Ensure ID doesn't change
-      updatedAt: new Date().toISOString()
-    }
+        const updated = {
+          ...existing,
+          ...updates,
+          id: templateId, // Ensure ID doesn't change
+          updatedAt: new Date().toISOString()
+        }
 
-    // Validate the updated template data
-    const validation = validateTemplateData(updated)
-    if (!validation.valid) {
-      throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
-    }
+        // Validate the updated template data
+        const validation = validateTemplateData(updated)
+        if (!validation.valid) {
+          reject(new Error(`Invalid template data: ${validation.errors.join('; ')}`))
+          return
+        }
 
-    await store.put(updated)
-    await tx.done
+        const putRequest = store.put(updated)
+        putRequest.onerror = () => reject(putRequest.error)
+        putRequest.onsuccess = () => resolve()
+      }
+
+      transaction.oncomplete = () => db.close()
+    })
   } catch (error) {
     logger.error('Error updating template:', error)
     throw error
@@ -196,10 +230,16 @@ export async function deleteTemplate(templateId) {
 
   try {
     const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readwrite')
-    const store = tx.objectStore(TEMPLATES_STORE)
-    await store.delete(templateId)
-    await tx.done
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.delete(templateId)
+
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve()
+
+      transaction.oncomplete = () => db.close()
+    })
   } catch (error) {
     logger.error('Error deleting template:', error)
     throw error
