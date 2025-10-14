@@ -2,6 +2,7 @@
 // Implements ARC-DAT-01: Structured data storage in IndexedDB
 // Implements ARC-DAT-02: File attachment references
 import { createLogger } from './logger'
+import { DEFAULT_BACKUP_LIMIT } from './uiConstants'
 
 const logger = createLogger('IndexedDB')
 
@@ -410,8 +411,6 @@ export async function saveBackup(data) {
   }
   return put(STORES.BACKUPS, backup)
 }
-
-import { DEFAULT_BACKUP_LIMIT } from './uiConstants'
 
 /**
  * ARC-DAT-03: Get recent backups
