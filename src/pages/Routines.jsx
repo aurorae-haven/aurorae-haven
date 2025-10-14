@@ -115,7 +115,8 @@ function Routines() {
             aria-valuenow={runner.progress}
             aria-valuemin='0'
             aria-valuemax='100'
-            aria-label={`Routine progress ${runner.progress}%`}
+            aria-label="Routine progress"
+            aria-valuetext={`${runner.progress}% complete`}
           >
             <div
               className='routine-progress-bar'
