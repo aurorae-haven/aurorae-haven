@@ -14,7 +14,8 @@ import PropTypes from 'prop-types'
  */
 function convertToNumberOrNull(value) {
   if (value && value !== '') {
-    return parseInt(value, 10)
+    const num = Number(value)
+    return isNaN(num) ? null : num
   }
   return null
 }
