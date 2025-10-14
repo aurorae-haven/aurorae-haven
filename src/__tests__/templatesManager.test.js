@@ -9,7 +9,8 @@ import {
   filterTemplates,
   sortTemplates,
   exportTemplates,
-  importTemplates
+  importTemplates,
+  templatesDBManager
 } from '../utils/templatesManager'
 import * as indexedDBManager from '../utils/indexedDBManager'
 import * as uuidGenerator from '../utils/uuidGenerator'
@@ -25,6 +26,9 @@ describe('templatesManager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    
+    // Reset connection manager between tests
+    templatesDBManager.resetConnectionState()
     
     // In-memory store for template data
     mockDataStore = new Map()
@@ -496,7 +500,10 @@ describe('templatesManager', () => {
         templates: [{ id: 'import-1', type: 'task', title: 'Imported Task' }]
       }
 
+      // Mock get to return null (no collision)
       mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
+      // Mock put to succeed
+      mockDB.mockStore.put.mockReturnValue(createMockRequest('import-1'))
 
       const result = await importTemplates(importData)
 
@@ -511,9 +518,12 @@ describe('templatesManager', () => {
         templates: [{ id: 'existing-id', type: 'task', title: 'Imported Task' }]
       }
 
+      // Mock get to return existing template (collision)
       mockDB.mockStore.get.mockReturnValue(
-        Promise.resolve({ id: 'existing-id', title: 'Existing' })
+        createMockRequest({ id: 'existing-id', title: 'Existing', type: 'task' })
       )
+      // Mock put to succeed with new ID
+      mockDB.mockStore.put.mockReturnValue(createMockRequest('new-uuid'))
 
       const result = await importTemplates(importData)
 
@@ -580,7 +590,10 @@ describe('templatesManager', () => {
         ]
       }
 
+      // Mock get to return null (no collision)
       mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
+      // Mock put to succeed for valid template
+      mockDB.mockStore.put.mockReturnValue(createMockRequest('1'))
 
       const result = await importTemplates(importData)
 
@@ -599,7 +612,10 @@ describe('templatesManager', () => {
         ]
       }
 
+      // Mock get to return null (no collision)
       mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
+      // Mock put to succeed for valid template
+      mockDB.mockStore.put.mockReturnValue(createMockRequest('1'))
 
       const result = await importTemplates(importData)
 
@@ -618,10 +634,22 @@ describe('templatesManager', () => {
         ]
       }
 
-      mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
-      mockDB.mockStore.put
-        .mockResolvedValueOnce()
-        .mockRejectedValueOnce(new Error('Save failed'))
+      // Mock get to return null for first template, but throw error for second
+      let callCount = 0
+      mockDB.mockStore.get.mockImplementation(() => {
+        callCount++
+        return createMockRequest(null)
+      })
+      
+      // Mock put to succeed first time
+      mockDB.mockStore.put.mockImplementation((template) => {
+        if (template.id === '2') {
+          // Second template will fail during put
+          return createMockRequest(null, true) // Error
+        }
+        mockDataStore.set(template.id, template)
+        return createMockRequest()
+      })
 
       const result = await importTemplates(importData)
 

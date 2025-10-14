@@ -85,6 +85,13 @@ class TemplatesDBManager {
 export const templatesDBManager = new TemplatesDBManager()
 // Export the class for testing/multi-instance scenarios
 export { TemplatesDBManager }
+
+// Export convenience functions for backward compatibility
+const getDBConnection = () => templatesDBManager.getDBConnection()
+const closeDBConnection = () => templatesDBManager.closeDBConnection()
+
+export { getDBConnection, closeDBConnection }
+
 /**
  * Check if a template version is supported
  * @param {string} version
