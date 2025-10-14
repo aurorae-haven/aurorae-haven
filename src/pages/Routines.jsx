@@ -127,8 +127,20 @@ function Routines() {
             <div className='routine-time'>
               <div className='small'>Step timer</div>
               {/* TAB-RTN-43: Timer with aria-live for screen readers */}
-              <div style={{ fontWeight: '700' }} aria-live='polite'>
+              <div style={{ fontWeight: '700' }}>
                 {runner.remainingTime}
+                <span
+                  style={{
+                    position: 'absolute',
+                    left: '-9999px',
+                    width: '1px',
+                    height: '1px',
+                    overflow: 'hidden',
+                  }}
+                  aria-live='polite'
+                >
+                  {formatTime(runner.remainingTime, { verbose: true })} remaining
+                </span>
               </div>
             </div>
             {/* TAB-RTN-09: Step triptych - Previous (dim), Current (glow), Next (preview) */}
