@@ -6,7 +6,7 @@
 // and avoiding tight coupling with other modules. This approach eliminates race
 // conditions during initialization and follows clean architecture principles.
 
-/* eslint-disable no-console */
+/* eslint-disable no-console -- Logger utility requires console access */
 // This file is the logger utility itself, so it needs to use console
 
 /**
