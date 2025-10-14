@@ -7,6 +7,19 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
+/**
+ * Convert a numeric string value to a number or null
+ * @param {string} value - The value to convert
+ * @returns {number|null} The converted number or null if empty
+ */
+function convertToNumberOrNull(value) {
+  if (value && value !== '') {
+    const num = Number(value)
+    return isNaN(num) ? null : num
+  }
+  return null
+}
+
 function TemplateEditor({ template, onSave, onClose }) {
   const [formData, setFormData] = useState({
     type: 'task',
@@ -68,7 +81,18 @@ function TemplateEditor({ template, onSave, onClose }) {
 
     if (!validateForm()) return
 
-    onSave(formData)
+    // Convert numeric fields to numbers (or null if empty)
+    const templateData = {
+      ...formData,
+      dueOffset: convertToNumberOrNull(formData.dueOffset),
+      estimatedDuration: convertToNumberOrNull(formData.estimatedDuration),
+      steps: formData.steps.map(step => ({
+        ...step,
+        duration: convertToNumberOrNull(step.duration)
+      }))
+    }
+
+    onSave(templateData)
   }
 
   const handleAddTag = () => {

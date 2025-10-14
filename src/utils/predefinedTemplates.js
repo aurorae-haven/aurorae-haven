@@ -132,6 +132,13 @@ export async function seedPredefinedTemplates() {
 export async function arePredefinedTemplatesSeeded() {
   try {
     const existingTemplates = await getAllTemplates()
+    
+    // Defensive check: ensure we have an array
+    if (!Array.isArray(existingTemplates)) {
+      logger.warn('arePredefinedTemplatesSeeded: getAllTemplates did not return an array')
+      return false
+    }
+    
     const predefined = getPredefinedTemplates()
     const predefinedIds = new Set(predefined.map((t) => t.id))
 

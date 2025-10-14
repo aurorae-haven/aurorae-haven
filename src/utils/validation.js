@@ -110,7 +110,8 @@ export function validateExportData(data) {
       data,
       ARRAY_FIELDS,
       VALIDATION_TYPES.ARRAY
-    ),
+    )
+  )
 
   // Validate BrainDump structure if dumps exist
   if (data.dumps && Array.isArray(data.dumps)) {
