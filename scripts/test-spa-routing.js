@@ -15,6 +15,7 @@ import { dirname, join } from 'path'
 import { existsSync } from 'fs'
 import rateLimit from 'express-rate-limit'
 import { DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH } from '../src/utils/configConstants.js'
+import { DIST_DIR as DIST_DIR_NAME } from './buildConstants.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -24,7 +25,7 @@ const PORT = process.env.PORT || 8080
 // Express treats paths with and without trailing slashes differently when mounting middleware.
 // Using the constant without trailing slash ensures correct routing behavior.
 const BASE_PATH = DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH
-const DIST_DIR = join(__dirname, '..', 'dist')
+const DIST_DIR = join(__dirname, '..', DIST_DIR_NAME)
 
 const app = express()
 

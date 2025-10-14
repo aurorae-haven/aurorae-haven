@@ -12,12 +12,13 @@ import { join } from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 import { DEFAULT_GITHUB_PAGES_BASE_PATH } from '../src/utils/configConstants.js'
+import { OUTPUT_DIR } from './buildConstants.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const TEST_DIR = 'test-offline-package'
-const PACKAGE_DIR = join(__dirname, '..', 'dist-offline')
+const PACKAGE_DIR = join(__dirname, '..', OUTPUT_DIR)
 const TEST_PORT = parseInt(process.env.TEST_PORT || '8766', 10)
 
 // Find the offline package

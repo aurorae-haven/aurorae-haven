@@ -10,6 +10,7 @@ import {
   CACHE_MAX_ENTRIES,
   CACHE_MAX_AGE_DAYS
 } from './src/utils/themeConstants.js'
+import { DIST_DIR } from './scripts/buildConstants.js'
 
 // Cache age in seconds (30 days)
 const CACHE_MAX_AGE_SECONDS = CACHE_MAX_AGE_DAYS * 24 * 60 * 60
@@ -108,7 +109,7 @@ export default defineConfig(({ mode }) => {
       })
     ],
     build: {
-      outDir: 'dist',
+      outDir: DIST_DIR,
       sourcemap: mode === 'development',
       rollupOptions: {
         output: {
