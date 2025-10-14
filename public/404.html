@@ -14,7 +14,7 @@
       // This script runs when a user navigates directly to a route (e.g., /repo-name/page)
       // and GitHub Pages serves this 404.html file.
 
-      (function() {
+      ;(function () {
         // Shared utility functions for redirect logic (inlined from redirectHelpers.js)
         // These match the implementation in src/utils/redirectHelpers.js to ensure consistency
 
@@ -37,7 +37,7 @@
          */
         function computeBasePath(pathname, origin) {
           // Filter out empty segments from pathname
-          var pathSegments = pathname.split('/').filter(s => s !== '')
+          var pathSegments = pathname.split('/').filter((s) => s !== '')
 
           // For paths like /repo-name/page, we want /repo-name/
           // For paths like /page, we want /page/
@@ -75,10 +75,13 @@
           location.search,
           location.hash
         )
-        
+
         try {
           sessionStorage.setItem('redirectPath', redirectPath)
-          console.log('[404.html] Stored redirectPath:', sessionStorage.getItem('redirectPath'))
+          console.log(
+            '[404.html] Stored redirectPath:',
+            sessionStorage.getItem('redirectPath')
+          )
         } catch (e) {
           console.error('[404.html] Failed to store redirectPath:', e)
         }
@@ -90,7 +93,7 @@
         console.log('[404.html] Redirecting in ' + REDIRECT_DELAY_MS + 'ms...')
 
         // Use the delay to ensure sessionStorage is written before redirect
-        setTimeout(function() {
+        setTimeout(function () {
           location.replace(basePath)
         }, REDIRECT_DELAY_MS)
       })()

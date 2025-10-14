@@ -1,4 +1,7 @@
-import { DEFAULT_GITHUB_PAGES_BASE_PATH, DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH } from '../utils/configConstants'
+import {
+  DEFAULT_GITHUB_PAGES_BASE_PATH,
+  DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH
+} from '../utils/configConstants'
 
 /**
  * Tests for basename normalization in React Router

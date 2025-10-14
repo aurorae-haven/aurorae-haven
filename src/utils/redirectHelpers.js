@@ -63,21 +63,38 @@ export function computeBasePath(pathname, origin) {
  */
 /**
  * Escapes special characters in a string for use in a regular expression.
+ * This is a security-critical function that prevents regex injection attacks
+ * by ensuring user-provided strings or dynamic values are treated as literal
+ * text when used in RegExp constructors.
  *
- * @param {string} string - The string to escape.
+ * @param {string} string - The string to escape (e.g., a basename or path segment).
  * @returns {string} The escaped string safe for use in RegExp constructors.
+ *
+ * @example
+ * escapeRegExp('/aurorae-haven/')
+ * // Returns: '\\/aurorae-haven\\/'
+ *
+ * @example
+ * escapeRegExp('.')
+ * // Returns: '\\.' (prevents matching any character)
+ *
+ * @example
+ * const basename = '/my-app/'
+ * const escapedBasename = escapeRegExp(basename)
+ * const regex = new RegExp(`^${escapedBasename}`)
+ * // regex safely matches paths starting with '/my-app/'
  */
 function escapeRegExp(string) {
-  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export function normalizeRedirectPath(redirectPath, basename) {
   // Remove the basename from the redirectPath to get the route
   // The first replacement removes the basename (e.g., '/repo-name/' or './')
   // The second replacement normalizes multiple leading slashes to a single slash
-  const escapedBasename = escapeRegExp(basename);
-  const regex = new RegExp(`^${escapedBasename}`);
-  const path = redirectPath.replace(regex, '/').replace(/^\/+/, '/');
+  const escapedBasename = escapeRegExp(basename)
+  const regex = new RegExp(`^${escapedBasename}`)
+  const path = redirectPath.replace(regex, '/').replace(/^\/+/, '/')
   return path
 }
 

@@ -49,16 +49,16 @@ function RedirectHandler() {
     redirectLogger.log('Checking for redirectPath in sessionStorage...')
     const redirectPath = sessionStorage.getItem('redirectPath')
     redirectLogger.log('redirectPath:', redirectPath)
-    
+
     if (redirectPath) {
       sessionStorage.removeItem('redirectPath')
       const basename = import.meta.env.BASE_URL || '/'
       redirectLogger.log('basename:', basename)
-      
+
       // Use shared utility to normalize the redirect path
       const path = normalizeRedirectPath(redirectPath, basename)
       redirectLogger.log('Normalized path:', path)
-      
+
       // Navigate to the correct route
       redirectLogger.log('Navigating to:', path)
       navigate(path, { replace: true })
@@ -133,7 +133,10 @@ function RouterApp() {
           <Route path='/schedule' element={<Schedule />} />
           <Route path='/routines' element={<Routines />} />
           {/* Legacy route redirect */}
-          <Route path='/sequences' element={<Navigate to='/routines' replace />} />
+          <Route
+            path='/sequences'
+            element={<Navigate to='/routines' replace />}
+          />
           <Route path='/braindump' element={<Notes />} />
           <Route path='/tasks' element={<Tasks />} />
           <Route path='/habits' element={<Habits />} />
@@ -158,33 +161,46 @@ function RouterApp() {
 // Clean up old service workers registered at wrong scope
 // This fixes the issue where an old SW at root scope (/) interferes with the new SW at the configured base path
 if ('serviceWorker' in navigator) {
-  const expectedScope = new URL(import.meta.env.BASE_URL || '/', window.location.origin).href
+  const expectedScope = new URL(
+    import.meta.env.BASE_URL || '/',
+    window.location.origin
+  ).href
   swLogger.log('Expected scope:', expectedScope)
-  
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    swLogger.log('Found', registrations.length, 'registered service worker(s)')
-    
-    registrations.forEach((registration) => {
-      const scopeUrl = registration.scope
-      swLogger.log('Checking SW with scope:', scopeUrl)
-      
-      // Unregister service workers with wrong scope
-      if (scopeUrl !== expectedScope) {
-        swLogger.log('Unregistering SW with wrong scope:', scopeUrl)
-        registration.unregister().then((success) => {
-          if (success) {
-            swLogger.log('Successfully unregistered old SW')
-          }
-        }).catch((error) => {
-          swLogger.error('Failed to unregister SW:', error)
-        })
-      } else {
-        swLogger.log('SW scope is correct, keeping it')
-      }
+
+  navigator.serviceWorker
+    .getRegistrations()
+    .then((registrations) => {
+      swLogger.log(
+        'Found',
+        registrations.length,
+        'registered service worker(s)'
+      )
+
+      registrations.forEach((registration) => {
+        const scopeUrl = registration.scope
+        swLogger.log('Checking SW with scope:', scopeUrl)
+
+        // Unregister service workers with wrong scope
+        if (scopeUrl !== expectedScope) {
+          swLogger.log('Unregistering SW with wrong scope:', scopeUrl)
+          registration
+            .unregister()
+            .then((success) => {
+              if (success) {
+                swLogger.log('Successfully unregistered old SW')
+              }
+            })
+            .catch((error) => {
+              swLogger.error('Failed to unregister SW:', error)
+            })
+        } else {
+          swLogger.log('SW scope is correct, keeping it')
+        }
+      })
     })
-  }).catch((error) => {
-    swLogger.error('Error checking registrations:', error)
-  })
+    .catch((error) => {
+      swLogger.error('Error checking registrations:', error)
+    })
 }
 
 const root = createRoot(document.getElementById('root'))
@@ -199,11 +215,13 @@ root.render(
 
 // Log service worker status for debugging
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.ready.then((registration) => {
-    swLogger.log('Service worker is active and ready')
-    swLogger.log('Scope:', registration.scope)
-    swLogger.log('Active SW:', registration.active?.scriptURL)
-  }).catch((error) => {
-    swLogger.error('No service worker is ready yet:', error.message)
-  })
+  navigator.serviceWorker.ready
+    .then((registration) => {
+      swLogger.log('Service worker is active and ready')
+      swLogger.log('Scope:', registration.scope)
+      swLogger.log('Active SW:', registration.active?.scriptURL)
+    })
+    .catch((error) => {
+      swLogger.error('No service worker is ready yet:', error.message)
+    })
 }

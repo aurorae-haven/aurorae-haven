@@ -29,7 +29,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
   // Use environment variable from process.env (set by CI) or .env file or default
   // Priority: process.env.VITE_BASE_URL > .env file > default
-  const base = process.env.VITE_BASE_URL || env.VITE_BASE_URL || DEFAULT_GITHUB_PAGES_BASE_PATH
+  const base =
+    process.env.VITE_BASE_URL ||
+    env.VITE_BASE_URL ||
+    DEFAULT_GITHUB_PAGES_BASE_PATH
 
   return {
     base,

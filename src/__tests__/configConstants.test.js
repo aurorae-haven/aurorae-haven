@@ -1,4 +1,7 @@
-import { DEFAULT_GITHUB_PAGES_BASE_PATH, DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH } from '../utils/configConstants'
+import {
+  DEFAULT_GITHUB_PAGES_BASE_PATH,
+  DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH
+} from '../utils/configConstants'
 
 describe('configConstants', () => {
   describe('DEFAULT_GITHUB_PAGES_BASE_PATH', () => {
@@ -21,7 +24,8 @@ describe('configConstants', () => {
 
     test('should be a valid path for React Router basename', () => {
       // React Router requires absolute paths starting with '/'
-      const isValidReactRouterBasename = DEFAULT_GITHUB_PAGES_BASE_PATH.startsWith('/')
+      const isValidReactRouterBasename =
+        DEFAULT_GITHUB_PAGES_BASE_PATH.startsWith('/')
       expect(isValidReactRouterBasename).toBe(true)
     })
 
@@ -52,15 +56,21 @@ describe('configConstants', () => {
     })
 
     test('should be a string', () => {
-      expect(typeof DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH).toBe('string')
+      expect(typeof DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH).toBe(
+        'string'
+      )
     })
 
     test('should start with a forward slash', () => {
-      expect(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH.startsWith('/')).toBe(true)
+      expect(
+        DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH.startsWith('/')
+      ).toBe(true)
     })
 
     test('should not end with a forward slash', () => {
-      expect(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH.endsWith('/')).toBe(false)
+      expect(
+        DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH.endsWith('/')
+      ).toBe(false)
     })
 
     test('should be derived from DEFAULT_GITHUB_PAGES_BASE_PATH', () => {
@@ -70,12 +80,15 @@ describe('configConstants', () => {
     })
 
     test('should match the expected format', () => {
-      expect(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH).toBe('/aurorae-haven')
+      expect(DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH).toBe(
+        '/aurorae-haven'
+      )
     })
 
     test('should be usable for Express route paths', () => {
       // Simulate Express route path construction
-      const routePath = DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH + '/api'
+      const routePath =
+        DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH + '/api'
       expect(routePath).toBe('/aurorae-haven/api')
       expect(routePath).not.toContain('//')
     })

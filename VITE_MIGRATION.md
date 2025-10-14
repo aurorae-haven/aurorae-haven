@@ -169,16 +169,19 @@ npm test -- --verbose
 After the Vite migration, we identified and fixed a critical issue with service worker registration that caused 404 errors on page refresh.
 
 ### Issue
+
 - Duplicate service worker registrations (manual + vite-plugin-pwa)
 - Missing NavigationRoute configuration for SPA routing
 - 404 errors when refreshing non-root routes
 
 ### Solution
+
 - Removed manual service worker registration (`public/service-worker.js` and `serviceWorkerRegistration.js`)
 - Configured Workbox NavigationRoute with proper allowlist/denylist
 - Single service worker managed by vite-plugin-pwa
 
 ### Result
+
 - ✅ No more 404 errors on page refresh
 - ✅ Works on GitHub Pages and offline mode
 - ✅ Proper SPA routing with service worker support

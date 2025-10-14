@@ -39,7 +39,7 @@ The following pages currently exist in `src/pages/`:
 | TAB-LIB  | 39    | Library (partial)       | 🔄 Partial (template instantiation implemented) |
 | TAB-NAV  | 29    | Layout (Navigation)     | ✅ Implemented (in Layout component)            |
 | TAB-POP  | 30    | Various (Modals/Popups) | 🔄 Partial (some popups exist)                  |
-| TAB-RTN  | 58    | Sequences               | 🔄 Partial (routines)               |
+| TAB-RTN  | 58    | Sequences               | 🔄 Partial (routines)                           |
 | TAB-SCH  | 52    | Schedule                | 🔄 Partial (basic structure exists)             |
 | TAB-SEC  | 42    | Settings (Security)     | ❌ Not Implemented (security features missing)  |
 | TAB-SET  | 44    | Settings                | 🔄 Partial (basic structure exists)             |

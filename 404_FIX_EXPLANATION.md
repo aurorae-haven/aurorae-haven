@@ -9,6 +9,7 @@ When a user manually refreshes a non-root page (e.g., `/aurorae-haven/schedule`)
 ### How Service Workers Handle SPA Routing
 
 1. **Normal Navigation (Clicking Links)**
+
    ```
    User clicks "Schedule" link
    ↓
@@ -19,6 +20,7 @@ When a user manually refreshes a non-root page (e.g., `/aurorae-haven/schedule`)
    ```
 
 2. **Manual Refresh (F5)**
+
    ```
    User presses F5 on /aurorae-haven/schedule
    ↓
@@ -27,7 +29,7 @@ When a user manually refreshes a non-root page (e.g., `/aurorae-haven/schedule`)
    WITHOUT SERVICE WORKER FIX:
    GitHub Pages responds: "404 Not Found" (no schedule file exists)
    ❌ Error!
-   
+
    WITH SERVICE WORKER FIX:
    Service worker intercepts request
    ↓
@@ -48,12 +50,12 @@ The service worker configuration had a mismatch between two URLs:
 ```javascript
 // vite-plugin-pwa generates this in the service worker:
 precacheAndRoute([
-  {url: "index.html", revision: "abc123"},  // ← Precached URL
+  { url: 'index.html', revision: 'abc123' } // ← Precached URL
   // ... other files
 ])
 
 // But the navigation fallback was trying to use:
-createHandlerBoundToURL("/aurorae-haven/index.html")  // ← ❌ WRONG!
+createHandlerBoundToURL('/aurorae-haven/index.html') // ← ❌ WRONG!
 // This URL is not in the precache manifest!
 ```
 
@@ -73,10 +75,11 @@ Workbox's `createHandlerBoundToURL()` needs to reference a URL that exists in th
 The service worker resolves the `navigateFallback` URL relative to its scope:
 
 **Production Build:**
+
 ```javascript
 // Service worker registered with:
-navigator.serviceWorker.register('/aurorae-haven/sw.js', { 
-  scope: '/aurorae-haven/' 
+navigator.serviceWorker.register('/aurorae-haven/sw.js', {
+  scope: '/aurorae-haven/'
 })
 
 // Navigation fallback: 'index.html'
@@ -89,10 +92,11 @@ navigator.serviceWorker.register('/aurorae-haven/sw.js', {
 ```
 
 **Offline Build:**
+
 ```javascript
 // Service worker registered with:
-navigator.serviceWorker.register('./sw.js', { 
-  scope: './' 
+navigator.serviceWorker.register('./sw.js', {
+  scope: './'
 })
 
 // Navigation fallback: 'index.html'
@@ -161,12 +165,14 @@ Renders Schedule component
 ### DevTools Verification
 
 **Application > Service Workers**
+
 ```
 Status: ✅ activated and is running
 Scope: /aurorae-haven/
 ```
 
 **Network Tab (after service worker is active)**
+
 ```
 Request URL: /aurorae-haven/schedule
 Status: 200 OK (from ServiceWorker)
@@ -174,6 +180,7 @@ Size: (from ServiceWorker)
 ```
 
 **Console**
+
 ```
 No service worker errors ✅
 ```
@@ -194,6 +201,7 @@ Service workers only activate after the first page load. For first-time visitors
 8. ✅ Page loads correctly
 
 **On subsequent refreshes:**
+
 - Service worker is now active
 - Intercepts navigation requests
 - Serves cached index.html
@@ -202,6 +210,7 @@ Service workers only activate after the first page load. For first-time visitors
 ### Browsers Without Service Worker Support
 
 For older browsers that don't support service workers:
+
 1. 404.html redirect mechanism still works
 2. React Router handles the routing
 3. ✅ App still functions (just slower on refresh)
@@ -211,9 +220,10 @@ For older browsers that don't support service workers:
 **Problem**: Service worker navigation fallback wasn't working because of URL mismatch  
 **Root Cause**: `navigateFallback` used full path but precache had relative path  
 **Solution**: Use simple `'index.html'` for both - let scope resolve the path  
-**Result**: Service worker properly intercepts refresh requests and serves cached SPA  
+**Result**: Service worker properly intercepts refresh requests and serves cached SPA
 
 **Impact**:
+
 - ✅ No more 404 errors on manual page refresh
 - ✅ Works for both GitHub Pages (production) and offline builds
 - ✅ Faster page loads (served from cache, no network request)

@@ -14,7 +14,8 @@
  * Example: If your repository is `aurorae-haven`, the base path should be `/aurorae-haven/`.
  * This matches the URL structure: https://username.github.io/aurorae-haven/
  */
-export const DEFAULT_GITHUB_PAGES_BASE_PATH = process.env.VITE_GITHUB_PAGES_BASE_PATH || '/aurorae-haven/';
+export const DEFAULT_GITHUB_PAGES_BASE_PATH =
+  process.env.VITE_GITHUB_PAGES_BASE_PATH || '/aurorae-haven/'
 
 /**
  * Base path without trailing slash.
@@ -26,4 +27,5 @@ export const DEFAULT_GITHUB_PAGES_BASE_PATH = process.env.VITE_GITHUB_PAGES_BASE
  *
  * Derived from DEFAULT_GITHUB_PAGES_BASE_PATH by removing the trailing slash.
  */
-export const DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH = DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1);
+export const DEFAULT_GITHUB_PAGES_BASE_PATH_NO_TRAILING_SLASH =
+  DEFAULT_GITHUB_PAGES_BASE_PATH.slice(0, -1)

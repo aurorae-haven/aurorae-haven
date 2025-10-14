@@ -71,8 +71,7 @@ describe('Service Worker Cleanup', () => {
       ])
 
       // Execute the cleanup logic
-      const registrations =
-        await mockNavigator.serviceWorker.getRegistrations()
+      const registrations = await mockNavigator.serviceWorker.getRegistrations()
 
       registrations.forEach((registration) => {
         if (registration.scope !== expectedScope) {
@@ -95,8 +94,7 @@ describe('Service Worker Cleanup', () => {
       ])
 
       // Execute the cleanup logic
-      const registrations =
-        await mockNavigator.serviceWorker.getRegistrations()
+      const registrations = await mockNavigator.serviceWorker.getRegistrations()
 
       registrations.forEach((registration) => {
         if (registration.scope !== expectedScope) {
@@ -133,8 +131,7 @@ describe('Service Worker Cleanup', () => {
       ])
 
       // Execute the cleanup logic
-      const registrations =
-        await mockNavigator.serviceWorker.getRegistrations()
+      const registrations = await mockNavigator.serviceWorker.getRegistrations()
 
       registrations.forEach((registration) => {
         if (registration.scope !== expectedScope) {
@@ -152,8 +149,7 @@ describe('Service Worker Cleanup', () => {
     test('handles empty registrations array', async () => {
       mockNavigator.serviceWorker.getRegistrations.mockResolvedValue([])
 
-      const registrations =
-        await mockNavigator.serviceWorker.getRegistrations()
+      const registrations = await mockNavigator.serviceWorker.getRegistrations()
 
       expect(registrations).toHaveLength(0)
     })
@@ -170,8 +166,7 @@ describe('Service Worker Cleanup', () => {
         mockRegistration
       ])
 
-      const registrations =
-        await mockNavigator.serviceWorker.getRegistrations()
+      const registrations = await mockNavigator.serviceWorker.getRegistrations()
 
       registrations.forEach((registration) => {
         if (registration.scope !== expectedScope) {
@@ -208,8 +203,7 @@ describe('Service Worker Cleanup', () => {
         oldRootSW
       ])
 
-      const registrations =
-        await mockNavigator.serviceWorker.getRegistrations()
+      const registrations = await mockNavigator.serviceWorker.getRegistrations()
 
       registrations.forEach((registration) => {
         if (registration.scope !== expectedScope) {
@@ -233,8 +227,7 @@ describe('Service Worker Cleanup', () => {
 
       mockNavigator.serviceWorker.getRegistrations.mockResolvedValue([localSW])
 
-      const registrations =
-        await mockNavigator.serviceWorker.getRegistrations()
+      const registrations = await mockNavigator.serviceWorker.getRegistrations()
 
       registrations.forEach((registration) => {
         if (registration.scope !== expectedScope) {

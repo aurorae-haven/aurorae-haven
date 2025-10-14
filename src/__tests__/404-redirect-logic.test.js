@@ -10,7 +10,7 @@ describe('404.html Redirect Logic', () => {
     // Hardcoded repository name (matches public/404.html)
     var repoName = 'aurorae-haven'
     var basePath = origin + '/' + repoName + '/'
-    
+
     return basePath
   }
 
@@ -43,7 +43,10 @@ describe('404.html Redirect Logic', () => {
 
   describe('nested routes', () => {
     test('redirects /aurorae-haven/routines/my-routine to /aurorae-haven/', () => {
-      const result = simulateRedirect('/aurorae-haven/routines/my-routine', origin)
+      const result = simulateRedirect(
+        '/aurorae-haven/routines/my-routine',
+        origin
+      )
       expect(result).toBe('https://aurorae-haven.github.io/aurorae-haven/')
     })
 
@@ -83,13 +86,13 @@ describe('404.html Redirect Logic', () => {
     test('verifies the fix prevents redirect to root domain', () => {
       // Now using hardcoded repository name for reliability
       // ALL paths redirect to /aurorae-haven/ regardless of input
-      
+
       const pathWithoutSlash = '/aurorae-haven'
       const result = simulateRedirect(pathWithoutSlash, origin)
-      
+
       // Should NOT redirect to root
       expect(result).not.toBe('https://aurorae-haven.github.io/')
-      
+
       // Should redirect to /aurorae-haven/
       expect(result).toBe('https://aurorae-haven.github.io/aurorae-haven/')
     })
@@ -97,16 +100,16 @@ describe('404.html Redirect Logic', () => {
     test('documents the evolution of the fix', () => {
       // First attempt: Extract first path segment
       // Problem: Complex logic, edge cases
-      
+
       // Final solution: Hardcode repository name
       // Benefit: Simple, reliable, always redirects to correct base
-      
+
       const solution = {
         approach: 'Hardcode repository name in 404.html',
         benefit: 'Guaranteed correct redirection regardless of URL',
         code: "var repoName = 'aurorae-haven'; var basePath = origin + '/' + repoName + '/';"
       }
-      
+
       expect(solution.approach).toBe('Hardcode repository name in 404.html')
     })
   })
@@ -117,9 +120,9 @@ describe('404.html Redirect Logic', () => {
       const pathname = '/aurorae-haven/schedule'
       const search = '?filter=active'
       const hash = '#section'
-      
+
       const redirectPath = pathname + search + hash
-      
+
       expect(redirectPath).toBe('/aurorae-haven/schedule?filter=active#section')
     })
 
@@ -127,10 +130,10 @@ describe('404.html Redirect Logic', () => {
       // After redirect, React reads from sessionStorage
       const redirectPath = '/aurorae-haven/schedule'
       const basename = '/aurorae-haven/'
-      
+
       // Extract route by removing basename
       const route = redirectPath.replace(basename, '/').replace(/^\/+/, '/')
-      
+
       expect(route).toBe('/schedule')
     })
   })

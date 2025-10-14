@@ -247,7 +247,9 @@ export async function instantiateTemplatesBatch(templates) {
     for (const template of taskTemplates) {
       const validation = validateTemplateData(template)
       if (!validation.valid) {
-        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+        throw new Error(
+          `Invalid template data: ${validation.errors.join('; ')}`
+        )
       }
 
       // Validate dueOffset if present
@@ -333,7 +335,9 @@ export async function instantiateTemplatesBatch(templates) {
       // Validate template data
       const validation = validateTemplateData(template)
       if (!validation.valid) {
-        throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+        throw new Error(
+          `Invalid template data: ${validation.errors.join('; ')}`
+        )
       }
 
       // Additional validation for routine-specific fields

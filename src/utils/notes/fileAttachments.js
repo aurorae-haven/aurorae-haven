@@ -155,7 +155,9 @@ export class FileAttachments {
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(BYTES_PER_KILOBYTE))
     return (
-      Math.round((bytes / Math.pow(BYTES_PER_KILOBYTE, i)) * FILE_SIZE_PRECISION) /
+      Math.round(
+        (bytes / Math.pow(BYTES_PER_KILOBYTE, i)) * FILE_SIZE_PRECISION
+      ) /
         FILE_SIZE_PRECISION +
       ' ' +
       sizes[i]

@@ -121,8 +121,7 @@ The export file contains all your data in a structured JSON format:
 
 - **`version`** (number): Data format version for compatibility checking
 - **`exportedAt`** (ISO timestamp): When the export was created
-- **`tasks`** (array): Flattened array of all tasks from all quadrants
--**`routines`** (array): Saved routines
+- **`tasks`** (array): Flattened array of all tasks from all quadrants -**`routines`** (array): Saved routines
 - **`habits`** (array): Habit tracking data
 - **`dumps`** (array): Brain dump notes/entries
 - **`schedule`** (array): Calendar/schedule events
