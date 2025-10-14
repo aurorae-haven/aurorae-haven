@@ -39,8 +39,8 @@ describe('templatesManager', () => {
         result: null,
         error: null
       }
-      // Use setTimeout to ensure callbacks are set before firing
-      setTimeout(() => {
+      // Use Promise.resolve().then() for deterministic async behavior
+      Promise.resolve().then(() => {
         if (shouldError) {
           request.error = new Error('Mock error')
           request.onerror && request.onerror()
@@ -48,7 +48,7 @@ describe('templatesManager', () => {
           request.result = result
           request.onsuccess && request.onsuccess()
         }
-      }, 0)
+      })
       return request
     }
 

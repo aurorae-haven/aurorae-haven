@@ -43,13 +43,18 @@ class TemplatesDBManager {
         this.dbConnection = db
         this.connectionPromise = null
         
-        // Handle connection close/error events
-        db.onclose = () => {
+        // Handle connection close/error events with proper cleanup
+        const handleDisconnect = () => {
+          // Remove event handlers to prevent memory leaks
+          if (this.dbConnection) {
+            this.dbConnection.onclose = null
+            this.dbConnection.onerror = null
+          }
           this.dbConnection = null
         }
-        db.onerror = () => {
-          this.dbConnection = null
-        }
+        
+        db.onclose = handleDisconnect
+        db.onerror = handleDisconnect
         
         return db
       })
@@ -67,6 +72,9 @@ class TemplatesDBManager {
    */
   closeDBConnection() {
     if (this.dbConnection) {
+      // Clean up event handlers before closing
+      this.dbConnection.onclose = null
+      this.dbConnection.onerror = null
       this.dbConnection.close()
       this.dbConnection = null
     }

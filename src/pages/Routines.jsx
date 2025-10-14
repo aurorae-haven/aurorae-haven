@@ -68,7 +68,7 @@ function Routines() {
                   }}
                   aria-live='polite'
                 >
-                  {formatTime(runner.remainingTime, { verbose: true })} remaining
+                  {formatTime(runner.remainingTime, { verbose: true })}
                 </span>
               </div>
             </div>

@@ -117,6 +117,19 @@ describe('Routine Runner - Time Formatting', () => {
     expect(formatTime(-30)).toBe('-00:30')
     expect(formatTime(-90)).toBe('-01:30')
   })
+
+  test('should handle invalid inputs by defaulting to 0', () => {
+    expect(formatTime(undefined)).toBe('00:00')
+    expect(formatTime(null)).toBe('00:00')
+    expect(formatTime(NaN)).toBe('00:00')
+    expect(formatTime('invalid')).toBe('00:00')
+  })
+
+  test('should support verbose option with "remaining" suffix', () => {
+    expect(formatTime(90, { verbose: true })).toBe('01:30 remaining')
+    expect(formatTime(300, { verbose: true })).toBe('05:00 remaining')
+    expect(formatTime(0, { verbose: false })).toBe('00:00')
+  })
 })
 
 describe('Routine Runner - State Management', () => {

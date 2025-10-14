@@ -317,25 +317,22 @@ function Library() {
       ) : (
         <>
           {/* Routine Templates Section */}
-          {filteredTemplates.filter((t) => t.type === 'routine').length > 0 && (
-            <div className='template-section'>
-              <div className='template-section-header'>
-                <h2>Routines</h2>
-                <span className='small'>
-                  {filteredTemplates.filter((t) => t.type === 'routine').length}{' '}
-                  {filteredTemplates.filter((t) => t.type === 'routine')
-                    .length === 1
-                    ? 'routine'
-                    : 'routines'}
-                </span>
-              </div>
+          {(() => {
+            const routineTemplates = filteredTemplates.filter((t) => t.type === 'routine')
+            const routineCount = routineTemplates.length
+            return routineCount > 0 && (
+              <div className='template-section'>
+                <div className='template-section-header'>
+                  <h2>Routines</h2>
+                  <span className='small'>
+                    {routineCount} {routineCount === 1 ? 'routine' : 'routines'}
+                  </span>
+                </div>
               <div
                 className={`template-${viewMode}`}
                 role={viewMode === 'grid' ? 'grid' : 'list'}
               >
-                {filteredTemplates
-                  .filter((t) => t.type === 'routine')
-                  .map((template) => (
+                {routineTemplates.map((template) => (
                     <TemplateCard
                       key={template.id}
                       template={template}
@@ -348,28 +345,26 @@ function Library() {
                   ))}
               </div>
             </div>
-          )}
+            )
+          })()}
 
           {/* Task Templates Section */}
-          {filteredTemplates.filter((t) => t.type === 'task').length > 0 && (
-            <div className='template-section'>
-              <div className='template-section-header'>
-                <h2>Tasks</h2>
-                <span className='small'>
-                  {filteredTemplates.filter((t) => t.type === 'task').length}{' '}
-                  {filteredTemplates.filter((t) => t.type === 'task').length ===
-                  1
-                    ? 'task'
-                    : 'tasks'}
-                </span>
-              </div>
+          {(() => {
+            const taskTemplates = filteredTemplates.filter((t) => t.type === 'task')
+            const taskCount = taskTemplates.length
+            return taskCount > 0 && (
+              <div className='template-section'>
+                <div className='template-section-header'>
+                  <h2>Tasks</h2>
+                  <span className='small'>
+                    {taskCount} {taskCount === 1 ? 'task' : 'tasks'}
+                  </span>
+                </div>
               <div
                 className={`template-${viewMode}`}
                 role={viewMode === 'grid' ? 'grid' : 'list'}
               >
-                {filteredTemplates
-                  .filter((t) => t.type === 'task')
-                  .map((template) => (
+                {taskTemplates.map((template) => (
                     <TemplateCard
                       key={template.id}
                       template={template}
@@ -382,7 +377,8 @@ function Library() {
                   ))}
               </div>
             </div>
-          )}
+            )
+          })()}
         </>
       )}
 

@@ -66,13 +66,21 @@ export function calculateTotalXP(completedSteps, totalSteps) {
 /**
  * Format seconds to mm:ss
  * @param {number} seconds - Time in seconds
+ * @param {Object} options - Formatting options
+ * @param {boolean} options.verbose - If true, return with "mm:ss remaining" suffix
  * @returns {string} Formatted time string
  */
-export function formatTime(seconds) {
-  const mins = Math.floor(Math.abs(seconds) / 60)
-  const secs = Math.abs(seconds) % 60
-  const sign = seconds < 0 ? '-' : ''
-  return `${sign}${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+export function formatTime(seconds, options = {}) {
+  // Validate input - default to 0 if not a number
+  const validSeconds = typeof seconds === 'number' && !isNaN(seconds) ? seconds : 0
+  
+  const mins = Math.floor(Math.abs(validSeconds) / 60)
+  const secs = Math.abs(validSeconds) % 60
+  const sign = validSeconds < 0 ? '-' : ''
+  const formatted = `${sign}${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+  
+  // Return with suffix if verbose option is enabled
+  return options.verbose ? `${formatted} remaining` : formatted
 }
 
 /**
