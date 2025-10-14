@@ -17,59 +17,74 @@ const TEMPLATES_STORE = 'templates'
 const SUPPORTED_VERSION_RANGE = '>=1.0 <2.0'
 const CURRENT_VERSION = '1.0'
 
-// Database connection management
-// Keep a single connection open for reuse to improve performance
-let dbConnection = null
-let connectionPromise = null
-
-/**
- * Get or create database connection
- * Reuses existing connection to avoid frequent open/close cycles
- * @returns {Promise<IDBDatabase>}
- */
-async function getDBConnection() {
-  if (dbConnection) {
-    return dbConnection
+// Database connection management encapsulated in a class
+class TemplatesDBManager {
+  constructor() {
+    this.dbConnection = null
+    this.connectionPromise = null
   }
 
-  if (connectionPromise) {
-    return connectionPromise
+  /**
+   * Get or create database connection
+   * Reuses existing connection to avoid frequent open/close cycles
+   * @returns {Promise<IDBDatabase>}
+   */
+  async getDBConnection() {
+    if (this.dbConnection) {
+      return this.dbConnection
+    }
+
+    if (this.connectionPromise) {
+      return this.connectionPromise
+    }
+
+    this.connectionPromise = openDB()
+      .then((db) => {
+        this.dbConnection = db
+        this.connectionPromise = null
+        
+        // Handle connection close/error events
+        db.onclose = () => {
+          this.dbConnection = null
+        }
+        db.onerror = () => {
+          this.dbConnection = null
+        }
+        
+        return db
+      })
+      .catch((error) => {
+        this.connectionPromise = null
+        throw error
+      })
+
+    return this.connectionPromise
   }
 
-  connectionPromise = openDB()
-    .then((db) => {
-      dbConnection = db
-      connectionPromise = null
-      
-      // Handle connection close/error events
-      db.onclose = () => {
-        dbConnection = null
-      }
-      db.onerror = () => {
-        dbConnection = null
-      }
-      
-      return db
-    })
-    .catch((error) => {
-      connectionPromise = null
-      throw error
-    })
+  /**
+   * Close database connection
+   * Should only be called when application unloads or no longer needs DB access
+   */
+  closeDBConnection() {
+    if (this.dbConnection) {
+      this.dbConnection.close()
+      this.dbConnection = null
+    }
+  }
 
-  return connectionPromise
+  /**
+   * Reset connection state (for testing)
+   */
+  resetConnectionState() {
+    this.dbConnection = null
+    this.connectionPromise = null
+  }
 }
 
-/**
- * Close database connection
- * Should only be called when application unloads or no longer needs DB access
- */
-export function closeDBConnection() {
-  if (dbConnection) {
-    dbConnection.close()
-    dbConnection = null
-  }
-}
-
+// Export a singleton instance for default use
+export const templatesDBManager = new TemplatesDBManager()
+// Export the class for testing/multi-instance scenarios
+export { TemplatesDBManager }
 /**
  * Check if a template version is supported
  * @param {string} version
