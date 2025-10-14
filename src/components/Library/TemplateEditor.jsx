@@ -68,7 +68,20 @@ function TemplateEditor({ template, onSave, onClose }) {
 
     if (!validateForm()) return
 
-    onSave(formData)
+    // Convert numeric fields to numbers (or null if empty)
+    const templateData = {
+      ...formData,
+      dueOffset:
+        formData.dueOffset && formData.dueOffset !== ''
+          ? parseInt(formData.dueOffset, 10)
+          : null,
+      estimatedDuration:
+        formData.estimatedDuration && formData.estimatedDuration !== ''
+          ? parseInt(formData.estimatedDuration, 10)
+          : null
+    }
+
+    onSave(templateData)
   }
 
   const handleAddTag = () => {
