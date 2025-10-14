@@ -72,13 +72,14 @@ export function calculateTotalXP(completedSteps, totalSteps) {
  */
 export function formatTime(seconds, options = {}) {
   // Validate input - default to 0 if not a number
-  const validSeconds = typeof seconds === 'number' && !isNaN(seconds) ? seconds : 0
-  
+  const validSeconds =
+    typeof seconds === 'number' && !isNaN(seconds) ? seconds : 0
+
   const mins = Math.floor(Math.abs(validSeconds) / 60)
   const secs = Math.abs(validSeconds) % 60
   const sign = validSeconds < 0 ? '-' : ''
   const formatted = `${sign}${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-  
+
   // Return with suffix if verbose option is enabled
   return options.verbose ? `${formatted} remaining` : formatted
 }
@@ -156,7 +157,10 @@ export function completeStep(state) {
 
   return advanceStep({
     ...state,
-    completedSteps: [...state.completedSteps, { ...stepLog, completedOnTime, xp }],
+    completedSteps: [
+      ...state.completedSteps,
+      { ...stepLog, completedOnTime, xp }
+    ],
     logs: [...state.logs, stepLog]
   })
 }
@@ -268,7 +272,9 @@ export function getRoutineSummary(state) {
   const totalSteps = state.routine.steps.length
   const completedCount = state.completedSteps.length
   const skippedCount = state.skippedSteps.length
-  const onTimeCount = state.completedSteps.filter((s) => s.completedOnTime).length
+  const onTimeCount = state.completedSteps.filter(
+    (s) => s.completedOnTime
+  ).length
   const onTimePercentage =
     completedCount > 0 ? Math.round((onTimeCount / completedCount) * 100) : 0
 

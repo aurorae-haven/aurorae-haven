@@ -10,7 +10,13 @@ function Routines() {
 
   // Start runner when selectedRoutine and runner are ready
   React.useEffect(() => {
-    if (selectedRoutine && runner && runner.start && runner.state && !runner.state.isRunning) {
+    if (
+      selectedRoutine &&
+      runner &&
+      runner.start &&
+      runner.state &&
+      !runner.state.isRunning
+    ) {
       runner.start()
     }
   }, [selectedRoutine, runner])
@@ -27,7 +33,6 @@ function Routines() {
 
   return (
     <>
-
       {/* TAB-RTN-03: Current Routine runner with progress bar */}
       {runner.state && runner.state.isRunning && (
         <div className='card'>
@@ -44,7 +49,7 @@ function Routines() {
             aria-valuenow={runner.progress}
             aria-valuemin='0'
             aria-valuemax='100'
-            aria-label="Routine progress"
+            aria-label='Routine progress'
             aria-valuetext={`${runner.progress}% complete`}
           >
             <div
@@ -64,7 +69,7 @@ function Routines() {
                     left: '-9999px',
                     width: '1px',
                     height: '1px',
-                    overflow: 'hidden',
+                    overflow: 'hidden'
                   }}
                   aria-live='polite'
                 >
@@ -288,9 +293,17 @@ function Routines() {
               {/* XP Breakdown */}
               <div style={{ marginBottom: '16px' }}>
                 <div className='small'>XP Earned</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '4px'
+                  }}
+                >
                   <div>
-                    <strong style={{ fontSize: '1.5rem', color: 'var(--mint)' }}>
+                    <strong
+                      style={{ fontSize: '1.5rem', color: 'var(--mint)' }}
+                    >
                       {runner.summary.xpBreakdown.total} XP
                     </strong>
                   </div>

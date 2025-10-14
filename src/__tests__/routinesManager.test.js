@@ -177,14 +177,14 @@ describe('Routines Manager', () => {
       // Currently, scheduleManager handles this independently
       // This test documents the expected behavior
       const id = await createRoutine({ name: 'Scheduled Routine', steps: [] })
-      
+
       // Delete the routine
       await deleteRoutine(id)
-      
+
       // Verify routine is deleted
       const routine = await getRoutine(id)
       expect(routine).toBeUndefined()
-      
+
       // Note: Schedule cleanup would be tested in scheduleManager.test.js
       // This test just ensures the routine itself is properly removed
     })
@@ -303,14 +303,14 @@ describe('Routines Manager', () => {
       })
 
       const state = await startRoutine(id)
-      
+
       // Verify state is initialized correctly for execution
       expect(state.routineId).toBe(id)
       expect(state.isRunning).toBe(true)
       expect(state.currentStepIndex).toBe(0)
       expect(state.routine).toBeDefined()
       expect(state.routine.steps).toHaveLength(2)
-      
+
       // Note: Full completion flow including XP calculation is tested
       // in routineRunner.test.js with 28 comprehensive tests
     })

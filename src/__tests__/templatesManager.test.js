@@ -26,10 +26,10 @@ describe('templatesManager', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    
+
     // Reset connection manager between tests
     templatesDBManager.resetConnectionState()
-    
+
     // In-memory store for template data
     mockDataStore = new Map()
 
@@ -520,7 +520,11 @@ describe('templatesManager', () => {
 
       // Mock get to return existing template (collision)
       mockDB.mockStore.get.mockReturnValue(
-        createMockRequest({ id: 'existing-id', title: 'Existing', type: 'task' })
+        createMockRequest({
+          id: 'existing-id',
+          title: 'Existing',
+          type: 'task'
+        })
       )
       // Mock put to succeed with new ID
       mockDB.mockStore.put.mockReturnValue(createMockRequest('new-uuid'))
@@ -640,7 +644,7 @@ describe('templatesManager', () => {
         callCount++
         return createMockRequest(null)
       })
-      
+
       // Mock put to succeed first time
       mockDB.mockStore.put.mockImplementation((template) => {
         if (template.id === '2') {
