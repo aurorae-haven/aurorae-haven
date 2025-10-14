@@ -6,14 +6,18 @@ import {
 } from './indexedDBManager'
 import { getDataTemplate } from './exportData'
 import { MS_PER_DAY } from './timeConstants'
+import { DEFAULT_BACKUP_LIMIT } from './uiConstants'
+import { MINUTES_PER_HOUR } from './scheduleConstants'
 import { createLogger } from './logger'
 
 const logger = createLogger('AutoBackup')
 
 // ARC-DAT-03: Automatic backup configuration
 const BACKUP_INTERVAL = MS_PER_DAY // 24 hours
-const MAX_BACKUPS = 10
 const LAST_BACKUP_KEY = 'aurorae_last_backup'
+
+// Convert milliseconds to hours for logging
+const MS_PER_HOUR = MINUTES_PER_HOUR * 60 * 1000
 
 /**
  * Initialize automatic backup system
@@ -37,7 +41,7 @@ export async function initAutoBackup() {
 
       if (timeSinceBackup < BACKUP_INTERVAL) {
         logger.log(
-          `Next backup in ${Math.round((BACKUP_INTERVAL - timeSinceBackup) / (60 * 60 * 1000))} hours`
+          `Next backup in ${Math.round((BACKUP_INTERVAL - timeSinceBackup) / MS_PER_HOUR)} hours`
         )
         return
       }
@@ -58,7 +62,7 @@ async function performAutoBackup() {
   try {
     const data = await getDataTemplate()
     await saveBackup(data)
-    await cleanOldBackups(MAX_BACKUPS)
+    await cleanOldBackups(DEFAULT_BACKUP_LIMIT)
     localStorage.setItem(LAST_BACKUP_KEY, Date.now().toString())
     logger.log('Backup completed successfully')
   } catch (e) {

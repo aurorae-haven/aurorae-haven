@@ -1,8 +1,12 @@
 // TAB-BDP-FIL-01: OPFS file attachment management
 // Implements Origin Private File System storage for secure file attachments
 import { createLogger } from '../logger'
+import { BYTES_PER_KILOBYTE } from '../themeConstants'
 
 const logger = createLogger('FileAttachments')
+
+// Precision for file size display (decimal places)
+const FILE_SIZE_PRECISION = 100
 
 /**
  * File Attachments Manager
@@ -148,10 +152,14 @@ export class FileAttachments {
    */
   formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes'
-    const k = 1024
     const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+    const i = Math.floor(Math.log(bytes) / Math.log(BYTES_PER_KILOBYTE))
+    return (
+      Math.round((bytes / Math.pow(BYTES_PER_KILOBYTE, i)) * FILE_SIZE_PRECISION) /
+        FILE_SIZE_PRECISION +
+      ' ' +
+      sizes[i]
+    )
   }
 
   /**

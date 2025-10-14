@@ -5,6 +5,7 @@ import {
   importAllData as importToIndexedDB
 } from './indexedDBManager'
 import { createLogger } from './logger'
+import { PAGE_RELOAD_DELAY_MS } from './uiConstants'
 
 const logger = createLogger('ImportData')
 
@@ -36,12 +37,12 @@ export const IMPORT_SUCCESS_MESSAGE =
 
 /**
  * Reload page after a delay
- * @param {number} [delay=1500] - Delay in milliseconds (default: 1500ms)
+ * @param {number} [delay=PAGE_RELOAD_DELAY_MS] - Delay in milliseconds (default: PAGE_RELOAD_DELAY_MS)
  * @param {Window|undefined} [windowObj=globalThis.window] - Injectable window object (defaults to globalThis.window). No action is taken when no window is available.
  * @returns {void}
  */
 export function reloadPageAfterDelay(
-  delay = 1500,
+  delay = PAGE_RELOAD_DELAY_MS,
   windowObj = typeof globalThis !== 'undefined' ? globalThis.window : undefined
 ) {
   // Early return if no window object available
