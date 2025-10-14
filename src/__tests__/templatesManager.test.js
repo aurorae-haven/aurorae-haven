@@ -30,8 +30,8 @@ describe('templatesManager', () => {
         result: null,
         error: null
       }
-      // Use setImmediate to ensure callbacks are set before firing
-      setImmediate(() => {
+      // Use setTimeout to ensure callbacks are set before firing
+      setTimeout(() => {
         if (shouldError) {
           request.error = new Error('Mock error')
           request.onerror && request.onerror()
@@ -39,7 +39,7 @@ describe('templatesManager', () => {
           request.result = result
           request.onsuccess && request.onsuccess()
         }
-      })
+      }, 0)
       return request
     }
 
