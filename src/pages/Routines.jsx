@@ -1,13 +1,10 @@
 import React, { useState } from 'react'
-import { useRoutines } from '../hooks/useRoutines'
 import { useRoutineRunner } from '../hooks/useRoutineRunner'
 import { formatTime } from '../utils/routineRunner'
+import { Link } from 'react-router-dom'
 
 function Routines() {
-  const { routines, isLoading, filters, sortBy, updateSort } = useRoutines()
-
   const [selectedRoutine, setSelectedRoutine] = useState(null)
-  const [viewMode, setViewMode] = useState('grid') // TAB-RTN-05: Grid/List view
 
   const runner = useRoutineRunner(selectedRoutine)
 
@@ -18,86 +15,20 @@ function Routines() {
     }
   }, [selectedRoutine, runner])
 
-  // Start a routine - TAB-RTN-04: Start button
-  const handleStartRoutine = (routine) => {
-    setSelectedRoutine(routine)
-    // Runner will auto-initialize when selectedRoutine changes
-  }
-
   // Stop/Cancel routine - TAB-RTN-18
   const handleCancelRoutine = () => {
     if (runner.cancel) runner.cancel()
     setSelectedRoutine(null)
   }
 
+  // Handle routine selection (would come from Library via state/context in production)
+  const handleSelectRoutine = () => {
+    // For now, user needs to go to Library to select a routine
+    // In future, could open a modal to select from available routines
+  }
+
   return (
     <>
-      {/* TAB-RTN-01 & TAB-RTN-05: Toolbar with Routine Management Buttons */}
-      <div className='card' style={{ marginBottom: '14px' }}>
-        <div className='card-b'>
-          <div className='routine-toolbar'>
-            <button className='btn' aria-label='Create new routine'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M12 5v14M5 12h14' />
-              </svg>
-              New Routine
-            </button>
-            <button className='btn' aria-label='Import routines from file'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3' />
-              </svg>
-              Import
-            </button>
-            <button className='btn' aria-label='Export all routines'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12' />
-              </svg>
-              Export
-            </button>
-            <button
-              className='btn'
-              aria-label='Filter routines'
-              title='Filter by tags, duration, or energy level'
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M22 3H2l8 9.46V19l4 2v-8.54L22 3z' />
-              </svg>
-              Filter
-            </button>
-            <button
-              className='btn'
-              aria-label='Sort routines'
-              onClick={() => {
-                // Cycle through sort options - TAB-RTN-07
-                const sortOptions = ['title', 'lastUsed', 'duration', 'timestamp']
-                const currentIndex = sortOptions.indexOf(sortBy)
-                const nextIndex = (currentIndex + 1) % sortOptions.length
-                updateSort(sortOptions[nextIndex], 'desc')
-              }}
-              title={`Currently sorted by: ${sortBy}`}
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M3 18h6M3 6h18M3 12h12' />
-              </svg>
-              Sort
-            </button>
-            <button
-              className='btn'
-              aria-label={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
-              onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-            >
-              <svg className='icon' viewBox='0 0 24 24'>
-                {viewMode === 'grid' ? (
-                  <path d='M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z' />
-                ) : (
-                  <path d='M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01' />
-                )}
-              </svg>
-              View
-            </button>
-          </div>
-        </div>
-      </div>
 
       {/* TAB-RTN-03: Current Routine runner with progress bar */}
       {runner.state && runner.state.isRunning && (
@@ -259,161 +190,36 @@ function Routines() {
         </div>
       )}
 
-      {/* TAB-RTN-04: Routine Library */}
-      <div className='card'>
-        <div className='card-h'>
-          <strong>Routine Library</strong>
-          <span className='small'>
-            {isLoading
-              ? 'Loading...'
-              : `${routines.length} routine${routines.length !== 1 ? 's' : ''}`}
-          </span>
-        </div>
-        <div className='card-b'>
-          {isLoading ? (
-            // TAB-RTN-51: Skeleton loading state
-            <div className='routine-library'>
-              {[1, 2, 3].map((i) => (
-                <div key={i} className='routine-card' style={{ opacity: 0.5 }}>
-                  <div className='routine-card-header'>
-                    <div>
-                      <div
-                        style={{
-                          height: '20px',
-                          width: '150px',
-                          background: 'var(--line)',
-                          borderRadius: '4px'
-                        }}
-                      />
-                      <div
-                        style={{
-                          height: '12px',
-                          width: '100px',
-                          background: 'var(--line)',
-                          borderRadius: '4px',
-                          marginTop: '8px'
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : routines.length === 0 ? (
-            // Empty state
-            <div className='routine-library-empty'>
-              <div className='empty-state'>
-                <svg
-                  className='icon'
-                  viewBox='0 0 24 24'
-                  style={{ width: '48px', height: '48px', opacity: 0.5 }}
-                >
-                  <circle cx='12' cy='12' r='10' />
-                  <path d='M12 6v12M6 12h12' />
+      {/* No routine selected - prompt to select from Library */}
+      {!runner.state || !runner.state.isRunning ? (
+        <div className='card'>
+          <div className='card-b'>
+            <div className='empty-state'>
+              <svg
+                className='icon'
+                viewBox='0 0 24 24'
+                style={{ width: '48px', height: '48px', opacity: 0.5 }}
+              >
+                <circle cx='12' cy='12' r='10' />
+                <path d='M12 8v4M12 16h.01' />
+              </svg>
+              <p className='empty-state-text'>No routine running</p>
+              <p
+                className='small'
+                style={{ marginTop: '8px', marginBottom: '16px' }}
+              >
+                Select a routine from the Library to get started
+              </p>
+              <Link to='/library' className='btn btn-primary'>
+                <svg className='icon' viewBox='0 0 24 24'>
+                  <path d='M3 3h18v18H3zM7 7h10M7 11h10M7 15h10' />
                 </svg>
-                <p className='empty-state-text'>No routines found</p>
-                <p
-                  className='small'
-                  style={{ marginTop: '8px', marginBottom: '16px' }}
-                >
-                  {Object.keys(filters).length > 0
-                    ? 'Try adjusting your filters'
-                    : 'Create your first routine to get started'}
-                </p>
-                <button
-                  className='btn btn-primary'
-                  aria-label='Create your first routine'
-                >
-                  <svg className='icon' viewBox='0 0 24 24'>
-                    <path d='M12 5v14M5 12h14' />
-                  </svg>
-                  Create Routine
-                </button>
-              </div>
+                Browse Routines
+              </Link>
             </div>
-          ) : (
-            // Routine cards - TAB-RTN-04
-            <div
-              className={
-                viewMode === 'grid' ? 'routine-library' : 'routine-list'
-              }
-            >
-              {routines.map((routine) => (
-                <div key={routine.id} className='routine-card'>
-                  <div className='routine-card-header'>
-                    <div style={{ flex: 1 }}>
-                      <h3 className='routine-title'>
-                        {routine.title || routine.name}
-                      </h3>
-                      {routine.tags && routine.tags.length > 0 && (
-                        <div className='routine-tags'>
-                          {routine.tags.map((tag, i) => (
-                            <span key={i} className='routine-tag'>
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      className='btn-menu'
-                      aria-label={`Options for ${routine.title || routine.name}`}
-                      title='Edit, Duplicate, Delete, Export'
-                    >
-                      <svg className='icon' viewBox='0 0 24 24'>
-                        <circle cx='12' cy='5' r='1' />
-                        <circle cx='12' cy='12' r='1' />
-                        <circle cx='12' cy='19' r='1' />
-                      </svg>
-                    </button>
-                  </div>
-
-                  <div className='routine-card-meta'>
-                    <span className='small'>
-                      {routine.version ? `v${routine.version}` : 'v1'}
-                    </span>
-                    <span className='small'>·</span>
-                    <span className='small'>
-                      {formatTime(
-                        routine.estimatedDuration || routine.totalDuration || 0
-                      )}
-                    </span>
-                    {routine.energyTag && (
-                      <>
-                        <span className='small'>·</span>
-                        <span className='small'>{routine.energyTag} energy</span>
-                      </>
-                    )}
-                    {routine.lastUsed && (
-                      <>
-                        <span className='small'>·</span>
-                        <span className='small'>
-                          Used{' '}
-                          {new Date(routine.lastUsed).toLocaleDateString()}
-                        </span>
-                      </>
-                    )}
-                  </div>
-
-                  <div className='routine-card-actions'>
-                    <button
-                      className='btn btn-primary'
-                      onClick={() => handleStartRoutine(routine)}
-                      aria-label={`Start ${routine.title || routine.name} routine`}
-                      disabled={runner.state?.isRunning}
-                    >
-                      <svg className='icon' viewBox='0 0 24 24'>
-                        <polygon points='5 3 19 12 5 21 5 3' />
-                      </svg>
-                      Start
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      ) : null}
 
       {/* TAB-RTN-31: Completion Summary Modal */}
       {runner.isComplete && runner.summary && (
