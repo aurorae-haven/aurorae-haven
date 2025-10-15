@@ -180,7 +180,7 @@ function getUserFriendlyMessage(error, context) {
     return 'Storage quota exceeded. Please free up space.'
   }
 
-  if (error.message.includes('IndexedDB')) {
+  if (error.message.toLowerCase().includes('indexeddb')) {
     return 'Database error. Please try again.'
   }
 
