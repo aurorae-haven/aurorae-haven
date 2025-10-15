@@ -45,10 +45,13 @@ export function parseTime(timeString) {
  * @returns {string} Time in "HH:MM" format
  */
 export function formatTime(hours, minutes) {
-  const validHours = Math.max(0, Math.floor(hours))
-  const validMinutes = Math.max(0, Math.floor(minutes))
-
-  return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
+  // Normalize hours and minutes to valid time within a day
+  const totalMinutes = Math.floor(hours) * MINUTES_PER_HOUR + Math.floor(minutes);
+  const minutesInDay = HOURS_PER_DAY * MINUTES_PER_HOUR;
+  const normalizedMinutes = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay;
+  const validHours = Math.floor(normalizedMinutes / MINUTES_PER_HOUR);
+  const validMinutes = normalizedMinutes % MINUTES_PER_HOUR;
+  return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`;
 }
 
 /**
