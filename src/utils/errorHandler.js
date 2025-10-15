@@ -29,7 +29,7 @@ export const ErrorSeverity = {
  * @property {string} [severity=ErrorSeverity.MEDIUM] - Error severity level
  * @property {Object} [metadata] - Additional metadata to log with error
  * @property {Array<Function>} [expectedErrors] - Array of error types to catch (e.g., [TypeError, RangeError])
- * @property {Object} [validateParams] - Object mapping parameter names to expected types for validation
+ * @property {Object|Function} [validateParams] - Object mapping parameter names to expected types for validation, or a function that receives runtime arguments and returns the validation map. The function form is supported by the decorator.
  * @property {Function} [customMessageFormatter] - Function to format custom error messages: (error, context) => string
  */
 
