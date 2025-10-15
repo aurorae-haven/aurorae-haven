@@ -5,16 +5,11 @@ import { put, getAll, getByIndex, deleteById, STORES } from './indexedDBManager'
 import {
   DEFAULT_EVENT_DURATION_MINUTES,
   BUSINESS_HOURS_START,
-  BUSINESS_HOURS_END,
-  MINUTES_PER_HOUR,
-  HOURS_PER_DAY
+  BUSINESS_HOURS_END
 } from './scheduleConstants'
 import { ISO_DATE_START_INDEX, ISO_DATE_END_INDEX } from './timeConstants'
 import { normalizeEntity, updateMetadata } from './idGenerator'
-
-// Number of padding digits for time formatting
-const TIME_PADDING_LENGTH = 2
-const PADDING_CHAR = '0'
+import { calculateDuration, addDuration } from './timeUtils'
 
 /**
  * Create a schedule event
@@ -121,7 +116,7 @@ export async function moveEvent(id, newDay, newStartTime) {
   }
 
   const duration = event.duration || DEFAULT_EVENT_DURATION_MINUTES
-  const newEndTime = addMinutes(newStartTime, duration)
+  const newEndTime = addDuration(newStartTime, duration)
 
   const updated = updateMetadata({
     ...event,
@@ -210,44 +205,6 @@ export async function getAvailableSlots(
   }
 
   return slots
-}
-
-/**
- * Calculates the duration in minutes between two times given in "HH:MM" 24-hour format.
- * Both `startTime` and `endTime` must be strings in "HH:MM" format (e.g., "09:30").
- * The function converts both times to minutes since midnight and returns the difference (`endTime` - `startTime`).
- * If either input is missing or invalid, returns 0.
- * If `endTime` is before `startTime`, the result will be negative.
- *
- * @param {string} startTime - Start time in "HH:MM" 24-hour format.
- * @param {string} endTime - End time in "HH:MM" 24-hour format.
- * @returns {number} Duration in minutes between start and end times.
- */
-function calculateDuration(startTime, endTime) {
-  if (!startTime || !endTime) return 0
-
-  const [startHour, startMin] = startTime.split(':').map(Number)
-  const [endHour, endMin] = endTime.split(':').map(Number)
-
-  const startMinutes = startHour * MINUTES_PER_HOUR + startMin
-  const endMinutes = endHour * MINUTES_PER_HOUR + endMin
-
-  return endMinutes - startMinutes
-}
-
-/**
- * Add minutes to a time
- * @param {string} time - Time (HH:MM)
- * @param {number} minutes - Minutes to add
- * @returns {string} New time (HH:MM)
- */
-function addMinutes(time, minutes) {
-  const [hour, min] = time.split(':').map(Number)
-  const totalMinutes = hour * MINUTES_PER_HOUR + min + minutes
-  const newHour = Math.floor(totalMinutes / MINUTES_PER_HOUR) % HOURS_PER_DAY
-  const newMin = totalMinutes % MINUTES_PER_HOUR
-
-  return `${String(newHour).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(newMin).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
 /**
