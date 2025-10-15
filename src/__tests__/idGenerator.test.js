@@ -15,7 +15,8 @@ import {
   ensureId,
   generateMetadata,
   normalizeEntity,
-  updateMetadata
+  updateMetadata,
+  getCurrentTimestamp
 } from '../utils/idGenerator'
 
 describe('idGenerator', () => {
@@ -312,6 +313,32 @@ describe('idGenerator', () => {
       
       const timestampFromISO = new Date(result.updatedAt).getTime()
       expect(result.timestamp).toBe(timestampFromISO)
+    })
+  })
+
+  describe('getCurrentTimestamp', () => {
+    test('returns an ISO string', () => {
+      const timestamp = getCurrentTimestamp()
+      expect(typeof timestamp).toBe('string')
+      expect(timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+    })
+
+    test('returns current time', () => {
+      const before = Date.now()
+      const timestamp = getCurrentTimestamp()
+      const after = Date.now()
+      
+      const timestampMs = new Date(timestamp).getTime()
+      expect(timestampMs).toBeGreaterThanOrEqual(before)
+      expect(timestampMs).toBeLessThanOrEqual(after)
+    })
+
+    test('generates different timestamps on subsequent calls', async () => {
+      const timestamp1 = getCurrentTimestamp()
+      await new Promise((resolve) => setTimeout(resolve, 5))
+      const timestamp2 = getCurrentTimestamp()
+      
+      expect(timestamp1).not.toBe(timestamp2)
     })
   })
 })

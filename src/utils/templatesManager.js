@@ -8,7 +8,7 @@ import { generateSecureUUID } from './uuidGenerator'
 import { validateTemplateData } from './validation'
 import semver from 'semver'
 import { createLogger } from './logger'
-import { updateMetadata } from './idGenerator'
+import { updateMetadata, getCurrentTimestamp } from './idGenerator'
 
 const logger = createLogger('Templates')
 
@@ -359,9 +359,8 @@ export async function duplicateTemplate(templateId) {
  * @returns {Promise<void>}
  */
 export async function markTemplateUsed(templateId) {
-  const { updatedAt } = updateMetadata({})
   await updateTemplate(templateId, {
-    lastUsed: updatedAt
+    lastUsed: getCurrentTimestamp()
   })
 }
 

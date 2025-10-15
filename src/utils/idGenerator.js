@@ -161,3 +161,15 @@ export function updateMetadata(entity) {
     timestamp: now
   }
 }
+
+/**
+ * Get current timestamp as ISO string
+ * Utility for cases where only the current timestamp is needed
+ * @returns {string} Current timestamp in ISO 8601 format
+ * @example
+ * getCurrentTimestamp()
+ * // Returns: '2023-10-13T12:34:56.789Z'
+ */
+export function getCurrentTimestamp() {
+  return new Date().toISOString()
+}
