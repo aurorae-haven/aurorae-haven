@@ -542,6 +542,46 @@ describe('errorHandler', () => {
       expect(result).toBeUndefined()
       expect(operation).toHaveBeenCalled()
     })
+
+    test('tryCatch catches specified error types', () => {
+      const operation = jest.fn(() => {
+        throw new TypeError('Type error')
+      })
+
+      const result = tryCatch(operation, 'Test operation', {
+        expectedErrors: [TypeError, RangeError],
+        showToast: false
+      })
+
+      expect(result).toBeUndefined()
+      expect(operation).toHaveBeenCalled()
+    })
+
+    test('tryCatch rethrows unexpected error types', () => {
+      const operation = jest.fn(() => {
+        throw new ReferenceError('Reference error')
+      })
+
+      expect(() => {
+        tryCatch(operation, 'Test operation', {
+          expectedErrors: [TypeError],
+          showToast: false
+        })
+      }).toThrow(ReferenceError)
+    })
+
+    test('tryCatch catches all errors when no filter specified', () => {
+      const operation = jest.fn(() => {
+        throw new Error('Any error')
+      })
+
+      const result = tryCatch(operation, 'Test operation', {
+        showToast: false
+      })
+
+      expect(result).toBeUndefined()
+      expect(operation).toHaveBeenCalled()
+    })
   })
 
   describe('custom message formatter', () => {
@@ -564,6 +604,37 @@ describe('errorHandler', () => {
       expect(() => {
         handleError(error, 'Test operation')
       }).not.toThrow()
+    })
+
+    test('falls back to toastMessage if formatter throws', () => {
+      const formatter = jest.fn(() => {
+        throw new Error('Formatter error')
+      })
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation', {
+          customMessageFormatter: formatter,
+          toastMessage: 'Fallback message'
+        })
+      }).not.toThrow()
+
+      expect(formatter).toHaveBeenCalledWith(error, 'Test operation')
+    })
+
+    test('falls back to getUserFriendlyMessage if formatter throws and no toastMessage', () => {
+      const formatter = jest.fn(() => {
+        throw new Error('Formatter error')
+      })
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation', {
+          customMessageFormatter: formatter
+        })
+      }).not.toThrow()
+
+      expect(formatter).toHaveBeenCalledWith(error, 'Test operation')
     })
   })
 })

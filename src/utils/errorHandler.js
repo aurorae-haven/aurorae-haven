@@ -69,7 +69,13 @@ export function handleError(error, context, options = {}) {
   if (showToast && typeof window !== 'undefined') {
     let displayMessage
     if (customMessageFormatter && typeof customMessageFormatter === 'function') {
-      displayMessage = customMessageFormatter(errorObj, context)
+      try {
+        displayMessage = customMessageFormatter(errorObj, context)
+      } catch (formatterError) {
+        logger.error('Error in customMessageFormatter:', formatterError)
+        // Fall back to toastMessage or default message
+        displayMessage = toastMessage || getUserFriendlyMessage(errorObj, context)
+      }
     } else if (toastMessage) {
       displayMessage = toastMessage
     } else {
@@ -110,7 +116,8 @@ export async function withErrorHandling(operation, context, options = {}) {
   if (validateParams) {
     const validationError = validateParameters(validateParams)
     if (validationError) {
-      handleError(validationError, context, options)
+      // Force rethrow: false for validation errors to keep them consistently 'handled'
+      handleError(validationError, context, { ...options, rethrow: false })
       return undefined
     }
   }
@@ -142,7 +149,8 @@ export function tryCatch(operation, context, options = {}) {
   if (validateParams) {
     const validationError = validateParameters(validateParams)
     if (validationError) {
-      handleError(validationError, context, options)
+      // Force rethrow: false for validation errors to keep them consistently 'handled'
+      handleError(validationError, context, { ...options, rethrow: false })
       return undefined
     }
   }
@@ -207,6 +215,7 @@ function showToastNotification(message) {
       detail: { message }
     })
     window.dispatchEvent(event)
+    return // Return early to avoid duplicate notifications
   }
 
   // Fallback: try to show toast using existing DOM element (legacy support)
