@@ -113,14 +113,14 @@ export function calculateDuration(startTime, endTime) {
 
 /**
  * Add minutes to a time
- * Returns '00:00' for invalid time inputs
+ * If time is invalid, it's treated as 00:00 and minutes are applied
  * @param {string} time - Time in "HH:MM" format
  * @param {number} minutes - Minutes to add (can be negative)
- * @returns {string} New time in "HH:MM" format
+ * @returns {string} New time in "HH:MM" format (e.g., addDuration('', 60) returns '01:00')
  */
 export function addDuration(time, minutes) {
   const parsed = parseTime(time)
-  // If invalid time provided, return 00:00 plus the minutes
+  // If invalid time provided, treat as 00:00 and apply minutes offset
   const startMinutes = parsed !== null ? timeToMinutes(time) : 0
   const totalMinutes = startMinutes + minutes
   return minutesToTime(totalMinutes)

@@ -158,7 +158,7 @@ The new utilities provide additional capabilities:
 All refactored functions maintain their original behavior:
 - `scheduleManager` tests continue to pass
 - `routineRunner` functionality preserved through delegation
-- `TemplateCard` displays durations in the same format
+- `TemplateCard` displays durations with a slight format change: exact hours are rendered as '1h' instead of '1h 0m'
 
 The `formatTime()` function in `routineRunner.js` was kept as a wrapper for backward compatibility, with a deprecation notice for future cleanup.
 
