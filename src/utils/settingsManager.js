@@ -209,9 +209,7 @@ export function importSettings(json) {
     }
   )
 
-  if (!data) {
-    throw new Error('Failed to import settings: Invalid format')
-  }
+  // The check for !data is redundant with rethrow: true in tryCatch
 
   return updateSettings(data.settings)
 }
