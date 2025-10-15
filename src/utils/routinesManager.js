@@ -43,15 +43,26 @@ export async function createRoutineBatch(routines) {
   }
 
   // Prepare all routines with proper structure
+  // For batch operations, we need to ensure unique IDs when routines don't have them
+  const baseTimestamp = Date.now()
   const newRoutines = routines.map((routine, index) => {
-    // For batch operations, ensure unique IDs by adding index
-    const baseId = routine.id ? routine.id : `routine_${Date.now()}_${index}`
-    return normalizeEntity({
-      ...routine,
-      id: baseId,
-      steps: routine.steps || [],
-      totalDuration: calculateTotalDuration(routine.steps || [])
-    })
+    // If routine has an ID, preserve it; otherwise generate with index suffix for uniqueness
+    if (routine.id) {
+      return normalizeEntity({
+        ...routine,
+        steps: routine.steps || [],
+        totalDuration: calculateTotalDuration(routine.steps || [])
+      })
+    } else {
+      // Generate unique ID with index suffix to prevent collisions in batch
+      const uniqueId = `routine_${baseTimestamp}_${index}`
+      return normalizeEntity({
+        ...routine,
+        id: uniqueId,
+        steps: routine.steps || [],
+        totalDuration: calculateTotalDuration(routine.steps || [])
+      })
+    }
   })
 
   // Use batch operation for efficiency

@@ -359,9 +359,9 @@ export async function duplicateTemplate(templateId) {
  * @returns {Promise<void>}
  */
 export async function markTemplateUsed(templateId) {
-  const now = new Date().toISOString()
+  const { updatedAt } = updateMetadata({})
   await updateTemplate(templateId, {
-    lastUsed: now
+    lastUsed: updatedAt
   })
 }
 
