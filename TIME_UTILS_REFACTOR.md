@@ -78,7 +78,7 @@ A centralized utility module containing all time/duration calculation functions:
 - Added import from `timeUtils`: `formatDurationVerbose`
 
 **Lines Removed:** 7
-**Impact:** UI displays duration in same format
+**Impact:** UI displays duration in a slightly changed format: exact hours are now rendered as '1h' instead of '1h 0m'
 
 #### 4. `src/utils/routinesManager.js`
 **Status:** No changes needed
