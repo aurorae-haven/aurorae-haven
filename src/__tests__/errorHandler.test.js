@@ -374,6 +374,81 @@ describe('errorHandler', () => {
       expect(result).toBeUndefined()
       expect(fn).toHaveBeenCalled()
     })
+
+    test('validates parameters using function that receives args', async () => {
+      const fn = jest.fn(async (userId, data) => ({ userId, data }))
+      const wrapped = decorateWithErrorHandling(fn, 'Update user', {
+        validateParams: (userId, data) => ({
+          userId: { value: userId, type: 'string', required: true },
+          data: { value: data, type: 'object', required: true }
+        }),
+        showToast: false
+      })
+
+      // Call with invalid parameters
+      const result1 = await wrapped(null, {})
+      expect(result1).toBeUndefined()
+      expect(fn).not.toHaveBeenCalled()
+
+      // Call with valid parameters
+      fn.mockClear()
+      const result2 = await wrapped('user123', { name: 'John' })
+      expect(result2).toEqual({ userId: 'user123', data: { name: 'John' } })
+      expect(fn).toHaveBeenCalledWith('user123', { name: 'John' })
+    })
+
+    test('validates parameters using static object', async () => {
+      const fn = jest.fn(async (x) => x * 2)
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation', {
+        validateParams: {
+          value: { value: 'test', type: 'string', required: true }
+        },
+        showToast: false
+      })
+
+      const result = await wrapped(5)
+
+      expect(result).toBe(10)
+      expect(fn).toHaveBeenCalledWith(5)
+    })
+
+    test('allows function validateParams to return dynamic validation based on args', async () => {
+      const fn = jest.fn(async (action, value) => ({ action, value }))
+      const wrapped = decorateWithErrorHandling(fn, 'Perform action', {
+        validateParams: (action, value) => {
+          // Different validation rules based on action type
+          if (action === 'update') {
+            return {
+              action: { value: action, type: 'string', required: true },
+              value: { value: value, type: 'object', required: true }
+            }
+          } else {
+            return {
+              action: { value: action, type: 'string', required: true },
+              value: { value: value, type: 'string', required: false }
+            }
+          }
+        },
+        showToast: false
+      })
+
+      // Update action requires object value
+      const result1 = await wrapped('update', 'string-value')
+      expect(result1).toBeUndefined()
+      expect(fn).not.toHaveBeenCalled()
+
+      // Update action with valid object
+      fn.mockClear()
+      const result2 = await wrapped('update', { key: 'value' })
+      expect(result2).toEqual({ action: 'update', value: { key: 'value' } })
+      expect(fn).toHaveBeenCalledWith('update', { key: 'value' })
+
+      // Read action allows string value
+      fn.mockClear()
+      const result3 = await wrapped('read', 'string-value')
+      expect(result3).toEqual({ action: 'read', value: 'string-value' })
+      expect(fn).toHaveBeenCalledWith('read', 'string-value')
+    })
   })
 
   describe('enhanceError', () => {

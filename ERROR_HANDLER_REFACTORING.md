@@ -336,30 +336,54 @@ async function fetchData(userId) {
   }
 }
 
-// After - decorated with validation and error filtering
-const fetchData = (userId) =>
-  decorateWithErrorHandling(
-    () => api.fetchUser(userId),
-    'Fetching user data',
-    {
-      validateParams: {
-        userId: { value: userId, type: 'string' }
-      },
-      expectedErrors: [TypeError, NetworkError],
-      toastMessage: 'Failed to fetch data'
-    }
-  );
+// After - decorated with dynamic parameter validation
+const fetchData = decorateWithErrorHandling(
+  async (userId) => api.fetchUser(userId),
+  'Fetching user data',
+  {
+    validateParams: (userId) => ({
+      userId: { value: userId, type: 'string', required: true }
+    }),
+    expectedErrors: [TypeError, NetworkError],
+    toastMessage: 'Failed to fetch data'
+  }
+)
 
 // The decorated function automatically:
-// - Validates userId is a string
+// - Validates userId is a string before executing
 // - Catches only TypeError and NetworkError
 // - Logs errors with context
 // - Shows toast notification
 // - Returns undefined on error
+
+// Advanced: Dynamic validation based on arguments
+const performAction = decorateWithErrorHandling(
+  async (action, value) => api.perform(action, value),
+  'Performing action',
+  {
+    validateParams: (action, value) => {
+      // Different validation rules based on action type
+      if (action === 'update') {
+        return {
+          action: { value: action, type: 'string', required: true },
+          value: { value: value, type: 'object', required: true }
+        }
+      } else {
+        return {
+          action: { value: action, type: 'string', required: true },
+          value: { value: value, type: 'string', required: false }
+        }
+      }
+    }
+  }
+)
 ```
 
 **Note**: `decorateWithErrorHandling` now supports all the same options as `withErrorHandling` and `tryCatch`, including:
 - `validateParams` - Parameter validation with type checking
+  - Can be a static object: `{ param: { value, type, required } }`
+  - Can be a function: `(...args) => ({ param: { value: args[0], type, required } })`
+  - Function form allows dynamic validation based on actual runtime arguments
 - `expectedErrors` - Selective error catching
 - `customMessageFormatter` - Custom error message formatting
 - All other standard error handling options

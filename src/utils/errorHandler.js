@@ -269,7 +269,12 @@ export function decorateWithErrorHandling(fn, context, options = {}) {
 
     // Validate parameters if validation is requested
     if (validateParams) {
-      const validationError = validateParameters(validateParams)
+      // Allow validateParams to be a function that receives args and returns validation map
+      const params = typeof validateParams === 'function' 
+        ? validateParams(...args) 
+        : validateParams
+      
+      const validationError = validateParameters(params)
       if (validationError) {
         // Force rethrow: false for validation errors to keep them consistently 'handled'
         handleError(validationError, context, { ...options, rethrow: false })
