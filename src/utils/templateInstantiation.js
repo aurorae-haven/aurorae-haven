@@ -12,6 +12,39 @@ import { tryCatch, isQuotaExceededError } from './errorHandler'
 
 const logger = createLogger('TemplateInstantiation')
 
+// Default Eisenhower tasks structure
+// Factory function for default Eisenhower tasks structure to prevent mutation
+const createDefaultEisenhowerTasks = () => ({
+  urgent_important: [],
+  not_urgent_important: [],
+  urgent_not_important: [],
+  not_urgent_not_important: []
+})
+
+/**
+ * Create a task object from template data
+ * @param {Object} template - Task template object
+ * @param {string} quadrant - Optional quadrant (uses template.quadrant if not provided)
+ * @returns {Object} Task object
+ * @private
+ */
+function createTaskFromTemplate(template, quadrant = null) {
+  const taskQuadrant = quadrant || template.quadrant || 'urgent_important'
+  const dueDate = template.dueOffset
+    ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
+    : null
+
+  return {
+    id: generateSecureUUID(),
+    text: template.title,
+    completed: false,
+    createdAt: new Date().toISOString(),
+    dueDate,
+    completedAt: null,
+    quadrant: taskQuadrant
+  }
+}
+
 /**
  * Instantiate a task from a task template
  * Creates a new independent task in localStorage (aurorae_tasks) from template data
@@ -43,16 +76,7 @@ export function instantiateTaskFromTemplate(template) {
   const quadrant = template.quadrant || 'urgent_important'
 
   // Create new independent task
-  const task = {
-    id: generateSecureUUID(),
-    text: template.title,
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: template.dueOffset
-      ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
-      : null,
-    completedAt: null
-  }
+  const task = createTaskFromTemplate(template, quadrant)
 
   // Load existing tasks from localStorage
   const tasks = tryCatch(
@@ -60,23 +84,13 @@ export function instantiateTaskFromTemplate(template) {
       const savedTasks = localStorage.getItem('aurorae_tasks')
       return savedTasks
         ? JSON.parse(savedTasks)
-        : {
-            urgent_important: [],
-            not_urgent_important: [],
-            urgent_not_important: [],
-            not_urgent_not_important: []
-          }
+        : createDefaultEisenhowerTasks()
     },
     `Loading tasks for template "${template.title || '[unknown title]'}"`,
     {
       showToast: false
     }
-  ) || {
-    urgent_important: [],
-    not_urgent_important: [],
-    urgent_not_important: [],
-    not_urgent_not_important: []
-  }
+  ) || createDefaultEisenhowerTasks()
 
   // Add task to appropriate quadrant
   if (!tasks[quadrant]) {
@@ -269,38 +283,18 @@ export async function instantiateTemplatesBatch(templates) {
         const savedTasks = localStorage.getItem('aurorae_tasks')
         return savedTasks
           ? JSON.parse(savedTasks)
-          : {
-              urgent_important: [],
-              not_urgent_important: [],
-              urgent_not_important: [],
-              not_urgent_not_important: []
-            }
+          : createDefaultEisenhowerTasks()
       },
       'Loading tasks for batch template instantiation',
       {
         showToast: false
       }
-    ) || {
-      urgent_important: [],
-      not_urgent_important: [],
-      urgent_not_important: [],
-      not_urgent_not_important: []
-    }
+    ) || createDefaultEisenhowerTasks()
 
     // Create all tasks after validation passes
     for (const template of taskTemplates) {
       const quadrant = template.quadrant || 'urgent_important'
-      const dueDate = template.dueOffset
-        ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
-        : null
-      const task = {
-        id: generateSecureUUID(),
-        text: template.title,
-        completed: false,
-        createdAt: new Date().toISOString(),
-        dueDate: dueDate,
-        completedAt: null
-      }
+      const task = createTaskFromTemplate(template, quadrant)
 
       if (!tasks[quadrant]) {
         tasks[quadrant] = []

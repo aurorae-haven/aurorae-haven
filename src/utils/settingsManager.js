@@ -37,22 +37,20 @@ const DEFAULT_SETTINGS = {
  */
 export function getSettings() {
   // TODO: Implement settings validation
-  const settings = tryCatch(
+  return tryCatch(
     () => {
       const stored = localStorage.getItem(SETTINGS_KEY)
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        return { ...DEFAULT_SETTINGS, ...parsed }
+      if (!stored) {
+        return { ...DEFAULT_SETTINGS }
       }
-      return null
+      const parsed = JSON.parse(stored)
+      return { ...DEFAULT_SETTINGS, ...parsed }
     },
     'Loading settings from localStorage',
     {
       showToast: false
     }
   )
-
-  return settings || { ...DEFAULT_SETTINGS }
 }
 
 /**
