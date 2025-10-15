@@ -33,6 +33,23 @@ describe('timeUtils', () => {
     test('should handle numeric strings', () => {
       expect(parseTime('12:45')).toEqual({ hours: 12, minutes: 45 })
     })
+
+    test('should validate hour range (0-23)', () => {
+      expect(parseTime('24:00')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('25:30')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('-1:30')).toEqual({ hours: 0, minutes: 0 })
+    })
+
+    test('should validate minute range (0-59)', () => {
+      expect(parseTime('12:60')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('12:75')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('12:-5')).toEqual({ hours: 0, minutes: 0 })
+    })
+
+    test('should reject out-of-range values', () => {
+      expect(parseTime('24:60')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('99:99')).toEqual({ hours: 0, minutes: 0 })
+    })
   })
 
   describe('formatTime', () => {

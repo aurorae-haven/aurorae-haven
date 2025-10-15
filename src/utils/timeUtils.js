@@ -13,6 +13,8 @@ const SECONDS_PER_MINUTE = 60
 
 /**
  * Parse time string in HH:MM format to hours and minutes
+ * Validates that hours are in range 0-23 and minutes are in range 0-59
+ * Returns { hours: 0, minutes: 0 } for invalid inputs
  * @param {string} timeString - Time in "HH:MM" format
  * @returns {{hours: number, minutes: number}} Object with hours and minutes
  */
@@ -23,8 +25,13 @@ export function parseTime(timeString) {
 
   const [hours, minutes] = timeString.split(':').map(Number)
 
-  // Validate parsed values
+  // Validate parsed values are numbers
   if (isNaN(hours) || isNaN(minutes)) {
+    return { hours: 0, minutes: 0 }
+  }
+
+  // Validate ranges: 0 <= hours < 24, 0 <= minutes < 60
+  if (hours < 0 || hours >= HOURS_PER_DAY || minutes < 0 || minutes >= MINUTES_PER_HOUR) {
     return { hours: 0, minutes: 0 }
   }
 
@@ -38,10 +45,10 @@ export function parseTime(timeString) {
  * @returns {string} Time in "HH:MM" format
  */
 export function formatTime(hours, minutes) {
-  const totalMinutes =
-    Math.max(0, Math.floor(hours)) * MINUTES_PER_HOUR +
-    Math.max(0, Math.floor(minutes));
-  return minutesToTime(totalMinutes);
+  const validHours = Math.max(0, Math.floor(hours))
+  const validMinutes = Math.max(0, Math.floor(minutes))
+
+  return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
 /**
