@@ -212,19 +212,176 @@ try {
 }
 ```
 
+### Advanced: Parameter Validation
+
+```javascript
+import { withErrorHandling } from './utils/errorHandler'
+
+// Before - manual validation
+async function updateUser(userId, data) {
+  if (typeof userId !== 'string') {
+    throw new Error('userId must be a string')
+  }
+  if (typeof data !== 'object') {
+    throw new Error('data must be an object')
+  }
+  try {
+    await api.updateUser(userId, data)
+  } catch (error) {
+    logger.error('Update failed:', error)
+    showToast('Update failed')
+  }
+}
+
+// After - automatic validation
+async function updateUser(userId, data) {
+  return await withErrorHandling(
+    async () => await api.updateUser(userId, data),
+    'Updating user',
+    {
+      validateParams: {
+        userId: { value: userId, type: 'string' },
+        data: { value: data, type: 'object' }
+      },
+      toastMessage: 'Update failed'
+    }
+  )
+}
+```
+
+### Advanced: Expected Errors Filtering
+
+```javascript
+import { withErrorHandling } from './utils/errorHandler'
+
+// Before - catching all errors
+try {
+  const data = JSON.parse(userInput)
+  processData(data)
+} catch (error) {
+  // This catches ALL errors, including unexpected ones
+  logger.error('Processing failed:', error)
+  showToast('Invalid input')
+}
+
+// After - only catch expected errors
+await withErrorHandling(
+  () => {
+    const data = JSON.parse(userInput)
+    processData(data)
+  },
+  'Processing user input',
+  {
+    expectedErrors: [SyntaxError, TypeError],  // Only catch JSON/type errors
+    toastMessage: 'Invalid input'
+  }
+)
+// Unexpected errors (like network issues) will be rethrown
+```
+
+### Advanced: Custom Message Formatter
+
+```javascript
+import { withErrorHandling } from './utils/errorHandler'
+
+// Before - complex error message logic
+try {
+  await fetchUserProfile(userId)
+} catch (error) {
+  let message
+  if (error.status === 404) {
+    message = 'User not found'
+  } else if (error.status === 403) {
+    message = 'Access denied'
+  } else {
+    message = `Failed to load profile: ${error.message}`
+  }
+  logger.error('Profile load failed:', error)
+  showToast(message)
+}
+
+// After - custom formatter
+await withErrorHandling(
+  async () => await fetchUserProfile(userId),
+  'Loading user profile',
+  {
+    customMessageFormatter: (error, context) => {
+      if (error.status === 404) return 'User not found'
+      if (error.status === 403) return 'Access denied'
+      return `${context} failed: ${error.message}`
+    }
+  }
+)
+```
+
 ## Configuration Options
 
 ### ErrorHandlingOptions
 
 ```javascript
 {
-  showToast: boolean,        // Show toast notification (default: true)
-  toastMessage: string,      // Custom toast message
-  rethrow: boolean,          // Rethrow after handling (default: false)
-  onError: Function,         // Custom error callback
-  severity: string,          // Error severity level
-  metadata: Object          // Additional context
+  showToast: boolean,                  // Show toast notification (default: true)
+  toastMessage: string,                // Custom toast message
+  rethrow: boolean,                    // Rethrow after handling (default: false)
+  onError: Function,                   // Custom error callback
+  severity: string,                    // Error severity level
+  metadata: Object,                    // Additional context
+  expectedErrors: Array<Function>,     // Array of error types to catch (e.g., [TypeError, RangeError])
+  validateParams: Object,              // Parameter validation config (see below)
+  customMessageFormatter: Function     // Custom message formatter: (error, context) => string
 }
+```
+
+### Parameter Validation
+
+The `validateParams` option allows you to validate function parameters before execution:
+
+```javascript
+await withErrorHandling(
+  async () => { /* operation */ },
+  'Processing user data',
+  {
+    validateParams: {
+      userId: { value: userId, type: 'string', required: true },
+      count: { value: count, type: 'number', required: false }
+    }
+  }
+)
+```
+
+Supported types: `'string'`, `'number'`, `'boolean'`, `'object'`, `'array'`, `'function'`
+
+### Expected Errors Filtering
+
+You can specify which error types should be caught, and all others will be rethrown:
+
+```javascript
+await withErrorHandling(
+  async () => { /* operation */ },
+  'Parsing data',
+  {
+    expectedErrors: [TypeError, SyntaxError],  // Only catch these types
+    toastMessage: 'Invalid data format'
+  }
+)
+```
+
+### Custom Message Formatter
+
+For more complex error message generation:
+
+```javascript
+await withErrorHandling(
+  async () => { /* operation */ },
+  'Loading user profile',
+  {
+    customMessageFormatter: (error, context) => {
+      if (error.code === 404) return 'User not found'
+      if (error.code === 403) return 'Access denied'
+      return `${context} failed: ${error.message}`
+    }
+  }
+)
 ```
 
 ### Severity Levels

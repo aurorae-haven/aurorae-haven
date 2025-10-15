@@ -28,6 +28,9 @@ export const ErrorSeverity = {
  * @property {Function} [onError] - Custom error callback
  * @property {string} [severity=ErrorSeverity.MEDIUM] - Error severity level
  * @property {Object} [metadata] - Additional metadata to log with error
+ * @property {Array<Function>} [expectedErrors] - Array of error types to catch (e.g., [TypeError, RangeError])
+ * @property {Object} [validateParams] - Object mapping parameter names to expected types for validation
+ * @property {Function} [customMessageFormatter] - Function to format custom error messages: (error, context) => string
  */
 
 /**
@@ -45,7 +48,8 @@ export function handleError(error, context, options = {}) {
     rethrow = false,
     onError,
     severity = ErrorSeverity.MEDIUM,
-    metadata = {}
+    metadata = {},
+    customMessageFormatter
   } = options
 
   // Normalize error to Error object
@@ -63,7 +67,14 @@ export function handleError(error, context, options = {}) {
 
   // Show user notification if requested
   if (showToast && typeof window !== 'undefined') {
-    const displayMessage = toastMessage || getUserFriendlyMessage(errorObj, context)
+    let displayMessage
+    if (customMessageFormatter && typeof customMessageFormatter === 'function') {
+      displayMessage = customMessageFormatter(errorObj, context)
+    } else if (toastMessage) {
+      displayMessage = toastMessage
+    } else {
+      displayMessage = getUserFriendlyMessage(errorObj, context)
+    }
     showToastNotification(displayMessage)
   }
 
@@ -93,9 +104,24 @@ export function handleError(error, context, options = {}) {
  * @returns {Promise<*>} Result of the operation or undefined on error
  */
 export async function withErrorHandling(operation, context, options = {}) {
+  const { expectedErrors, validateParams } = options
+
+  // Validate parameters if validation is requested
+  if (validateParams) {
+    const validationError = validateParameters(validateParams)
+    if (validationError) {
+      handleError(validationError, context, options)
+      return undefined
+    }
+  }
+
   try {
     return await operation()
   } catch (error) {
+    // Check if this error should be caught
+    if (expectedErrors && !shouldCatchError(error, expectedErrors)) {
+      throw error // Rethrow if not in expected errors list
+    }
     handleError(error, context, options)
     return undefined
   }
@@ -110,9 +136,24 @@ export async function withErrorHandling(operation, context, options = {}) {
  * @returns {*} Result of the operation or undefined on error
  */
 export function tryCatch(operation, context, options = {}) {
+  const { expectedErrors, validateParams } = options
+
+  // Validate parameters if validation is requested
+  if (validateParams) {
+    const validationError = validateParameters(validateParams)
+    if (validationError) {
+      handleError(validationError, context, options)
+      return undefined
+    }
+  }
+
   try {
     return operation()
   } catch (error) {
+    // Check if this error should be caught
+    if (expectedErrors && !shouldCatchError(error, expectedErrors)) {
+      throw error // Rethrow if not in expected errors list
+    }
     handleError(error, context, options)
     return undefined
   }
@@ -231,6 +272,61 @@ export function enhanceError(error, additionalContext = {}) {
   })
 
   return errorObj
+}
+
+/**
+ * Validate parameters against expected types
+ *
+ * @param {Object} validateParams - Object mapping parameter names to their values and expected types
+ * @returns {Error|null} Validation error or null if valid
+ * @example
+ * validateParameters({
+ *   userId: { value: userId, type: 'string' },
+ *   count: { value: count, type: 'number' }
+ * })
+ */
+function validateParameters(validateParams) {
+  for (const [paramName, paramConfig] of Object.entries(validateParams)) {
+    const { value, type, required = true } = paramConfig
+
+    // Check if required parameter is missing
+    if (required && (value === undefined || value === null)) {
+      return new Error(
+        `Required parameter '${paramName}' is missing or null`
+      )
+    }
+
+    // Skip type check if value is optional and not provided
+    if (!required && (value === undefined || value === null)) {
+      continue
+    }
+
+    // Validate type
+    const actualType = Array.isArray(value) ? 'array' : typeof value
+    if (actualType !== type) {
+      return new Error(
+        `Parameter '${paramName}' expected type '${type}' but got '${actualType}'`
+      )
+    }
+  }
+
+  return null
+}
+
+/**
+ * Check if an error should be caught based on expected error types
+ *
+ * @param {Error} error - The error that was thrown
+ * @param {Array<Function>} expectedErrors - Array of error constructor functions
+ * @returns {boolean} True if error should be caught
+ */
+function shouldCatchError(error, expectedErrors) {
+  if (!Array.isArray(expectedErrors) || expectedErrors.length === 0) {
+    return true // Catch all errors if no filter specified
+  }
+
+  // Check if error is an instance of any expected error type
+  return expectedErrors.some((ErrorType) => error instanceof ErrorType)
 }
 
 /**

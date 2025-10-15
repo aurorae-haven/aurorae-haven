@@ -432,4 +432,127 @@ describe('errorHandler', () => {
       expect(error).toBeInstanceOf(Error)
     })
   })
+
+  describe('parameter validation', () => {
+    test('validates required parameters', async () => {
+      const operation = jest.fn(async () => 'success')
+
+      const result = await withErrorHandling(operation, 'Test operation', {
+        validateParams: {
+          userId: { value: undefined, type: 'string' }
+        },
+        showToast: false
+      })
+
+      expect(result).toBeUndefined()
+      expect(operation).not.toHaveBeenCalled()
+    })
+
+    test('validates parameter types', async () => {
+      const operation = jest.fn(async () => 'success')
+
+      const result = await withErrorHandling(operation, 'Test operation', {
+        validateParams: {
+          count: { value: '123', type: 'number' }
+        },
+        showToast: false
+      })
+
+      expect(result).toBeUndefined()
+      expect(operation).not.toHaveBeenCalled()
+    })
+
+    test('allows optional parameters to be missing', async () => {
+      const operation = jest.fn(async () => 'success')
+
+      const result = await withErrorHandling(operation, 'Test operation', {
+        validateParams: {
+          optionalParam: { value: undefined, type: 'string', required: false }
+        },
+        showToast: false
+      })
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalled()
+    })
+
+    test('validates array types', async () => {
+      const operation = jest.fn(async () => 'success')
+
+      const result = await withErrorHandling(operation, 'Test operation', {
+        validateParams: {
+          items: { value: [1, 2, 3], type: 'array' }
+        },
+        showToast: false
+      })
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalled()
+    })
+  })
+
+  describe('expected errors filtering', () => {
+    test('catches specified error types', async () => {
+      const operation = jest.fn(async () => {
+        throw new TypeError('Type error')
+      })
+
+      const result = await withErrorHandling(operation, 'Test operation', {
+        expectedErrors: [TypeError, RangeError],
+        showToast: false
+      })
+
+      expect(result).toBeUndefined()
+      expect(operation).toHaveBeenCalled()
+    })
+
+    test('rethrows unexpected error types', async () => {
+      const operation = jest.fn(async () => {
+        throw new ReferenceError('Reference error')
+      })
+
+      await expect(
+        withErrorHandling(operation, 'Test operation', {
+          expectedErrors: [TypeError],
+          showToast: false
+        })
+      ).rejects.toThrow(ReferenceError)
+    })
+
+    test('catches all errors when no filter specified', async () => {
+      const operation = jest.fn(async () => {
+        throw new Error('Any error')
+      })
+
+      const result = await withErrorHandling(operation, 'Test operation', {
+        showToast: false
+      })
+
+      expect(result).toBeUndefined()
+      expect(operation).toHaveBeenCalled()
+    })
+  })
+
+  describe('custom message formatter', () => {
+    test('uses custom message formatter', () => {
+      const formatter = jest.fn(
+        (error, context) => `Custom: ${context} - ${error.message}`
+      )
+      const error = new Error('Test error')
+
+      handleError(error, 'Test operation', {
+        customMessageFormatter: formatter
+      })
+
+      expect(formatter).toHaveBeenCalledWith(error, 'Test operation')
+    })
+
+    test('falls back to default message if formatter not provided', () => {
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation')
+      }).not.toThrow()
+    })
+  })
 })
