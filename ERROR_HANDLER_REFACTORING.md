@@ -102,12 +102,12 @@ enhanceError(error, context)  // Add context to errors
 ## Testing
 
 ### Error Handler Tests
-- **Total Tests**: 66 unit tests
+- **Total Tests**: 71 unit tests
 - **Coverage**: All core functions tested including getUserFriendlyMessage paths and DOM fallback
 - **Status**: ✅ 100% passing
 
 ### Application Tests
-- **Total Tests**: 989 tests (66 for error handler + 923 for application)
+- **Total Tests**: 994 tests (71 for error handler + 923 for application)
 - **Status**: ✅ 100% passing
 - **Linting**: ✅ 0 warnings
 
@@ -314,6 +314,57 @@ await withErrorHandling(
 )
 ```
 
+### Advanced: Function Decoration
+
+The `decorateWithErrorHandling` function wraps existing functions with automatic error handling, parameter validation, and error filtering:
+
+```javascript
+import { decorateWithErrorHandling } from './utils/errorHandler'
+
+// Before - repetitive error handling
+async function fetchData(userId) {
+  if (typeof userId !== 'string') {
+    throw new Error('userId must be a string')
+  }
+  try {
+    const result = await api.fetchUser(userId)
+    return result
+  } catch (error) {
+    logger.error('Fetch failed:', error)
+    showToast('Failed to fetch data')
+    return null
+  }
+}
+
+// After - decorated with validation and error filtering
+const fetchData = decorateWithErrorHandling(
+  async (userId) => await api.fetchUser(userId),
+  'Fetching user data',
+  {
+    validateParams: {
+      userId: { value: userId, type: 'string' }
+    },
+    expectedErrors: [TypeError, NetworkError],
+    toastMessage: 'Failed to fetch data'
+  }
+)
+
+// The decorated function automatically:
+// - Validates userId is a string
+// - Catches only TypeError and NetworkError
+// - Logs errors with context
+// - Shows toast notification
+// - Returns undefined on error
+```
+
+**Note**: `decorateWithErrorHandling` now supports all the same options as `withErrorHandling` and `tryCatch`, including:
+- `validateParams` - Parameter validation with type checking
+- `expectedErrors` - Selective error catching
+- `customMessageFormatter` - Custom error message formatting
+- All other standard error handling options
+
+This ensures consistent behavior across all error handling APIs in the codebase.
+
 ## Configuration Options
 
 ### ErrorHandlingOptions
@@ -421,7 +472,7 @@ await withErrorHandling(
 - [x] Refactor at least 20 try-catch blocks (achieved: 24)
 - [x] Add unit tests for error handler (achieved: 49 tests)
 - [x] Document error handling patterns
-- [x] Verify all existing functionality works correctly (989 tests passing)
+- [x] Verify all existing functionality works correctly (994 tests passing)
 
 ## Conclusion
 

@@ -304,6 +304,76 @@ describe('errorHandler', () => {
       expect(result).toBe(10)
       expect(fn).toHaveBeenCalledWith(5)
     })
+
+    test('validates parameters before executing function', async () => {
+      const fn = jest.fn(async (x) => x * 2)
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation', {
+        validateParams: {
+          value: { value: null, type: 'string', required: true }
+        }
+      })
+
+      const result = await wrapped()
+
+      expect(result).toBeUndefined()
+      expect(fn).not.toHaveBeenCalled()
+    })
+
+    test('executes function when parameters are valid', async () => {
+      const fn = jest.fn(async (x) => x * 2)
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation', {
+        validateParams: {
+          value: { value: 'test', type: 'string', required: true }
+        }
+      })
+
+      const result = await wrapped(5)
+
+      expect(result).toBe(10)
+      expect(fn).toHaveBeenCalledWith(5)
+    })
+
+    test('catches expected error types', async () => {
+      const fn = jest.fn(async () => {
+        throw new TypeError('Type error')
+      })
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation', {
+        expectedErrors: [TypeError],
+        showToast: false
+      })
+
+      const result = await wrapped()
+
+      expect(result).toBeUndefined()
+      expect(fn).toHaveBeenCalled()
+    })
+
+    test('rethrows unexpected error types', async () => {
+      const fn = jest.fn(async () => {
+        throw new RangeError('Range error')
+      })
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation', {
+        expectedErrors: [TypeError],
+        showToast: false
+      })
+
+      await expect(wrapped()).rejects.toThrow('Range error')
+      expect(fn).toHaveBeenCalled()
+    })
+
+    test('catches all errors when no expectedErrors filter', async () => {
+      const fn = jest.fn(async () => {
+        throw new RangeError('Range error')
+      })
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation', {
+        showToast: false
+      })
+
+      const result = await wrapped()
+
+      expect(result).toBeUndefined()
+      expect(fn).toHaveBeenCalled()
+    })
   })
 
   describe('enhanceError', () => {

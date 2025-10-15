@@ -265,9 +265,25 @@ export function createErrorHandler(context, defaultOptions = {}) {
  */
 export function decorateWithErrorHandling(fn, context, options = {}) {
   return async function wrappedFunction(...args) {
+    const { expectedErrors, validateParams } = options
+
+    // Validate parameters if validation is requested
+    if (validateParams) {
+      const validationError = validateParameters(validateParams)
+      if (validationError) {
+        // Force rethrow: false for validation errors to keep them consistently 'handled'
+        handleError(validationError, context, { ...options, rethrow: false })
+        return undefined
+      }
+    }
+
     try {
       return await fn(...args)
     } catch (error) {
+      // Check if this error should be caught
+      if (expectedErrors && !shouldCatchError(error, expectedErrors)) {
+        throw error // Rethrow if not in expected errors list
+      }
       handleError(error, context, options)
       return undefined
     }
