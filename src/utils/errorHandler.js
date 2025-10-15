@@ -363,12 +363,13 @@ function shouldCatchError(error, expectedErrors) {
  * @returns {boolean} True if quota exceeded error
  */
 export function isQuotaExceededError(error) {
+  const msg = (error && error.message ? error.message : '').toLowerCase();
   return (
     error &&
     (error.name === 'QuotaExceededError' ||
       error.code === 22 ||
-      error.message.includes('quota') ||
-      error.message.includes('storage'))
+      msg.includes('quota') ||
+      msg.includes('storage'))
   )
 }
 
