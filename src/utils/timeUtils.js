@@ -105,8 +105,8 @@ export function calculateDuration(startTime, endTime) {
     return 0
   }
 
-  const startMinutes = timeToMinutes(startTime)
-  const endMinutes = timeToMinutes(endTime)
+  const startMinutes = startParsed.hours * MINUTES_PER_HOUR + startParsed.minutes
+  const endMinutes = endParsed.hours * MINUTES_PER_HOUR + endParsed.minutes
 
   return endMinutes - startMinutes
 }
