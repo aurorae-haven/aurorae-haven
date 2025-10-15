@@ -2,7 +2,17 @@
 
 ## Overview
 
-This refactoring consolidates duplicate time and duration calculation logic from multiple files into a single, well-tested utility module.
+This refactoring consolidates duplicate time and duration calculation logic from multiple files into a single utility module, now powered by Day.js for robust date/time handling.
+
+## Migration to Day.js
+
+The custom time utility functions have been migrated to use **Day.js**, a lightweight (2KB) date/time library with MIT license. This provides:
+
+- **Battle-tested edge case handling**: Years of community validation
+- **Future extensibility**: Ready for dates, deadlines, timezones
+- **Plugin architecture**: Duration, customParseFormat, and more
+- **Immutable API**: Safer manipulation of date/time objects
+- **Offline support**: Fully bundleable with no external dependencies
 
 ## Issue Reference
 

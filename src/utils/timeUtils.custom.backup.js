@@ -1,16 +1,10 @@
 /**
- * Time Utilities using Day.js
- * Migrated from custom implementation to use Day.js library for better date/time handling
- * Supports dates, times, durations, deadlines with battle-tested edge case handling
+ * Time Utilities
+ * Centralized time and duration calculation functions
+ * Consolidates duplicate time logic from multiple files
  */
 
-import dayjs from 'dayjs'
-import duration from 'dayjs/plugin/duration'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-
-// Enable Day.js plugins
-dayjs.extend(duration)
-dayjs.extend(customParseFormat)
+import { MINUTES_PER_HOUR, HOURS_PER_DAY } from './scheduleConstants'
 
 // Time formatting constants
 const TIME_PADDING_LENGTH = 2
@@ -29,18 +23,15 @@ export function parseTime(timeString) {
     return null
   }
 
-  // Use Day.js to parse HH:MM format
-  const parsed = dayjs(timeString, 'HH:mm', true)
-  
-  if (!parsed.isValid()) {
+  const [hours, minutes] = timeString.split(':').map(Number)
+
+  // Validate parsed values are numbers
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
     return null
   }
 
-  const hours = parsed.hour()
-  const minutes = parsed.minute()
-
-  // Validate ranges (Day.js should handle this, but double-check)
-  if (hours < 0 || hours >= 24 || minutes < 0 || minutes >= 60) {
+  // Validate ranges: 0 <= hours < 24, 0 <= minutes < 60
+  if (hours < 0 || hours >= HOURS_PER_DAY || minutes < 0 || minutes >= MINUTES_PER_HOUR) {
     return null
   }
 
@@ -55,9 +46,13 @@ export function parseTime(timeString) {
  * @returns {string} Time in "HH:MM" format
  */
 export function formatClockTime(hours, minutes) {
-  // Create a Day.js object with today's date and specified time
-  const time = dayjs().hour(Math.floor(hours)).minute(Math.floor(minutes)).second(0)
-  return time.format('HH:mm')
+  // Normalize hours and minutes to valid time within a day
+  const totalMinutes = Math.floor(hours) * MINUTES_PER_HOUR + Math.floor(minutes)
+  const minutesInDay = HOURS_PER_DAY * MINUTES_PER_HOUR
+  const normalizedMinutes = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay
+  const validHours = Math.floor(normalizedMinutes / MINUTES_PER_HOUR)
+  const validMinutes = normalizedMinutes % MINUTES_PER_HOUR
+  return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
 // Deprecated: Use formatClockTime instead for clarity
@@ -75,7 +70,7 @@ export function timeToMinutes(timeString) {
   if (parsed === null) {
     return 0
   }
-  return parsed.hours * 60 + parsed.minutes
+  return parsed.hours * MINUTES_PER_HOUR + parsed.minutes
 }
 
 /**
@@ -91,15 +86,16 @@ export function minutesToTime(totalMinutes) {
     return '00:00'
   }
 
-  // Use Day.js duration to handle the conversion
-  const dur = dayjs.duration(Math.floor(totalMinutes), 'minutes')
+  const validMinutes = Math.floor(totalMinutes)
   
-  // Get hours and minutes, wrapping around 24 hours
-  const totalHours = Math.floor(dur.asHours())
-  const normalizedHours = ((totalHours % 24) + 24) % 24
-  const minutes = dur.minutes()
+  // Handle negative values by wrapping to previous day
+  const minutesInDay = HOURS_PER_DAY * MINUTES_PER_HOUR
+  const normalizedMinutes = ((validMinutes % minutesInDay) + minutesInDay) % minutesInDay
   
-  return `${String(normalizedHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(Math.abs(minutes)).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
+  const hours = Math.floor(normalizedMinutes / MINUTES_PER_HOUR)
+  const minutes = normalizedMinutes % MINUTES_PER_HOUR
+
+  return `${String(hours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(minutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
 /**
@@ -120,12 +116,10 @@ export function calculateDuration(startTime, endTime) {
     return 0
   }
 
-  // Create Day.js objects for comparison
-  const start = dayjs().hour(startParsed.hours).minute(startParsed.minutes).second(0)
-  const end = dayjs().hour(endParsed.hours).minute(endParsed.minutes).second(0)
-  
-  // Return difference in minutes
-  return end.diff(start, 'minute')
+  const startMinutes = startParsed.hours * MINUTES_PER_HOUR + startParsed.minutes
+  const endMinutes = endParsed.hours * MINUTES_PER_HOUR + endParsed.minutes
+
+  return endMinutes - startMinutes
 }
 
 /**
@@ -137,15 +131,10 @@ export function calculateDuration(startTime, endTime) {
  */
 export function addDuration(time, minutes) {
   const parsed = parseTime(time)
-  
-  // If invalid time provided, treat as 00:00
-  const baseTime = parsed !== null 
-    ? dayjs().hour(parsed.hours).minute(parsed.minutes).second(0)
-    : dayjs().hour(0).minute(0).second(0)
-  
-  // Add minutes and format
-  const result = baseTime.add(minutes, 'minute')
-  return result.format('HH:mm')
+  // If invalid time provided, treat as 00:00 and apply minutes offset
+  const startMinutes = parsed !== null ? parsed.hours * MINUTES_PER_HOUR + parsed.minutes : 0
+  const totalMinutes = startMinutes + minutes
+  return minutesToTime(totalMinutes)
 }
 
 /**
@@ -190,17 +179,17 @@ export function formatDurationDisplay(seconds, options = {}) {
 export function formatDurationVerbose(seconds) {
   if (!seconds) return null
 
-  const dur = dayjs.duration(Math.abs(seconds), 'seconds')
-  const sign = seconds < 0 ? '-' : ''
-  
-  const hours = Math.floor(dur.asHours())
-  const minutes = dur.minutes()
-  
-  if (hours === 0) {
+  const absSeconds = Math.abs(seconds)
+  const minutes = Math.floor(absSeconds / SECONDS_PER_MINUTE)
+  const sign = (seconds < 0 && minutes > 0) ? '-' : ''
+  if (minutes < MINUTES_PER_HOUR) {
     return `${sign}${minutes}m`
   }
-  
-  return minutes > 0
-    ? `${sign}${hours}h ${minutes}m`
+
+  const hours = Math.floor(minutes / MINUTES_PER_HOUR)
+  const remainingMinutes = minutes % MINUTES_PER_HOUR
+
+  return remainingMinutes > 0
+    ? `${sign}${hours}h ${remainingMinutes}m`
     : `${sign}${hours}h`
 }
