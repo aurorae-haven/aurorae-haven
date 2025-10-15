@@ -2,6 +2,7 @@
 // TODO: Implement full habits tracking with IndexedDB integration
 
 import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
+import { normalizeEntity, updateMetadata } from './idGenerator'
 
 /**
  * Create a new habit
@@ -10,15 +11,12 @@ import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
  */
 export async function createHabit(habit) {
   // TODO: Implement habit creation
-  const newHabit = {
+  const newHabit = normalizeEntity({
     ...habit,
-    id: habit.id || Date.now(),
     streak: 0,
     paused: false,
-    timestamp: Date.now(),
-    lastCompleted: null,
-    createdAt: new Date().toISOString()
-  }
+    lastCompleted: null
+  })
   return await put(STORES.HABITS, newHabit)
 }
 
@@ -73,12 +71,11 @@ export async function completeHabit(id) {
     newStreak += 1
   }
 
-  const updatedHabit = {
+  const updatedHabit = updateMetadata({
     ...habit,
     streak: newStreak,
-    lastCompleted: today,
-    timestamp: Date.now()
-  }
+    lastCompleted: today
+  })
 
   await put(STORES.HABITS, updatedHabit)
   return updatedHabit
@@ -98,11 +95,10 @@ export async function pauseHabit(id, paused) {
     throw new Error('Habit not found')
   }
 
-  const updatedHabit = {
+  const updatedHabit = updateMetadata({
     ...habit,
-    paused,
-    timestamp: Date.now()
-  }
+    paused
+  })
 
   await put(STORES.HABITS, updatedHabit)
   return updatedHabit

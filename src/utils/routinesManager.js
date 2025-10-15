@@ -9,6 +9,7 @@ import {
   deleteById,
   STORES
 } from './indexedDBManager'
+import { normalizeEntity, updateMetadata } from './idGenerator'
 
 /**
  * Create a new routine
@@ -17,16 +18,11 @@ import {
  */
 export async function createRoutine(routine) {
   // TODO: Implement routine validation and step validation
-  const now = Date.now()
-  const isoNow = new Date(now).toISOString()
-  const newRoutine = {
+  const newRoutine = normalizeEntity({
     ...routine,
-    id: routine.id || `routine_${now}`,
-    timestamp: isoNow,
-    createdAt: isoNow,
     steps: routine.steps || [],
     totalDuration: calculateTotalDuration(routine.steps || [])
-  }
+  }, { idPrefix: 'routine' })
   await put(STORES.ROUTINES, newRoutine)
   return newRoutine.id
 }
@@ -47,16 +43,23 @@ export async function createRoutineBatch(routines) {
   }
 
   // Prepare all routines with proper structure
+  // For batch operations, we need to ensure unique IDs when routines don't have them
   const baseTimestamp = Date.now()
-  const isoNow = new Date(baseTimestamp).toISOString()
-  const newRoutines = routines.map((routine, index) => ({
-    ...routine,
-    id: routine.id || `routine_${baseTimestamp}_${index}`,
-    timestamp: isoNow,
-    createdAt: isoNow,
-    steps: routine.steps || [],
-    totalDuration: calculateTotalDuration(routine.steps || [])
-  }))
+  const newRoutines = routines.map((routine, index) => {
+    // Prepare common fields for normalization
+    const routineData = {
+      ...routine,
+      steps: routine.steps || [],
+      totalDuration: calculateTotalDuration(routine.steps || [])
+    }
+    
+    // If routine lacks an ID, generate unique ID with index suffix to prevent collisions
+    if (!routine.id) {
+      routineData.id = `routine_${baseTimestamp}_${index}`
+    }
+    
+    return normalizeEntity(routineData)
+  })
 
   // Use batch operation for efficiency
   await putBatch(STORES.ROUTINES, newRoutines)
@@ -122,11 +125,10 @@ export async function getRoutine(id) {
  */
 export async function updateRoutine(routine) {
   // TODO: Add validation and recalculate total duration
-  const updated = {
+  const updated = updateMetadata({
     ...routine,
-    timestamp: new Date().toISOString(),
     totalDuration: calculateTotalDuration(routine.steps || [])
-  }
+  })
   await put(STORES.ROUTINES, updated)
   return updated.id
 }
@@ -163,10 +165,10 @@ export async function addStep(routineId, step) {
 
   routine.steps.push(newStep)
   routine.totalDuration = calculateTotalDuration(routine.steps)
-  routine.timestamp = new Date().toISOString()
-
-  await put(STORES.ROUTINES, routine)
-  return routine
+  
+  const updated = updateMetadata(routine)
+  await put(STORES.ROUTINES, updated)
+  return updated
 }
 
 /**
@@ -187,10 +189,10 @@ export async function removeStep(routineId, stepId) {
     step.order = index
   })
   routine.totalDuration = calculateTotalDuration(routine.steps)
-  routine.timestamp = new Date().toISOString()
-
-  await put(STORES.ROUTINES, routine)
-  return routine
+  
+  const updated = updateMetadata(routine)
+  await put(STORES.ROUTINES, updated)
+  return updated
 }
 
 /**
@@ -218,10 +220,10 @@ export async function reorderStep(routineId, stepId, newOrder) {
   routine.steps.forEach((s, index) => {
     s.order = index
   })
-  routine.timestamp = new Date().toISOString()
-
-  await put(STORES.ROUTINES, routine)
-  return routine
+  
+  const updated = updateMetadata(routine)
+  await put(STORES.ROUTINES, updated)
+  return updated
 }
 
 /**
@@ -246,15 +248,17 @@ export async function cloneRoutine(routineId, newName) {
     throw new Error('Routine not found')
   }
 
-  const timestamp = Date.now()
-  const isoNow = new Date(timestamp).toISOString()
-  const cloned = {
-    ...routine,
-    id: `routine_${timestamp}`,
-    name: newName || `${routine.name} (Copy)`,
-    timestamp: isoNow,
-    createdAt: isoNow
-  }
+  // Create a copy excluding metadata fields that should be regenerated
+  const routineData = { ...routine }
+  delete routineData.id
+  delete routineData.timestamp
+  delete routineData.createdAt
+  delete routineData.updatedAt
+  
+  const cloned = normalizeEntity({
+    ...routineData,
+    name: newName || `${routine.name} (Copy)`
+  }, { idPrefix: 'routine' })
 
   await put(STORES.ROUTINES, cloned)
   return cloned.id
