@@ -14,9 +14,10 @@ Based on review of all documentation in the `/docs` folder, high priority items 
 
 ### Critical Priority (v1.1)
 
-- **Total Parent Issues**: 3
-- **Total Specifications**: 152
+- **Total Parent Issues**: 2
+- **Total Specifications**: 110
 - **Implementation Status**: Partially Implemented
+- **Note**: TAB-SEC moved to v2.0 (requires backend infrastructure)
 
 ### High Priority (v1.2)
 
@@ -34,15 +35,15 @@ Based on review of all documentation in the `/docs` folder, high priority items 
 
 ## Critical Priority Items (v1.1)
 
-These items are marked as **Critical** and should be implemented first for security, core functionality, and user trust.
+These items are marked as **Critical** and should be implemented first for core productivity functionality.
 
-### 1. TAB-SEC: Security Features (42 specifications)
+### 1. TAB-HAB: Habits Feature (52 specifications) - IMMEDIATE PRIORITY
 
 **Priority**: CRITICAL  
-**Reason**: Security is fundamental for user trust  
-**Estimated Effort**: 2-3 weeks  
-**Implementation Status**: ❌ Not Implemented  
-**Reference**: `/docs/GITHUB_ISSUES_TO_CREATE.md` Lines 13-81, `/docs/IMPLEMENTATION_GAP_ANALYSIS.md`
+**Reason**: Core productivity feature requested for immediate implementation  
+**Estimated Effort**: 2 weeks  
+**Implementation Status**: 🔄 Partially Implemented (basic structure exists)  
+**Reference**: `/docs/GITHUB_ISSUES_TO_CREATE.md` Lines 83-174, `/docs/IMPLEMENTATION_GAP_ANALYSIS.md`
 
 **Key Specifications**:
 
@@ -88,18 +89,6 @@ These items are marked as **Critical** and should be implemented first for secur
 - [ ] TAB-SEC-40: Desktop security screenshots
 - [ ] TAB-SEC-41: Mobile security screenshots
 - [ ] TAB-SEC-42: Data wipe success screenshot
-
-**Next Steps**: Create GitHub issue and begin implementation planning
-
----
-
-### 2. TAB-HAB: Habits Feature (52 specifications)
-
-**Priority**: CRITICAL  
-**Reason**: Core productivity feature  
-**Estimated Effort**: 2 weeks  
-**Implementation Status**: 🔄 Partially Implemented (basic structure exists)  
-**Reference**: `/docs/GITHUB_ISSUES_TO_CREATE.md` Lines 83-174, `/docs/IMPLEMENTATION_GAP_ANALYSIS.md`
 
 **Current State**:
 
@@ -160,15 +149,15 @@ These items are marked as **Critical** and should be implemented first for secur
 - [ ] TAB-HAB-47: Desktop grid screenshots
 - [ ] TAB-HAB-48: Mobile list screenshots
 - [ ] TAB-HAB-49: Habit detail drawer screenshot
-- [ ] TAB-HAB-50: Edit modal screenshot
+- [ ] TAB-HAB-50: Habit edit modal screenshot
 - [ ] TAB-HAB-51: Streak milestone screenshot
 - [ ] TAB-HAB-52: Vacation mode screenshot
 
-**Next Steps**: Enhance existing Habits.jsx implementation with missing features
+**Next Steps**: Begin implementation immediately
 
 ---
 
-### 3. TAB-RTN: Routines Feature (58 specifications)
+### 2. TAB-RTN: Routines Feature (58 specifications)
 
 **Priority**: CRITICAL  
 **Reason**: Core productivity feature  
@@ -465,17 +454,42 @@ These items are marked as **Medium Priority** and should be implemented after Hi
 
 ---
 
+## Deferred Items (v2.0+)
+
+These items are deferred to future versions due to infrastructure dependencies.
+
+### TAB-SEC: Security Features (42 specifications)
+
+**Priority**: DEFERRED to v2.0  
+**Reason**: Requires backend infrastructure (not currently available)  
+**Estimated Effort**: 2-3 weeks (when backend is ready)  
+**Implementation Status**: ❌ Not Implemented  
+**Reference**: `/docs/GITHUB_ISSUES_TO_CREATE.md` Lines 13-81
+
+**Deferred Features**:
+
+- Passphrase setup and encryption
+- Biometric authentication
+- Auto-lock functionality
+- Data wipe with confirmation
+- Encryption key export/import
+
+**Why Deferred**: The application currently operates without a backend, making server-side security features premature. These will be implemented when backend infrastructure is available.
+
+---
+
 ## Implementation Strategy
 
 Based on the gap analysis, the recommended implementation approach is:
 
-### Phase 1: Critical (v1.1) - Security & Core Features
+### Phase 1: Critical (v1.1) - Core Productivity Features
 
-1. **TAB-SEC** (Security) - 2-3 weeks
-2. **TAB-HAB** (Habits) - 2 weeks (enhance existing)
-3. **TAB-RTN** (Routines) - 2-3 weeks (enhance existing)
+1. **TAB-HAB** (Habits) - 2 weeks (enhance existing) - **IMMEDIATE PRIORITY**
+2. **TAB-RTN** (Routines) - 2-3 weeks (enhance existing)
 
-**Estimated Phase 1 Total**: 6-8 weeks
+**Estimated Phase 1 Total**: 4-5 weeks
+
+**Note**: TAB-SEC (Security) has been deferred to v2.0 pending backend infrastructure.
 
 ### Phase 2: High Priority (v1.2) - Enhancement Features
 
@@ -493,7 +507,7 @@ Based on the gap analysis, the recommended implementation approach is:
 
 **Estimated Phase 3 Total**: 3-4 weeks
 
-**Total Estimated Effort**: 15-19 weeks for all high priority items
+**Total Estimated Effort**: 13-16 weeks for v1.x high priority items (excludes TAB-SEC deferred to v2.0)
 
 ---
 

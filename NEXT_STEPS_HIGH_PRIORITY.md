@@ -18,31 +18,19 @@ This document provides actionable next steps for implementing the high priority 
 
 The `/docs/GITHUB_ISSUES_TO_CREATE.md` file contains ready-to-use templates. Create issues in this order:
 
-#### Issue #1: TAB-SEC Implementation (CRITICAL)
+#### Issue #1: TAB-HAB Implementation (CRITICAL - IMMEDIATE PRIORITY)
 
 ```bash
 gh issue create \
-  --title "Implement TAB-SEC: Security Features" \
-  --label "specification,tab-sec,enhancement,priority:critical" \
-  --milestone "v1.1" \
-  --body "Implement all 42 security specifications. See docs/GITHUB_ISSUES_TO_CREATE.md lines 13-81 and docs/COMPLETE_SPECIFICATIONS.md for full details."
-```
-
-**Why First**: Security is fundamental and currently completely missing. Users cannot protect their data.
-
-#### Issue #2: TAB-HAB Implementation (CRITICAL)
-
-```bash
-gh issue create \
-  --title "Complete TAB-HAB: Habits Feature" \
+  --title "Implement TAB-HAB: Habits Feature" \
   --label "specification,tab-hab,enhancement,priority:critical" \
   --milestone "v1.1" \
-  --body "Enhance existing Habits feature with 52 missing specifications. See docs/GITHUB_ISSUES_TO_CREATE.md lines 83-174 for details. Current: basic structure exists in src/pages/Habits.jsx. Needed: streak management, categories, tags, XP system."
+  --body "Enhance existing Habits feature with 52 specifications. See docs/GITHUB_ISSUES_TO_CREATE.md lines 83-174 for details. Current: basic structure exists in src/pages/Habits.jsx. Needed: streak management, categories, tags, XP system, heatmap, Today panel."
 ```
 
-**Why Second**: Core productivity feature with basic structure already in place. Can be enhanced incrementally.
+**Why First**: Requested as immediate priority. Core productivity feature with basic structure already in place. Can be enhanced incrementally.
 
-#### Issue #3: TAB-RTN Implementation (CRITICAL)
+#### Issue #2: TAB-RTN Implementation (CRITICAL)
 
 ```bash
 gh issue create \
@@ -52,48 +40,17 @@ gh issue create \
   --body "Enhance existing Routines feature with 58 missing specifications. See docs/GITHUB_ISSUES_TO_CREATE.md lines 176-246 for details. Current: basic runner exists in src/pages/Routines.jsx. Needed: step templates, scheduling, XP tracking."
 ```
 
-**Why Third**: Core productivity feature that builds on routine runner foundation.
+**Why Second**: Core productivity feature that builds on routine runner foundation.
+
+**Note**: TAB-SEC (Security) has been deferred to v2.0 as it requires backend infrastructure that is not currently available.
 
 ---
 
-## Phase 1 Implementation Plan (Weeks 1-8)
+## Phase 1 Implementation Plan (Weeks 1-5)
 
-### Week 1-3: TAB-SEC (Security)
+**Note**: TAB-SEC (Security) has been deferred to v2.0 as it requires backend infrastructure.
 
-**Goal**: Implement complete security system
-
-**Key Deliverables**:
-
-- [ ] Passphrase setup with strength meter
-- [ ] Unlock dialog with focus trap
-- [ ] Auto-lock after inactivity
-- [ ] Biometric authentication support (if available)
-- [ ] Data wipe with confirmation
-- [ ] Encryption key export
-- [ ] WCAG 2.2 AA compliant security UI
-- [ ] Unit tests for all security functions (target: 90%+ coverage)
-
-**Files to Create/Modify**:
-
-- Create: `src/utils/securityManager.js`
-- Create: `src/components/Security/PassphraseSetup.jsx`
-- Create: `src/components/Security/UnlockDialog.jsx`
-- Create: `src/components/Security/DataWipe.jsx`
-- Create: `src/components/Security/KeyExport.jsx`
-- Modify: `src/pages/Settings.jsx` (add Security section)
-- Create: `src/__tests__/securityManager.test.js`
-
-**Testing Requirements**:
-
-- Test passphrase validation and strength calculation
-- Test auto-lock triggering and countdown
-- Test data wipe with proper cleanup
-- Test biometric integration (if available)
-- Test error states and accessibility
-
----
-
-### Week 4-5: TAB-HAB (Habits Enhancement)
+### Week 1-2: TAB-HAB (Habits Enhancement) - IMMEDIATE PRIORITY
 
 **Goal**: Transform basic habit tracking into full-featured habit system
 
@@ -132,7 +89,7 @@ gh issue create \
 
 ---
 
-### Week 6-8: TAB-RTN (Routines Enhancement)
+### Week 3-5: TAB-RTN (Routines Enhancement)
 
 **Goal**: Enhance basic routine runner with full workflow management
 
@@ -172,9 +129,9 @@ gh issue create \
 
 ---
 
-## Phase 2 Implementation Plan (Weeks 9-15)
+## Phase 2 Implementation Plan (Weeks 6-12)
 
-### Week 9-10: TAB-LIB (Library/Templates)
+### Week 6-7: TAB-LIB (Library/Templates)
 
 **Goal**: Complete template management system
 
@@ -195,7 +152,7 @@ gh issue create \
 
 ---
 
-### Week 11-13: TAB-SCH (Schedule)
+### Week 8-10: TAB-SCH (Schedule)
 
 **Goal**: Implement full calendar and time management
 
@@ -215,7 +172,7 @@ gh issue create \
 
 ---
 
-### Week 14-15: TAB-STT (Statistics)
+### Week 11-12: TAB-STT (Statistics)
 
 **Goal**: Implement charts and data visualization
 
@@ -234,28 +191,45 @@ gh issue create \
 
 ---
 
-## Phase 3 Implementation Plan (Weeks 16-19)
+## Phase 3 Implementation Plan (Weeks 13-16)
 
-### Week 16: TAB-SPG (Static Pages)
+### Week 13: TAB-SPG (Static Pages)
 
 - Privacy Policy page
 - Legal Notice page
 - Enhanced About page
 - Accordion UI for mobile
 
-### Week 17-18: TAB-SET (Settings Enhancement)
+### Week 14-15: TAB-SET (Settings Enhancement)
 
 - Tabbed interface
 - Theme customization
 - Notification preferences
 - Advanced options
 
-### Week 19: TAB-POP (Popup System)
+### Week 16: TAB-POP (Popup System)
 
 - Standardized modal system
 - Consistent animations
 - Accessibility features
 - Mobile adaptations
+
+---
+
+## Deferred to v2.0
+
+### TAB-SEC (Security)
+
+**Deferred**: Requires backend infrastructure (not currently available)
+
+**Planned for v2.0** (when backend is implemented):
+
+- Passphrase setup and encryption
+- Biometric authentication
+- Auto-lock functionality
+- Data wipe with confirmation
+- Encryption key export/import
+- Estimated effort: 2-3 weeks
 
 ---
 
@@ -269,10 +243,10 @@ gh issue create \
 
 ### Priority Test Areas
 
-1. Security functions (target: 90%+ coverage)
-2. Habits manager (target: 85%+ coverage)
-3. Routines manager (target: 85%+ coverage)
-4. Data validation and sanitization (target: 95%+ coverage)
+1. Habits manager (target: 85%+ coverage) - **IMMEDIATE PRIORITY**
+2. Routines manager (target: 85%+ coverage)
+3. Data validation and sanitization (target: 95%+ coverage)
+4. Template management (target: 85%+ coverage)
 
 ### Test Types to Implement
 
@@ -340,13 +314,14 @@ For Phase 2-3, may need:
 
 ### Phase 1 Success Criteria
 
-- [ ] All 152 Critical specifications implemented
-- [ ] Security system fully functional and tested
-- [ ] Habits feature matches specification requirements
-- [ ] Routines feature matches specification requirements
+- [ ] All 110 Critical specifications implemented (TAB-HAB + TAB-RTN)
+- [ ] Habits feature fully functional with all 52 specifications
+- [ ] Routines feature fully functional with all 58 specifications
 - [ ] Test coverage reaches 80%+
 - [ ] Zero security vulnerabilities
 - [ ] WCAG 2.2 AA compliant
+
+**Note**: TAB-SEC (42 specs) deferred to v2.0
 
 ### Phase 2 Success Criteria
 
@@ -420,7 +395,7 @@ This plan provides a structured approach to implementing 388 specifications over
 - Testing and quality remain priorities throughout
 - Documentation stays current
 
-**Start with Phase 1, Week 1: Create GitHub Issue #1 (TAB-SEC) and begin security implementation.**
+**Start with Phase 1, Week 1: Create GitHub Issue #1 (TAB-HAB) and begin Habits implementation.**
 
 ---
 

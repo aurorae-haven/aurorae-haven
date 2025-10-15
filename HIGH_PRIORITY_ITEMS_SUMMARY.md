@@ -25,32 +25,13 @@ This document summarizes the high priority items identified from the comprehensi
 |----------|--------|-------|
 | ✅ Fully Implemented | TAB-BDP, TAB-TSK, TAB-IEX/NAV | 3 |
 | 🔄 Partially Implemented | TAB-HAB, TAB-RTN, TAB-LIB, TAB-SCH, TAB-STT, TAB-SET, TAB-POP | 7 |
-| ❌ Not Implemented | TAB-SEC | 1 |
+| ⏸️ Deferred to v2.0 | TAB-SEC (requires backend) | 1 |
 
 ---
 
 ## Critical Priority Items (v1.1)
 
-### 1. TAB-SEC: Security Features
-
-- **Status**: ❌ Not Implemented
-- **Specifications**: 42
-- **Effort**: 2-3 weeks
-- **Priority**: CRITICAL - Security is fundamental for user trust
-
-**Key Missing Features**:
-
-- Passphrase setup with strength meter
-- Unlock dialog with auto-lock
-- Biometric authentication support
-- Data wipe functionality
-- Encryption key export
-
-**Impact**: Without security features, users cannot protect sensitive data stored in the application.
-
----
-
-### 2. TAB-HAB: Habits Feature
+### 1. TAB-HAB: Habits Feature - **IMMEDIATE PRIORITY**
 
 - **Status**: 🔄 Partially Implemented
 - **Specifications**: 52
@@ -73,7 +54,7 @@ This document summarizes the high priority items identified from the comprehensi
 
 ---
 
-### 3. TAB-RTN: Routines Feature
+### 2. TAB-RTN: Routines Feature
 
 - **Status**: 🔄 Partially Implemented
 - **Specifications**: 58
@@ -162,6 +143,27 @@ This document summarizes the high priority items identified from the comprehensi
 
 ---
 
+## Deferred Items (v2.0+)
+
+### TAB-SEC: Security Features
+
+- **Status**: ⏸️ Deferred to v2.0
+- **Specifications**: 42
+- **Effort**: 2-3 weeks (when backend ready)
+- **Reason**: Requires backend infrastructure (not currently available)
+
+**Deferred Features**:
+
+- Passphrase setup and encryption
+- Biometric authentication
+- Auto-lock functionality
+- Data wipe with confirmation
+- Encryption key export/import
+
+**Why Deferred**: The application currently operates without a backend, making server-side security features premature. These will be implemented when backend infrastructure is available in v2.0.
+
+---
+
 ## Medium Priority Items (v1.3)
 
 ### 7. TAB-SPG: Static Pages
@@ -196,11 +198,12 @@ This document summarizes the high priority items identified from the comprehensi
 
 ## Recommended Implementation Approach
 
-### Phase 1: Critical (v1.1) - 6-8 weeks
+### Phase 1: Critical (v1.1) - 4-5 weeks
 
-1. TAB-SEC (Security) - 2-3 weeks
-2. TAB-HAB (Habits) - 2 weeks
-3. TAB-RTN (Routines) - 2-3 weeks
+1. TAB-HAB (Habits) - 2 weeks - **IMMEDIATE PRIORITY**
+2. TAB-RTN (Routines) - 2-3 weeks
+
+**Note**: TAB-SEC (Security) deferred to v2.0 pending backend infrastructure.
 
 ### Phase 2: High Priority (v1.2) - 6-7 weeks
 
@@ -214,7 +217,7 @@ This document summarizes the high priority items identified from the comprehensi
 2. TAB-SET (Settings) - 1-2 weeks
 3. TAB-POP (Popups) - 1 week
 
-**Total Estimated Effort**: 15-19 weeks
+**Total Estimated Effort**: 13-16 weeks for v1.x (excludes TAB-SEC deferred to v2.0)
 
 ---
 
@@ -240,7 +243,7 @@ This document summarizes the high priority items identified from the comprehensi
 1. ✅ **Completed**: Comprehensive documentation review
 2. ✅ **Completed**: Created detailed tracking document
 3. **Recommended**: Create GitHub issues using templates in `/docs/GITHUB_ISSUES_TO_CREATE.md`
-4. **Recommended**: Prioritize Phase 1 Critical items (TAB-SEC, TAB-HAB, TAB-RTN)
+4. **Recommended**: Begin Phase 1 with TAB-HAB (Habits) implementation - immediate priority
 5. **Recommended**: Write tests alongside implementation to reach 80%+ coverage
 6. **Recommended**: Update tracker as items are completed
 
