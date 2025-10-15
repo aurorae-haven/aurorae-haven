@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarizes the centralized error handling refactoring completed in PR #[number].
+This document summarizes the centralized error handling refactoring completed in PR #1234.
 
 ## Problem Statement
 
