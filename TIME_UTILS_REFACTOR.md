@@ -117,8 +117,8 @@ A centralized utility module containing all time/duration calculation functions:
 - **routineRunner.js:** -14 lines (implementation replaced with delegation)
 - **TemplateCard.jsx:** -7 lines
 - **Total Duplicate Code Removed:** ~67 lines
-- **New Utility Module:** +160 lines (well-tested, reusable)
-- **New Tests:** +250 lines
+- **New Utility Module:** Added well-tested, reusable module
+- **New Tests:** Added comprehensive test suite
 
 ### Net Result
 - Reduced code duplication by consolidating ~67 lines into a single module
