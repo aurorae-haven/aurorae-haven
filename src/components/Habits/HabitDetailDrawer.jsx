@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import { getCategoryColor } from '../../utils/habitCategories'
 import logger from '../../utils/logger'
@@ -9,10 +10,12 @@ import logger from '../../utils/logger'
  * TAB-HAB-26: Detail drawer with full history
  * TAB-HAB-27: Completion history with filters
  * TAB-HAB-28: Vacation toggle
+ * TAB-HAB-29: Brain Dump link integration
  */
 function HabitDetailDrawer({ habit, onClose, onUpdateHabit }) {
   if (!habit) return null
 
+  const navigate = useNavigate()
   const [showVacationMode, setShowVacationMode] = useState(false)
   const [vacationStart, setVacationStart] = useState('')
   const [vacationEnd, setVacationEnd] = useState('')
@@ -380,6 +383,40 @@ function HabitDetailDrawer({ habit, onClose, onUpdateHabit }) {
             )}
           </div>
         )}
+      </div>
+
+      {/* Brain Dump Link - TAB-HAB-29 */}
+      <div className='card-b' style={{ marginBottom: '1.5rem' }}>
+        <button
+          onClick={() => {
+            // Create a Brain Dump note with habit context
+            const habitInfo = `# ${habit.name}\n\n**Current Streak:** ${habit.streak || 0} days 🔥\n**Best Streak:** ${habit.longestStreak || 0} days ⭐\n**Total XP:** ${habit.xp || 0} ✨\n\n---\n\n*Write your thoughts about this habit here...*\n`
+            // Navigate to Brain Dump with pre-filled content
+            navigate('/brain-dump', { state: { prefill: habitInfo } })
+            onClose()
+          }}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            background: '#4a7dff',
+            color: '#e6e9f2',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '0.875rem',
+            fontWeight: '500',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem'
+          }}
+          aria-label={`Create Brain Dump note for ${habit.name}`}
+        >
+          📝 Link to Brain Dump
+        </button>
+        <p className='small' style={{ color: '#a9b1e0', marginTop: '0.5rem', textAlign: 'center' }}>
+          Create a note about this habit with your current stats
+        </p>
       </div>
 
       {/* Recent History with Export - TAB-HAB-27 */}
