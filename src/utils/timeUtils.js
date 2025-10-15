@@ -144,13 +144,17 @@ export function formatDurationDisplay(seconds, options = {}) {
 export function formatDurationVerbose(seconds) {
   if (!seconds) return null
 
-  const minutes = Math.floor(seconds / SECONDS_PER_MINUTE)
+  const absSeconds = Math.abs(seconds)
+  const minutes = Math.floor(absSeconds / SECONDS_PER_MINUTE)
+  const sign = seconds < 0 ? '-' : ''
   if (minutes < MINUTES_PER_HOUR) {
-    return `${minutes}m`
+    return `${sign}${minutes}m`
   }
 
   const hours = Math.floor(minutes / MINUTES_PER_HOUR)
   const remainingMinutes = minutes % MINUTES_PER_HOUR
 
-  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`
+  return remainingMinutes > 0
+    ? `${sign}${hours}h ${remainingMinutes}m`
+    : `${sign}${hours}h`
 }
