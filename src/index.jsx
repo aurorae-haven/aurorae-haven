@@ -35,6 +35,7 @@ import {
 } from './utils/dataManager'
 import { normalizeRedirectPath } from './utils/redirectHelpers'
 import { createLogger } from './utils/logger'
+import { withErrorHandling } from './utils/errorHandler'
 
 // Create namespaced loggers for different concerns
 const redirectLogger = createLogger('RedirectHandler')
@@ -82,28 +83,42 @@ function RouterApp() {
   }, [])
 
   const handleExport = useCallback(async () => {
-    try {
-      await exportJSON()
-      showToast('Data exported successfully')
-    } catch (error) {
-      swLogger.error('Export failed:', error)
-      showToast('Export failed: ' + error.message)
-    }
+    await withErrorHandling(
+      async () => {
+        await exportJSON()
+        showToast('Data exported successfully')
+      },
+      'Exporting data',
+      {
+        toastMessage: 'Export failed',
+        onError: (error) => {
+          swLogger.error('Export failed:', error)
+          showToast('Export failed: ' + error.message)
+        }
+      }
+    )
   }, [showToast])
 
   const handleImport = useCallback(
     async (e) => {
       const file = e.target.files?.[0]
       if (file) {
-        try {
-          await importJSON(file)
-          showToast(IMPORT_SUCCESS_MESSAGE)
-          // Use shared utility function for page reload
-          reloadPageAfterDelay(1500)
-        } catch (error) {
-          swLogger.error('Import failed:', error)
-          showToast('Import failed: ' + error.message)
-        }
+        await withErrorHandling(
+          async () => {
+            await importJSON(file)
+            showToast(IMPORT_SUCCESS_MESSAGE)
+            // Use shared utility function for page reload
+            reloadPageAfterDelay(1500)
+          },
+          'Importing data',
+          {
+            toastMessage: 'Import failed',
+            onError: (error) => {
+              swLogger.error('Import failed:', error)
+              showToast('Import failed: ' + error.message)
+            }
+          }
+        )
         // allow re-selecting the same file next time
         e.target.value = ''
       }
