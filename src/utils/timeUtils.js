@@ -29,8 +29,10 @@ export function parseTime(timeString) {
     return null
   }
 
+  // Trim whitespace before parsing
+  const trimmedTimeString = timeString.trim()
   // Use Day.js to parse HH:MM format
-  const parsed = dayjs(timeString, 'HH:mm', true)
+  const parsed = dayjs(trimmedTimeString, 'HH:mm', true)
   
   if (!parsed.isValid()) {
     return null
