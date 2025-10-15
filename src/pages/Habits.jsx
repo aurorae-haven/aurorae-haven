@@ -9,6 +9,8 @@ import {
 } from '../utils/habitsManager'
 import Toast from '../components/Toast'
 import HeatmapStrip from '../components/Habits/HeatmapStrip'
+import FilterModal from '../components/Habits/FilterModal'
+import HabitDetailDrawer from '../components/Habits/HabitDetailDrawer'
 import { createLogger } from '../utils/logger'
 import { getCategoryColor, CATEGORY_OPTIONS } from '../utils/habitCategories'
 
@@ -23,18 +25,39 @@ function Habits() {
   const [todayStats, setTodayStats] = useState({ total: 0, completed: 0, percentage: 0 })
   const [loading, setLoading] = useState(true)
   const [showNewHabitModal, setShowNewHabitModal] = useState(false)
+  const [showFilterModal, setShowFilterModal] = useState(false)
+  const [selectedHabit, setSelectedHabit] = useState(null)
   const [toast, setToast] = useState(null)
   const [newHabitName, setNewHabitName] = useState('')
   const [newHabitCategory, setNewHabitCategory] = useState('default')
   const [sortBy, setSortBy] = useState('title')
+  const [filters, setFilters] = useState({})
 
   useEffect(() => {
     loadHabits()
-  }, [sortBy])
+  }, [sortBy, filters])
 
   const loadHabits = async () => {
     try {
-      const allHabits = await getHabits({ sortBy })
+      setLoading(true)
+      let allHabits = await getHabits({ sortBy })
+      
+      // Apply filters
+      if (filters.category) {
+        allHabits = allHabits.filter(h => h.category === filters.category)
+      }
+      if (filters.status === 'active') {
+        allHabits = allHabits.filter(h => !h.paused)
+      } else if (filters.status === 'paused') {
+        allHabits = allHabits.filter(h => h.paused)
+      } else if (filters.status === 'completed-today') {
+        const today = new Date().toISOString().split('T')[0]
+        allHabits = allHabits.filter(h => h.completions?.some(c => c.date === today))
+      } else if (filters.status === 'incomplete-today') {
+        const today = new Date().toISOString().split('T')[0]
+        allHabits = allHabits.filter(h => !h.completions?.some(c => c.date === today))
+      }
+      
       const stats = await getTodayStats()
       setHabits(allHabits)
       setTodayStats(stats)
@@ -177,6 +200,31 @@ function Habits() {
         <div className='card-h' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <strong>Habits ({habits.length})</strong>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={() => setShowFilterModal(true)}
+              style={{
+                padding: '0.25rem 0.75rem',
+                borderRadius: '4px',
+                background: '#2a2e47',
+                border: '1px solid #3d4263',
+                color: '#eef0ff',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              🔍 Filter
+              {(filters.category || filters.status) && (
+                <span style={{
+                  display: 'inline-block',
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: '#86f5e0'
+                }} />
+              )}
+            </button>
             <select 
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
@@ -206,10 +254,19 @@ function Habits() {
         </div>
       ) : (
         habits.map(habit => (
-          <div key={habit.id} className='card' style={{ marginBottom: '1rem', opacity: habit.paused ? 0.6 : 1 }}>
+          <div 
+            key={habit.id} 
+            className='card' 
+            style={{ marginBottom: '1rem', opacity: habit.paused ? 0.6 : 1, cursor: 'pointer' }} 
+            onClick={() => setSelectedHabit(habit)}
+            onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedHabit(habit) }}
+            role='button'
+            tabIndex={0}
+            aria-label={`View details for ${habit.name}`}
+          >
             <div className='card-b'>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }} onClick={(e) => e.stopPropagation()} onKeyPress={(e) => e.stopPropagation()} role='presentation'>
                   {/* TAB-HAB-08: Today tick control */}
                   <input
                     type='checkbox'
@@ -225,7 +282,13 @@ function Habits() {
                     aria-label={`Complete ${habit.name}`}
                   />
                   
-                  <div style={{ flex: 1 }}>
+                  <div 
+                    style={{ flex: 1 }} 
+                    onClick={() => setSelectedHabit(habit)}
+                    onKeyPress={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedHabit(habit) }}
+                    role='button'
+                    tabIndex={0}
+                  >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       {/* TAB-HAB-07, TAB-HAB-34: Category color chip */}
                       {habit.category && habit.category !== 'default' && (
@@ -382,6 +445,23 @@ function Habits() {
 
       {/* Toast notifications */}
       {toast && <Toast message={toast.message} type={toast.type} />}
+      
+      {/* TAB-HAB-04: Filter Modal */}
+      {showFilterModal && (
+        <FilterModal
+          filters={filters}
+          onApply={setFilters}
+          onClose={() => setShowFilterModal(false)}
+        />
+      )}
+      
+      {/* TAB-HAB-26: Habit Detail Drawer */}
+      {selectedHabit && (
+        <HabitDetailDrawer
+          habit={selectedHabit}
+          onClose={() => setSelectedHabit(null)}
+        />
+      )}
     </div>
   )
 }
