@@ -1,9 +1,6 @@
 // Settings Manager - Feature stub for app configuration
 // TODO: Implement full settings management with validation
-import { createLogger } from './logger'
 import { tryCatch } from './errorHandler'
-
-const logger = createLogger('SettingsManager')
 
 const SETTINGS_KEY = 'aurorae_settings'
 
@@ -51,10 +48,7 @@ export function getSettings() {
     },
     'Loading settings from localStorage',
     {
-      showToast: false,
-      onError: (e) => {
-        logger.error('Failed to load settings:', e)
-      }
+      showToast: false
     }
   )
 
@@ -100,10 +94,7 @@ export function updateSettings(updates) {
     'Saving settings to localStorage',
     {
       showToast: false,
-      rethrow: true,
-      onError: (e) => {
-        logger.error('Failed to save settings:', e)
-      }
+      rethrow: true
     }
   )
 
@@ -148,10 +139,7 @@ export function resetSettings() {
     'Resetting settings to defaults',
     {
       showToast: false,
-      rethrow: true,
-      onError: (e) => {
-        logger.error('Failed to reset settings:', e)
-      }
+      rethrow: true
     }
   )
 
@@ -194,10 +182,7 @@ export function importSettings(json) {
     'Parsing imported settings',
     {
       showToast: false,
-      rethrow: true,
-      onError: (e) => {
-        logger.error('Failed to import settings:', e)
-      }
+      rethrow: true
     }
   )
 

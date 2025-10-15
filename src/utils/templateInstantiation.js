@@ -69,13 +69,7 @@ export function instantiateTaskFromTemplate(template) {
     },
     `Loading tasks for template "${template.title || '[unknown title]'}"`,
     {
-      showToast: false,
-      onError: (err) => {
-        logger.error(
-          `Error while instantiating task from template "${template.title || '[unknown title]'}": Failed to parse saved tasks from localStorage.`,
-          err
-        )
-      }
+      showToast: false
     }
   ) || {
     urgent_important: [],
@@ -284,10 +278,7 @@ export async function instantiateTemplatesBatch(templates) {
       },
       'Loading tasks for batch template instantiation',
       {
-        showToast: false,
-        onError: (err) => {
-          logger.error('Failed to parse saved tasks:', err)
-        }
+        showToast: false
       }
     ) || {
       urgent_important: [],

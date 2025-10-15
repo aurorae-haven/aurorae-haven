@@ -5,10 +5,7 @@ import {
   isIndexedDBAvailable,
   exportAllData as exportFromIndexedDB
 } from './indexedDBManager'
-import { createLogger } from './logger'
 import { tryCatch, withErrorHandling } from './errorHandler'
-
-const logger = createLogger('ExportData')
 
 // Data schema field names - centralized to prevent drift
 const DATA_FIELDS = {
@@ -38,10 +35,7 @@ export async function getDataTemplate() {
       exportFromIndexedDB,
       'IndexedDB export',
       {
-        showToast: false,
-        onError: (error) => {
-          logger.warn('IndexedDB export failed, falling back to localStorage:', error)
-        }
+        showToast: false
       }
     )
 
@@ -73,10 +67,7 @@ export async function getDataTemplate() {
       },
       `Loading ${field} from localStorage`,
       {
-        showToast: false,
-        onError: (error) => {
-          logger.error(`Error loading ${field} from localStorage:`, error)
-        }
+        showToast: false
       }
     ) || []
   }
@@ -93,10 +84,7 @@ export async function getDataTemplate() {
     },
     'Loading legacy sequences from localStorage',
     {
-      showToast: false,
-      onError: (error) => {
-        logger.warn('Failed to parse sequences from localStorage:', error)
-      }
+      showToast: false
     }
   )
 
@@ -117,10 +105,7 @@ export async function getDataTemplate() {
     },
     'Loading aurorae_tasks from localStorage',
     {
-      showToast: false,
-      onError: (error) => {
-        logger.warn('Failed to parse aurorae_tasks during export:', error)
-      }
+      showToast: false
     }
   )
 
@@ -140,10 +125,7 @@ export async function getDataTemplate() {
     },
     'Loading brainDumpEntries from localStorage',
     {
-      showToast: false,
-      onError: (error) => {
-        logger.warn('Failed to parse brainDumpEntries during export:', error)
-      }
+      showToast: false
     }
   ) || []
 
@@ -155,10 +137,7 @@ export async function getDataTemplate() {
     },
     'Loading brainDumpVersions from localStorage',
     {
-      showToast: false,
-      onError: (error) => {
-        logger.warn('Failed to parse brainDumpVersions during export:', error)
-      }
+      showToast: false
     }
   ) || []
 
