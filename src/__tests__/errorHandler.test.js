@@ -637,4 +637,133 @@ describe('errorHandler', () => {
       expect(formatter).toHaveBeenCalledWith(error, 'Test operation')
     })
   })
+
+  describe('getUserFriendlyMessage', () => {
+    // Note: getUserFriendlyMessage is not exported, so we test it indirectly through handleError
+    // We verify the message by checking what gets passed to showToastNotification
+
+    beforeEach(() => {
+      // Mock window.dispatchEvent to capture toast messages
+      global.window.dispatchEvent = jest.fn()
+    })
+
+    test('returns quota exceeded message for quota errors', () => {
+      const error = new Error('QuotaExceededError')
+      error.name = 'QuotaExceededError'
+
+      handleError(error, 'Test operation')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Storage quota exceeded. Please free up space.' }
+        })
+      )
+    })
+
+    test('returns quota exceeded message for quota errors with code 22', () => {
+      const error = new Error('Storage full')
+      error.code = 22
+
+      handleError(error, 'Test operation')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Storage quota exceeded. Please free up space.' }
+        })
+      )
+    })
+
+    test('returns database error message for IndexedDB errors', () => {
+      const error = new Error('IndexedDB operation failed')
+
+      handleError(error, 'Test operation')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Database error. Please try again.' }
+        })
+      )
+    })
+
+    test('returns network error message for network errors', () => {
+      const error = new Error('network request failed')
+
+      handleError(error, 'Test operation')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Network error. Please check your connection.' }
+        })
+      )
+    })
+
+    test('returns network error message for fetch errors', () => {
+      const error = new Error('fetch failed')
+
+      handleError(error, 'Test operation')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Network error. Please check your connection.' }
+        })
+      )
+    })
+
+    test('returns validation error message for validation errors', () => {
+      const error = new Error('validation failed')
+
+      handleError(error, 'Test operation')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Invalid data. Please check your input.' }
+        })
+      )
+    })
+
+    test('returns validation error message for invalid errors', () => {
+      const error = new Error('Invalid input provided')
+
+      handleError(error, 'Test operation')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Invalid data. Please check your input.' }
+        })
+      )
+    })
+
+    test('returns default context-based message for generic errors', () => {
+      const error = new Error('Something went wrong')
+
+      handleError(error, 'Loading data')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Loading data failed. Please try again.' }
+        })
+      )
+    })
+
+    test('returns default context-based message when no specific pattern matches', () => {
+      const error = new Error('Random error message')
+
+      handleError(error, 'Saving profile')
+
+      expect(global.window.dispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'aurorae-toast',
+          detail: { message: 'Saving profile failed. Please try again.' }
+        })
+      )
+    })
+  })
 })
