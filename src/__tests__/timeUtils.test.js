@@ -228,6 +228,13 @@ describe('timeUtils', () => {
       expect(formatDurationDisplay('invalid')).toBe('00:00')
     })
 
+    test('should floor fractional seconds', () => {
+      expect(formatDurationDisplay(90.5)).toBe('01:30')
+      expect(formatDurationDisplay(90.9)).toBe('01:30')
+      expect(formatDurationDisplay(59.9)).toBe('00:59')
+      expect(formatDurationDisplay(0.9)).toBe('00:00')
+    })
+
     test('should match routineRunner formatTime behavior', () => {
       // Test cases from routineRunner.js usage
       expect(formatDurationDisplay(462)).toBe('07:42')
