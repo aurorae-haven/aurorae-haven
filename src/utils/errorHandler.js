@@ -366,11 +366,15 @@ export function isQuotaExceededError(error) {
   const msg = (error && error.message ? error.message : '').toLowerCase();
   return (
     error &&
-    (error.name === 'QuotaExceededError' ||
+    (
+      error.name === 'QuotaExceededError' ||
       error.code === 22 ||
+      error.code === 1014 ||
+      error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
       msg.includes('quota') ||
-      msg.includes('storage'))
-  )
+      msg.includes('storage quota')
+    )
+  );
 }
 
 /**
