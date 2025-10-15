@@ -121,7 +121,7 @@ export function calculateDuration(startTime, endTime) {
 export function addDuration(time, minutes) {
   const parsed = parseTime(time)
   // If invalid time provided, treat as 00:00 and apply minutes offset
-  const startMinutes = parsed !== null ? timeToMinutes(time) : 0
+  const startMinutes = parsed !== null ? parsed.hours * MINUTES_PER_HOUR + parsed.minutes : 0
   const totalMinutes = startMinutes + minutes
   return minutesToTime(totalMinutes)
 }
