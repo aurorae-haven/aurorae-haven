@@ -93,7 +93,7 @@ export function updateSettings(updates) {
   const current = getSettings()
   const updated = deepMerge(current, updates)
 
-  const saveError = tryCatch(
+  tryCatch(
     () => {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated))
     },
@@ -106,10 +106,6 @@ export function updateSettings(updates) {
       }
     }
   )
-
-  if (saveError) {
-    throw new Error('Failed to save settings')
-  }
 
   return updated
 }
@@ -145,7 +141,7 @@ export function updateSetting(key, value) {
  */
 export function resetSettings() {
   // TODO: Implement confirmation dialog
-  const saveError = tryCatch(
+  tryCatch(
     () => {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS))
     },
@@ -158,10 +154,6 @@ export function resetSettings() {
       }
     }
   )
-
-  if (saveError) {
-    throw new Error('Failed to reset settings')
-  }
 
   return DEFAULT_SETTINGS
 }

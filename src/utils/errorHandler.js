@@ -167,8 +167,8 @@ export function tryCatch(operation, context, options = {}) {
  * @returns {string} User-friendly error message
  */
 function getUserFriendlyMessage(error, context) {
-  // Check for specific error types
-  if (error.name === 'QuotaExceededError' || error.code === 22) {
+  // Check for specific error types using helper functions
+  if (isQuotaExceededError(error)) {
     return 'Storage quota exceeded. Please free up space.'
   }
 
@@ -176,11 +176,11 @@ function getUserFriendlyMessage(error, context) {
     return 'Database error. Please try again.'
   }
 
-  if (error.message.includes('network') || error.message.includes('fetch')) {
+  if (isNetworkError(error)) {
     return 'Network error. Please check your connection.'
   }
 
-  if (error.message.includes('validation') || error.message.includes('Invalid')) {
+  if (isValidationError(error)) {
     return 'Invalid data. Please check your input.'
   }
 
@@ -200,7 +200,8 @@ function showToastNotification(message) {
     return
   }
 
-  // Try to dispatch a custom event that the Toast component can listen to
+  // Dispatch a custom event that the Toast component can listen to
+  // This is the preferred method as it lets the UI framework handle rendering
   if (window.CustomEvent && window.dispatchEvent) {
     const event = new window.CustomEvent('aurorae-toast', {
       detail: { message }
@@ -209,10 +210,20 @@ function showToastNotification(message) {
   }
 
   // Fallback: try to show toast using existing DOM element (legacy support)
+  // Enhanced with accessibility attributes
   const toastElement = document.getElementById('toast')
   if (toastElement) {
     toastElement.textContent = message
     toastElement.style.display = 'block'
+    
+    // Add accessibility attributes if not present
+    if (!toastElement.getAttribute('role')) {
+      toastElement.setAttribute('role', 'status')
+    }
+    if (!toastElement.getAttribute('aria-live')) {
+      toastElement.setAttribute('aria-live', 'polite')
+    }
+    
     setTimeout(() => {
       toastElement.style.display = 'none'
     }, 3000)
@@ -234,15 +245,16 @@ export function createErrorHandler(context, defaultOptions = {}) {
 }
 
 /**
- * Wrap a function with error handling
+ * Decorator that wraps a function with error handling
  * Returns a new function that automatically handles errors
+ * Note: Renamed from withErrorHandler to avoid confusion with withErrorHandling
  *
  * @param {Function} fn - Function to wrap
  * @param {string} context - Context description
  * @param {ErrorHandlingOptions} [options={}] - Error handling options
  * @returns {Function} Wrapped function
  */
-export function withErrorHandler(fn, context, options = {}) {
+export function decorateWithErrorHandling(fn, context, options = {}) {
   return async function wrappedFunction(...args) {
     try {
       return await fn(...args)
@@ -252,6 +264,12 @@ export function withErrorHandler(fn, context, options = {}) {
     }
   }
 }
+
+/**
+ * @deprecated Use decorateWithErrorHandling instead
+ * Kept for backward compatibility
+ */
+export const withErrorHandler = decorateWithErrorHandling
 
 /**
  * Parse and enhance error objects with additional context

@@ -7,6 +7,7 @@ import {
   withErrorHandling,
   tryCatch,
   createErrorHandler,
+  decorateWithErrorHandling,
   withErrorHandler,
   enhanceError,
   isQuotaExceededError,
@@ -261,10 +262,10 @@ describe('errorHandler', () => {
     })
   })
 
-  describe('withErrorHandler', () => {
+  describe('decorateWithErrorHandling', () => {
     test('wraps function with error handling', async () => {
       const fn = jest.fn(async (x) => x * 2)
-      const wrapped = withErrorHandler(fn, 'Test operation')
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation')
 
       const result = await wrapped(5)
 
@@ -276,7 +277,7 @@ describe('errorHandler', () => {
       const fn = jest.fn(async () => {
         throw new Error('Test error')
       })
-      const wrapped = withErrorHandler(fn, 'Test operation')
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation')
 
       const result = await wrapped()
 
@@ -286,12 +287,22 @@ describe('errorHandler', () => {
 
     test('preserves function arguments', async () => {
       const fn = jest.fn(async (a, b, c) => a + b + c)
-      const wrapped = withErrorHandler(fn, 'Test operation')
+      const wrapped = decorateWithErrorHandling(fn, 'Test operation')
 
       const result = await wrapped(1, 2, 3)
 
       expect(result).toBe(6)
       expect(fn).toHaveBeenCalledWith(1, 2, 3)
+    })
+
+    test('deprecated alias withErrorHandler still works', async () => {
+      const fn = jest.fn(async (x) => x * 2)
+      const wrapped = withErrorHandler(fn, 'Test operation')
+
+      const result = await wrapped(5)
+
+      expect(result).toBe(10)
+      expect(fn).toHaveBeenCalledWith(5)
     })
   })
 

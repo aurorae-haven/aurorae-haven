@@ -90,7 +90,7 @@ function RouterApp() {
       },
       'Exporting data',
       {
-        toastMessage: 'Export failed',
+        showToast: false,
         onError: (error) => {
           swLogger.error('Export failed:', error)
           showToast('Export failed: ' + error.message)
@@ -112,7 +112,7 @@ function RouterApp() {
           },
           'Importing data',
           {
-            toastMessage: 'Import failed',
+            showToast: false,
             onError: (error) => {
               swLogger.error('Import failed:', error)
               showToast('Import failed: ' + error.message)

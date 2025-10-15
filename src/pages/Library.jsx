@@ -157,7 +157,7 @@ function Library() {
       },
       'Saving template',
       {
-        toastMessage: 'Failed to save template',
+        showToast: false,
         onError: () => showToastNotification('Failed to save template')
       }
     )
@@ -184,7 +184,7 @@ function Library() {
       },
       'Deleting template',
       {
-        toastMessage: 'Failed to delete template',
+        showToast: false,
         onError: () => showToastNotification('Failed to delete template')
       }
     )
@@ -212,7 +212,7 @@ function Library() {
       },
       'Duplicating template',
       {
-        toastMessage: 'Failed to duplicate template',
+        showToast: false,
         onError: () => showToastNotification('Failed to duplicate template')
       }
     )
@@ -237,7 +237,7 @@ function Library() {
       },
       'Using template',
       {
-        toastMessage: 'Failed to use template',
+        showToast: false,
         onError: () => showToastNotification('Failed to use template')
       }
     )
@@ -260,7 +260,7 @@ function Library() {
       },
       'Exporting templates',
       {
-        toastMessage: 'Failed to export templates',
+        showToast: false,
         onError: () => showToastNotification('Failed to export templates')
       }
     )
@@ -285,7 +285,7 @@ function Library() {
       },
       'Importing templates',
       {
-        toastMessage: 'Import failed: Invalid schema',
+        showToast: false,
         onError: () => showToastNotification('Import failed: Invalid schema')
       }
     )

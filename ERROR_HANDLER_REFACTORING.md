@@ -56,7 +56,7 @@ isValidationError(error)
 #### 5. Additional Utilities
 ```javascript
 createErrorHandler(context, options)  // Factory for reusable handlers
-withErrorHandler(fn, context, options)  // Function decorator
+decorateWithErrorHandling(fn, context, options)  // Function decorator (formerly withErrorHandler)
 enhanceError(error, context)  // Add context to errors
 ```
 
@@ -102,12 +102,12 @@ enhanceError(error, context)  // Add context to errors
 ## Testing
 
 ### Error Handler Tests
-- **Total Tests**: 48 unit tests
+- **Total Tests**: 49 unit tests
 - **Coverage**: All core functions tested
 - **Status**: ✅ 100% passing
 
 ### Application Tests
-- **Total Tests**: 971 tests
+- **Total Tests**: 972 tests (49 for error handler + 923 for application)
 - **Status**: ✅ 100% passing
 - **Linting**: ✅ 0 warnings
 
@@ -421,7 +421,7 @@ await withErrorHandling(
 - [x] Refactor at least 20 try-catch blocks (achieved: 24)
 - [x] Add unit tests for error handler (achieved: 39 tests)
 - [x] Document error handling patterns
-- [x] Verify all existing functionality works correctly (962 tests passing)
+- [x] Verify all existing functionality works correctly (972 tests passing)
 
 ## Conclusion
 
