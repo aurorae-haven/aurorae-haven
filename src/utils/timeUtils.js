@@ -26,7 +26,7 @@ export function parseTime(timeString) {
   const [hours, minutes] = timeString.split(':').map(Number)
 
   // Validate parsed values are numbers
-  if (isNaN(hours) || isNaN(minutes)) {
+  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
     return null
   }
 
