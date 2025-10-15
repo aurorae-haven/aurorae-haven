@@ -102,6 +102,47 @@ export function handleError(error, context, options = {}) {
 }
 
 /**
+ * Internal helper to validate parameters and check for expected errors
+ * Reduces code duplication between withErrorHandling and tryCatch
+ *
+ * @param {*} validateParams - Validation parameters
+ * @param {string} context - Context description
+ * @param {ErrorHandlingOptions} options - Error handling options
+ * @returns {boolean} Returns true if validation failed (operation should be aborted)
+ * @private
+ */
+function handleValidation(validateParams, context, options) {
+  if (validateParams) {
+    const validationError = validateParameters(validateParams)
+    if (validationError) {
+      // Force rethrow: false for validation errors to keep them consistently 'handled'
+      handleError(validationError, context, { ...options, rethrow: false })
+      return true // Validation failed
+    }
+  }
+  return false // Validation passed
+}
+
+/**
+ * Internal helper to check if an error should be caught based on expectedErrors filter
+ *
+ * @param {Error} error - The error to check
+ * @param {Array<Function>} expectedErrors - Array of error types to catch
+ * @param {string} context - Context description
+ * @param {ErrorHandlingOptions} options - Error handling options
+ * @returns {boolean} Returns true if error was handled
+ * @private
+ */
+function handleCaughtError(error, expectedErrors, context, options) {
+  // Check if this error should be caught
+  if (expectedErrors && !shouldCatchError(error, expectedErrors)) {
+    throw error // Rethrow if not in expected errors list
+  }
+  handleError(error, context, options)
+  return true
+}
+
+/**
  * Wrapper for async operations with centralized error handling
  *
  * @param {Function} operation - Async operation to execute
@@ -113,23 +154,14 @@ export async function withErrorHandling(operation, context, options = {}) {
   const { expectedErrors, validateParams } = options
 
   // Validate parameters if validation is requested
-  if (validateParams) {
-    const validationError = validateParameters(validateParams)
-    if (validationError) {
-      // Force rethrow: false for validation errors to keep them consistently 'handled'
-      handleError(validationError, context, { ...options, rethrow: false })
-      return undefined
-    }
+  if (handleValidation(validateParams, context, options)) {
+    return undefined
   }
 
   try {
     return await operation()
   } catch (error) {
-    // Check if this error should be caught
-    if (expectedErrors && !shouldCatchError(error, expectedErrors)) {
-      throw error // Rethrow if not in expected errors list
-    }
-    handleError(error, context, options)
+    handleCaughtError(error, expectedErrors, context, options)
     return undefined
   }
 }
@@ -146,23 +178,14 @@ export function tryCatch(operation, context, options = {}) {
   const { expectedErrors, validateParams } = options
 
   // Validate parameters if validation is requested
-  if (validateParams) {
-    const validationError = validateParameters(validateParams)
-    if (validationError) {
-      // Force rethrow: false for validation errors to keep them consistently 'handled'
-      handleError(validationError, context, { ...options, rethrow: false })
-      return undefined
-    }
+  if (handleValidation(validateParams, context, options)) {
+    return undefined
   }
 
   try {
     return operation()
   } catch (error) {
-    // Check if this error should be caught
-    if (expectedErrors && !shouldCatchError(error, expectedErrors)) {
-      throw error // Rethrow if not in expected errors list
-    }
-    handleError(error, context, options)
+    handleCaughtError(error, expectedErrors, context, options)
     return undefined
   }
 }

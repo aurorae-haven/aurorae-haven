@@ -344,14 +344,14 @@ const fetchData = decorateWithErrorHandling(
     validateParams: (userId) => ({
       userId: { value: userId, type: 'string', required: true }
     }),
-    expectedErrors: [TypeError, NetworkError],
+    expectedErrors: [TypeError, ReferenceError],
     toastMessage: 'Failed to fetch data'
   }
 )
 
 // The decorated function automatically:
 // - Validates userId is a string before executing
-// - Catches only TypeError and NetworkError
+// - Catches only TypeError and ReferenceError
 // - Logs errors with context
 // - Shows toast notification
 // - Returns undefined on error

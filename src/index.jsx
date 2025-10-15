@@ -92,7 +92,6 @@ function RouterApp() {
       {
         showToast: false,
         onError: (error) => {
-          swLogger.error('Export failed:', error)
           showToast('Export failed: ' + error.message)
         }
       }
@@ -114,7 +113,6 @@ function RouterApp() {
           {
             showToast: false,
             onError: (error) => {
-              swLogger.error('Import failed:', error)
               showToast('Import failed: ' + error.message)
             }
           }
