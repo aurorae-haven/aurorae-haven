@@ -170,7 +170,7 @@ export function formatDurationVerbose(seconds) {
 
   const absSeconds = Math.abs(seconds)
   const minutes = Math.floor(absSeconds / SECONDS_PER_MINUTE)
-  const sign = seconds < 0 ? '-' : ''
+  const sign = (seconds < 0 && minutes > 0) ? '-' : ''
   if (minutes < MINUTES_PER_HOUR) {
     return `${sign}${minutes}m`
   }
