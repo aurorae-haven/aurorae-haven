@@ -8,8 +8,42 @@ import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
 import { MS_PER_DAY } from './timeConstants'
 import { createLogger } from './logger'
+import { tryCatch, isQuotaExceededError } from './errorHandler'
 
 const logger = createLogger('TemplateInstantiation')
+
+// Default Eisenhower tasks structure
+// Factory function for default Eisenhower tasks structure to prevent mutation
+const createDefaultEisenhowerTasks = () => ({
+  urgent_important: [],
+  not_urgent_important: [],
+  urgent_not_important: [],
+  not_urgent_not_important: []
+})
+
+/**
+ * Create a task object from template data
+ * @param {Object} template - Task template object
+ * @param {string} quadrant - Optional quadrant (uses template.quadrant if not provided)
+ * @returns {Object} Task object
+ * @private
+ */
+function createTaskFromTemplate(template, quadrant = null) {
+  const taskQuadrant = quadrant || template.quadrant || 'urgent_important'
+  const dueDate = template.dueOffset
+    ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
+    : null
+
+  return {
+    id: generateSecureUUID(),
+    text: template.title,
+    completed: false,
+    createdAt: new Date().toISOString(),
+    dueDate,
+    completedAt: null,
+    quadrant: taskQuadrant
+  }
+}
 
 /**
  * Instantiate a task from a task template
@@ -42,41 +76,21 @@ export function instantiateTaskFromTemplate(template) {
   const quadrant = template.quadrant || 'urgent_important'
 
   // Create new independent task
-  const task = {
-    id: generateSecureUUID(),
-    text: template.title,
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: template.dueOffset
-      ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
-      : null,
-    completedAt: null
-  }
+  const task = createTaskFromTemplate(template, quadrant)
 
   // Load existing tasks from localStorage
-  let tasks
-  try {
-    const savedTasks = localStorage.getItem('aurorae_tasks')
-    tasks = savedTasks
-      ? JSON.parse(savedTasks)
-      : {
-          urgent_important: [],
-          not_urgent_important: [],
-          urgent_not_important: [],
-          not_urgent_not_important: []
-        }
-  } catch (err) {
-    logger.error(
-      `Error while instantiating task from template "${template.title || '[unknown title]'}": Failed to parse saved tasks from localStorage.`,
-      err
-    )
-    tasks = {
-      urgent_important: [],
-      not_urgent_important: [],
-      urgent_not_important: [],
-      not_urgent_not_important: []
+  const tasks = tryCatch(
+    () => {
+      const savedTasks = localStorage.getItem('aurorae_tasks')
+      return savedTasks
+        ? JSON.parse(savedTasks)
+        : createDefaultEisenhowerTasks()
+    },
+    `Loading tasks for template "${template.title || '[unknown title]'}"`,
+    {
+      showToast: false
     }
-  }
+  ) || createDefaultEisenhowerTasks()
 
   // Add task to appropriate quadrant
   if (!tasks[quadrant]) {
@@ -90,7 +104,7 @@ export function instantiateTaskFromTemplate(template) {
   } catch (err) {
     logger.error('Failed to save task:', err)
     // Check for quota exceeded error
-    if (err.name === 'QuotaExceededError' || err.code === 22) {
+    if (isQuotaExceededError(err)) {
       throw new Error(
         'Storage quota exceeded. Please free up space by deleting old tasks.'
       )
@@ -264,41 +278,23 @@ export async function instantiateTemplatesBatch(templates) {
     }
 
     // Load existing tasks once
-    let tasks
-    try {
-      const savedTasks = localStorage.getItem('aurorae_tasks')
-      tasks = savedTasks
-        ? JSON.parse(savedTasks)
-        : {
-            urgent_important: [],
-            not_urgent_important: [],
-            urgent_not_important: [],
-            not_urgent_not_important: []
-          }
-    } catch (err) {
-      logger.error('Failed to parse saved tasks:', err)
-      tasks = {
-        urgent_important: [],
-        not_urgent_important: [],
-        urgent_not_important: [],
-        not_urgent_not_important: []
+    const tasks = tryCatch(
+      () => {
+        const savedTasks = localStorage.getItem('aurorae_tasks')
+        return savedTasks
+          ? JSON.parse(savedTasks)
+          : createDefaultEisenhowerTasks()
+      },
+      'Loading tasks for batch template instantiation',
+      {
+        showToast: false
       }
-    }
+    ) || createDefaultEisenhowerTasks()
 
     // Create all tasks after validation passes
     for (const template of taskTemplates) {
       const quadrant = template.quadrant || 'urgent_important'
-      const dueDate = template.dueOffset
-        ? new Date(Date.now() + template.dueOffset * MS_PER_DAY).toISOString()
-        : null
-      const task = {
-        id: generateSecureUUID(),
-        text: template.title,
-        completed: false,
-        createdAt: new Date().toISOString(),
-        dueDate: dueDate,
-        completedAt: null
-      }
+      const task = createTaskFromTemplate(template, quadrant)
 
       if (!tasks[quadrant]) {
         tasks[quadrant] = []
@@ -318,7 +314,7 @@ export async function instantiateTemplatesBatch(templates) {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
     } catch (err) {
       logger.error('Failed to save tasks:', err)
-      if (err.name === 'QuotaExceededError' || err.code === 22) {
+      if (isQuotaExceededError(err)) {
         throw new Error(
           'Storage quota exceeded. Please free up space by deleting old tasks.'
         )
