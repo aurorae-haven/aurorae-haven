@@ -384,13 +384,15 @@ export function isQuotaExceededError(error) {
  * @returns {boolean} True if network error
  */
 export function isNetworkError(error) {
+  if (!error) return false;
+  const msg = error.message ? error.message.toLowerCase() : '';
+  const name = error.name ? error.name.toLowerCase() : '';
   return (
-    error &&
-    (error.message.includes('network') ||
-      error.message.includes('fetch') ||
-      error.message.includes('NetworkError') ||
-      error.name === 'NetworkError')
-  )
+    msg.includes('network') ||
+    msg.includes('fetch') ||
+    msg.includes('networkerror') ||
+    name === 'networkerror'
+  );
 }
 
 /**
