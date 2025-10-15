@@ -80,7 +80,7 @@ export function minutesToTime(totalMinutes) {
   const hours = Math.floor(normalizedMinutes / MINUTES_PER_HOUR)
   const minutes = normalizedMinutes % MINUTES_PER_HOUR
 
-  return formatTime(hours, minutes)
+  return `${String(hours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(minutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
 /**
