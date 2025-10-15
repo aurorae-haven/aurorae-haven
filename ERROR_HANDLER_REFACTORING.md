@@ -161,7 +161,8 @@ await withErrorHandling(
   'Operation description',
   {
     toastMessage: 'Failed',
-    onError: (error) => showToast('Failed')
+    onError: (error) => showToast('Failed'),
+    showToast: false
   }
 )
 ```
