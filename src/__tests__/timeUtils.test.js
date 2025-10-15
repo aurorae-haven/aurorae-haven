@@ -5,7 +5,6 @@
 
 import {
   parseTime,
-  formatTime,
   formatClockTime,
   timeToMinutes,
   minutesToTime,
@@ -97,13 +96,6 @@ describe('timeUtils', () => {
     test('should handle negative minutes with positive hours', () => {
       expect(formatClockTime(5, -30)).toBe('04:30') // 5:(-30) = 4:30
       expect(formatClockTime(1, -60)).toBe('00:00') // 1:(-60) = 0:00
-    })
-  })
-
-  describe('formatTime (deprecated alias)', () => {
-    test('should work as alias to formatClockTime', () => {
-      expect(formatTime(9, 30)).toBe('09:30')
-      expect(formatTime(23, 59)).toBe('23:59')
     })
   })
 

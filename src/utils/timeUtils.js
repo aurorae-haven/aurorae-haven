@@ -60,10 +60,6 @@ export function formatClockTime(hours, minutes) {
   return time.format('HH:mm')
 }
 
-// Deprecated: Use formatClockTime instead for clarity
-// This alias exists for backward compatibility
-export const formatTime = formatClockTime
-
 /**
  * Convert HH:MM time string to total minutes since midnight
  * Returns 0 for invalid time strings
