@@ -127,8 +127,8 @@ function TemplateCard({
         )}
 
         {template.type === 'routine' && template.estimatedDuration && (
-          <div className='template-duration small'>
-            ⏱️ {formatDurationVerbose(template.estimatedDuration)}
+          <div className='template-duration small' aria-label={`Duration: ${formatDurationVerbose(template.estimatedDuration)}`}>
+            <span aria-hidden='true'>⏱️</span> {formatDurationVerbose(template.estimatedDuration)}
           </div>
         )}
 
