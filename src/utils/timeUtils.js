@@ -38,10 +38,10 @@ export function parseTime(timeString) {
  * @returns {string} Time in "HH:MM" format
  */
 export function formatTime(hours, minutes) {
-  const validHours = Math.max(0, Math.floor(hours))
-  const validMinutes = Math.max(0, Math.floor(minutes))
-
-  return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
+  const totalMinutes =
+    Math.max(0, Math.floor(hours)) * MINUTES_PER_HOUR +
+    Math.max(0, Math.floor(minutes));
+  return minutesToTime(totalMinutes);
 }
 
 /**
