@@ -6,6 +6,7 @@
 import {
   parseTime,
   formatTime,
+  formatClockTime,
   timeToMinutes,
   minutesToTime,
   calculateDuration,
@@ -52,50 +53,57 @@ describe('timeUtils', () => {
     })
   })
 
-  describe('formatTime', () => {
+  describe('formatClockTime', () => {
     test('should format time with proper padding', () => {
-      expect(formatTime(9, 30)).toBe('09:30')
-      expect(formatTime(0, 0)).toBe('00:00')
-      expect(formatTime(23, 59)).toBe('23:59')
-      expect(formatTime(1, 5)).toBe('01:05')
+      expect(formatClockTime(9, 30)).toBe('09:30')
+      expect(formatClockTime(0, 0)).toBe('00:00')
+      expect(formatClockTime(23, 59)).toBe('23:59')
+      expect(formatClockTime(1, 5)).toBe('01:05')
     })
 
     test('should handle edge cases', () => {
-      expect(formatTime(0, 0)).toBe('00:00')
-      expect(formatTime(12, 0)).toBe('12:00')
-      expect(formatTime(0, 30)).toBe('00:30')
+      expect(formatClockTime(0, 0)).toBe('00:00')
+      expect(formatClockTime(12, 0)).toBe('12:00')
+      expect(formatClockTime(0, 30)).toBe('00:30')
     })
 
     test('should floor decimal values', () => {
-      expect(formatTime(9.7, 30.9)).toBe('09:30')
+      expect(formatClockTime(9.7, 30.9)).toBe('09:30')
     })
 
     test('should handle negative values', () => {
       // -5 hours -10 minutes = -310 minutes wraps to 18:50 (24*60 - 310 = 1440 - 310 = 1130 minutes = 18:50)
-      expect(formatTime(-5, -10)).toBe('18:50')
-      expect(formatTime(-1, 0)).toBe('23:00') // -1 hour wraps to 23:00
+      expect(formatClockTime(-5, -10)).toBe('18:50')
+      expect(formatClockTime(-1, 0)).toBe('23:00') // -1 hour wraps to 23:00
     })
 
     test('should normalize out-of-range hours', () => {
-      expect(formatTime(24, 0)).toBe('00:00') // 24 hours wraps to 00:00
-      expect(formatTime(25, 30)).toBe('01:30') // 25:30 wraps to 01:30
-      expect(formatTime(48, 0)).toBe('00:00') // 48 hours wraps to 00:00
+      expect(formatClockTime(24, 0)).toBe('00:00') // 24 hours wraps to 00:00
+      expect(formatClockTime(25, 30)).toBe('01:30') // 25:30 wraps to 01:30
+      expect(formatClockTime(48, 0)).toBe('00:00') // 48 hours wraps to 00:00
     })
 
     test('should normalize out-of-range minutes', () => {
-      expect(formatTime(0, 60)).toBe('01:00') // 60 minutes = 1 hour
-      expect(formatTime(0, 90)).toBe('01:30') // 90 minutes = 1 hour 30 minutes
-      expect(formatTime(23, 120)).toBe('01:00') // 23:120 = 25:00 wraps to 01:00
+      expect(formatClockTime(0, 60)).toBe('01:00') // 60 minutes = 1 hour
+      expect(formatClockTime(0, 90)).toBe('01:30') // 90 minutes = 1 hour 30 minutes
+      expect(formatClockTime(23, 120)).toBe('01:00') // 23:120 = 25:00 wraps to 01:00
     })
 
     test('should normalize combined out-of-range values', () => {
-      expect(formatTime(24, 60)).toBe('01:00') // 24:60 = 25:00 wraps to 01:00
-      expect(formatTime(23, 90)).toBe('00:30') // 23:90 = 24:30 wraps to 00:30
+      expect(formatClockTime(24, 60)).toBe('01:00') // 24:60 = 25:00 wraps to 01:00
+      expect(formatClockTime(23, 90)).toBe('00:30') // 23:90 = 24:30 wraps to 00:30
     })
 
     test('should handle negative minutes with positive hours', () => {
-      expect(formatTime(5, -30)).toBe('04:30') // 5:(-30) = 4:30
-      expect(formatTime(1, -60)).toBe('00:00') // 1:(-60) = 0:00
+      expect(formatClockTime(5, -30)).toBe('04:30') // 5:(-30) = 4:30
+      expect(formatClockTime(1, -60)).toBe('00:00') // 1:(-60) = 0:00
+    })
+  })
+
+  describe('formatTime (deprecated alias)', () => {
+    test('should work as alias to formatClockTime', () => {
+      expect(formatTime(9, 30)).toBe('09:30')
+      expect(formatTime(23, 59)).toBe('23:59')
     })
   })
 
@@ -136,6 +144,12 @@ describe('timeUtils', () => {
 
     test('should handle decimal values', () => {
       expect(minutesToTime(90.5)).toBe('01:30')
+    })
+
+    test('should return 00:00 for non-finite values', () => {
+      expect(minutesToTime(NaN)).toBe('00:00')
+      expect(minutesToTime(Infinity)).toBe('00:00')
+      expect(minutesToTime(-Infinity)).toBe('00:00')
     })
   })
 

@@ -39,12 +39,13 @@ export function parseTime(timeString) {
 }
 
 /**
- * Format hours and minutes to HH:MM string
+ * Format hours and minutes to HH:MM clock time string
+ * Distinct from routineRunner.formatTime which formats seconds to mm:ss
  * @param {number} hours - Hours (0-23)
  * @param {number} minutes - Minutes (0-59)
  * @returns {string} Time in "HH:MM" format
  */
-export function formatTime(hours, minutes) {
+export function formatClockTime(hours, minutes) {
   // Normalize hours and minutes to valid time within a day
   const totalMinutes = Math.floor(hours) * MINUTES_PER_HOUR + Math.floor(minutes)
   const minutesInDay = HOURS_PER_DAY * MINUTES_PER_HOUR
@@ -53,6 +54,10 @@ export function formatTime(hours, minutes) {
   const validMinutes = normalizedMinutes % MINUTES_PER_HOUR
   return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
+
+// Deprecated: Use formatClockTime instead for clarity
+// This alias exists for backward compatibility
+export const formatTime = formatClockTime
 
 /**
  * Convert HH:MM time string to total minutes since midnight
@@ -71,10 +76,16 @@ export function timeToMinutes(timeString) {
 /**
  * Convert total minutes to HH:MM time string
  * Handles wrapping for negative values (e.g., -60 minutes = 23:00)
+ * Returns '00:00' for non-finite values (NaN, Infinity, etc.)
  * @param {number} totalMinutes - Total minutes since midnight
  * @returns {string} Time in "HH:MM" format
  */
 export function minutesToTime(totalMinutes) {
+  // Guard against non-finite values (NaN, Infinity, etc.)
+  if (!Number.isFinite(totalMinutes)) {
+    return '00:00'
+  }
+
   const validMinutes = Math.floor(totalMinutes)
   
   // Handle negative values by wrapping to previous day
