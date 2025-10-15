@@ -423,10 +423,12 @@ export function isNetworkError(error) {
  * @returns {boolean} True if validation error
  */
 export function isValidationError(error) {
+  if (!error) return false;
+  const msg = error.message ? error.message.toLowerCase() : '';
+  const name = error.name ? error.name.toLowerCase() : '';
   return (
-    error &&
-    (error.message.includes('validation') ||
-      error.message.includes('Invalid') ||
-      error.name === 'ValidationError')
-  )
+    msg.includes('validation') ||
+    msg.includes('invalid') ||
+    name === 'validationerror'
+  );
 }
