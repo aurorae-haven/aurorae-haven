@@ -102,13 +102,11 @@ enhanceError(error, context)  // Add context to errors
 ## Testing
 
 ### Error Handler Tests
-- **Total Tests**: 71 unit tests
-- **Coverage**: All core functions tested including getUserFriendlyMessage paths and DOM fallback
-- **Status**: ✅ 100% passing
+- **Test Coverage**: All core functions tested including getUserFriendlyMessage paths and DOM fallback
+- **Status**: ✅ 100% passing (see CI for current test counts)
 
 ### Application Tests
-- **Total Tests**: 994 tests (71 for error handler + 923 for application)
-- **Status**: ✅ 100% passing
+- **Status**: ✅ 100% passing (see CI for current test counts)
 - **Linting**: ✅ 0 warnings
 
 ## Benefits
