@@ -28,6 +28,7 @@ import TemplateToolbar from '../components/Library/TemplateToolbar'
 import FilterModal from '../components/Library/FilterModal'
 import ConfirmModal from '../components/common/ConfirmModal'
 import { createLogger } from '../utils/logger'
+import { withErrorHandling } from '../utils/errorHandler'
 
 const logger = createLogger('Library')
 
@@ -70,25 +71,28 @@ function Library() {
 
       setUseIndexedDB(true)
 
-      try {
-        // Check if predefined templates need to be seeded
-        const isSeeded = await arePredefinedTemplatesSeeded()
-        if (!isSeeded) {
-          const seedResults = await seedPredefinedTemplates()
-          if (seedResults.added > 0) {
-            logger.log(`Seeded ${seedResults.added} predefined templates`)
+      await withErrorHandling(
+        async () => {
+          // Check if predefined templates need to be seeded
+          const isSeeded = await arePredefinedTemplatesSeeded()
+          if (!isSeeded) {
+            const seedResults = await seedPredefinedTemplates()
+            if (seedResults.added > 0) {
+              logger.log(`Seeded ${seedResults.added} predefined templates`)
+            }
           }
-        }
 
-        // Load all templates
-        const allTemplates = await getAllTemplates()
-        setTemplates(allTemplates)
-      } catch (error) {
-        logger.error('Failed to load templates:', error)
-        showToastNotification('Failed to load templates')
-      } finally {
-        setLoading(false)
-      }
+          // Load all templates
+          const allTemplates = await getAllTemplates()
+          setTemplates(allTemplates)
+        },
+        'Loading templates',
+        {
+          toastMessage: 'Failed to load templates'
+        }
+      )
+
+      setLoading(false)
     }
 
     loadTemplates()
@@ -134,24 +138,29 @@ function Library() {
   }
 
   const handleSaveTemplate = async (templateData) => {
-    try {
-      if (editingTemplate) {
-        await updateTemplate(editingTemplate.id, templateData)
-        showToastNotification('Template updated')
-      } else {
-        await saveTemplate(templateData)
-        showToastNotification('Template created')
-      }
+    const successMessage = editingTemplate ? 'Template updated' : 'Template created'
 
-      // Reload templates
-      const allTemplates = await getAllTemplates()
-      setTemplates(allTemplates)
-      setShowEditor(false)
-      setEditingTemplate(null)
-    } catch (error) {
-      logger.error('Failed to save template:', error)
-      showToastNotification('Failed to save template')
-    }
+    await withErrorHandling(
+      async () => {
+        if (editingTemplate) {
+          await updateTemplate(editingTemplate.id, templateData)
+        } else {
+          await saveTemplate(templateData)
+        }
+
+        // Reload templates
+        const allTemplates = await getAllTemplates()
+        setTemplates(allTemplates)
+        setShowEditor(false)
+        setEditingTemplate(null)
+        showToastNotification(successMessage)
+      },
+      'Saving template',
+      {
+        showToast: false,
+        onError: () => showToastNotification('Failed to save template')
+      }
+    )
   }
 
   const handleDeleteTemplate = async (templateId) => {
@@ -164,17 +173,21 @@ function Library() {
   const handleConfirmDelete = async () => {
     if (!templateToDelete) return
 
-    try {
-      await deleteTemplate(templateToDelete.id)
-      showToastNotification('Template deleted')
+    await withErrorHandling(
+      async () => {
+        await deleteTemplate(templateToDelete.id)
+        showToastNotification('Template deleted')
 
-      // Reload templates
-      const allTemplates = await getAllTemplates()
-      setTemplates(allTemplates)
-    } catch (error) {
-      logger.error('Failed to delete template:', error)
-      showToastNotification('Failed to delete template')
-    }
+        // Reload templates
+        const allTemplates = await getAllTemplates()
+        setTemplates(allTemplates)
+      },
+      'Deleting template',
+      {
+        showToast: false,
+        onError: () => showToastNotification('Failed to delete template')
+      }
+    )
 
     // Close modal and reset state
     setShowDeleteConfirm(false)
@@ -188,77 +201,94 @@ function Library() {
   }
 
   const handleDuplicateTemplate = async (templateId) => {
-    try {
-      await duplicateTemplate(templateId)
-      showToastNotification('Template duplicated')
+    await withErrorHandling(
+      async () => {
+        await duplicateTemplate(templateId)
+        showToastNotification('Template duplicated')
 
-      // Reload templates
-      const allTemplates = await getAllTemplates()
-      setTemplates(allTemplates)
-    } catch (error) {
-      logger.error('Failed to duplicate template:', error)
-      showToastNotification('Failed to duplicate template')
-    }
+        // Reload templates
+        const allTemplates = await getAllTemplates()
+        setTemplates(allTemplates)
+      },
+      'Duplicating template',
+      {
+        showToast: false,
+        onError: () => showToastNotification('Failed to duplicate template')
+      }
+    )
   }
 
   const handleUseTemplate = async (template) => {
-    try {
-      // TAB-LIB-13: Spawn a new Task or Routine pre-filled with template's fields
-      await instantiateTemplate(template)
+    const successMessage =
+      template.type === 'task'
+        ? 'Template applied — Task created'
+        : 'Template applied — Routine created'
 
-      // Mark template as used
-      await markTemplateUsed(template.id)
+    await withErrorHandling(
+      async () => {
+        // TAB-LIB-13: Spawn a new Task or Routine pre-filled with template's fields
+        await instantiateTemplate(template)
 
-      // Show appropriate confirmation message (TAB-LIB-15)
-      showToastNotification(
-        template.type === 'task'
-          ? 'Template applied — Task created'
-          : 'Template applied — Routine created'
-      )
-    } catch (error) {
-      logger.error('Failed to use template:', error)
-      showToastNotification('Failed to use template')
-    }
+        // Mark template as used
+        await markTemplateUsed(template.id)
+
+        // Show appropriate confirmation message (TAB-LIB-15)
+        showToastNotification(successMessage)
+      },
+      'Using template',
+      {
+        showToast: false,
+        onError: () => showToastNotification('Failed to use template')
+      }
+    )
   }
 
   const handleExport = async () => {
-    try {
-      const data = await exportTemplates()
-      const blob = new Blob([JSON.stringify(data, null, 2)], {
-        type: 'application/json'
-      })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `templates-${new Date().toISOString().split('T')[0]}.json`
-      a.click()
-      URL.revokeObjectURL(url)
-      showToastNotification('Templates exported')
-    } catch (error) {
-      logger.error('Failed to export templates:', error)
-      showToastNotification('Failed to export templates')
-    }
+    await withErrorHandling(
+      async () => {
+        const data = await exportTemplates()
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: 'application/json'
+        })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `templates-${new Date().toISOString().split('T')[0]}.json`
+        a.click()
+        URL.revokeObjectURL(url)
+        showToastNotification('Templates exported')
+      },
+      'Exporting templates',
+      {
+        showToast: false,
+        onError: () => showToastNotification('Failed to export templates')
+      }
+    )
   }
 
   const handleImport = async (event) => {
     const file = event.target.files[0]
     if (!file) return
 
-    try {
-      const text = await file.text()
-      const data = JSON.parse(text)
-      const results = await importTemplates(data)
+    await withErrorHandling(
+      async () => {
+        const text = await file.text()
+        const data = JSON.parse(text)
+        const results = await importTemplates(data)
 
-      const allTemplates = await getAllTemplates()
-      setTemplates(allTemplates)
+        const allTemplates = await getAllTemplates()
+        setTemplates(allTemplates)
 
-      showToastNotification(
-        `Imported ${results.imported} templates (${results.skipped} skipped)`
-      )
-    } catch (error) {
-      logger.error('Failed to import templates:', error)
-      showToastNotification('Import failed: Invalid schema')
-    }
+        showToastNotification(
+          `Imported ${results.imported} templates (${results.skipped} skipped)`
+        )
+      },
+      'Importing templates',
+      {
+        showToast: false,
+        onError: () => showToastNotification('Import failed: Invalid schema')
+      }
+    )
   }
 
   if (loading) {

@@ -104,6 +104,75 @@ function Icon({ name, className = 'icon', ...props }) {
         <path d='M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3' />
         <line x1='12' y1='17' x2='12.01' y2='17' />
       </>
+    ),
+    alertCircle: (
+      <>
+        <circle cx='12' cy='12' r='10' />
+        <line x1='12' y1='8' x2='12' y2='12' />
+        <line x1='12' y1='16' x2='12.01' y2='16' />
+      </>
+    ),
+
+    // Media controls
+    play: (
+      <>
+        <polygon points='5 3 19 12 5 21 5 3' />
+      </>
+    ),
+    pause: (
+      <>
+        <rect x='6' y='4' width='4' height='16' />
+        <rect x='14' y='4' width='4' height='16' />
+      </>
+    ),
+    skip: (
+      <>
+        <polygon points='5 4 15 12 5 20 5 4' />
+        <rect x='17' y='4' width='2' height='16' />
+      </>
+    ),
+
+    // Other icons
+    search: (
+      <>
+        <circle cx='11' cy='11' r='8' />
+        <line x1='21' y1='21' x2='16.65' y2='16.65' />
+      </>
+    ),
+    moon: (
+      <>
+        <path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' />
+      </>
+    ),
+    file: (
+      <>
+        <path d='M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z' />
+        <polyline points='13 2 13 9 20 9' />
+      </>
+    ),
+    grid: (
+      <>
+        <rect x='3' y='3' width='7' height='7' />
+        <rect x='14' y='3' width='7' height='7' />
+        <rect x='3' y='14' width='7' height='7' />
+        <rect x='14' y='14' width='7' height='7' />
+      </>
+    ),
+    list: (
+      <>
+        <line x1='8' y1='6' x2='21' y2='6' />
+        <line x1='8' y1='12' x2='21' y2='12' />
+        <line x1='8' y1='18' x2='21' y2='18' />
+        <line x1='3' y1='6' x2='3.01' y2='6' />
+        <line x1='3' y1='12' x2='3.01' y2='12' />
+        <line x1='3' y1='18' x2='3.01' y2='18' />
+      </>
+    ),
+    settings: (
+      <>
+        <circle cx='12' cy='12' r='3' />
+        <path d='M12 1v6m0 6v6M5.64 5.64l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6M5.64 18.36l4.24-4.24m4.24-4.24l4.24-4.24' />
+      </>
     )
   }
 
