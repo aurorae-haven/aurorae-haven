@@ -1,6 +1,7 @@
 // Settings Manager - Feature stub for app configuration
 // TODO: Implement full settings management with validation
 import { createLogger } from './logger'
+import { tryCatch } from './errorHandler'
 
 const logger = createLogger('SettingsManager')
 
@@ -39,16 +40,25 @@ const DEFAULT_SETTINGS = {
  */
 export function getSettings() {
   // TODO: Implement settings validation
-  try {
-    const stored = localStorage.getItem(SETTINGS_KEY)
-    if (stored) {
-      const settings = JSON.parse(stored)
-      return { ...DEFAULT_SETTINGS, ...settings }
+  const settings = tryCatch(
+    () => {
+      const stored = localStorage.getItem(SETTINGS_KEY)
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        return { ...DEFAULT_SETTINGS, ...parsed }
+      }
+      return null
+    },
+    'Loading settings from localStorage',
+    {
+      showToast: false,
+      onError: (e) => {
+        logger.error('Failed to load settings:', e)
+      }
     }
-  } catch (e) {
-    logger.error('Failed to load settings:', e)
-  }
-  return { ...DEFAULT_SETTINGS }
+  )
+
+  return settings || { ...DEFAULT_SETTINGS }
 }
 
 /**
@@ -83,10 +93,21 @@ export function updateSettings(updates) {
   const current = getSettings()
   const updated = deepMerge(current, updates)
 
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated))
-  } catch (e) {
-    logger.error('Failed to save settings:', e)
+  const saveError = tryCatch(
+    () => {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(updated))
+    },
+    'Saving settings to localStorage',
+    {
+      showToast: false,
+      rethrow: true,
+      onError: (e) => {
+        logger.error('Failed to save settings:', e)
+      }
+    }
+  )
+
+  if (saveError) {
     throw new Error('Failed to save settings')
   }
 
@@ -124,10 +145,21 @@ export function updateSetting(key, value) {
  */
 export function resetSettings() {
   // TODO: Implement confirmation dialog
-  try {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS))
-  } catch (e) {
-    logger.error('Failed to reset settings:', e)
+  const saveError = tryCatch(
+    () => {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(DEFAULT_SETTINGS))
+    },
+    'Resetting settings to defaults',
+    {
+      showToast: false,
+      rethrow: true,
+      onError: (e) => {
+        logger.error('Failed to reset settings:', e)
+      }
+    }
+  )
+
+  if (saveError) {
     throw new Error('Failed to reset settings')
   }
 
@@ -159,17 +191,29 @@ export function exportSettings() {
  */
 export function importSettings(json) {
   // TODO: Implement validation and version checking
-  try {
-    const data = JSON.parse(json)
-    if (!data.settings) {
-      throw new Error('Invalid settings format')
+  const data = tryCatch(
+    () => {
+      const parsed = JSON.parse(json)
+      if (!parsed.settings) {
+        throw new Error('Invalid settings format')
+      }
+      return parsed
+    },
+    'Parsing imported settings',
+    {
+      showToast: false,
+      rethrow: true,
+      onError: (e) => {
+        logger.error('Failed to import settings:', e)
+      }
     }
+  )
 
-    return updateSettings(data.settings)
-  } catch (e) {
-    logger.error('Failed to import settings:', e)
-    throw new Error('Failed to import settings: ' + e.message)
+  if (!data) {
+    throw new Error('Failed to import settings: Invalid format')
   }
+
+  return updateSettings(data.settings)
 }
 
 /**

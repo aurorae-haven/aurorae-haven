@@ -8,6 +8,7 @@ import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
 import { MS_PER_DAY } from './timeConstants'
 import { createLogger } from './logger'
+import { tryCatch, isQuotaExceededError } from './errorHandler'
 
 const logger = createLogger('TemplateInstantiation')
 
@@ -54,28 +55,33 @@ export function instantiateTaskFromTemplate(template) {
   }
 
   // Load existing tasks from localStorage
-  let tasks
-  try {
-    const savedTasks = localStorage.getItem('aurorae_tasks')
-    tasks = savedTasks
-      ? JSON.parse(savedTasks)
-      : {
-          urgent_important: [],
-          not_urgent_important: [],
-          urgent_not_important: [],
-          not_urgent_not_important: []
-        }
-  } catch (err) {
-    logger.error(
-      `Error while instantiating task from template "${template.title || '[unknown title]'}": Failed to parse saved tasks from localStorage.`,
-      err
-    )
-    tasks = {
-      urgent_important: [],
-      not_urgent_important: [],
-      urgent_not_important: [],
-      not_urgent_not_important: []
+  const tasks = tryCatch(
+    () => {
+      const savedTasks = localStorage.getItem('aurorae_tasks')
+      return savedTasks
+        ? JSON.parse(savedTasks)
+        : {
+            urgent_important: [],
+            not_urgent_important: [],
+            urgent_not_important: [],
+            not_urgent_not_important: []
+          }
+    },
+    `Loading tasks for template "${template.title || '[unknown title]'}"`,
+    {
+      showToast: false,
+      onError: (err) => {
+        logger.error(
+          `Error while instantiating task from template "${template.title || '[unknown title]'}": Failed to parse saved tasks from localStorage.`,
+          err
+        )
+      }
     }
+  ) || {
+    urgent_important: [],
+    not_urgent_important: [],
+    urgent_not_important: [],
+    not_urgent_not_important: []
   }
 
   // Add task to appropriate quadrant
@@ -90,7 +96,7 @@ export function instantiateTaskFromTemplate(template) {
   } catch (err) {
     logger.error('Failed to save task:', err)
     // Check for quota exceeded error
-    if (err.name === 'QuotaExceededError' || err.code === 22) {
+    if (isQuotaExceededError(err)) {
       throw new Error(
         'Storage quota exceeded. Please free up space by deleting old tasks.'
       )
@@ -264,25 +270,30 @@ export async function instantiateTemplatesBatch(templates) {
     }
 
     // Load existing tasks once
-    let tasks
-    try {
-      const savedTasks = localStorage.getItem('aurorae_tasks')
-      tasks = savedTasks
-        ? JSON.parse(savedTasks)
-        : {
-            urgent_important: [],
-            not_urgent_important: [],
-            urgent_not_important: [],
-            not_urgent_not_important: []
-          }
-    } catch (err) {
-      logger.error('Failed to parse saved tasks:', err)
-      tasks = {
-        urgent_important: [],
-        not_urgent_important: [],
-        urgent_not_important: [],
-        not_urgent_not_important: []
+    const tasks = tryCatch(
+      () => {
+        const savedTasks = localStorage.getItem('aurorae_tasks')
+        return savedTasks
+          ? JSON.parse(savedTasks)
+          : {
+              urgent_important: [],
+              not_urgent_important: [],
+              urgent_not_important: [],
+              not_urgent_not_important: []
+            }
+      },
+      'Loading tasks for batch template instantiation',
+      {
+        showToast: false,
+        onError: (err) => {
+          logger.error('Failed to parse saved tasks:', err)
+        }
       }
+    ) || {
+      urgent_important: [],
+      not_urgent_important: [],
+      urgent_not_important: [],
+      not_urgent_not_important: []
     }
 
     // Create all tasks after validation passes
@@ -318,7 +329,7 @@ export async function instantiateTemplatesBatch(templates) {
       localStorage.setItem('aurorae_tasks', JSON.stringify(tasks))
     } catch (err) {
       logger.error('Failed to save tasks:', err)
-      if (err.name === 'QuotaExceededError' || err.code === 22) {
+      if (isQuotaExceededError(err)) {
         throw new Error(
           'Storage quota exceeded. Please free up space by deleting old tasks.'
         )
