@@ -12,7 +12,10 @@ import {
   generateTemplateId,
   generateNoteId,
   shouldRegenerateId,
-  ensureId
+  ensureId,
+  generateMetadata,
+  normalizeEntity,
+  updateMetadata
 } from '../utils/idGenerator'
 
 describe('idGenerator', () => {
@@ -140,6 +143,175 @@ describe('idGenerator', () => {
       const result = ensureId(entity)
       expect(result.id).not.toBeNull()
       expect(result.id).toBeDefined()
+    })
+  })
+
+  describe('generateMetadata', () => {
+    test('generates metadata with timestamp, createdAt, and updatedAt', () => {
+      const metadata = generateMetadata()
+      expect(metadata).toHaveProperty('timestamp')
+      expect(metadata).toHaveProperty('createdAt')
+      expect(metadata).toHaveProperty('updatedAt')
+    })
+
+    test('timestamp is a number', () => {
+      const metadata = generateMetadata()
+      expect(typeof metadata.timestamp).toBe('number')
+      expect(metadata.timestamp).toBeGreaterThan(0)
+    })
+
+    test('createdAt and updatedAt are ISO strings', () => {
+      const metadata = generateMetadata()
+      expect(typeof metadata.createdAt).toBe('string')
+      expect(typeof metadata.updatedAt).toBe('string')
+      // Verify ISO 8601 format
+      expect(metadata.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+      expect(metadata.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+    })
+
+    test('createdAt and updatedAt are initially equal', () => {
+      const metadata = generateMetadata()
+      expect(metadata.createdAt).toBe(metadata.updatedAt)
+    })
+
+    test('timestamp matches createdAt time', () => {
+      const metadata = generateMetadata()
+      const timestampFromISO = new Date(metadata.createdAt).getTime()
+      expect(metadata.timestamp).toBe(timestampFromISO)
+    })
+  })
+
+  describe('normalizeEntity', () => {
+    test('adds ID and metadata to entity without ID', () => {
+      const entity = { name: 'Test Entity' }
+      const result = normalizeEntity(entity)
+      
+      expect(result.name).toBe('Test Entity')
+      expect(result.id).toBeDefined()
+      expect(result.timestamp).toBeDefined()
+      expect(result.createdAt).toBeDefined()
+      expect(result.updatedAt).toBeDefined()
+    })
+
+    test('preserves existing ID', () => {
+      const entity = { id: 'existing-123', name: 'Test' }
+      const result = normalizeEntity(entity)
+      
+      expect(result.id).toBe('existing-123')
+      expect(result.timestamp).toBeDefined()
+      expect(result.createdAt).toBeDefined()
+      expect(result.updatedAt).toBeDefined()
+    })
+
+    test('generates numeric timestamp ID without prefix', () => {
+      const entity = { name: 'Test' }
+      const result = normalizeEntity(entity)
+      
+      expect(typeof result.id).toBe('number')
+      expect(result.id).toBeGreaterThan(0)
+    })
+
+    test('generates prefixed timestamp ID with idPrefix option', () => {
+      const entity = { name: 'Test Routine' }
+      const result = normalizeEntity(entity, { idPrefix: 'routine' })
+      
+      expect(typeof result.id).toBe('string')
+      expect(result.id).toMatch(/^routine_\d+$/)
+    })
+
+    test('preserves all entity properties', () => {
+      const entity = { 
+        name: 'Test', 
+        description: 'A test entity',
+        tags: ['test', 'sample']
+      }
+      const result = normalizeEntity(entity)
+      
+      expect(result.name).toBe('Test')
+      expect(result.description).toBe('A test entity')
+      expect(result.tags).toEqual(['test', 'sample'])
+    })
+
+    test('metadata fields are consistent with generateMetadata', () => {
+      const entity = { name: 'Test' }
+      const result = normalizeEntity(entity)
+      
+      expect(result.createdAt).toBe(result.updatedAt)
+      expect(new Date(result.createdAt).getTime()).toBe(result.timestamp)
+    })
+  })
+
+  describe('updateMetadata', () => {
+    test('updates updatedAt and timestamp', () => {
+      const entity = {
+        id: 1,
+        name: 'Test',
+        createdAt: '2023-01-01T00:00:00.000Z',
+        timestamp: 1672531200000
+      }
+      
+      const result = updateMetadata(entity)
+      
+      expect(result.id).toBe(1)
+      expect(result.name).toBe('Test')
+      expect(result.createdAt).toBe('2023-01-01T00:00:00.000Z')
+      expect(result.updatedAt).toBeDefined()
+      expect(result.timestamp).toBeDefined()
+      expect(result.timestamp).toBeGreaterThan(1672531200000)
+    })
+
+    test('preserves createdAt', () => {
+      const originalCreatedAt = '2023-01-01T00:00:00.000Z'
+      const entity = {
+        id: 1,
+        name: 'Test',
+        createdAt: originalCreatedAt
+      }
+      
+      const result = updateMetadata(entity)
+      
+      expect(result.createdAt).toBe(originalCreatedAt)
+    })
+
+    test('updatedAt is an ISO string', () => {
+      const entity = { id: 1, name: 'Test' }
+      const result = updateMetadata(entity)
+      
+      expect(typeof result.updatedAt).toBe('string')
+      expect(result.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)
+    })
+
+    test('timestamp is a number', () => {
+      const entity = { id: 1, name: 'Test' }
+      const result = updateMetadata(entity)
+      
+      expect(typeof result.timestamp).toBe('number')
+      expect(result.timestamp).toBeGreaterThan(0)
+    })
+
+    test('preserves all entity properties', () => {
+      const entity = {
+        id: 1,
+        name: 'Test',
+        description: 'Description',
+        tags: ['tag1', 'tag2'],
+        createdAt: '2023-01-01T00:00:00.000Z'
+      }
+      
+      const result = updateMetadata(entity)
+      
+      expect(result.id).toBe(1)
+      expect(result.name).toBe('Test')
+      expect(result.description).toBe('Description')
+      expect(result.tags).toEqual(['tag1', 'tag2'])
+    })
+
+    test('timestamp matches updatedAt time', () => {
+      const entity = { id: 1, name: 'Test' }
+      const result = updateMetadata(entity)
+      
+      const timestampFromISO = new Date(result.updatedAt).getTime()
+      expect(result.timestamp).toBe(timestampFromISO)
     })
   })
 })

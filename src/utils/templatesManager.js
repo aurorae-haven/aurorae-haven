@@ -8,6 +8,7 @@ import { generateSecureUUID } from './uuidGenerator'
 import { validateTemplateData } from './validation'
 import semver from 'semver'
 import { createLogger } from './logger'
+import { updateMetadata } from './idGenerator'
 
 const logger = createLogger('Templates')
 
@@ -274,12 +275,11 @@ export async function updateTemplate(templateId, updates) {
           return
         }
 
-        const updated = {
+        const updated = updateMetadata({
           ...existing,
           ...updates,
-          id: templateId, // Ensure ID doesn't change
-          updatedAt: new Date().toISOString()
-        }
+          id: templateId // Ensure ID doesn't change
+        })
 
         // Validate the updated template data
         const validation = validateTemplateData(updated)
@@ -359,8 +359,9 @@ export async function duplicateTemplate(templateId) {
  * @returns {Promise<void>}
  */
 export async function markTemplateUsed(templateId) {
+  const now = new Date().toISOString()
   await updateTemplate(templateId, {
-    lastUsed: new Date().toISOString()
+    lastUsed: now
   })
 }
 

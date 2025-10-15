@@ -105,3 +105,59 @@ export function ensureId(entity, idGenerator = generateSecureUUID) {
     id: shouldRegenerateId(entity.id) ? idGenerator() : entity.id
   }
 }
+
+/**
+ * Generate standard metadata for new entities
+ * Creates consistent timestamp and ISO date fields
+ * @returns {Object} Metadata object with timestamp, createdAt, and updatedAt
+ * @example
+ * generateMetadata()
+ * // Returns: { timestamp: 1697234567890, createdAt: '2023-10-13T12:34:56.789Z', updatedAt: '2023-10-13T12:34:56.789Z' }
+ */
+export function generateMetadata() {
+  const now = Date.now()
+  const isoNow = new Date(now).toISOString()
+  return {
+    timestamp: now,
+    createdAt: isoNow,
+    updatedAt: isoNow
+  }
+}
+
+/**
+ * Normalize entity with ID and metadata
+ * Combines entity data with generated ID and metadata fields
+ * @param {Object} entity - Entity to normalize
+ * @param {Object} options - Normalization options
+ * @param {string} options.idPrefix - Optional prefix for timestamp-based IDs
+ * @returns {Object} Normalized entity with ID and metadata
+ * @example
+ * normalizeEntity({ name: 'Test' }, { idPrefix: 'routine' })
+ * // Returns: { name: 'Test', id: 'routine_1697234567890', timestamp: 1697234567890, createdAt: '...', updatedAt: '...' }
+ */
+export function normalizeEntity(entity, options = {}) {
+  const metadata = generateMetadata()
+  return {
+    ...entity,
+    id: entity.id || (options.idPrefix ? generateTimestampId(options.idPrefix) : metadata.timestamp),
+    ...metadata
+  }
+}
+
+/**
+ * Update entity metadata on modification
+ * Updates only the updatedAt and timestamp fields while preserving createdAt
+ * @param {Object} entity - Entity to update
+ * @returns {Object} Entity with updated metadata
+ * @example
+ * updateMetadata({ id: 1, name: 'Test', createdAt: '2023-10-13T12:00:00.000Z' })
+ * // Returns: { id: 1, name: 'Test', createdAt: '2023-10-13T12:00:00.000Z', updatedAt: '2023-10-13T12:34:56.789Z', timestamp: 1697234567890 }
+ */
+export function updateMetadata(entity) {
+  const now = Date.now()
+  return {
+    ...entity,
+    updatedAt: new Date(now).toISOString(),
+    timestamp: now
+  }
+}

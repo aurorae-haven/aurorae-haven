@@ -10,6 +10,7 @@ import {
   HOURS_PER_DAY
 } from './scheduleConstants'
 import { ISO_DATE_START_INDEX, ISO_DATE_END_INDEX } from './timeConstants'
+import { normalizeEntity, updateMetadata } from './idGenerator'
 
 // Number of padding digits for time formatting
 const TIME_PADDING_LENGTH = 2
@@ -22,11 +23,8 @@ const PADDING_CHAR = '0'
  */
 export async function createEvent(event) {
   // TODO: Implement event validation and conflict detection
-  const newEvent = {
+  const newEvent = normalizeEntity({
     ...event,
-    id: event.id || Date.now(),
-    timestamp: Date.now(),
-    createdAt: new Date().toISOString(),
     type: event.type || 'task', // 'task', 'routine', 'break', 'meeting'
     day:
       event.day ||
@@ -35,7 +33,7 @@ export async function createEvent(event) {
     endTime: event.endTime,
     duration:
       event.duration || calculateDuration(event.startTime, event.endTime)
-  }
+  })
   return await put(STORES.SCHEDULE, newEvent)
 }
 
@@ -88,12 +86,11 @@ export async function getEventsForWeek() {
  */
 export async function updateEvent(event) {
   // TODO: Add conflict detection and validation
-  const updated = {
+  const updated = updateMetadata({
     ...event,
-    timestamp: Date.now(),
     duration:
       event.duration || calculateDuration(event.startTime, event.endTime)
-  }
+  })
   return await put(STORES.SCHEDULE, updated)
 }
 
@@ -126,13 +123,12 @@ export async function moveEvent(id, newDay, newStartTime) {
   const duration = event.duration || DEFAULT_EVENT_DURATION_MINUTES
   const newEndTime = addMinutes(newStartTime, duration)
 
-  const updated = {
+  const updated = updateMetadata({
     ...event,
     day: newDay,
     startTime: newStartTime,
-    endTime: newEndTime,
-    timestamp: Date.now()
-  }
+    endTime: newEndTime
+  })
 
   await put(STORES.SCHEDULE, updated)
   return updated

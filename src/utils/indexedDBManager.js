@@ -3,6 +3,7 @@
 // Implements ARC-DAT-02: File attachment references
 import { createLogger } from './logger'
 import { DEFAULT_BACKUP_LIMIT } from './uiConstants'
+import { generateMetadata } from './idGenerator'
 
 const logger = createLogger('IndexedDB')
 
@@ -323,11 +324,12 @@ export async function addFileReference(
   parentId,
   metadata = {}
 ) {
+  const { timestamp } = generateMetadata()
   const fileRef = {
     fileName,
     parentType,
     parentId,
-    timestamp: Date.now(),
+    timestamp,
     size: metadata.size || 0,
     type: metadata.type || '',
     ...metadata
@@ -367,10 +369,11 @@ export async function deleteFileReference(fileName) {
  * @returns {Promise<number>}
  */
 export async function saveStats(type, data) {
+  const { timestamp } = generateMetadata()
   const stat = {
     type,
     date: new Date().toISOString().split('T')[0],
-    timestamp: Date.now(),
+    timestamp,
     ...data
   }
   return put(STORES.STATS, stat)
@@ -404,8 +407,9 @@ export async function getStatsByDateRange(startDate, endDate) {
  * @returns {Promise<number>}
  */
 export async function saveBackup(data) {
+  const { timestamp } = generateMetadata()
   const backup = {
-    timestamp: Date.now(),
+    timestamp,
     data: JSON.stringify(data),
     size: JSON.stringify(data).length
   }
