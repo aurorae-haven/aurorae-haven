@@ -6,6 +6,7 @@ import {
   exportAllData as exportFromIndexedDB
 } from './indexedDBManager'
 import { createLogger } from './logger'
+import { tryCatch } from './errorHandler'
 
 const logger = createLogger('ExportData')
 
@@ -33,21 +34,27 @@ export const SCHEDULE_EVENT_TYPES = {
 export async function getDataTemplate() {
   // Check if IndexedDB is available and has data
   if (isIndexedDBAvailable()) {
-    try {
-      const indexedDBData = await exportFromIndexedDB()
-      // Only use IndexedDB if it has actual data
-      if (
-        indexedDBData &&
-        (indexedDBData.tasks?.length > 0 ||
-          indexedDBData.routines?.length > 0 ||
-          indexedDBData.habits?.length > 0 ||
-          indexedDBData.dumps?.length > 0 ||
-          indexedDBData.schedule?.length > 0)
-      ) {
-        return indexedDBData
+    const indexedDBData = await tryCatch(
+      async () => await exportFromIndexedDB(),
+      'IndexedDB export',
+      {
+        showToast: false,
+        onError: (error) => {
+          logger.warn('IndexedDB export failed, falling back to localStorage:', error)
+        }
       }
-    } catch (e) {
-      logger.warn('IndexedDB export failed, falling back to localStorage:', e)
+    )
+
+    // Only use IndexedDB if it has actual data
+    if (
+      indexedDBData &&
+      (indexedDBData.tasks?.length > 0 ||
+        indexedDBData.routines?.length > 0 ||
+        indexedDBData.habits?.length > 0 ||
+        indexedDBData.dumps?.length > 0 ||
+        indexedDBData.schedule?.length > 0)
+    ) {
+      return indexedDBData
     }
   }
 
@@ -59,69 +66,101 @@ export async function getDataTemplate() {
 
   // Load all data fields from localStorage
   for (const field of Object.values(DATA_FIELDS)) {
-    try {
-      const raw = localStorage.getItem(field)
-      data[field] = raw ? JSON.parse(raw) : []
-    } catch (e) {
-      logger.error(`Error loading ${field} from localStorage:`, e)
-      data[field] = []
-    }
+    data[field] = tryCatch(
+      () => {
+        const raw = localStorage.getItem(field)
+        return raw ? JSON.parse(raw) : []
+      },
+      `Loading ${field} from localStorage`,
+      {
+        showToast: false,
+        onError: (error) => {
+          logger.error(`Error loading ${field} from localStorage:`, error)
+        }
+      }
+    ) || []
   }
 
   // Backward compatibility: check for old 'sequences' localStorage key
-  try {
-    if (!data.routines || data.routines.length === 0) {
-      const sequencesStr = localStorage.getItem('sequences')
-      if (sequencesStr) {
-        data.routines = JSON.parse(sequencesStr)
+  tryCatch(
+    () => {
+      if (!data.routines || data.routines.length === 0) {
+        const sequencesStr = localStorage.getItem('sequences')
+        if (sequencesStr) {
+          data.routines = JSON.parse(sequencesStr)
+        }
+      }
+    },
+    'Loading legacy sequences from localStorage',
+    {
+      showToast: false,
+      onError: (error) => {
+        logger.warn('Failed to parse sequences from localStorage:', error)
       }
     }
-  } catch (e) {
-    logger.warn('Failed to parse sequences from localStorage:', e)
-  }
+  )
 
   // Also check for aurorae_tasks (Eisenhower matrix format)
-  try {
-    const tasksStr = localStorage.getItem('aurorae_tasks')
-    if (tasksStr) {
-      const auroraeTasksData = JSON.parse(tasksStr)
-      if (auroraeTasksData) {
-        data.auroraeTasksData = auroraeTasksData
-        // Also flatten to tasks array for backward compatibility
-        data.tasks = Object.values(auroraeTasksData).flatMap((quadrant) =>
-          Array.isArray(quadrant) ? quadrant : []
-        )
+  tryCatch(
+    () => {
+      const tasksStr = localStorage.getItem('aurorae_tasks')
+      if (tasksStr) {
+        const auroraeTasksData = JSON.parse(tasksStr)
+        if (auroraeTasksData) {
+          data.auroraeTasksData = auroraeTasksData
+          // Also flatten to tasks array for backward compatibility
+          data.tasks = Object.values(auroraeTasksData).flatMap((quadrant) =>
+            Array.isArray(quadrant) ? quadrant : []
+          )
+        }
+      }
+    },
+    'Loading aurorae_tasks from localStorage',
+    {
+      showToast: false,
+      onError: (error) => {
+        logger.warn('Failed to parse aurorae_tasks during export:', error)
       }
     }
-  } catch (e) {
-    logger.warn('Failed to parse aurorae_tasks during export:', e)
-  }
+  )
 
   // Parse brainDumpEntries once for both dumps override and brainDump.entries
-  let entries = []
-  try {
-    const entriesStr = localStorage.getItem('brainDumpEntries')
-    if (entriesStr) {
-      entries = JSON.parse(entriesStr)
-      // Override dumps field with brainDumpEntries if it exists
-      if (Array.isArray(entries)) {
-        data.dumps = entries
+  const entries = tryCatch(
+    () => {
+      const entriesStr = localStorage.getItem('brainDumpEntries')
+      if (entriesStr) {
+        const parsed = JSON.parse(entriesStr)
+        // Override dumps field with brainDumpEntries if it exists
+        if (Array.isArray(parsed)) {
+          data.dumps = parsed
+        }
+        return parsed
+      }
+      return []
+    },
+    'Loading brainDumpEntries from localStorage',
+    {
+      showToast: false,
+      onError: (error) => {
+        logger.warn('Failed to parse brainDumpEntries during export:', error)
       }
     }
-  } catch (e) {
-    logger.warn('Failed to parse brainDumpEntries during export:', e)
-    entries = []
-  }
+  ) || []
 
   // Parse brainDumpVersions for backward compatibility
-  let versions = []
-  try {
-    const versionsStr = localStorage.getItem('brainDumpVersions')
-    versions = versionsStr ? JSON.parse(versionsStr) : []
-  } catch (e) {
-    logger.warn('Failed to parse brainDumpVersions during export:', e)
-    versions = []
-  }
+  const versions = tryCatch(
+    () => {
+      const versionsStr = localStorage.getItem('brainDumpVersions')
+      return versionsStr ? JSON.parse(versionsStr) : []
+    },
+    'Loading brainDumpVersions from localStorage',
+    {
+      showToast: false,
+      onError: (error) => {
+        logger.warn('Failed to parse brainDumpVersions during export:', error)
+      }
+    }
+  ) || []
 
   // Include brain dump data for backward compatibility
   data.brainDump = {
@@ -143,40 +182,35 @@ export async function getDataTemplate() {
  * @throws {Error} If export fails
  */
 export async function exportJSON() {
-  try {
-    const dataTemplate = await getDataTemplate()
+  const dataTemplate = await getDataTemplate()
 
-    // Validate data before export (includes serialization test)
-    const validation = validateExportData(dataTemplate)
-    if (!validation.valid) {
-      throw new Error(
-        `Export validation failed: ${validation.errors.join(', ')}`
-      )
-    }
-
-    // Serialize data for export (reuse validation.stringified to avoid redundant serialization)
-    const data =
-      typeof validation.stringified === 'string'
-        ? validation.stringified
-        : JSON.stringify(dataTemplate)
-    const blob = new Blob([data], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-
-    // Generate filename: aurorae_YYYY-MM-DD_UUID.json
-    const date = new Date().toISOString().split('T')[0]
-    const uuid = generateSecureUUID()
-    const filename = `aurorae_${date}_${uuid}.json`
-
-    const a = document.createElement('a')
-    a.href = url
-    a.download = filename
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    URL.revokeObjectURL(url)
-    return true
-  } catch (e) {
-    logger.error('Export failed:', e)
-    throw new Error('Export failed: ' + e.message)
+  // Validate data before export (includes serialization test)
+  const validation = validateExportData(dataTemplate)
+  if (!validation.valid) {
+    throw new Error(
+      `Export validation failed: ${validation.errors.join(', ')}`
+    )
   }
+
+  // Serialize data for export (reuse validation.stringified to avoid redundant serialization)
+  const data =
+    typeof validation.stringified === 'string'
+      ? validation.stringified
+      : JSON.stringify(dataTemplate)
+  const blob = new Blob([data], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+
+  // Generate filename: aurorae_YYYY-MM-DD_UUID.json
+  const date = new Date().toISOString().split('T')[0]
+  const uuid = generateSecureUUID()
+  const filename = `aurorae_${date}_${uuid}.json`
+
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+  return true
 }
