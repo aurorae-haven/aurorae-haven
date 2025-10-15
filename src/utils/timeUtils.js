@@ -14,25 +14,25 @@ const SECONDS_PER_MINUTE = 60
 /**
  * Parse time string in HH:MM format to hours and minutes
  * Validates that hours are in range 0-23 and minutes are in range 0-59
- * Returns { hours: 0, minutes: 0 } for invalid inputs
+ * Returns null for invalid inputs to distinguish from valid '00:00'
  * @param {string} timeString - Time in "HH:MM" format
- * @returns {{hours: number, minutes: number}} Object with hours and minutes
+ * @returns {{hours: number, minutes: number}|null} Object with hours and minutes, or null if invalid
  */
 export function parseTime(timeString) {
   if (!timeString || typeof timeString !== 'string') {
-    return { hours: 0, minutes: 0 }
+    return null
   }
 
   const [hours, minutes] = timeString.split(':').map(Number)
 
   // Validate parsed values are numbers
   if (isNaN(hours) || isNaN(minutes)) {
-    return { hours: 0, minutes: 0 }
+    return null
   }
 
   // Validate ranges: 0 <= hours < 24, 0 <= minutes < 60
   if (hours < 0 || hours >= HOURS_PER_DAY || minutes < 0 || minutes >= MINUTES_PER_HOUR) {
-    return { hours: 0, minutes: 0 }
+    return null
   }
 
   return { hours, minutes }
@@ -56,12 +56,16 @@ export function formatTime(hours, minutes) {
 
 /**
  * Convert HH:MM time string to total minutes since midnight
+ * Returns 0 for invalid time strings
  * @param {string} timeString - Time in "HH:MM" format
- * @returns {number} Total minutes since midnight
+ * @returns {number} Total minutes since midnight, or 0 if invalid
  */
 export function timeToMinutes(timeString) {
-  const { hours, minutes } = parseTime(timeString)
-  return hours * MINUTES_PER_HOUR + minutes
+  const parsed = parseTime(timeString)
+  if (parsed === null) {
+    return 0
+  }
+  return parsed.hours * MINUTES_PER_HOUR + parsed.minutes
 }
 
 /**
@@ -86,13 +90,20 @@ export function minutesToTime(totalMinutes) {
 /**
  * Calculate duration in minutes between two times
  * Both times must be in "HH:MM" 24-hour format
+ * Returns 0 if either time is invalid
  * If endTime is before startTime, the result will be negative
  * @param {string} startTime - Start time in "HH:MM" format
  * @param {string} endTime - End time in "HH:MM" format
- * @returns {number} Duration in minutes between start and end times
+ * @returns {number} Duration in minutes between start and end times, or 0 if either is invalid
  */
 export function calculateDuration(startTime, endTime) {
-  if (!startTime || !endTime) return 0
+  // Check if inputs are invalid early to avoid misleading results
+  const startParsed = parseTime(startTime)
+  const endParsed = parseTime(endTime)
+  
+  if (startParsed === null || endParsed === null) {
+    return 0
+  }
 
   const startMinutes = timeToMinutes(startTime)
   const endMinutes = timeToMinutes(endTime)
@@ -102,13 +113,15 @@ export function calculateDuration(startTime, endTime) {
 
 /**
  * Add minutes to a time
+ * Returns '00:00' for invalid time inputs
  * @param {string} time - Time in "HH:MM" format
  * @param {number} minutes - Minutes to add (can be negative)
  * @returns {string} New time in "HH:MM" format
  */
 export function addDuration(time, minutes) {
-  // If no valid time provided, treat as starting from 00:00
-  const startMinutes = time ? timeToMinutes(time) : 0
+  const parsed = parseTime(time)
+  // If invalid time provided, return 00:00 plus the minutes
+  const startMinutes = parsed !== null ? timeToMinutes(time) : 0
   const totalMinutes = startMinutes + minutes
   return minutesToTime(totalMinutes)
 }

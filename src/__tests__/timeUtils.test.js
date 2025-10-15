@@ -23,11 +23,11 @@ describe('timeUtils', () => {
       expect(parseTime('23:59')).toEqual({ hours: 23, minutes: 59 })
     })
 
-    test('should handle invalid input', () => {
-      expect(parseTime('')).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime(null)).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime(undefined)).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime('invalid')).toEqual({ hours: 0, minutes: 0 })
+    test('should return null for invalid input', () => {
+      expect(parseTime('')).toBeNull()
+      expect(parseTime(null)).toBeNull()
+      expect(parseTime(undefined)).toBeNull()
+      expect(parseTime('invalid')).toBeNull()
     })
 
     test('should handle numeric strings', () => {
@@ -35,20 +35,20 @@ describe('timeUtils', () => {
     })
 
     test('should validate hour range (0-23)', () => {
-      expect(parseTime('24:00')).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime('25:30')).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime('-1:30')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('24:00')).toBeNull()
+      expect(parseTime('25:30')).toBeNull()
+      expect(parseTime('-1:30')).toBeNull()
     })
 
     test('should validate minute range (0-59)', () => {
-      expect(parseTime('12:60')).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime('12:75')).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime('12:-5')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('12:60')).toBeNull()
+      expect(parseTime('12:75')).toBeNull()
+      expect(parseTime('12:-5')).toBeNull()
     })
 
     test('should reject out-of-range values', () => {
-      expect(parseTime('24:60')).toEqual({ hours: 0, minutes: 0 })
-      expect(parseTime('99:99')).toEqual({ hours: 0, minutes: 0 })
+      expect(parseTime('24:60')).toBeNull()
+      expect(parseTime('99:99')).toBeNull()
     })
   })
 
@@ -107,9 +107,11 @@ describe('timeUtils', () => {
       expect(timeToMinutes('23:59')).toBe(1439)
     })
 
-    test('should handle invalid input', () => {
+    test('should return 0 for invalid input', () => {
       expect(timeToMinutes('')).toBe(0)
       expect(timeToMinutes(null)).toBe(0)
+      expect(timeToMinutes('invalid')).toBe(0)
+      expect(timeToMinutes('25:00')).toBe(0) // out-of-range
     })
   })
 
@@ -156,6 +158,14 @@ describe('timeUtils', () => {
       expect(calculateDuration('', '10:00')).toBe(0)
       expect(calculateDuration('09:00', '')).toBe(0)
       expect(calculateDuration(null, null)).toBe(0)
+    })
+
+    test('should return 0 for non-empty invalid strings', () => {
+      // Document behavior: invalid strings return 0 instead of treating as 00:00
+      expect(calculateDuration('invalid', '10:00')).toBe(0)
+      expect(calculateDuration('09:00', 'invalid')).toBe(0)
+      expect(calculateDuration('bad', 'input')).toBe(0)
+      expect(calculateDuration('25:00', '10:00')).toBe(0) // out-of-range
     })
 
     test('should match scheduleManager behavior', () => {
