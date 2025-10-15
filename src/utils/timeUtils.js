@@ -136,8 +136,9 @@ export function formatDurationDisplay(seconds, options = {}) {
   const validSeconds =
     typeof seconds === 'number' && !isNaN(seconds) ? seconds : 0
 
-  const mins = Math.floor(Math.abs(validSeconds) / SECONDS_PER_MINUTE)
-  const secs = Math.abs(validSeconds) % SECONDS_PER_MINUTE
+  const abs = Math.floor(Math.abs(validSeconds))
+  const mins = Math.floor(abs / SECONDS_PER_MINUTE)
+  const secs = abs % SECONDS_PER_MINUTE
   const sign = validSeconds < 0 ? '-' : ''
   const formatted = `${sign}${String(mins).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(secs).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 
