@@ -46,12 +46,12 @@ export function parseTime(timeString) {
  */
 export function formatTime(hours, minutes) {
   // Normalize hours and minutes to valid time within a day
-  const totalMinutes = Math.floor(hours) * MINUTES_PER_HOUR + Math.floor(minutes);
-  const minutesInDay = HOURS_PER_DAY * MINUTES_PER_HOUR;
-  const normalizedMinutes = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay;
-  const validHours = Math.floor(normalizedMinutes / MINUTES_PER_HOUR);
-  const validMinutes = normalizedMinutes % MINUTES_PER_HOUR;
-  return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`;
+  const totalMinutes = Math.floor(hours) * MINUTES_PER_HOUR + Math.floor(minutes)
+  const minutesInDay = HOURS_PER_DAY * MINUTES_PER_HOUR
+  const normalizedMinutes = ((totalMinutes % minutesInDay) + minutesInDay) % minutesInDay
+  const validHours = Math.floor(normalizedMinutes / MINUTES_PER_HOUR)
+  const validMinutes = normalizedMinutes % MINUTES_PER_HOUR
+  return `${String(validHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(validMinutes).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
 /**
