@@ -102,12 +102,12 @@ enhanceError(error, context)  // Add context to errors
 ## Testing
 
 ### Error Handler Tests
-- **Total Tests**: 39 unit tests
+- **Total Tests**: 48 unit tests
 - **Coverage**: All core functions tested
 - **Status**: ✅ 100% passing
 
 ### Application Tests
-- **Total Tests**: 962 tests
+- **Total Tests**: 971 tests
 - **Status**: ✅ 100% passing
 - **Linting**: ✅ 0 warnings
 
