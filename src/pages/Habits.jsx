@@ -5,7 +5,8 @@ import {
   getTodayStats,
   createHabit,
   deleteHabit,
-  pauseHabit
+  pauseHabit,
+  updateHabit
 } from '../utils/habitsManager'
 import Toast from '../components/Toast'
 import HeatmapStrip from '../components/Habits/HeatmapStrip'
@@ -13,8 +14,28 @@ import FilterModal from '../components/Habits/FilterModal'
 import HabitDetailDrawer from '../components/Habits/HabitDetailDrawer'
 import { createLogger } from '../utils/logger'
 import { getCategoryColor, CATEGORY_OPTIONS } from '../utils/habitCategories'
+import { triggerConfetti, prefersReducedMotion } from '../utils/confetti'
 
 const logger = createLogger('Habits')
+
+/**
+ * Announce message to screen readers
+ * TAB-HAB-40: Screen reader announcements
+ * @param {string} message - Message to announce
+ */
+function announceToScreenReader(message) {
+  const announcement = document.createElement('div')
+  announcement.setAttribute('role', 'status')
+  announcement.setAttribute('aria-live', 'polite')
+  announcement.setAttribute('aria-atomic', 'true')
+  announcement.style.cssText = 'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;'
+  announcement.textContent = message
+  document.body.appendChild(announcement)
+  
+  setTimeout(() => {
+    announcement.remove()
+  }, 1000)
+}
 
 /**
  * Habits Page - TAB-HAB Implementation
@@ -75,6 +96,15 @@ function Habits() {
       await loadHabits()
       
       if (result.xpEarned > 0) {
+        // TAB-HAB-40: Screen reader announcement
+        const announcement = `${result.title || 'Habit'} completed today. Current streak: ${result.streak} days. +${result.xpEarned} XP.`
+        announceToScreenReader(announcement)
+        
+        // TAB-HAB-24: Confetti on milestones
+        if (result.milestone) {
+          triggerConfetti({ reducedMotion: prefersReducedMotion() })
+        }
+        
         showToast(result.message, 'success')
       }
     } catch (error) {
@@ -123,6 +153,21 @@ function Habits() {
       showToast(isPaused ? 'Habit resumed' : 'Habit paused', 'success')
     } catch (error) {
       logger.error('Failed to pause habit:', error)
+      showToast('Failed to update habit', 'error')
+    }
+  }
+
+  const handleUpdateHabit = async (updatedHabit) => {
+    try {
+      await updateHabit(updatedHabit)
+      await loadHabits()
+      // Update selectedHabit to reflect changes
+      if (selectedHabit && selectedHabit.id === updatedHabit.id) {
+        setSelectedHabit(updatedHabit)
+      }
+      showToast('Habit updated successfully', 'success')
+    } catch (error) {
+      logger.error('Failed to update habit:', error)
       showToast('Failed to update habit', 'error')
     }
   }
@@ -460,6 +505,7 @@ function Habits() {
         <HabitDetailDrawer
           habit={selectedHabit}
           onClose={() => setSelectedHabit(null)}
+          onUpdateHabit={handleUpdateHabit}
         />
       )}
     </div>

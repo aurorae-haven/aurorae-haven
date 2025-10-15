@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import dayjs from 'dayjs'
 import { getCategoryColor } from '../../utils/habitCategories'
+import logger from '../../utils/logger'
 
 /**
  * HabitDetailDrawer - Expanded view with full history and vacation mode
@@ -9,8 +10,13 @@ import { getCategoryColor } from '../../utils/habitCategories'
  * TAB-HAB-27: Completion history with filters
  * TAB-HAB-28: Vacation toggle
  */
-function HabitDetailDrawer({ habit, onClose }) {
+function HabitDetailDrawer({ habit, onClose, onUpdateHabit }) {
   if (!habit) return null
+
+  const [showVacationMode, setShowVacationMode] = useState(false)
+  const [vacationStart, setVacationStart] = useState('')
+  const [vacationEnd, setVacationEnd] = useState('')
+  const [historyFilter, setHistoryFilter] = useState('30') // 7, 30, 90 days
 
   const categoryColor = getCategoryColor(habit.category)
   const completions = habit.completions || []
@@ -45,6 +51,101 @@ function HabitDetailDrawer({ habit, onClose }) {
   const weeks = []
   for (let i = 0; i < heatmapDays.length; i += 7) {
     weeks.push(heatmapDays.slice(i, i + 7))
+  }
+
+  // Filter completions based on selected period - TAB-HAB-27
+  const getFilteredCompletions = () => {
+    const days = parseInt(historyFilter, 10)
+    const cutoff = dayjs().subtract(days, 'day').format('YYYY-MM-DD')
+    return [...completions]
+      .filter(c => c.date >= cutoff)
+      .reverse()
+  }
+
+  // Set vacation dates - TAB-HAB-28
+  const handleSetVacation = () => {
+    if (!vacationStart || !vacationEnd) return
+    
+    const start = dayjs(vacationStart)
+    const end = dayjs(vacationEnd)
+    
+    if (end.isBefore(start)) {
+      logger.warn('End date must be after start date')
+      return
+    }
+    
+    const newVacationDates = []
+    let current = start
+    while (current.isBefore(end) || current.isSame(end)) {
+      newVacationDates.push(current.format('YYYY-MM-DD'))
+      current = current.add(1, 'day')
+    }
+    
+    const updatedHabit = {
+      ...habit,
+      vacationDates: [...new Set([...vacationDates, ...newVacationDates])]
+    }
+    
+    onUpdateHabit(updatedHabit)
+    setVacationStart('')
+    setVacationEnd('')
+    setShowVacationMode(false)
+    logger.info(`Set ${newVacationDates.length} vacation days for ${habit.title}`)
+  }
+
+  const handleClearVacation = () => {
+    const updatedHabit = {
+      ...habit,
+      vacationDates: []
+    }
+    onUpdateHabit(updatedHabit)
+    logger.info(`Cleared all vacation days for ${habit.title}`)
+  }
+
+  // Export completion history - TAB-HAB-27
+  const handleExport = (format) => {
+    const filtered = getFilteredCompletions()
+    
+    if (format === 'csv') {
+      // CSV format
+      const csv = [
+        'Date,Habit,Status',
+        ...filtered.map(c => `${c.date},${habit.title},Completed`)
+      ].join('\n')
+      
+      const blob = new Blob([csv], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${habit.title.replace(/\s+/g, '_')}_${dayjs().format('YYYY-MM-DD')}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+      logger.info(`Exported ${filtered.length} completions as CSV`)
+    } else if (format === 'markdown') {
+      // Markdown format
+      const markdown = [
+        `# ${habit.title} - Completion History`,
+        '',
+        `**Export Date**: ${dayjs().format('YYYY-MM-DD')}`,
+        `**Period**: Last ${historyFilter} days`,
+        `**Current Streak**: ${habit.currentStreak || 0} days 🔥`,
+        `**Best Streak**: ${habit.longestStreak || 0} days ⭐`,
+        `**Total Completions**: ${completions.length}`,
+        '',
+        '## Completions',
+        '',
+        ...filtered.map(c => `- ${dayjs(c.date).format('MMMM D, YYYY')} ✓`)
+      ].join('\n')
+      
+      const blob = new Blob([markdown], { type: 'text/markdown' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${habit.title.replace(/\s+/g, '_')}_${dayjs().format('YYYY-MM-DD')}.md`
+      a.click()
+      URL.revokeObjectURL(url)
+      logger.info(`Exported ${filtered.length} completions as Markdown`)
+    }
   }
 
   return (
@@ -166,19 +267,191 @@ function HabitDetailDrawer({ habit, onClose }) {
         </div>
       </div>
 
-      {/* Recent History */}
+      {/* Vacation Mode - TAB-HAB-28 */}
+      <div className='card-b' style={{ marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <strong>Vacation Mode</strong>
+          <button
+            onClick={() => setShowVacationMode(!showVacationMode)}
+            style={{
+              padding: '0.5rem 1rem',
+              background: showVacationMode ? '#2a2e47' : '#86f5e0',
+              color: showVacationMode ? '#a9b1e0' : '#0e1117',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              fontWeight: '500'
+            }}
+            aria-expanded={showVacationMode}
+          >
+            {showVacationMode ? 'Hide' : 'Set Vacation Dates'}
+          </button>
+        </div>
+        
+        {showVacationMode && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <p className='small' style={{ color: '#a9b1e0', marginBottom: '0.5rem' }}>
+              Vacation days preserve your streak without requiring completion.
+            </p>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'end' }}>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="vacation-start" className='small' style={{ display: 'block', marginBottom: '0.25rem', color: '#a9b1e0' }}>
+                  Start Date
+                </label>
+                <input
+                  id="vacation-start"
+                  type="date"
+                  value={vacationStart}
+                  onChange={(e) => setVacationStart(e.target.value)}
+                  min={dayjs().format('YYYY-MM-DD')}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: '#1a1d2e',
+                    color: '#e6e9f2',
+                    border: '1px solid #2a2e47',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem'
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="vacation-end" className='small' style={{ display: 'block', marginBottom: '0.25rem', color: '#a9b1e0' }}>
+                  End Date
+                </label>
+                <input
+                  id="vacation-end"
+                  type="date"
+                  value={vacationEnd}
+                  onChange={(e) => setVacationEnd(e.target.value)}
+                  min={vacationStart || dayjs().format('YYYY-MM-DD')}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: '#1a1d2e',
+                    color: '#e6e9f2',
+                    border: '1px solid #2a2e47',
+                    borderRadius: '8px',
+                    fontSize: '0.875rem'
+                  }}
+                />
+              </div>
+              <button
+                onClick={handleSetVacation}
+                disabled={!vacationStart || !vacationEnd}
+                style={{
+                  padding: '0.5rem 1rem',
+                  background: (!vacationStart || !vacationEnd) ? '#2a2e47' : '#86f5e0',
+                  color: (!vacationStart || !vacationEnd) ? '#a9b1e0' : '#0e1117',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: (!vacationStart || !vacationEnd) ? 'not-allowed' : 'pointer',
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  whiteSpace: 'nowrap'
+                }}
+                aria-label="Set vacation dates"
+              >
+                Set Vacation
+              </button>
+            </div>
+            {vacationDates.length > 0 && (
+              <div style={{ marginTop: '0.5rem' }}>
+                <p className='small' style={{ color: '#a9b1e0', marginBottom: '0.5rem' }}>
+                  {vacationDates.length} vacation {vacationDates.length === 1 ? 'day' : 'days'} set
+                </p>
+                <button
+                  onClick={handleClearVacation}
+                  style={{
+                    padding: '0.375rem 0.75rem',
+                    background: 'transparent',
+                    color: '#ff6b6b',
+                    border: '1px solid #ff6b6b',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: '500'
+                  }}
+                >
+                  Clear All Vacation Days
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Recent History with Export - TAB-HAB-27 */}
       <div className='card-b'>
-        <strong style={{ display: 'block', marginBottom: '1rem' }}>Recent Completions</strong>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <strong>Completion History</strong>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <select
+              value={historyFilter}
+              onChange={(e) => setHistoryFilter(e.target.value)}
+              style={{
+                padding: '0.375rem 0.75rem',
+                background: '#1a1d2e',
+                color: '#e6e9f2',
+                border: '1px solid #2a2e47',
+                borderRadius: '8px',
+                fontSize: '0.75rem',
+                cursor: 'pointer'
+              }}
+              aria-label="Filter completion history"
+            >
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+            </select>
+            <button
+              onClick={() => handleExport('csv')}
+              disabled={completions.length === 0}
+              style={{
+                padding: '0.375rem 0.75rem',
+                background: completions.length === 0 ? '#2a2e47' : '#4a7dff',
+                color: completions.length === 0 ? '#a9b1e0' : '#e6e9f2',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: completions.length === 0 ? 'not-allowed' : 'pointer',
+                fontSize: '0.75rem',
+                fontWeight: '500'
+              }}
+              aria-label="Export history as CSV"
+            >
+              CSV
+            </button>
+            <button
+              onClick={() => handleExport('markdown')}
+              disabled={completions.length === 0}
+              style={{
+                padding: '0.375rem 0.75rem',
+                background: completions.length === 0 ? '#2a2e47' : '#4a7dff',
+                color: completions.length === 0 ? '#a9b1e0' : '#e6e9f2',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: completions.length === 0 ? 'not-allowed' : 'pointer',
+                fontSize: '0.75rem',
+                fontWeight: '500'
+              }}
+              aria-label="Export history as Markdown"
+            >
+              MD
+            </button>
+          </div>
+        </div>
+        
         {completions.length === 0 ? (
           <p className='small' style={{ color: '#a9b1e0' }}>No completions yet. Start your streak today!</p>
         ) : (
           <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-            {[...completions].reverse().slice(0, 30).map((completion, idx) => (
+            {getFilteredCompletions().map((completion, idx) => (
               <div
                 key={idx}
                 style={{
                   padding: '0.5rem',
-                  borderBottom: idx < Math.min(completions.length, 30) - 1 ? '1px solid #2a2e47' : 'none',
+                  borderBottom: idx < getFilteredCompletions().length - 1 ? '1px solid #2a2e47' : 'none',
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center'
@@ -197,7 +470,14 @@ function HabitDetailDrawer({ habit, onClose }) {
 
 HabitDetailDrawer.propTypes = {
   habit: PropTypes.object,
-  onClose: PropTypes.func.isRequired
+  onClose: PropTypes.func.isRequired,
+  onUpdateHabit: PropTypes.func.isRequired
+}
+
+HabitDetailDrawer.propTypes = {
+  habit: PropTypes.object,
+  onClose: PropTypes.func.isRequired,
+  onUpdateHabit: PropTypes.func.isRequired
 }
 
 export default HabitDetailDrawer
