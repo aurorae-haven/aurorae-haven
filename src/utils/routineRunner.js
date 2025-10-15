@@ -1,6 +1,8 @@
 // Routine Runner - Timer and execution state management
 // Handles step progression, timer countdown, XP calculation, and logging
 
+import { formatDurationDisplay } from './timeUtils'
+
 /**
  * Calculate XP for completing a step
  * TAB-RTN-22: Base step XP = 1
@@ -69,19 +71,11 @@ export function calculateTotalXP(completedSteps, totalSteps) {
  * @param {Object} options - Formatting options
  * @param {boolean} options.verbose - If true, return with "mm:ss remaining" suffix
  * @returns {string} Formatted time string
+ * @deprecated Use formatDurationDisplay from timeUtils instead
  */
 export function formatTime(seconds, options = {}) {
-  // Validate input - default to 0 if not a number
-  const validSeconds =
-    typeof seconds === 'number' && !isNaN(seconds) ? seconds : 0
-
-  const mins = Math.floor(Math.abs(validSeconds) / 60)
-  const secs = Math.abs(validSeconds) % 60
-  const sign = validSeconds < 0 ? '-' : ''
-  const formatted = `${sign}${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-
-  // Return with suffix if verbose option is enabled
-  return options.verbose ? `${formatted} remaining` : formatted
+  // Delegate to centralized time utility
+  return formatDurationDisplay(seconds, options)
 }
 
 /**
