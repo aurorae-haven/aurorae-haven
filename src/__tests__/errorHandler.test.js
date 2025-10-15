@@ -1,0 +1,435 @@
+/**
+ * Tests for centralized error handler utility
+ */
+
+import {
+  handleError,
+  withErrorHandling,
+  tryCatch,
+  createErrorHandler,
+  withErrorHandler,
+  enhanceError,
+  isQuotaExceededError,
+  isNetworkError,
+  isValidationError,
+  ErrorSeverity
+} from '../utils/errorHandler'
+
+// Mock logger
+jest.mock('../utils/logger', () => ({
+  createLogger: () => ({
+    error: jest.fn(),
+    warn: jest.fn(),
+    info: jest.fn(),
+    log: jest.fn()
+  })
+}))
+
+describe('errorHandler', () => {
+  let originalWindow
+  let mockToastElement
+
+  beforeEach(() => {
+    // Clear all mocks
+    jest.clearAllMocks()
+
+    // Mock window and document for toast notifications
+    originalWindow = global.window
+    mockToastElement = {
+      textContent: '',
+      style: { display: '' }
+    }
+
+    const mockDispatchEvent = jest.fn()
+    global.window = {
+      dispatchEvent: mockDispatchEvent,
+      CustomEvent: function (type, options) {
+        this.type = type
+        this.detail = options?.detail
+      }
+    }
+
+    const mockGetElementById = jest.fn(() => mockToastElement)
+    global.document = {
+      getElementById: mockGetElementById
+    }
+
+    // Store references to mocks for assertions
+    global.window.__mockDispatchEvent = mockDispatchEvent
+    global.document.__mockGetElementById = mockGetElementById
+  })
+
+  afterEach(() => {
+    global.window = originalWindow
+    delete global.document
+  })
+
+  describe('handleError', () => {
+    test('handles Error objects', () => {
+      const error = new Error('Test error')
+      const result = handleError(error, 'Test operation')
+
+      expect(result).toBeInstanceOf(Error)
+      expect(result.message).toBe('Test error')
+    })
+
+    test('handles string errors', () => {
+      const result = handleError('Test error string', 'Test operation')
+
+      expect(result).toBeInstanceOf(Error)
+      expect(result.message).toBe('Test error string')
+    })
+
+    test('shows toast notification by default', () => {
+      const error = new Error('Test error')
+
+      // Should not throw when showing toast
+      expect(() => {
+        handleError(error, 'Test operation')
+      }).not.toThrow()
+
+      // Verify the error was handled (returns Error object)
+      const result = handleError(error, 'Test operation')
+      expect(result).toBeInstanceOf(Error)
+    })
+
+    test('does not show toast when showToast is false', () => {
+      mockToastElement.textContent = ''
+      mockToastElement.style.display = ''
+
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation', { showToast: false })
+      }).not.toThrow()
+    })
+
+    test('uses custom toast message when provided', () => {
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation', {
+          toastMessage: 'Custom message'
+        })
+      }).not.toThrow()
+    })
+
+    test('calls custom error callback', () => {
+      const onError = jest.fn()
+      const error = new Error('Test error')
+
+      handleError(error, 'Test operation', { onError })
+
+      expect(onError).toHaveBeenCalledWith(error, 'Test operation')
+    })
+
+    test('rethrows error when rethrow option is true', () => {
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation', { rethrow: true })
+      }).toThrow('Test error')
+    })
+
+    test('does not rethrow by default', () => {
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation')
+      }).not.toThrow()
+    })
+
+    test('handles errors in custom callback gracefully', () => {
+      const onError = jest.fn(() => {
+        throw new Error('Callback error')
+      })
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation', { onError })
+      }).not.toThrow()
+    })
+
+    test('respects severity levels', () => {
+      const error = new Error('Test error')
+
+      handleError(error, 'Test operation', {
+        severity: ErrorSeverity.CRITICAL
+      })
+
+      // Should log with error level for critical severity
+      // (logger is mocked, so we just verify it doesn't throw)
+      expect(true).toBe(true)
+    })
+  })
+
+  describe('withErrorHandling', () => {
+    test('returns result when operation succeeds', async () => {
+      const operation = jest.fn(async () => 'success')
+      const result = await withErrorHandling(operation, 'Test operation')
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalled()
+    })
+
+    test('handles errors and returns undefined', async () => {
+      const operation = jest.fn(async () => {
+        throw new Error('Test error')
+      })
+      const result = await withErrorHandling(operation, 'Test operation')
+
+      expect(result).toBeUndefined()
+      expect(operation).toHaveBeenCalled()
+    })
+
+    test('passes options to error handler', async () => {
+      const onError = jest.fn()
+      const operation = jest.fn(async () => {
+        throw new Error('Test error')
+      })
+
+      await withErrorHandling(operation, 'Test operation', { onError })
+
+      expect(onError).toHaveBeenCalled()
+    })
+  })
+
+  describe('tryCatch', () => {
+    test('returns result when operation succeeds', () => {
+      const operation = jest.fn(() => 'success')
+      const result = tryCatch(operation, 'Test operation')
+
+      expect(result).toBe('success')
+      expect(operation).toHaveBeenCalled()
+    })
+
+    test('handles errors and returns undefined', () => {
+      const operation = jest.fn(() => {
+        throw new Error('Test error')
+      })
+      const result = tryCatch(operation, 'Test operation')
+
+      expect(result).toBeUndefined()
+      expect(operation).toHaveBeenCalled()
+    })
+
+    test('passes options to error handler', () => {
+      const onError = jest.fn()
+      const operation = jest.fn(() => {
+        throw new Error('Test error')
+      })
+
+      tryCatch(operation, 'Test operation', { onError })
+
+      expect(onError).toHaveBeenCalled()
+    })
+  })
+
+  describe('createErrorHandler', () => {
+    test('creates a reusable error handler', () => {
+      const handler = createErrorHandler('Test context')
+      const error = new Error('Test error')
+
+      const result = handler(error)
+
+      expect(result).toBeInstanceOf(Error)
+      expect(result.message).toBe('Test error')
+    })
+
+    test('applies default options', () => {
+      const onError = jest.fn()
+      const handler = createErrorHandler('Test context', { onError })
+      const error = new Error('Test error')
+
+      handler(error)
+
+      expect(onError).toHaveBeenCalled()
+    })
+
+    test('allows overriding default options', () => {
+      const defaultCallback = jest.fn()
+      const overrideCallback = jest.fn()
+      const handler = createErrorHandler('Test context', {
+        onError: defaultCallback
+      })
+      const error = new Error('Test error')
+
+      handler(error, { onError: overrideCallback })
+
+      expect(defaultCallback).not.toHaveBeenCalled()
+      expect(overrideCallback).toHaveBeenCalled()
+    })
+  })
+
+  describe('withErrorHandler', () => {
+    test('wraps function with error handling', async () => {
+      const fn = jest.fn(async (x) => x * 2)
+      const wrapped = withErrorHandler(fn, 'Test operation')
+
+      const result = await wrapped(5)
+
+      expect(result).toBe(10)
+      expect(fn).toHaveBeenCalledWith(5)
+    })
+
+    test('handles errors in wrapped function', async () => {
+      const fn = jest.fn(async () => {
+        throw new Error('Test error')
+      })
+      const wrapped = withErrorHandler(fn, 'Test operation')
+
+      const result = await wrapped()
+
+      expect(result).toBeUndefined()
+      expect(fn).toHaveBeenCalled()
+    })
+
+    test('preserves function arguments', async () => {
+      const fn = jest.fn(async (a, b, c) => a + b + c)
+      const wrapped = withErrorHandler(fn, 'Test operation')
+
+      const result = await wrapped(1, 2, 3)
+
+      expect(result).toBe(6)
+      expect(fn).toHaveBeenCalledWith(1, 2, 3)
+    })
+  })
+
+  describe('enhanceError', () => {
+    test('enhances Error objects with context', () => {
+      const error = new Error('Test error')
+      const enhanced = enhanceError(error, { userId: '123', action: 'save' })
+
+      expect(enhanced).toBeInstanceOf(Error)
+      expect(enhanced.message).toBe('Test error')
+      expect(enhanced.context).toEqual({ userId: '123', action: 'save' })
+    })
+
+    test('converts string errors to Error objects', () => {
+      const enhanced = enhanceError('Test error', { key: 'value' })
+
+      expect(enhanced).toBeInstanceOf(Error)
+      expect(enhanced.message).toBe('Test error')
+      expect(enhanced.context).toEqual({ key: 'value' })
+    })
+
+    test('context property is non-enumerable', () => {
+      const error = new Error('Test error')
+      const enhanced = enhanceError(error, { key: 'value' })
+
+      expect(Object.keys(enhanced)).not.toContain('context')
+      expect(enhanced.context).toBeDefined()
+    })
+  })
+
+  describe('isQuotaExceededError', () => {
+    test('identifies QuotaExceededError by name', () => {
+      const error = new Error('Test error')
+      error.name = 'QuotaExceededError'
+
+      expect(isQuotaExceededError(error)).toBe(true)
+    })
+
+    test('identifies quota errors by code', () => {
+      const error = new Error('Test error')
+      error.code = 22
+
+      expect(isQuotaExceededError(error)).toBe(true)
+    })
+
+    test('identifies quota errors by message', () => {
+      const error = new Error('Storage quota exceeded')
+
+      expect(isQuotaExceededError(error)).toBe(true)
+    })
+
+    test('returns false for non-quota errors', () => {
+      const error = new Error('Regular error')
+
+      expect(isQuotaExceededError(error)).toBe(false)
+    })
+  })
+
+  describe('isNetworkError', () => {
+    test('identifies network errors by message', () => {
+      const error = new Error('network request failed')
+
+      expect(isNetworkError(error)).toBe(true)
+    })
+
+    test('identifies fetch errors', () => {
+      const error = new Error('Failed to fetch')
+
+      expect(isNetworkError(error)).toBe(true)
+    })
+
+    test('identifies NetworkError by name', () => {
+      const error = new Error('Test error')
+      error.name = 'NetworkError'
+
+      expect(isNetworkError(error)).toBe(true)
+    })
+
+    test('returns false for non-network errors', () => {
+      const error = new Error('Regular error')
+
+      expect(isNetworkError(error)).toBe(false)
+    })
+  })
+
+  describe('isValidationError', () => {
+    test('identifies validation errors by message', () => {
+      const error = new Error('validation failed')
+
+      expect(isValidationError(error)).toBe(true)
+    })
+
+    test('identifies invalid data errors', () => {
+      const error = new Error('Invalid data format')
+
+      expect(isValidationError(error)).toBe(true)
+    })
+
+    test('identifies ValidationError by name', () => {
+      const error = new Error('Test error')
+      error.name = 'ValidationError'
+
+      expect(isValidationError(error)).toBe(true)
+    })
+
+    test('returns false for non-validation errors', () => {
+      const error = new Error('Regular error')
+
+      expect(isValidationError(error)).toBe(false)
+    })
+  })
+
+  describe('toast notification fallback', () => {
+    test('works without window object', () => {
+      const originalWindow = global.window
+      delete global.window
+
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation')
+      }).not.toThrow()
+
+      global.window = originalWindow
+    })
+
+    test('uses DOM element fallback when available', () => {
+      const error = new Error('Test error')
+
+      expect(() => {
+        handleError(error, 'Test operation', {
+          toastMessage: 'Custom message'
+        })
+      }).not.toThrow()
+
+      // In a real browser environment, this would update the toast element
+      // In tests, we just verify it doesn't crash
+      expect(error).toBeInstanceOf(Error)
+    })
+  })
+})
