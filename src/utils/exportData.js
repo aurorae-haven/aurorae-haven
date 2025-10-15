@@ -35,7 +35,7 @@ export async function getDataTemplate() {
   // Check if IndexedDB is available and has data
   if (isIndexedDBAvailable()) {
     const indexedDBData = await withErrorHandling(
-      async () => await exportFromIndexedDB(),
+      exportFromIndexedDB,
       'IndexedDB export',
       {
         showToast: false,
