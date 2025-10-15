@@ -8,7 +8,9 @@ import {
   pauseHabit
 } from '../utils/habitsManager'
 import Toast from '../components/Toast'
+import HeatmapStrip from '../components/Habits/HeatmapStrip'
 import { createLogger } from '../utils/logger'
+import { getCategoryColor, CATEGORY_OPTIONS } from '../utils/habitCategories'
 
 const logger = createLogger('Habits')
 
@@ -23,6 +25,7 @@ function Habits() {
   const [showNewHabitModal, setShowNewHabitModal] = useState(false)
   const [toast, setToast] = useState(null)
   const [newHabitName, setNewHabitName] = useState('')
+  const [newHabitCategory, setNewHabitCategory] = useState('default')
   const [sortBy, setSortBy] = useState('title')
 
   useEffect(() => {
@@ -62,8 +65,12 @@ function Habits() {
     if (!newHabitName.trim()) return
 
     try {
-      await createHabit({ name: newHabitName })
+      await createHabit({ 
+        name: newHabitName,
+        category: newHabitCategory
+      })
       setNewHabitName('')
+      setNewHabitCategory('default')
       setShowNewHabitModal(false)
       await loadHabits()
       showToast('Habit created successfully', 'success')
@@ -220,6 +227,17 @@ function Habits() {
                   
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      {/* TAB-HAB-07, TAB-HAB-34: Category color chip */}
+                      {habit.category && habit.category !== 'default' && (
+                        <span style={{
+                          display: 'inline-block',
+                          width: '8px',
+                          height: '8px',
+                          borderRadius: '50%',
+                          backgroundColor: getCategoryColor(habit.category).bg,
+                          flexShrink: 0
+                        }} />
+                      )}
                       <strong>{habit.name}</strong>
                       {habit.paused && <span className='small' style={{ color: '#f2c94c' }}>(Paused)</span>}
                     </div>
@@ -232,6 +250,12 @@ function Habits() {
                         </span>
                       )}
                     </div>
+                    {/* TAB-HAB-09: Compact heatmap strip */}
+                    <HeatmapStrip 
+                      completions={habit.completions || []}
+                      vacationDates={habit.vacationDates || []}
+                      daysToShow={28}
+                    />
                   </div>
                 </div>
 
@@ -298,12 +322,37 @@ function Habits() {
                     }}
                   />
                 </div>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label htmlFor='habit-category' style={{ display: 'block', marginBottom: '0.5rem' }}>
+                    Category
+                  </label>
+                  <select
+                    id='habit-category'
+                    value={newHabitCategory}
+                    onChange={(e) => setNewHabitCategory(e.target.value)}
+                    style={{ 
+                      width: '100%', 
+                      padding: '0.5rem', 
+                      borderRadius: '4px', 
+                      background: '#2a2e47', 
+                      border: '1px solid #3d4263', 
+                      color: '#eef0ff' 
+                    }}
+                  >
+                    {CATEGORY_OPTIONS.map(cat => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                   <button
                     type='button'
                     onClick={() => {
                       setShowNewHabitModal(false)
                       setNewHabitName('')
+                      setNewHabitCategory('default')
                     }}
                     style={{ padding: '0.5rem 1rem', borderRadius: '4px', background: '#2a2e47', color: '#eef0ff', border: '1px solid #3d4263', cursor: 'pointer' }}
                   >
