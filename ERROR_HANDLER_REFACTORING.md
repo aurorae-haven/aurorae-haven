@@ -337,17 +337,18 @@ async function fetchData(userId) {
 }
 
 // After - decorated with validation and error filtering
-const fetchData = decorateWithErrorHandling(
-  async (userId) => await api.fetchUser(userId),
-  'Fetching user data',
-  {
-    validateParams: {
-      userId: { value: userId, type: 'string' }
-    },
-    expectedErrors: [TypeError, NetworkError],
-    toastMessage: 'Failed to fetch data'
-  }
-)
+const fetchData = (userId) =>
+  decorateWithErrorHandling(
+    () => api.fetchUser(userId),
+    'Fetching user data',
+    {
+      validateParams: {
+        userId: { value: userId, type: 'string' }
+      },
+      expectedErrors: [TypeError, NetworkError],
+      toastMessage: 'Failed to fetch data'
+    }
+  );
 
 // The decorated function automatically:
 // - Validates userId is a string
