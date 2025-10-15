@@ -88,8 +88,7 @@ function Library() {
         },
         'Loading templates',
         {
-          toastMessage: 'Failed to load templates',
-          onError: () => showToastNotification('Failed to load templates')
+          toastMessage: 'Failed to load templates'
         }
       )
 
