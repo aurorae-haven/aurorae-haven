@@ -155,7 +155,7 @@ export function resetSettings() {
     }
   )
 
-  return DEFAULT_SETTINGS
+  return { ...DEFAULT_SETTINGS }
 }
 
 /**
