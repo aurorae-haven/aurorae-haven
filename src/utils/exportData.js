@@ -6,7 +6,7 @@ import {
   exportAllData as exportFromIndexedDB
 } from './indexedDBManager'
 import { createLogger } from './logger'
-import { tryCatch } from './errorHandler'
+import { tryCatch, withErrorHandling } from './errorHandler'
 
 const logger = createLogger('ExportData')
 
@@ -34,8 +34,8 @@ export const SCHEDULE_EVENT_TYPES = {
 export async function getDataTemplate() {
   // Check if IndexedDB is available and has data
   if (isIndexedDBAvailable()) {
-    const indexedDBData = await tryCatch(
-      exportFromIndexedDB,
+    const indexedDBData = await withErrorHandling(
+      async () => await exportFromIndexedDB(),
       'IndexedDB export',
       {
         showToast: false,
