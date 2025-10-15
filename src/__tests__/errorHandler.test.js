@@ -766,4 +766,110 @@ describe('errorHandler', () => {
       )
     })
   })
+
+  describe('showToastNotification DOM fallback', () => {
+    test('uses DOM fallback when CustomEvent or dispatchEvent is not available', () => {
+      // Create a mock toast element with getAttribute and setAttribute methods
+      const mockToastElement = {
+        textContent: '',
+        style: { display: '' },
+        getAttribute: jest.fn((attr) => null), // Return null to simulate no attributes
+        setAttribute: jest.fn()
+      }
+
+      // Mock getElementById to return our toast element
+      global.document.getElementById = jest.fn(() => mockToastElement)
+
+      // Disable CustomEvent and dispatchEvent to force fallback
+      const originalCustomEvent = global.window.CustomEvent
+      const originalDispatchEvent = global.window.dispatchEvent
+      delete global.window.CustomEvent
+      delete global.window.dispatchEvent
+
+      // Trigger an error that will use the toast notification
+      const error = new Error('Test error')
+      handleError(error, 'Test operation')
+
+      // Verify DOM fallback was used
+      expect(mockToastElement.textContent).toBe(
+        'Test operation failed. Please try again.'
+      )
+      expect(mockToastElement.style.display).toBe('block')
+
+      // Verify accessibility attributes were set
+      expect(mockToastElement.setAttribute).toHaveBeenCalledWith(
+        'role',
+        'status'
+      )
+      expect(mockToastElement.setAttribute).toHaveBeenCalledWith(
+        'aria-live',
+        'polite'
+      )
+
+      // Restore original window properties
+      global.window.CustomEvent = originalCustomEvent
+      global.window.dispatchEvent = originalDispatchEvent
+    })
+
+    test('does not set accessibility attributes if already present', () => {
+      // Create a mock toast element that already has accessibility attributes
+      const mockToastElement = {
+        textContent: '',
+        style: { display: '' },
+        getAttribute: jest.fn((attr) => {
+          if (attr === 'role') return 'status'
+          if (attr === 'aria-live') return 'polite'
+          return null
+        }),
+        setAttribute: jest.fn()
+      }
+
+      // Mock getElementById to return our toast element
+      global.document.getElementById = jest.fn(() => mockToastElement)
+
+      // Disable CustomEvent and dispatchEvent to force fallback
+      const originalCustomEvent = global.window.CustomEvent
+      const originalDispatchEvent = global.window.dispatchEvent
+      delete global.window.CustomEvent
+      delete global.window.dispatchEvent
+
+      // Trigger an error that will use the toast notification
+      const error = new Error('Test error')
+      handleError(error, 'Test operation')
+
+      // Verify DOM fallback was used
+      expect(mockToastElement.textContent).toBe(
+        'Test operation failed. Please try again.'
+      )
+      expect(mockToastElement.style.display).toBe('block')
+
+      // Verify accessibility attributes were NOT set again (since they already exist)
+      expect(mockToastElement.setAttribute).not.toHaveBeenCalled()
+
+      // Restore original window properties
+      global.window.CustomEvent = originalCustomEvent
+      global.window.dispatchEvent = originalDispatchEvent
+    })
+
+    test('handles missing toast element gracefully', () => {
+      // Mock getElementById to return null (no toast element)
+      global.document.getElementById = jest.fn(() => null)
+
+      // Disable CustomEvent and dispatchEvent to force fallback
+      const originalCustomEvent = global.window.CustomEvent
+      const originalDispatchEvent = global.window.dispatchEvent
+      delete global.window.CustomEvent
+      delete global.window.dispatchEvent
+
+      // Trigger an error - should not throw
+      const error = new Error('Test error')
+      expect(() => {
+        handleError(error, 'Test operation')
+      }).not.toThrow()
+
+      // Restore original window properties
+      global.window.CustomEvent = originalCustomEvent
+      global.window.dispatchEvent = originalDispatchEvent
+    })
+  })
 })
