@@ -46,7 +46,7 @@ A centralized utility module containing all time/duration calculation functions:
 #### Core Time Conversion Functions
 - `parseTime(timeString)` - Parse HH:MM format to hours and minutes object
 - `formatClockTime(hours, minutes)` - Format hours and minutes to HH:MM string (canonical function)
-  - `formatTime(hours, minutes)` - **Deprecated alias** for backward compatibility
+  <!-- The deprecated alias `formatTime(hours, minutes)` is no longer exported. Use `formatClockTime(hours, minutes)` instead. -->
 - `timeToMinutes(timeString)` - Convert HH:MM to total minutes since midnight
 - `minutesToTime(totalMinutes)` - Convert total minutes to HH:MM format
 
