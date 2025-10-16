@@ -15,7 +15,11 @@ import {
   getTodayStats,
   getHabitStats,
   exportHabits,
-  importHabits
+  importHabits,
+  sortHabits,
+  filterHabits,
+  toggleCompletion,
+  calculateStreak
 } from '../utils/habitsManager'
 import { clear, STORES } from '../utils/indexedDBManager'
 

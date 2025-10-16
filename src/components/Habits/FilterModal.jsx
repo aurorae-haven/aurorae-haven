@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { CATEGORY_OPTIONS } from '../../utils/habitCategories'
 
@@ -6,22 +6,54 @@ import { CATEGORY_OPTIONS } from '../../utils/habitCategories'
  * FilterModal - Filter habits by category, status, and other criteria
  * TAB-HAB-04: Filter by Type, Category, Tags, Status
  */
-function FilterModal({ filters, onApply, onClose }) {
-  const [localFilters, setLocalFilters] = useState(filters || {})
+function FilterModal({ isOpen, currentFilters, onApply, onClose }) {
+  const [localFilters, setLocalFilters] = useState({
+    categories: currentFilters?.categories || [],
+    status: currentFilters?.status || 'all'
+  })
+
+  useEffect(() => {
+    setLocalFilters({
+      categories: currentFilters?.categories || [],
+      status: currentFilters?.status || 'all'
+    })
+  }, [currentFilters])
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose()
+      }
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isOpen, onClose])
+
+  const handleCategoryToggle = (categoryValue) => {
+    const categories = [...localFilters.categories]
+    const index = categories.indexOf(categoryValue)
+    if (index === -1) {
+      categories.push(categoryValue)
+    } else {
+      categories.splice(index, 1)
+    }
+    setLocalFilters({ ...localFilters, categories })
+  }
 
   const handleApply = () => {
     onApply(localFilters)
-    onClose()
   }
 
   const handleReset = () => {
     const resetFilters = {
-      category: null,
-      status: null
+      categories: [],
+      status: 'all'
     }
     setLocalFilters(resetFilters)
-    onApply(resetFilters)
-    onClose()
+  }
+
+  if (!isOpen) {
+    return null
   }
 
   return (
@@ -50,7 +82,7 @@ function FilterModal({ filters, onApply, onClose }) {
         }}
         role='dialog'
         aria-modal='true'
-        aria-labelledby='filter-modal-title'
+        aria-label='Filter Habits'
       >
         <strong id='filter-modal-title' style={{ fontSize: '1.25rem', display: 'block', marginBottom: '1rem' }}>
           Filter Habits
@@ -58,55 +90,50 @@ function FilterModal({ filters, onApply, onClose }) {
 
         {/* Category Filter */}
         <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor='filter-category' style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Category
-          </label>
-          <select
-            id='filter-category'
-            value={localFilters.category || ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, category: e.target.value || null })}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              borderRadius: '4px',
-              background: '#2a2e47',
-              border: '1px solid #3d4263',
-              color: '#eef0ff'
-            }}
-          >
-            <option value=''>All Categories</option>
-            {CATEGORY_OPTIONS.map(cat => (
-              <option key={cat.value} value={cat.value}>
-                {cat.label}
-              </option>
+          <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+            <legend style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+              Categories
+            </legend>
+            {CATEGORY_OPTIONS.filter(cat => cat.value !== 'default').map(cat => (
+              <div key={cat.value} style={{ marginBottom: '0.5rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type='checkbox'
+                    checked={localFilters.categories.includes(cat.value)}
+                    onChange={() => handleCategoryToggle(cat.value)}
+                    aria-label={cat.label}
+                    style={{ marginRight: '0.5rem' }}
+                  />
+                  {cat.label}
+                </label>
+              </div>
             ))}
-          </select>
+          </fieldset>
         </div>
 
         {/* Status Filter */}
         <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor='filter-status' style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Status
-          </label>
-          <select
-            id='filter-status'
-            value={localFilters.status || ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, status: e.target.value || null })}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              borderRadius: '4px',
-              background: '#2a2e47',
-              border: '1px solid #3d4263',
-              color: '#eef0ff'
-            }}
-          >
-            <option value=''>All Habits</option>
-            <option value='active'>Active</option>
-            <option value='paused'>Paused</option>
-            <option value='completed-today'>Completed Today</option>
-            <option value='incomplete-today'>Not Done Today</option>
-          </select>
+          <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+            <legend style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+              Status
+            </legend>
+            {['all', 'active', 'paused'].map(statusOption => (
+              <div key={statusOption} style={{ marginBottom: '0.5rem' }}>
+                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                  <input
+                    type='radio'
+                    name='status'
+                    value={statusOption}
+                    checked={localFilters.status === statusOption}
+                    onChange={(e) => setLocalFilters({ ...localFilters, status: e.target.value })}
+                    aria-label={statusOption.charAt(0).toUpperCase() + statusOption.slice(1)}
+                    style={{ marginRight: '0.5rem' }}
+                  />
+                  {statusOption.charAt(0).toUpperCase() + statusOption.slice(1)}
+                </label>
+              </div>
+            ))}
+          </fieldset>
         </div>
 
         {/* Action Buttons */}
@@ -139,13 +166,17 @@ function FilterModal({ filters, onApply, onClose }) {
 }
 
 FilterModal.propTypes = {
-  filters: PropTypes.object,
+  isOpen: PropTypes.bool.isRequired,
+  currentFilters: PropTypes.object,
   onApply: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired
 }
 
 FilterModal.defaultProps = {
-  filters: {}
+  currentFilters: {
+    categories: [],
+    status: 'all'
+  }
 }
 
 export default FilterModal
