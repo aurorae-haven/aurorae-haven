@@ -124,6 +124,10 @@ export function generateMetadata() {
   }
 }
 
+// Counter to ensure unique IDs even within the same millisecond
+let idCounter = 0
+let lastTimestamp = 0
+
 /**
  * Normalize entity with ID and metadata
  * Combines entity data with generated ID and metadata fields
@@ -137,9 +141,27 @@ export function generateMetadata() {
  */
 export function normalizeEntity(entity, options = {}) {
   const metadata = generateMetadata()
+  
+  // Generate unique ID - add counter to handle same-millisecond creates
+  let id
+  if (entity.id) {
+    id = entity.id
+  } else if (options.idPrefix) {
+    id = generateTimestampId(options.idPrefix)
+  } else {
+    // Use timestamp + counter for uniqueness
+    if (metadata.timestamp === lastTimestamp) {
+      idCounter++
+    } else {
+      idCounter = 0
+      lastTimestamp = metadata.timestamp
+    }
+    id = metadata.timestamp + idCounter
+  }
+  
   return {
     ...entity,
-    id: entity.id || (options.idPrefix ? generateTimestampId(options.idPrefix) : metadata.timestamp),
+    id,
     ...metadata
   }
 }

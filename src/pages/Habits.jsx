@@ -63,7 +63,7 @@ function Habits() {
   const loadHabits = useCallback(async () => {
     try {
       setLoading(true)
-      const allHabits = await getHabits(sortBy, filters)
+      const allHabits = await getHabits({ sortBy, ...filters })
       setHabits(allHabits)
       const stats = await getTodayStats()
       setTodayStats(stats)
@@ -78,6 +78,22 @@ function Habits() {
   useEffect(() => {
     loadHabits()
   }, [loadHabits])
+
+  // Handle Escape key to close modals
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        if (showNewHabitModal) {
+          setShowNewHabitModal(false)
+        } else if (selectedHabit) {
+          setSelectedHabit(null)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [showNewHabitModal, selectedHabit])
 
   // Phase 5: TAB-HAB-30, TAB-HAB-31 - Keyboard Navigation
   useEffect(() => {
@@ -420,8 +436,8 @@ function Habits() {
                 data-habit-id={habit.id}
                 className="habit-card"
                 tabIndex={0}
-                role="button"
-                aria-label={`${habit.name}, ${habit.currentStreak} day streak, ${isCompletedToday ? 'completed today' : 'not completed today'}. Press Enter to view details, Space to toggle completion.`}
+                role="article"
+                aria-label={`${habit.name}, ${habit.streak} day streak, ${isCompletedToday ? 'completed today' : 'not completed today'}. Press Enter to view details, Space to toggle completion.`}
                 onClick={(e) => {
                   // Don't open drawer if clicking checkbox
                   if (e.target.type !== 'checkbox') {
@@ -485,8 +501,8 @@ function Habits() {
 
                 <div className="habit-streak">
                   <span>
-                    🔥 {habit.currentStreak} day streak
-                    {habit.longestStreak > habit.currentStreak && (
+                    🔥 {habit.streak} day streak
+                    {habit.longestStreak > habit.streak && (
                       <span style={{ color: 'var(--dim)', marginLeft: '8px' }}>
                         (best: {habit.longestStreak})
                       </span>
@@ -594,13 +610,12 @@ function Habits() {
       )}
 
       {/* Filter Modal - TAB-HAB-04 */}
-      {showFilterModal && (
-        <FilterModal
-          currentFilters={filters}
-          onApply={applyFilters}
-          onClose={() => setShowFilterModal(false)}
-        />
-      )}
+      <FilterModal
+        isOpen={showFilterModal}
+        currentFilters={filters}
+        onApply={applyFilters}
+        onClose={() => setShowFilterModal(false)}
+      />
 
       {/* Habit Detail Drawer - TAB-HAB-26 */}
       {selectedHabit && (

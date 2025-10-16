@@ -14,8 +14,13 @@ import dayjs from 'dayjs'
  * @returns {Promise<number>} Habit ID
  */
 export async function createHabit(habitData) {
+  // Validate required fields
+  if (!habitData.name || habitData.name.trim() === '') {
+    throw new Error('Habit name is required')
+  }
+
   const newHabit = normalizeEntity({
-    name: habitData.name || '',
+    name: habitData.name,
     description: habitData.description || '',
     category: habitData.category || 'default',
     tags: habitData.tags || [],
@@ -24,12 +29,12 @@ export async function createHabit(habitData) {
     startDate: habitData.startDate || dayjs().format('YYYY-MM-DD'),
     motivation: habitData.motivation || '',
     brainDumpLink: habitData.brainDumpLink || null,
-    streak: 0,
-    longestStreak: 0,
-    completions: [], // Array of {date, timestamp}
-    vacationDates: [],
-    paused: false,
-    lastCompleted: null
+    streak: habitData.streak ?? 0,
+    longestStreak: habitData.longestStreak ?? 0,
+    completions: habitData.completions || [], // Array of {date, timestamp}
+    vacationDates: habitData.vacationDates || [],
+    paused: habitData.paused ?? false,
+    lastCompleted: habitData.lastCompleted || null
   })
   return await put(STORES.HABITS, newHabit)
 }
@@ -216,15 +221,24 @@ export async function uncompleteHabit(id) {
   const today = dayjs().format('YYYY-MM-DD')
   
   // Remove today's completion
-  const completions = (habit.completions || []).filter(c => c.date !== today)
+  const completions = (habit.completions || []).filter(c => {
+    const dateStr = typeof c === 'string' ? c : c.date
+    return dateStr !== today
+  })
+  
+  // Create updated habit for recalculation
+  const habitForCalc = { ...habit, completions }
   
   // Recalculate streak
-  const newStreak = calculateStreak(habit, null, false)
+  const newStreak = calculateStreak(habitForCalc, null, false)
 
   const updatedHabit = updateMetadata({
     ...habit,
     streak: newStreak,
-    lastCompleted: completions.length > 0 ? completions[completions.length - 1].date : null,
+    lastCompleted: completions.length > 0 ? 
+      (typeof completions[completions.length - 1] === 'string' ? 
+        completions[completions.length - 1] : 
+        completions[completions.length - 1].date) : null,
     completions
   })
 
@@ -244,18 +258,27 @@ export async function uncompleteHabit(id) {
  * @param {boolean} isNewCompletion - Whether this is a new completion
  * @returns {number} Current streak
  */
-function calculateStreak(habit, includeDate = null, isNewCompletion = false) {
+export function calculateStreak(habit, includeDate = null, isNewCompletion = false) {
   const completions = habit.completions || []
-  const vacationDates = habit.vacationDates || []
+  const vacationDates = habit.vacationDates || habit.vacationDays || []
+  
+  // Normalize completions to be date strings
+  let datesToCheck = completions.map(c => {
+    if (typeof c === 'string') {
+      return c
+    } else if (c && c.date) {
+      return c.date
+    }
+    return null
+  }).filter(d => d !== null)
   
   // If including new date, temporarily add it
-  let datesToCheck = [...completions]
   if (includeDate && isNewCompletion) {
-    datesToCheck.push({ date: includeDate })
+    datesToCheck.push(includeDate)
   }
   
   // Sort by date descending
-  datesToCheck.sort((a, b) => b.date.localeCompare(a.date))
+  datesToCheck.sort((a, b) => b.localeCompare(a))
   
   if (datesToCheck.length === 0) return 0
   
@@ -265,7 +288,7 @@ function calculateStreak(habit, includeDate = null, isNewCompletion = false) {
   // Start from today and count backwards
   for (let i = 0; i < 365; i++) { // Max 365 days lookback
     const dateStr = checkDate.format('YYYY-MM-DD')
-    const hasCompletion = datesToCheck.some(c => c.date === dateStr)
+    const hasCompletion = datesToCheck.includes(dateStr)
     const isVacation = vacationDates.includes(dateStr)
     
     if (hasCompletion) {
@@ -292,7 +315,7 @@ function calculateStreak(habit, includeDate = null, isNewCompletion = false) {
  * @param {number} oldStreak - Previous streak count
  * @returns {object} XP breakdown
  */
-function calculateXP(newStreak, oldStreak) {
+export function calculateXP(newStreak, oldStreak) {
   let total = 1 // Base XP
   let milestone = null
   let message = 'Habit done. +1 XP' // TAB-HAB-23
@@ -347,7 +370,7 @@ export async function getTodayStats() {
   
   const completed = habits.filter(h => h.lastCompleted === today).length
   const total = habits.length
-  const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
+  const percentage = total > 0 ? Math.round((completed / total) * 100 * 100) / 100 : 0
 
   return {
     total,
@@ -394,44 +417,139 @@ export async function getHabitStats(id) {
 /**
  * Export habits data
  * TAB-HAB-42: Import/Export functionality
- * @returns {Promise<object>} Exported data
+ * @returns {Promise<string>} Exported data as JSON string
  */
 export async function exportHabits() {
   const habits = await getAll(STORES.HABITS)
-  return {
+  const exportData = {
     habits,
-    exportedAt: new Date().toISOString(),
+    exportDate: new Date().toISOString(),
     version: '1.0'
   }
+  return JSON.stringify(exportData)
 }
 
 /**
  * Import habits data
  * TAB-HAB-43: Round-trip import/export
- * @param {object} data - Import data
+ * @param {string} jsonData - Import data as JSON string
  * @returns {Promise<object>} Import result
  */
-export async function importHabits(data) {
+export async function importHabits(jsonData) {
+  let data
+  try {
+    data = JSON.parse(jsonData)
+  } catch (error) {
+    throw new Error('Invalid JSON data')
+  }
+
   if (!data.habits || !Array.isArray(data.habits)) {
     throw new Error('Invalid import data')
   }
 
   let imported = 0
   let skipped = 0
+  const errors = []
 
   for (const habit of data.habits) {
     try {
-      const existing = await getById(STORES.HABITS, habit.id)
-      if (existing) {
-        skipped++
-        continue
+      // Check if habit has an ID and if it already exists
+      if (habit.id) {
+        const existing = await getById(STORES.HABITS, habit.id)
+        if (existing) {
+          skipped++
+          continue
+        }
       }
-      await put(STORES.HABITS, habit)
+      // Normalize the imported habit (generates new ID if needed)
+      const normalized = normalizeEntity(habit)
+      await put(STORES.HABITS, normalized)
       imported++
-    } catch {
+    } catch (error) {
+      // If validation fails or other error, skip this habit
+      errors.push({ habit: habit.name || 'unnamed', error: error.message })
       skipped++
     }
   }
 
+  if (errors.length > 0) {
+    console.error('Import errors:', errors)
+  }
+
   return { imported, skipped }
+}
+
+/**
+ * Sort habits by a given field
+ * @param {Array} habits - Array of habits
+ * @param {string} sortBy - Field to sort by
+ * @returns {Array} Sorted array of habits
+ */
+export function sortHabits(habits, sortBy) {
+  const sorted = [...habits]
+  
+  switch (sortBy) {
+    case 'title':
+      sorted.sort((a, b) => a.name.localeCompare(b.name))
+      break
+    case 'streak':
+      sorted.sort((a, b) => (b.streak || 0) - (a.streak || 0))
+      break
+    case 'longestStreak':
+      sorted.sort((a, b) => (b.longestStreak || 0) - (a.longestStreak || 0))
+      break
+    case 'lastCompleted':
+      sorted.sort((a, b) => {
+        const dateA = a.lastCompleted || '0000-00-00'
+        const dateB = b.lastCompleted || '0000-00-00'
+        return dateB.localeCompare(dateA)
+      })
+      break
+    case 'createdAt':
+      sorted.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+      break
+    default:
+      break
+  }
+  
+  return sorted
+}
+
+/**
+ * Filter habits by criteria
+ * @param {Array} habits - Array of habits
+ * @param {object} filters - Filter criteria
+ * @returns {Array} Filtered array of habits
+ */
+export function filterHabits(habits, filters = {}) {
+  let filtered = [...habits]
+  
+  if (filters.category) {
+    filtered = filtered.filter(h => h.category === filters.category)
+  }
+  
+  if (filters.tag) {
+    filtered = filtered.filter(h => h.tags && h.tags.includes(filters.tag))
+  }
+  
+  if (filters.status === 'active') {
+    filtered = filtered.filter(h => !h.paused)
+  } else if (filters.status === 'paused') {
+    filtered = filtered.filter(h => h.paused)
+  }
+  
+  if (filters.minStreak) {
+    filtered = filtered.filter(h => h.streak >= filters.minStreak)
+  }
+  
+  return filtered
+}
+
+/**
+ * Toggle habit completion for today (alias for toggleHabitToday)
+ * @param {number} id - Habit ID
+ * @returns {Promise<object>} Result with XP and streak
+ */
+export function toggleCompletion(id) {
+  return toggleHabitToday(id)
 }
