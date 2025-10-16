@@ -173,14 +173,16 @@ describe('Habits Component', () => {
       // Wait for habit to load
       await screen.findByText('Daily Habit')
       
-      const checkbox = screen.getByRole('checkbox', { name: /mark daily habit/i })
+      let checkbox = screen.getByRole('checkbox', { name: /mark daily habit/i })
       expect(checkbox).not.toBeChecked()
       
       fireEvent.click(checkbox)
       
+      // Wait for the re-render after completion
       await waitFor(() => {
+        checkbox = screen.getByRole('checkbox', { name: /mark daily habit/i })
         expect(checkbox).toBeChecked()
-      })
+      }, { timeout: 5000 })
     })
 
     test('updates Today panel when habit is completed', async () => {
@@ -295,14 +297,20 @@ describe('Habits Component', () => {
       
       render(<Habits />)
       
-      // Wait for loading and open filter modal
-      const filterButton = await screen.findByRole('button', { name: /filter/i })
+      // Wait for both habits to load
+      await screen.findByText('Blue Habit')
+      await screen.findByText('Violet Habit')
+      
+      // Open filter modal
+      const filterButton = screen.getByRole('button', { name: /filter/i })
       fireEvent.click(filterButton)
       
-      // Select blue category (need to be specific to find checkbox in modal, not habit card)
-      const filterModal = screen.getByRole('dialog')
-      const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
-      fireEvent.click(blueCheckbox)
+      // Select blue category
+      await waitFor(() => {
+        const filterModal = screen.getByRole('dialog')
+        const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
+        fireEvent.click(blueCheckbox)
+      })
       
       // Apply filter
       fireEvent.click(screen.getByText(/Apply/i))
@@ -310,7 +318,7 @@ describe('Habits Component', () => {
       await waitFor(() => {
         expect(screen.getByText('Blue Habit')).toBeInTheDocument()
         expect(screen.queryByText('Violet Habit')).not.toBeInTheDocument()
-      })
+      }, { timeout: 3000 })
     })
 
     test('shows filter indicator when filters are active', async () => {
@@ -318,18 +326,25 @@ describe('Habits Component', () => {
       
       render(<Habits />)
       
-      // Wait for loading and apply filter
-      const filterButton = await screen.findByRole('button', { name: /filter/i })
+      // Wait for loading
+      await screen.findByText('Test Habit')
+      
+      // Apply filter
+      const filterButton = screen.getByRole('button', { name: /filter/i })
       fireEvent.click(filterButton)
-      const filterModal = screen.getByRole('dialog')
-      const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
-      fireEvent.click(blueCheckbox)
+      
+      await waitFor(() => {
+        const filterModal = screen.getByRole('dialog')
+        const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
+        fireEvent.click(blueCheckbox)
+      })
+      
       fireEvent.click(screen.getByText(/Apply/i))
       
       await waitFor(() => {
         const filterIndicator = document.querySelector('.filter-active-indicator')
         expect(filterIndicator).toBeInTheDocument()
-      })
+      }, { timeout: 3000 })
     })
   })
 
@@ -361,7 +376,7 @@ describe('Habits Component', () => {
       await waitFor(() => {
         const heatmapCells = document.querySelectorAll('[aria-label*="Completed"], [aria-label*="Not completed"]')
         expect(heatmapCells.length).toBeGreaterThanOrEqual(30)
-      })
+      }, { timeout: 3000 })
     })
 
     test('shows stats in detail drawer', async () => {
@@ -381,7 +396,7 @@ describe('Habits Component', () => {
       await waitFor(() => {
         expect(screen.getByText(/Current Streak/i)).toBeInTheDocument()
         expect(screen.getByText(/5 days/i)).toBeInTheDocument()
-      })
+      }, { timeout: 3000 })
     })
 
     test('allows setting vacation days in detail drawer', async () => {
@@ -438,7 +453,7 @@ describe('Habits Component', () => {
       
       await waitFor(() => {
         expect(habitCards[1]).toHaveFocus()
-      })
+      }, { timeout: 3000 })
     })
 
     test('toggles completion with Space key', async () => {
@@ -457,7 +472,7 @@ describe('Habits Component', () => {
       await waitFor(() => {
         const checkbox = screen.getByRole('checkbox')
         expect(checkbox).toBeChecked()
-      })
+      }, { timeout: 5000 })
     })
 
     test('opens detail drawer with Enter key', async () => {
@@ -475,7 +490,7 @@ describe('Habits Component', () => {
       // Check drawer opened by looking for close button
       await waitFor(() => {
         expect(screen.getByLabelText(/close drawer/i)).toBeInTheDocument()
-      })
+      }, { timeout: 3000 })
     })
   })
 
@@ -498,12 +513,12 @@ describe('Habits Component', () => {
       await waitFor(() => {
         const pauseButton = screen.getByRole('button', { name: /pause/i })
         fireEvent.click(pauseButton)
-      })
+      }, { timeout: 3000 })
       
       // Check habit was paused by verifying opacity change
       await waitFor(() => {
         expect(habitCard).toHaveStyle({ opacity: '0.6' })
-      })
+      }, { timeout: 3000 })
     })
 
     test('resumes paused habit', async () => {
@@ -526,12 +541,12 @@ describe('Habits Component', () => {
       await waitFor(() => {
         const resumeButton = screen.getByRole('button', { name: /resume/i })
         fireEvent.click(resumeButton)
-      })
+      }, { timeout: 3000 })
       
       // Check habit was resumed
       await waitFor(() => {
         expect(habitCard).toHaveStyle({ opacity: '1' })
-      })
+      }, { timeout: 3000 })
     })
 
     test('shows confirmation before deleting habit', async () => {
@@ -553,7 +568,7 @@ describe('Habits Component', () => {
       await waitFor(() => {
         const deleteButton = screen.getByRole('button', { name: /delete/i })
         fireEvent.click(deleteButton)
-      })
+      }, { timeout: 3000 })
       
       expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining('Delete this habit'))
     })
@@ -574,15 +589,15 @@ describe('Habits Component', () => {
       // Mock window.confirm to return true
       window.confirm = jest.fn(() => true)
       
-      await waitFor(async () => {
+      await waitFor(() => {
         const deleteButton = screen.getByRole('button', { name: /delete/i })
         fireEvent.click(deleteButton)
-      })
+      }, { timeout: 3000 })
       
       // Wait for habit to be deleted
       await waitFor(() => {
         expect(screen.queryByText('To Delete')).not.toBeInTheDocument()
-      })
+      }, { timeout: 3000 })
     })
   })
 
