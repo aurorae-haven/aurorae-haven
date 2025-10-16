@@ -77,9 +77,11 @@ describe('HeatmapStrip Component', () => {
     const { container } = render(<HeatmapStrip completions={completions} />)
     
     const cells = container.querySelectorAll('[aria-label]')
-    // 7 days ago should be at index 21 (28 - 7 = 21)
-    expect(cells[21]).toHaveStyle({ backgroundColor: '#86f5e0' })
-    // Today should be last cell
+    // 7 days ago should be at index 20 (28 days total, starting from 27 days ago at index 0)
+    // When i=7 in the loop, we get today.subtract(7) which is 7 days ago
+    // This is the 21st element pushed (0-indexed at 20)
+    expect(cells[20]).toHaveStyle({ backgroundColor: '#86f5e0' })
+    // Today should be last cell (index 27)
     expect(cells[27]).toHaveStyle({ backgroundColor: '#86f5e0' })
   })
 

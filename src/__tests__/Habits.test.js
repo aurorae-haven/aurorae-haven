@@ -10,7 +10,14 @@ import { clear, STORES } from '../utils/indexedDBManager'
 jest.mock('../utils/logger', () => ({
   log: jest.fn(),
   warn: jest.fn(),
-  error: jest.fn()
+  error: jest.fn(),
+  info: jest.fn(),
+  createLogger: jest.fn(() => ({
+    log: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn()
+  }))
 }))
 
 describe('Habits Component', () => {
