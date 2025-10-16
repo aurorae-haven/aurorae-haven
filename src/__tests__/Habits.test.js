@@ -35,7 +35,8 @@ describe('Habits Component', () => {
       render(<Habits />)
       await waitFor(() => {
         expect(screen.getByText(/0\/0/i)).toBeInTheDocument()
-        expect(screen.getByText(/habits/i)).toBeInTheDocument()
+        // Check for "habits" in the Today panel context
+        expect(screen.getByText(/0 habits remaining/i)).toBeInTheDocument()
       })
     })
 
@@ -46,10 +47,12 @@ describe('Habits Component', () => {
       })
     })
 
-    test('renders toolbar with actions', () => {
+    test('renders toolbar with actions', async () => {
       render(<Habits />)
-      expect(screen.getByText(/Sort:/i)).toBeInTheDocument()
-      expect(screen.getByText(/New Habit/i)).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText(/Sort:/i)).toBeInTheDocument()
+        expect(screen.getByText(/New Habit/i)).toBeInTheDocument()
+      })
     })
   })
 

@@ -594,13 +594,12 @@ function Habits() {
       )}
 
       {/* Filter Modal - TAB-HAB-04 */}
-      {showFilterModal && (
-        <FilterModal
-          currentFilters={filters}
-          onApply={applyFilters}
-          onClose={() => setShowFilterModal(false)}
-        />
-      )}
+      <FilterModal
+        isOpen={showFilterModal}
+        currentFilters={filters}
+        onApply={applyFilters}
+        onClose={() => setShowFilterModal(false)}
+      />
 
       {/* Habit Detail Drawer - TAB-HAB-26 */}
       {selectedHabit && (
