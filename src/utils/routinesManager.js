@@ -172,13 +172,49 @@ export async function addStep(routineId, step) {
 }
 
 /**
+ * Update a specific step in routine
+ * TAB-RTN-19: Step attributes (Label, Timer, Description, Energy hint)
+ * @param {string} routineId - Routine ID
+ * @param {string} stepId - Step ID
+ * @param {object} updates - Step updates
+ * @returns {Promise<object>} Updated routine
+ */
+export async function updateStep(routineId, stepId, updates) {
+  const routine = await getById(STORES.ROUTINES, routineId)
+  if (!routine) {
+    throw new Error('Routine not found')
+  }
+
+  const stepIndex = routine.steps.findIndex((s) => s.id === stepId)
+  if (stepIndex === -1) {
+    throw new Error('Step not found')
+  }
+
+  // Validate step updates
+  const validation = validateStep({ ...routine.steps[stepIndex], ...updates })
+  if (!validation.valid) {
+    throw new Error(validation.errors.join(', '))
+  }
+
+  // Apply updates
+  routine.steps[stepIndex] = {
+    ...routine.steps[stepIndex],
+    ...updates
+  }
+
+  routine.totalDuration = calculateTotalDuration(routine.steps)
+  const updated = updateMetadata(routine)
+  await put(STORES.ROUTINES, updated)
+  return updated
+}
+
+/**
  * Remove step from routine
  * @param {string} routineId - Routine ID
  * @param {string} stepId - Step ID
  * @returns {Promise<object>} Updated routine
  */
 export async function removeStep(routineId, stepId) {
-  // TODO: Implement step removal with order recalculation
   const routine = await getById(STORES.ROUTINES, routineId)
   if (!routine) {
     throw new Error('Routine not found')
@@ -190,6 +226,46 @@ export async function removeStep(routineId, stepId) {
   })
   routine.totalDuration = calculateTotalDuration(routine.steps)
   
+  const updated = updateMetadata(routine)
+  await put(STORES.ROUTINES, updated)
+  return updated
+}
+
+/**
+ * Duplicate a step in routine
+ * TAB-RTN-20: Steps list editor - Duplicate button
+ * @param {string} routineId - Routine ID
+ * @param {string} stepId - Step ID to duplicate
+ * @returns {Promise<object>} Updated routine
+ */
+export async function duplicateStep(routineId, stepId) {
+  const routine = await getById(STORES.ROUTINES, routineId)
+  if (!routine) {
+    throw new Error('Routine not found')
+  }
+
+  const stepIndex = routine.steps.findIndex((s) => s.id === stepId)
+  if (stepIndex === -1) {
+    throw new Error('Step not found')
+  }
+
+  const stepToDuplicate = routine.steps[stepIndex]
+  const newStep = {
+    ...stepToDuplicate,
+    id: `step_${Date.now()}`,
+    order: stepIndex + 1,
+    label: `${stepToDuplicate.label} (Copy)`
+  }
+
+  // Insert after the original step
+  routine.steps.splice(stepIndex + 1, 0, newStep)
+
+  // Reorder all steps
+  routine.steps.forEach((step, index) => {
+    step.order = index
+  })
+
+  routine.totalDuration = calculateTotalDuration(routine.steps)
   const updated = updateMetadata(routine)
   await put(STORES.ROUTINES, updated)
   return updated
@@ -482,4 +558,85 @@ export async function importRoutines(data) {
   }
 
   return results
+}
+
+/**
+ * Validate step structure
+ * TAB-RTN-21: Timer validation (10 seconds minimum, 2 hours maximum)
+ * @param {object} step - Step to validate
+ * @returns {object} Validation result {valid, errors}
+ */
+export function validateStep(step) {
+  const errors = []
+
+  // Label validation
+  if (!step.label || step.label.trim() === '') {
+    errors.push('Step must have a label')
+  }
+
+  // Duration validation (TAB-RTN-21: 10s to 2h)
+  if (!step.duration) {
+    errors.push('Step must have a duration')
+  } else if (step.duration < 10) {
+    errors.push('Duration must be at least 10 seconds')
+  } else if (step.duration > 7200) {
+    errors.push('Duration cannot exceed 2 hours (7200 seconds)')
+  }
+
+  // Energy tag validation (optional but if present, must be valid)
+  if (step.energyTag) {
+    const validEnergyTags = ['low', 'medium', 'high']
+    if (!validEnergyTags.includes(step.energyTag)) {
+      errors.push('Energy tag must be: low, medium, or high')
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  }
+}
+
+/**
+ * Add or update energy tag for routine
+ * TAB-RTN-06: Filter by Energy (high/medium/low)
+ * @param {string} routineId - Routine ID
+ * @param {string} energyTag - Energy level (low, medium, high)
+ * @returns {Promise<object>} Updated routine
+ */
+export async function setEnergyTag(routineId, energyTag) {
+  const routine = await getById(STORES.ROUTINES, routineId)
+  if (!routine) {
+    throw new Error('Routine not found')
+  }
+
+  const validTags = ['low', 'medium', 'high']
+  if (!validTags.includes(energyTag)) {
+    throw new Error('Energy tag must be: low, medium, or high')
+  }
+
+  routine.energyTag = energyTag
+  const updated = updateMetadata(routine)
+  await put(STORES.ROUTINES, updated)
+  return updated
+}
+
+/**
+ * Update routine's last used timestamp
+ * TAB-RTN-06: Filter by Last Used date
+ * @param {string} routineId - Routine ID
+ * @returns {Promise<object>} Updated routine
+ */
+export async function updateLastUsed(routineId) {
+  const routine = await getById(STORES.ROUTINES, routineId)
+  if (!routine) {
+    throw new Error('Routine not found')
+  }
+
+  routine.lastUsed = Date.now()
+  routine.usageCount = (routine.usageCount || 0) + 1
+  
+  const updated = updateMetadata(routine)
+  await put(STORES.ROUTINES, updated)
+  return updated
 }
