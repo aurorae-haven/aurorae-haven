@@ -50,16 +50,16 @@ describe('Habits Component', () => {
     test('renders toolbar with actions', async () => {
       render(<Habits />)
       await waitFor(() => {
-        expect(screen.getByText(/Sort:/i)).toBeInTheDocument()
-        expect(screen.getByText(/New Habit/i)).toBeInTheDocument()
+        expect(screen.getByRole('combobox', { name: /Sort habits by/i })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /New Habit/i })).toBeInTheDocument()
       })
     })
   })
 
   describe('Creating Habits', () => {
-    test('opens new habit modal when button clicked', () => {
+    test('opens new habit modal when button clicked', async () => {
       render(<Habits />)
-      const newHabitButton = screen.getByText(/New Habit/i)
+      const newHabitButton = await screen.findByRole('button', { name: /New Habit/i })
       fireEvent.click(newHabitButton)
       
       expect(screen.getByText(/Create New Habit/i)).toBeInTheDocument()
@@ -68,8 +68,9 @@ describe('Habits Component', () => {
     test('creates new habit with name and category', async () => {
       render(<Habits />)
       
-      // Open modal
-      fireEvent.click(screen.getByText(/New Habit/i))
+      // Wait for loading and open modal
+      const newHabitButton = await screen.findByRole('button', { name: /New Habit/i })
+      fireEvent.click(newHabitButton)
       
       // Fill in form
       const nameInput = screen.getByLabelText(/Habit Name/i)
@@ -88,20 +89,22 @@ describe('Habits Component', () => {
       })
     })
 
-    test('validates habit name is required', () => {
+    test('validates habit name is required', async () => {
       render(<Habits />)
       
-      fireEvent.click(screen.getByText(/New Habit/i))
+      const newHabitButton = await screen.findByRole('button', { name: /New Habit/i })
+      fireEvent.click(newHabitButton)
       fireEvent.click(screen.getByText(/Create Habit/i))
       
       // Modal should still be open due to validation
       expect(screen.getByText(/Create New Habit/i)).toBeInTheDocument()
     })
 
-    test('closes modal when cancel is clicked', () => {
+    test('closes modal when cancel is clicked', async () => {
       render(<Habits />)
       
-      fireEvent.click(screen.getByText(/New Habit/i))
+      const newHabitButton = await screen.findByRole('button', { name: /New Habit/i })
+      fireEvent.click(newHabitButton)
       fireEvent.click(screen.getByText(/Cancel/i))
       
       expect(screen.queryByText(/Create New Habit/i)).not.toBeInTheDocument()
@@ -247,7 +250,7 @@ describe('Habits Component', () => {
       
       render(<Habits />)
       
-      const sortSelect = screen.getByLabelText(/Sort:/i)
+      const sortSelect = await screen.findByRole('combobox', { name: /Sort habits by/i })
       fireEvent.change(sortSelect, { target: { value: 'title' } })
       
       await waitFor(() => {
@@ -263,8 +266,8 @@ describe('Habits Component', () => {
       
       render(<Habits />)
       
-      const sortSelect = screen.getByLabelText(/Sort:/i)
-      fireEvent.change(sortSelect, { target: { value: 'streak' } })
+      const sortSelect = await screen.findByRole('combobox', { name: /Sort habits by/i })
+      fireEvent.change(sortSelect, { target: { value: 'currentStreak' } })
       
       await waitFor(() => {
         const habitCards = screen.getAllByRole('article')
@@ -273,10 +276,10 @@ describe('Habits Component', () => {
       })
     })
 
-    test('opens filter modal when filter button clicked', () => {
+    test('opens filter modal when filter button clicked', async () => {
       render(<Habits />)
       
-      const filterButton = screen.getByRole('button', { name: /filter/i })
+      const filterButton = await screen.findByRole('button', { name: /filter/i })
       fireEvent.click(filterButton)
       
       expect(screen.getByText(/Filter Habits/i)).toBeInTheDocument()
@@ -288,8 +291,9 @@ describe('Habits Component', () => {
       
       render(<Habits />)
       
-      // Open filter modal
-      fireEvent.click(screen.getByRole('button', { name: /filter/i }))
+      // Wait for loading and open filter modal
+      const filterButton = await screen.findByRole('button', { name: /filter/i })
+      fireEvent.click(filterButton)
       
       // Select blue category
       const blueCheckbox = screen.getByLabelText(/blue/i)
@@ -309,8 +313,9 @@ describe('Habits Component', () => {
       
       render(<Habits />)
       
-      // Apply filter
-      fireEvent.click(screen.getByRole('button', { name: /filter/i }))
+      // Wait for loading and apply filter
+      const filterButton = await screen.findByRole('button', { name: /filter/i })
+      fireEvent.click(filterButton)
       const blueCheckbox = screen.getByLabelText(/blue/i)
       fireEvent.click(blueCheckbox)
       fireEvent.click(screen.getByText(/Apply/i))
@@ -529,11 +534,13 @@ describe('Habits Component', () => {
   })
 
   describe('Accessibility', () => {
-    test('has proper ARIA labels on interactive elements', () => {
+    test('has proper ARIA labels on interactive elements', async () => {
       render(<Habits />)
       
-      expect(screen.getByRole('button', { name: /new habit/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /filter/i })).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /new habit/i })).toBeInTheDocument()
+        expect(screen.getByRole('button', { name: /filter/i })).toBeInTheDocument()
+      })
     })
 
     test('announces completion to screen readers', async () => {
@@ -552,20 +559,22 @@ describe('Habits Component', () => {
       })
     })
 
-    test('traps focus in modals', () => {
+    test('traps focus in modals', async () => {
       render(<Habits />)
       
-      fireEvent.click(screen.getByText(/New Habit/i))
+      const newHabitButton = await screen.findByRole('button', { name: /new habit/i })
+      fireEvent.click(newHabitButton)
       
       // Tab should cycle through modal elements only
       const modalElements = screen.getByRole('dialog').querySelectorAll('button, input, select')
       expect(modalElements.length).toBeGreaterThan(0)
     })
 
-    test('closes modal on Escape key', () => {
+    test('closes modal on Escape key', async () => {
       render(<Habits />)
       
-      fireEvent.click(screen.getByText(/New Habit/i))
+      const newHabitButton = await screen.findByRole('button', { name: /new habit/i })
+      fireEvent.click(newHabitButton)
       fireEvent.keyDown(document, { key: 'Escape' })
       
       expect(screen.queryByText(/Create New Habit/i)).not.toBeInTheDocument()

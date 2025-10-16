@@ -63,7 +63,7 @@ function Habits() {
   const loadHabits = useCallback(async () => {
     try {
       setLoading(true)
-      const allHabits = await getHabits(sortBy, filters)
+      const allHabits = await getHabits({ sortBy, ...filters })
       setHabits(allHabits)
       const stats = await getTodayStats()
       setTodayStats(stats)
@@ -421,7 +421,7 @@ function Habits() {
                 className="habit-card"
                 tabIndex={0}
                 role="button"
-                aria-label={`${habit.name}, ${habit.currentStreak} day streak, ${isCompletedToday ? 'completed today' : 'not completed today'}. Press Enter to view details, Space to toggle completion.`}
+                aria-label={`${habit.name}, ${habit.streak} day streak, ${isCompletedToday ? 'completed today' : 'not completed today'}. Press Enter to view details, Space to toggle completion.`}
                 onClick={(e) => {
                   // Don't open drawer if clicking checkbox
                   if (e.target.type !== 'checkbox') {
@@ -485,8 +485,8 @@ function Habits() {
 
                 <div className="habit-streak">
                   <span>
-                    🔥 {habit.currentStreak} day streak
-                    {habit.longestStreak > habit.currentStreak && (
+                    🔥 {habit.streak} day streak
+                    {habit.longestStreak > habit.streak && (
                       <span style={{ color: 'var(--dim)', marginLeft: '8px' }}>
                         (best: {habit.longestStreak})
                       </span>
