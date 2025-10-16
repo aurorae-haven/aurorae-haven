@@ -5,16 +5,17 @@ import 'fake-indexeddb/auto'
 import {
   createHabit,
   getHabits,
+  getHabit,
   updateHabit,
   deleteHabit,
-  toggleCompletion,
-  calculateStreak,
-  calculateXP,
+  toggleHabitToday,
+  completeHabit,
+  uncompleteHabit,
+  pauseHabit,
   getTodayStats,
+  getHabitStats,
   exportHabits,
-  importHabits,
-  filterHabits,
-  sortHabits
+  importHabits
 } from '../utils/habitsManager'
 import { clear, STORES } from '../utils/indexedDBManager'
 
