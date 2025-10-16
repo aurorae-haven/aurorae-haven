@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within, act } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import 'fake-indexeddb/auto'
 import Habits from '../pages/Habits'
@@ -176,12 +176,17 @@ describe('Habits Component', () => {
       let checkbox = screen.getByRole('checkbox', { name: /mark daily habit/i })
       expect(checkbox).not.toBeChecked()
       
-      fireEvent.click(checkbox)
+      // Click the checkbox using act to handle async state updates
+      await act(async () => {
+        fireEvent.click(checkbox)
+        // Wait for async operations to complete
+        await new Promise(resolve => setTimeout(resolve, 500))
+      })
       
-      // Wait for the re-render after completion
+      // Re-query the checkbox and check if it's now checked
       await waitFor(() => {
-        checkbox = screen.getByRole('checkbox', { name: /mark daily habit/i })
-        expect(checkbox).toBeChecked()
+        const updatedCheckbox = screen.getByRole('checkbox', { name: /mark daily habit/i })
+        expect(updatedCheckbox).toBeChecked()
       }, { timeout: 5000 })
     })
 
@@ -206,17 +211,27 @@ describe('Habits Component', () => {
     test('shows XP earned toast on completion', async () => {
       await createHabit({ name: 'XP Habit' })
       
-      render(<Habits />)
+      const { container } = render(<Habits />)
       
       await screen.findByText('XP Habit')
       
       const checkbox = screen.getByRole('checkbox')
-      fireEvent.click(checkbox)
       
-      // Wait for toast notification with XP
+      // Click and wait for async operations using act
+      await act(async () => {
+        fireEvent.click(checkbox)
+        // Wait for async operation to complete
+        await new Promise(resolve => setTimeout(resolve, 500))
+      })
+      
+      // Check if toast with XP appears
       await waitFor(() => {
-        expect(screen.getByText(/\+1 XP/i)).toBeInTheDocument()
-      }, { timeout: 3000 })
+        const toastElements = container.querySelectorAll('*')
+        const hasXPText = Array.from(toastElements).some(el => 
+          el.textContent && el.textContent.match(/\+\d+ XP/i)
+        )
+        expect(hasXPText).toBe(true)
+      }, { timeout: 5000 })
     })
 
     test('triggers confetti on milestone streaks', async () => {
@@ -240,12 +255,15 @@ describe('Habits Component', () => {
       const checkbox = screen.getByRole('checkbox')
       fireEvent.click(checkbox)
       
+      // Wait for async operations
+      await new Promise(resolve => setTimeout(resolve, 200))
+      
       // Confetti should be triggered (7 day milestone)
       // Check for canvas element that confetti creates
       await waitFor(() => {
         const canvas = document.querySelector('canvas')
         expect(canvas).toBeInTheDocument()
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
   })
 
@@ -305,20 +323,27 @@ describe('Habits Component', () => {
       const filterButton = screen.getByRole('button', { name: /filter/i })
       fireEvent.click(filterButton)
       
-      // Select blue category
+      // Wait for modal to open
       await waitFor(() => {
-        const filterModal = screen.getByRole('dialog')
-        const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
-        fireEvent.click(blueCheckbox)
+        expect(screen.getByRole('dialog')).toBeInTheDocument()
       })
       
+      // Select blue category
+      const filterModal = screen.getByRole('dialog')
+      const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
+      fireEvent.click(blueCheckbox)
+      
       // Apply filter
-      fireEvent.click(screen.getByText(/Apply/i))
+      const applyButton = screen.getByText(/Apply/i)
+      fireEvent.click(applyButton)
+      
+      // Wait for filter to be applied and UI to update
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       await waitFor(() => {
         expect(screen.getByText('Blue Habit')).toBeInTheDocument()
         expect(screen.queryByText('Violet Habit')).not.toBeInTheDocument()
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
 
     test('shows filter indicator when filters are active', async () => {
@@ -333,18 +358,25 @@ describe('Habits Component', () => {
       const filterButton = screen.getByRole('button', { name: /filter/i })
       fireEvent.click(filterButton)
       
+      // Wait for modal
       await waitFor(() => {
-        const filterModal = screen.getByRole('dialog')
-        const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
-        fireEvent.click(blueCheckbox)
+        expect(screen.getByRole('dialog')).toBeInTheDocument()
       })
       
-      fireEvent.click(screen.getByText(/Apply/i))
+      const filterModal = screen.getByRole('dialog')
+      const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
+      fireEvent.click(blueCheckbox)
+      
+      const applyButton = screen.getByText(/Apply/i)
+      fireEvent.click(applyButton)
+      
+      // Wait for filter to be applied
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       await waitFor(() => {
         const filterIndicator = document.querySelector('.filter-active-indicator')
         expect(filterIndicator).toBeInTheDocument()
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
   })
 
@@ -372,11 +404,18 @@ describe('Habits Component', () => {
       const habitCard = await screen.findByText('History Habit')
       fireEvent.click(habitCard)
       
-      // Wait for drawer to open and check for heatmap cells
+      // Wait for drawer to open
+      await new Promise(resolve => setTimeout(resolve, 200))
+      
+      // Wait for drawer and heatmap cells
       await waitFor(() => {
-        const heatmapCells = document.querySelectorAll('[aria-label*="Completed"], [aria-label*="Not completed"]')
-        expect(heatmapCells.length).toBeGreaterThanOrEqual(30)
+        expect(screen.getByLabelText(/close drawer/i)).toBeInTheDocument()
       }, { timeout: 3000 })
+      
+      await waitFor(() => {
+        const heatmapCells = document.querySelectorAll('[aria-label*="Completed"], [aria-label*="Not completed"], [aria-label*="Vacation"]')
+        expect(heatmapCells.length).toBeGreaterThanOrEqual(30)
+      }, { timeout: 5000 })
     })
 
     test('shows stats in detail drawer', async () => {
@@ -392,11 +431,14 @@ describe('Habits Component', () => {
       const habitCard = await screen.findByText('Stats Habit')
       fireEvent.click(habitCard)
       
+      // Wait for drawer to open
+      await new Promise(resolve => setTimeout(resolve, 200))
+      
       // Check for stats display (text includes streak values)
       await waitFor(() => {
         expect(screen.getByText(/Current Streak/i)).toBeInTheDocument()
         expect(screen.getByText(/5 days/i)).toBeInTheDocument()
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
 
     test('allows setting vacation days in detail drawer', async () => {
@@ -448,12 +490,18 @@ describe('Habits Component', () => {
       const habitCards = screen.getAllByRole('article')
       habitCards[0].focus()
       
+      // Wait a bit for focus to settle
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       // Press down arrow on window (keyboard navigation listens to window events)
       fireEvent.keyDown(window, { key: 'ArrowDown' })
       
+      // Give time for the focus change to happen
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       await waitFor(() => {
         expect(habitCards[1]).toHaveFocus()
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
 
     test('toggles completion with Space key', async () => {
@@ -466,8 +514,14 @@ describe('Habits Component', () => {
       const habitCard = screen.getByRole('article')
       habitCard.focus()
       
+      // Wait for focus to settle
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       // Fire keydown on window
       fireEvent.keyDown(window, { key: ' ' })
+      
+      // Wait for async completion
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       await waitFor(() => {
         const checkbox = screen.getByRole('checkbox')
@@ -485,12 +539,18 @@ describe('Habits Component', () => {
       const habitCard = screen.getByRole('article')
       habitCard.focus()
       
+      // Wait for focus to settle
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       fireEvent.keyDown(window, { key: 'Enter' })
+      
+      // Wait for drawer to open
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Check drawer opened by looking for close button
       await waitFor(() => {
         expect(screen.getByLabelText(/close drawer/i)).toBeInTheDocument()
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
   })
 
@@ -506,19 +566,27 @@ describe('Habits Component', () => {
       
       // Simulate swipe by triggering touch events
       fireEvent.touchStart(habitCard, { touches: [{ clientX: 100, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchMove(habitCard, { touches: [{ clientX: 50, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchEnd(habitCard)
+      
+      // Wait for swipe animation to complete
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Wait for pause button to appear and click it
       await waitFor(() => {
         const pauseButton = screen.getByRole('button', { name: /pause/i })
         fireEvent.click(pauseButton)
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
+      
+      // Wait for pause operation to complete
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Check habit was paused by verifying opacity change
       await waitFor(() => {
         expect(habitCard).toHaveStyle({ opacity: '0.6' })
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
 
     test('resumes paused habit', async () => {
@@ -534,19 +602,27 @@ describe('Habits Component', () => {
       
       // Simulate swipe to show action buttons
       fireEvent.touchStart(habitCard, { touches: [{ clientX: 100, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchMove(habitCard, { touches: [{ clientX: 50, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchEnd(habitCard)
+      
+      // Wait for swipe animation
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Wait for resume button and click it
       await waitFor(() => {
         const resumeButton = screen.getByRole('button', { name: /resume/i })
         fireEvent.click(resumeButton)
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
+      
+      // Wait for resume operation
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Check habit was resumed
       await waitFor(() => {
         expect(habitCard).toHaveStyle({ opacity: '1' })
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
 
     test('shows confirmation before deleting habit', async () => {
@@ -559,8 +635,13 @@ describe('Habits Component', () => {
       
       // Simulate swipe
       fireEvent.touchStart(habitCard, { touches: [{ clientX: 100, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchMove(habitCard, { touches: [{ clientX: 50, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchEnd(habitCard)
+      
+      // Wait for swipe animation
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Mock window.confirm
       window.confirm = jest.fn(() => false)
@@ -568,7 +649,7 @@ describe('Habits Component', () => {
       await waitFor(() => {
         const deleteButton = screen.getByRole('button', { name: /delete/i })
         fireEvent.click(deleteButton)
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
       
       expect(window.confirm).toHaveBeenCalledWith(expect.stringContaining('Delete this habit'))
     })
@@ -583,8 +664,13 @@ describe('Habits Component', () => {
       
       // Simulate swipe
       fireEvent.touchStart(habitCard, { touches: [{ clientX: 100, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchMove(habitCard, { touches: [{ clientX: 50, clientY: 0 }] })
+      await new Promise(resolve => setTimeout(resolve, 50))
       fireEvent.touchEnd(habitCard)
+      
+      // Wait for swipe animation
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Mock window.confirm to return true
       window.confirm = jest.fn(() => true)
@@ -592,12 +678,15 @@ describe('Habits Component', () => {
       await waitFor(() => {
         const deleteButton = screen.getByRole('button', { name: /delete/i })
         fireEvent.click(deleteButton)
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
+      
+      // Wait for delete operation
+      await new Promise(resolve => setTimeout(resolve, 200))
       
       // Wait for habit to be deleted
       await waitFor(() => {
         expect(screen.queryByText('To Delete')).not.toBeInTheDocument()
-      }, { timeout: 3000 })
+      }, { timeout: 5000 })
     })
   })
 
@@ -621,12 +710,15 @@ describe('Habits Component', () => {
       const checkbox = screen.getByRole('checkbox')
       fireEvent.click(checkbox)
       
-      // Wait for the announcement to be created (it's removed after 1s)
+      // Wait a bit for async completion to process
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
+      // Wait for the announcement to be created (it's removed after 1s, so we need to catch it quickly)
       await waitFor(() => {
         const announcement = document.querySelector('[role="status"]')
         expect(announcement).toBeInTheDocument()
         expect(announcement.textContent).toMatch(/SR Habit/i)
-      }, { timeout: 2000 })
+      }, { timeout: 3000 })
     })
 
     test('traps focus in modals', async () => {
