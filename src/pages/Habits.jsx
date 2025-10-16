@@ -79,6 +79,22 @@ function Habits() {
     loadHabits()
   }, [loadHabits])
 
+  // Handle Escape key to close modals
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        if (showNewHabitModal) {
+          setShowNewHabitModal(false)
+        } else if (selectedHabit) {
+          setSelectedHabit(null)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [showNewHabitModal, selectedHabit])
+
   // Phase 5: TAB-HAB-30, TAB-HAB-31 - Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e) => {

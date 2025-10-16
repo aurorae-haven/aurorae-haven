@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import 'fake-indexeddb/auto'
 import Habits from '../pages/Habits'
@@ -168,12 +168,12 @@ describe('Habits Component', () => {
       
       render(<Habits />)
       
-      await waitFor(() => {
-        const checkbox = screen.getByRole('checkbox', { name: /complete daily habit/i })
-        expect(checkbox).not.toBeChecked()
-      })
+      // Wait for habit to load
+      await screen.findByText('Daily Habit')
       
-      const checkbox = screen.getByRole('checkbox', { name: /complete daily habit/i })
+      const checkbox = screen.getByRole('checkbox', { name: /mark daily habit/i })
+      expect(checkbox).not.toBeChecked()
+      
       fireEvent.click(checkbox)
       
       await waitFor(() => {
@@ -295,8 +295,9 @@ describe('Habits Component', () => {
       const filterButton = await screen.findByRole('button', { name: /filter/i })
       fireEvent.click(filterButton)
       
-      // Select blue category
-      const blueCheckbox = screen.getByLabelText(/blue/i)
+      // Select blue category (need to be specific to find checkbox in modal, not habit card)
+      const filterModal = screen.getByRole('dialog')
+      const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
       fireEvent.click(blueCheckbox)
       
       // Apply filter
@@ -316,7 +317,8 @@ describe('Habits Component', () => {
       // Wait for loading and apply filter
       const filterButton = await screen.findByRole('button', { name: /filter/i })
       fireEvent.click(filterButton)
-      const blueCheckbox = screen.getByLabelText(/blue/i)
+      const filterModal = screen.getByRole('dialog')
+      const blueCheckbox = within(filterModal).getByLabelText(/blue/i)
       fireEvent.click(blueCheckbox)
       fireEvent.click(screen.getByText(/Apply/i))
       
