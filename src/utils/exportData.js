@@ -1,5 +1,5 @@
 // Data export utilities
-import { generateSecureUUID } from './uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { validateExportData } from './validation'
 import {
   isIndexedDBAvailable,

@@ -570,33 +570,16 @@ All interactive elements support full keyboard navigation:
 
 **Problem**: Previous implementation used `Math.random()` as fallback, which is not cryptographically secure.
 
-**Solution**: Created centralized `generateSecureUUID()` utility:
+**Solution**: Now uses the well-tested `uuid` library (v9.0.1, MIT-licensed) directly:
 
 ```javascript
-// src/utils/uuidGenerator.js
-export function generateSecureUUID() {
-  // Try crypto.randomUUID() first
-  if (window.crypto && window.crypto.randomUUID) {
-    return window.crypto.randomUUID()
-  }
+// Import in files that need UUID generation
+import { v4 as generateSecureUUID } from 'uuid'
 
-  // Secure fallback using crypto.getRandomValues
-  if (window.crypto && window.crypto.getRandomValues) {
-    const bytes = new Uint8Array(16)
-    window.crypto.getRandomValues(bytes)
-
-    // Set version (4) and variant bits per RFC 4122
-    bytes[6] = (bytes[6] & 0x0f) | 0x40
-    bytes[8] = (bytes[8] & 0x3f) | 0x80
-
-    // Format as UUID: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-    return formatAsUUID(bytes)
-  }
-
-  // Last resort fallback (should never happen)
-  return Date.now().toString(36) + Math.random().toString(36).substring(2)
-}
+// Usage
+const id = generateSecureUUID()
 ```
+
 
 **Applied To**:
 
@@ -674,9 +657,9 @@ for (const key of requiredKeys) {
 
 **After**:
 
-- `src/utils/uuidGenerator.js` (1 centralized utility)
+- Uses `uuid` library (v9.0.1, MIT-licensed) directly - no custom wrapper needed
 
-**Savings**: ~76 lines of duplicate code removed
+**Savings**: ~76 lines of duplicate code removed, plus 32 lines from eliminated custom UUID implementation
 
 **Benefits**:
 

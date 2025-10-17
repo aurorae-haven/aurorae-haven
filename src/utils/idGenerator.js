@@ -3,7 +3,7 @@
  * Consolidates various ID generation patterns used throughout the codebase
  */
 
-import { generateSecureUUID } from './uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 
 /**
  * Generate a timestamp-based ID with optional prefix

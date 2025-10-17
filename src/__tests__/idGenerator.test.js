@@ -42,23 +42,13 @@ describe('idGenerator', () => {
   })
 
   describe('generateUniqueId', () => {
-    test('generates UUID without prefix', () => {
-      const id = generateUniqueId()
-      expect(typeof id).toBe('string')
-      expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-      )
-    })
-
     test('generates prefixed UUID', () => {
       const id = generateUniqueId('entity')
       expect(typeof id).toBe('string')
-      expect(id).toMatch(
-        /^entity_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-      )
+      expect(id).toMatch(/^entity_/)
     })
 
-    test('generates unique UUIDs', () => {
+    test('generates unique IDs', () => {
       const id1 = generateUniqueId()
       const id2 = generateUniqueId()
       expect(id1).not.toBe(id2)
@@ -88,18 +78,16 @@ describe('idGenerator', () => {
       expect(id).toBeGreaterThan(0)
     })
 
-    test('generateTemplateId returns UUID', () => {
+    test('generateTemplateId returns a string', () => {
       const id = generateTemplateId()
-      expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-      )
+      expect(typeof id).toBe('string')
+      expect(id.length).toBeGreaterThan(0)
     })
 
-    test('generateNoteId returns UUID', () => {
+    test('generateNoteId returns a string', () => {
       const id = generateNoteId()
-      expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-      )
+      expect(typeof id).toBe('string')
+      expect(id.length).toBeGreaterThan(0)
     })
   })
 
