@@ -578,25 +578,8 @@ import { v4 as generateSecureUUID } from 'uuid'
 
 // Usage
 const id = generateSecureUUID()
-  }
-
-  // Secure fallback using crypto.getRandomValues
-  if (window.crypto && window.crypto.getRandomValues) {
-    const bytes = new Uint8Array(16)
-    window.crypto.getRandomValues(bytes)
-
-    // Set version (4) and variant bits per RFC 4122
-    bytes[6] = (bytes[6] & 0x0f) | 0x40
-    bytes[8] = (bytes[8] & 0x3f) | 0x80
-
-    // Format as UUID: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
-    return formatAsUUID(bytes)
-  }
-
-  // Last resort fallback (should never happen)
-  return Date.now().toString(36) + Math.random().toString(36).substring(2)
-}
 ```
+
 
 **Applied To**:
 
