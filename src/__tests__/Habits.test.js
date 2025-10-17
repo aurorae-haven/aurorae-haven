@@ -511,32 +511,6 @@ describe('Habits Component', () => {
       }, { timeout: 5000 })
     })
 
-    // SKIPPED: Complex async integration test - keyboard events with async state not completing in jsdom
-    test.skip('toggles completion with Space key', async () => {
-      await createHabit({ name: 'Keyboard Habit' })
-      
-      render(<Habits />)
-      
-      await screen.findByText('Keyboard Habit')
-      
-      const habitCard = screen.getByRole('button', { name: /Keyboard Habit/ })
-      habitCard.focus()
-      
-      // Wait for focus to settle
-      await new Promise(resolve => setTimeout(resolve, 100))
-      
-      // Fire keydown on window
-      fireEvent.keyDown(window, { key: ' ' })
-      
-      // Wait for async completion
-      await new Promise(resolve => setTimeout(resolve, 200))
-      
-      await waitFor(() => {
-        const checkbox = screen.getByRole('checkbox')
-        expect(checkbox).toBeChecked()
-      }, { timeout: 5000 })
-    })
-
     test('opens detail drawer with Enter key', async () => {
       await createHabit({ name: 'Enter Habit' })
       
