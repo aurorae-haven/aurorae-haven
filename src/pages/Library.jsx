@@ -400,7 +400,7 @@ function Library() {
                     </span>
                   </div>
                   <div
-                    className={clsx(`template-${viewMode}`)}
+                    className={`template-${viewMode}`}
                     role={viewMode === 'grid' ? 'grid' : 'list'}
                   >
                     {taskTemplates.map((template) => (
