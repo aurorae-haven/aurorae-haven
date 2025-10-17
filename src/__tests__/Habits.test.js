@@ -281,7 +281,7 @@ describe('Habits Component', () => {
       fireEvent.change(sortSelect, { target: { value: 'title' } })
       
       await waitFor(() => {
-        const habitCards = screen.getAllByRole('article')
+        const habitCards = screen.getAllByRole('button').filter(el => el.className === 'habit-card')
         expect(habitCards[0]).toHaveTextContent('Apple Habit')
         expect(habitCards[1]).toHaveTextContent('Zebra Habit')
       })
@@ -297,7 +297,7 @@ describe('Habits Component', () => {
       fireEvent.change(sortSelect, { target: { value: 'currentStreak' } })
       
       await waitFor(() => {
-        const habitCards = screen.getAllByRole('article')
+        const habitCards = screen.getAllByRole('button').filter(el => el.className === 'habit-card')
         expect(habitCards[0]).toHaveTextContent('High Streak')
         expect(habitCards[1]).toHaveTextContent('Low Streak')
       })
@@ -494,7 +494,7 @@ describe('Habits Component', () => {
       
       await screen.findByText('Habit 1')
       
-      const habitCards = screen.getAllByRole('article')
+      const habitCards = screen.getAllByRole('button').filter(el => el.className === 'habit-card')
       habitCards[0].focus()
       
       // Wait a bit for focus to settle
@@ -519,7 +519,7 @@ describe('Habits Component', () => {
       
       await screen.findByText('Keyboard Habit')
       
-      const habitCard = screen.getByRole('article')
+      const habitCard = screen.getByRole('button', { name: /Keyboard Habit/ })
       habitCard.focus()
       
       // Wait for focus to settle
@@ -544,7 +544,7 @@ describe('Habits Component', () => {
       
       await screen.findByText('Enter Habit')
       
-      const habitCard = screen.getByRole('article')
+      const habitCard = screen.getByRole('button', { name: /Enter Habit/ })
       habitCard.focus()
       
       // Wait for focus to settle

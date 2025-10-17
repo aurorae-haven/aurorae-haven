@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 import Icon from '../common/Icon'
 
 /**
@@ -76,7 +77,7 @@ function NotesList({
         {filteredNotes.map((note) => (
           <div
             key={note.id}
-            className={`note-item ${note.id === currentNoteId ? 'active' : ''}`}
+            className={clsx('note-item', { active: note.id === currentNoteId })}
             onClick={() => onNoteClick(note)}
             onContextMenu={(e) => onNoteContextMenu(e, note)}
             role='button'

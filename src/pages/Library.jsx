@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react'
+import clsx from 'clsx'
 import {
   getAllTemplates,
   saveTemplate,
@@ -363,7 +364,7 @@ function Library() {
                     </span>
                   </div>
                   <div
-                    className={`template-${viewMode}`}
+                    className={clsx(`template-${viewMode}`)}
                     role={viewMode === 'grid' ? 'grid' : 'list'}
                   >
                     {routineTemplates.map((template) => (
@@ -399,7 +400,7 @@ function Library() {
                     </span>
                   </div>
                   <div
-                    className={`template-${viewMode}`}
+                    className={clsx(`template-${viewMode}`)}
                     role={viewMode === 'grid' ? 'grid' : 'list'}
                   >
                     {taskTemplates.map((template) => (

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 
 /**
  * Accessible confirmation modal component
@@ -133,7 +134,7 @@ function ConfirmModal({
           </button>
           <button
             ref={confirmButtonRef}
-            className={`btn ${isDestructive ? 'btn-destructive' : 'btn-primary'}`}
+            className={clsx('btn', isDestructive ? 'btn-destructive' : 'btn-primary')}
             onClick={onConfirm}
             type='button'
           >

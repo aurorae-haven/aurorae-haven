@@ -436,7 +436,7 @@ function Habits() {
                 data-habit-id={habit.id}
                 className="habit-card"
                 tabIndex={0}
-                role="article"
+                role="button"
                 aria-label={`${habit.name}, ${habit.streak} day streak, ${isCompletedToday ? 'completed today' : 'not completed today'}. Press Enter to view details, Space to toggle completion.`}
                 onClick={(e) => {
                   // Don't open drawer if clicking checkbox

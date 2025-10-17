@@ -5,7 +5,10 @@
 
 import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
 import { normalizeEntity, updateMetadata } from './idGenerator'
+import { createLogger } from './logger'
 import dayjs from 'dayjs'
+
+const logger = createLogger('HabitsManager')
 
 /**
  * Create a new habit
@@ -439,7 +442,7 @@ export async function importHabits(jsonData) {
   let data
   try {
     data = JSON.parse(jsonData)
-  } catch (error) {
+  } catch {
     throw new Error('Invalid JSON data')
   }
 
@@ -473,7 +476,7 @@ export async function importHabits(jsonData) {
   }
 
   if (errors.length > 0) {
-    console.error('Import errors:', errors)
+    logger.error('Import errors:', errors)
   }
 
   return { imported, skipped }

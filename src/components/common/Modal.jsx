@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 import Icon from './Icon'
 
 /**
@@ -23,7 +24,7 @@ function Modal({ isOpen, onClose, title, children, className = '' }) {
     >
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
-        className={`modal-content ${className}`}
+        className={clsx('modal-content', className)}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
         role='document'
