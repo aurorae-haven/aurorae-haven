@@ -2,7 +2,6 @@
 import '@testing-library/jest-dom'
 
 // Mock logger to avoid import issues in tests
-/* global jest */
 jest.mock('./utils/logger')
 
 // Polyfill for structuredClone (needed for fake-indexeddb in Node.js < 17)

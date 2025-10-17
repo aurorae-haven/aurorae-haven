@@ -78,5 +78,22 @@ export default [
       'no-console': 'warn', // Warn on console usage - use logger utility instead
       'react/react-in-jsx-scope': 'off' // Not needed in React 17+
     }
+  },
+  // Test environment configuration
+  {
+    files: ['**/setupTests.js', '**/__tests__/**/*.js', '**/*.test.js', '**/*.test.jsx'],
+    languageOptions: {
+      globals: {
+        jest: 'readonly',
+        expect: 'readonly',
+        test: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly'
+      }
+    }
   }
 ]
