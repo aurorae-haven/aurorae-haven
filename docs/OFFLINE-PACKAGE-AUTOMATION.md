@@ -391,7 +391,6 @@ Potential enhancements:
 ## Related Documentation
 
 - [Offline Download Guide](./OFFLINE-DOWNLOAD.md) - User-facing download instructions
-- [Deployment Architecture](./ARC-APP-COMPLIANCE.md) - Full CI/CD documentation
 - [Contributing Guide](../CONTRIBUTING.md) - How to contribute
 
 ## References
