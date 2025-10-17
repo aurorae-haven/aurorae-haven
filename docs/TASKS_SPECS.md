@@ -570,14 +570,14 @@ All interactive elements support full keyboard navigation:
 
 **Problem**: Previous implementation used `Math.random()` as fallback, which is not cryptographically secure.
 
-**Solution**: Created centralized `generateSecureUUID()` utility:
+**Solution**: Now uses the well-tested `uuid` library (v9.0.1, MIT-licensed) directly:
 
 ```javascript
-// src/utils/uuidGenerator.js
-export function generateSecureUUID() {
-  // Try crypto.randomUUID() first
-  if (window.crypto && window.crypto.randomUUID) {
-    return window.crypto.randomUUID()
+// Import in files that need UUID generation
+import { v4 as generateSecureUUID } from 'uuid'
+
+// Usage
+const id = generateSecureUUID()
   }
 
   // Secure fallback using crypto.getRandomValues
@@ -674,9 +674,9 @@ for (const key of requiredKeys) {
 
 **After**:
 
-- `src/utils/uuidGenerator.js` (1 centralized utility)
+- Uses `uuid` library (v9.0.1, MIT-licensed) directly - no custom wrapper needed
 
-**Savings**: ~76 lines of duplicate code removed
+**Savings**: ~76 lines of duplicate code removed, plus 32 lines from eliminated custom UUID implementation
 
 **Benefits**:
 

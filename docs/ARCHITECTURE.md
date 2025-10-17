@@ -44,7 +44,7 @@ src/
 │   │   ├── noteOperations.js  # CRUD operations
 │   │   └── noteFilters.js     # Filtering and search
 │   ├── dataManager.js         # Global data management
-│   ├── uuidGenerator.js       # Secure UUID generation
+│   ├── idGenerator.js         # ID generation utilities
 │   └── ...
 │
 └── assets/              # Static assets

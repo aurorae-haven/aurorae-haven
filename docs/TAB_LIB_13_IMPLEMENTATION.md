@@ -192,5 +192,4 @@ The TAB-LIB-13 "Use Template" functionality is now fully implemented with compre
 - [TAB-LIB Specifications](./COMPLETE_SPECIFICATIONS.md#tab-lib)
 - [Template Manager](../src/utils/templatesManager.js)
 - [Routines Manager](../src/utils/routinesManager.js)
-- [UUID Generator](../src/utils/uuidGenerator.js)
 - [Implementation Tests](../src/__tests__/templateInstantiation.test.js)
