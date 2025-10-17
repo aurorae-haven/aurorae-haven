@@ -33,7 +33,7 @@ export function parseTime(timeString) {
   const trimmedTimeString = timeString.trim()
   // Use Day.js to parse HH:MM format
   const parsed = dayjs(trimmedTimeString, 'HH:mm', true)
-  
+
   if (!parsed.isValid()) {
     return null
   }
@@ -58,7 +58,10 @@ export function parseTime(timeString) {
  */
 export function formatClockTime(hours, minutes) {
   // Create a Day.js object with today's date and specified time
-  const time = dayjs().hour(Math.floor(hours)).minute(Math.floor(minutes)).second(0)
+  const time = dayjs()
+    .hour(Math.floor(hours))
+    .minute(Math.floor(minutes))
+    .second(0)
   return time.format('HH:mm')
 }
 
@@ -91,12 +94,12 @@ export function minutesToTime(totalMinutes) {
 
   // Use Day.js duration to handle the conversion
   const dur = dayjs.duration(Math.floor(totalMinutes), 'minutes')
-  
+
   // Get hours and minutes, wrapping around 24 hours
   const totalHours = Math.floor(dur.asHours())
   const normalizedHours = ((totalHours % 24) + 24) % 24
   const minutes = dur.minutes()
-  
+
   return `${String(normalizedHours).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}:${String(Math.abs(minutes)).padStart(TIME_PADDING_LENGTH, PADDING_CHAR)}`
 }
 
@@ -113,15 +116,18 @@ export function calculateDuration(startTime, endTime) {
   // Check if inputs are invalid early to avoid misleading results
   const startParsed = parseTime(startTime)
   const endParsed = parseTime(endTime)
-  
+
   if (startParsed === null || endParsed === null) {
     return 0
   }
 
   // Create Day.js objects for comparison
-  const start = dayjs().hour(startParsed.hours).minute(startParsed.minutes).second(0)
+  const start = dayjs()
+    .hour(startParsed.hours)
+    .minute(startParsed.minutes)
+    .second(0)
   const end = dayjs().hour(endParsed.hours).minute(endParsed.minutes).second(0)
-  
+
   // Return difference in minutes
   return end.diff(start, 'minute')
 }
@@ -135,12 +141,13 @@ export function calculateDuration(startTime, endTime) {
  */
 export function addDuration(time, minutes) {
   const parsed = parseTime(time)
-  
+
   // If invalid time provided, treat as 00:00
-  const baseTime = parsed !== null 
-    ? dayjs().hour(parsed.hours).minute(parsed.minutes).second(0)
-    : dayjs().hour(0).minute(0).second(0)
-  
+  const baseTime =
+    parsed !== null
+      ? dayjs().hour(parsed.hours).minute(parsed.minutes).second(0)
+      : dayjs().hour(0).minute(0).second(0)
+
   // Add minutes and format
   const result = baseTime.add(minutes, 'minute')
   return result.format('HH:mm')
@@ -190,15 +197,13 @@ export function formatDurationVerbose(seconds) {
 
   const dur = dayjs.duration(Math.abs(seconds), 'seconds')
   const sign = seconds < 0 ? '-' : ''
-  
+
   const hours = Math.floor(dur.asHours())
   const minutes = dur.minutes()
-  
+
   if (hours === 0) {
     return `${sign}${minutes}m`
   }
-  
-  return minutes > 0
-    ? `${sign}${hours}h ${minutes}m`
-    : `${sign}${hours}h`
+
+  return minutes > 0 ? `${sign}${hours}h ${minutes}m` : `${sign}${hours}h`
 }

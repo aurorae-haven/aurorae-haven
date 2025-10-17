@@ -1,13 +1,7 @@
 // Routine Templates - Predefined and custom routine templates
 // TAB-RTN-08, TAB-RTN-32, TAB-RTN-50: Template management system
 
-import {
-  put,
-  getAll,
-  getById,
-  deleteById,
-  STORES
-} from './indexedDBManager'
+import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
 import { normalizeEntity, updateMetadata } from './idGenerator'
 import { createRoutine } from './routinesManager'
 
@@ -138,10 +132,7 @@ export function getPredefinedTemplates() {
     ...template,
     id: `template_predefined_${index}`,
     isPredefined: true,
-    totalDuration: template.steps.reduce(
-      (sum, step) => sum + step.duration,
-      0
-    )
+    totalDuration: template.steps.reduce((sum, step) => sum + step.duration, 0)
   }))
 }
 
@@ -153,26 +144,32 @@ export function getPredefinedTemplates() {
  * @param {string} category - Template category (morning, evening, exercise, etc.)
  * @returns {Promise<string>} Template ID
  */
-export async function createTemplate(routine, templateName, category = 'custom') {
-  const template = normalizeEntity({
-    name: templateName || routine.name || routine.title,
-    description: routine.description || '',
-    category,
-    energyTag: routine.energyTag || 'medium',
-    tags: routine.tags || [],
-    steps: routine.steps.map((step) => ({
-      label: step.label,
-      duration: step.duration,
-      description: step.description || '',
-      energyTag: step.energyTag || 'medium'
-    })),
-    totalDuration: routine.totalDuration || routine.steps.reduce(
-      (sum, step) => sum + step.duration,
-      0
-    ),
-    isCustom: true,
-    sourceRoutineId: routine.id
-  }, { idPrefix: 'template' })
+export async function createTemplate(
+  routine,
+  templateName,
+  category = 'custom'
+) {
+  const template = normalizeEntity(
+    {
+      name: templateName || routine.name || routine.title,
+      description: routine.description || '',
+      category,
+      energyTag: routine.energyTag || 'medium',
+      tags: routine.tags || [],
+      steps: routine.steps.map((step) => ({
+        label: step.label,
+        duration: step.duration,
+        description: step.description || '',
+        energyTag: step.energyTag || 'medium'
+      })),
+      totalDuration:
+        routine.totalDuration ||
+        routine.steps.reduce((sum, step) => sum + step.duration, 0),
+      isCustom: true,
+      sourceRoutineId: routine.id
+    },
+    { idPrefix: 'template' }
+  )
 
   await put(STORES.TEMPLATES, template)
   return template.id
@@ -188,7 +185,7 @@ export async function createTemplate(routine, templateName, category = 'custom')
 export async function getTemplates(options = {}) {
   const customTemplates = await getAll(STORES.TEMPLATES)
   const predefinedTemplates = getPredefinedTemplates()
-  
+
   let allTemplates = [...predefinedTemplates, ...customTemplates]
 
   // Apply sorting if requested
@@ -249,10 +246,7 @@ export async function updateTemplate(template) {
 
   const updated = updateMetadata({
     ...template,
-    totalDuration: template.steps.reduce(
-      (sum, step) => sum + step.duration,
-      0
-    )
+    totalDuration: template.steps.reduce((sum, step) => sum + step.duration, 0)
   })
 
   await put(STORES.TEMPLATES, updated)
@@ -282,7 +276,7 @@ export async function deleteTemplate(id) {
  */
 export async function instantiateTemplate(templateId, routineName) {
   const template = await getTemplate(templateId)
-  
+
   if (!template) {
     throw new Error('Template not found')
   }

@@ -134,7 +134,10 @@ function ConfirmModal({
           </button>
           <button
             ref={confirmButtonRef}
-            className={clsx('btn', isDestructive ? 'btn-destructive' : 'btn-primary')}
+            className={clsx(
+              'btn',
+              isDestructive ? 'btn-destructive' : 'btn-primary'
+            )}
             onClick={onConfirm}
             type='button'
           >

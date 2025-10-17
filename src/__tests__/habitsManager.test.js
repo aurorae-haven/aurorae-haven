@@ -55,14 +55,14 @@ describe('Habits Manager', () => {
 
       const id = await createHabit(habit)
       const habits = await getHabits()
-      
+
       expect(habits[0].category).toBe('violet')
     })
 
     test('should initialize habit with empty completion history', async () => {
       const id = await createHabit({ name: 'New Habit' })
       const habits = await getHabits()
-      
+
       expect(habits[0].completions).toEqual([])
       expect(habits[0].streak).toBe(0)
       expect(habits[0].longestStreak).toBe(0)
@@ -112,7 +112,7 @@ describe('Habits Manager', () => {
     test('should sort habits by title', async () => {
       const habits = await getHabits()
       const sorted = sortHabits(habits, 'title')
-      
+
       expect(sorted[0].name).toBe('Habit A')
       expect(sorted[1].name).toBe('Habit B')
       expect(sorted[2].name).toBe('Habit C')
@@ -121,7 +121,7 @@ describe('Habits Manager', () => {
     test('should sort habits by current streak (descending)', async () => {
       const habits = await getHabits()
       const sorted = sortHabits(habits, 'streak')
-      
+
       expect(sorted[0].streak).toBe(15)
       expect(sorted[1].streak).toBe(10)
       expect(sorted[2].streak).toBe(5)
@@ -130,7 +130,7 @@ describe('Habits Manager', () => {
     test('should sort habits by longest streak (descending)', async () => {
       const habits = await getHabits()
       const sorted = sortHabits(habits, 'longestStreak')
-      
+
       expect(sorted[0].longestStreak).toBe(20)
       expect(sorted[1].longestStreak).toBe(15)
       expect(sorted[2].longestStreak).toBe(10)
@@ -139,17 +139,29 @@ describe('Habits Manager', () => {
 
   describe('filterHabits', () => {
     beforeEach(async () => {
-      await createHabit({ name: 'Active Habit', paused: false, category: 'blue' })
+      await createHabit({
+        name: 'Active Habit',
+        paused: false,
+        category: 'blue'
+      })
       await new Promise((resolve) => setTimeout(resolve, 10))
-      await createHabit({ name: 'Paused Habit', paused: true, category: 'violet' })
+      await createHabit({
+        name: 'Paused Habit',
+        paused: true,
+        category: 'violet'
+      })
       await new Promise((resolve) => setTimeout(resolve, 10))
-      await createHabit({ name: 'Another Active', paused: false, category: 'blue' })
+      await createHabit({
+        name: 'Another Active',
+        paused: false,
+        category: 'blue'
+      })
     })
 
     test('should filter paused habits', async () => {
       const habits = await getHabits()
       const filtered = filterHabits(habits, { status: 'paused' })
-      
+
       expect(filtered).toHaveLength(1)
       expect(filtered[0].name).toBe('Paused Habit')
     })
@@ -157,24 +169,24 @@ describe('Habits Manager', () => {
     test('should filter active habits', async () => {
       const habits = await getHabits()
       const filtered = filterHabits(habits, { status: 'active' })
-      
+
       expect(filtered).toHaveLength(2)
     })
 
     test('should filter by category', async () => {
       const habits = await getHabits()
       const filtered = filterHabits(habits, { category: 'blue' })
-      
+
       expect(filtered).toHaveLength(2)
     })
 
     test('should filter by multiple criteria', async () => {
       const habits = await getHabits()
-      const filtered = filterHabits(habits, { 
+      const filtered = filterHabits(habits, {
         status: 'active',
         category: 'blue'
       })
-      
+
       expect(filtered).toHaveLength(2)
     })
   })
@@ -254,13 +266,15 @@ describe('Habits Manager', () => {
 
     test('should update longest streak when current exceeds it', async () => {
       const id = await createHabit({ name: 'Streak Habit' })
-      
+
       // Manually set completion dates
       const habits = await getHabits()
       const habit = habits.find((h) => h.id === id)
       const today = new Date().toISOString().split('T')[0]
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-      
+      const yesterday = new Date(Date.now() - 86400000)
+        .toISOString()
+        .split('T')[0]
+
       habit.completions = [yesterday, today]
       habit.streak = 2
       habit.longestStreak = 1
@@ -268,7 +282,7 @@ describe('Habits Manager', () => {
 
       const currentStreak = calculateStreak(habit)
       expect(currentStreak).toBeGreaterThan(1)
-      
+
       // Verify that longestStreak is updated when needed
       const updatedHabits = await getHabits()
       const updatedHabit = updatedHabits.find((h) => h.id === id)
@@ -278,10 +292,10 @@ describe('Habits Manager', () => {
     test('should maintain completion history', async () => {
       const id = await createHabit({ name: 'History Habit' })
       await toggleCompletion(id)
-      
+
       const habits = await getHabits()
       const habit = habits.find((h) => h.id === id)
-      
+
       expect(habit.completions.length).toBeGreaterThan(0)
       // Completions are stored as objects with date and timestamp
       expect(habit.completions[0]).toHaveProperty('date')
@@ -292,41 +306,51 @@ describe('Habits Manager', () => {
   describe('calculateStreak', () => {
     test('should calculate streak correctly for consecutive days', () => {
       const today = new Date().toISOString().split('T')[0]
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-      const twoDaysAgo = new Date(Date.now() - 172800000).toISOString().split('T')[0]
-      
+      const yesterday = new Date(Date.now() - 86400000)
+        .toISOString()
+        .split('T')[0]
+      const twoDaysAgo = new Date(Date.now() - 172800000)
+        .toISOString()
+        .split('T')[0]
+
       const habit = {
         completions: [twoDaysAgo, yesterday, today],
         vacationDays: []
       }
-      
+
       const result = calculateStreak(habit)
       expect(result).toBe(3)
     })
 
     test('should reset streak when day is skipped', () => {
       const today = new Date().toISOString().split('T')[0]
-      const threeDaysAgo = new Date(Date.now() - 259200000).toISOString().split('T')[0]
-      
+      const threeDaysAgo = new Date(Date.now() - 259200000)
+        .toISOString()
+        .split('T')[0]
+
       const habit = {
         completions: [threeDaysAgo, today],
         vacationDays: []
       }
-      
+
       const result = calculateStreak(habit)
       expect(result).toBe(1) // Only today counts
     })
 
     test('should preserve streak during vacation days', () => {
       const today = new Date().toISOString().split('T')[0]
-      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-      const twoDaysAgo = new Date(Date.now() - 172800000).toISOString().split('T')[0]
-      
+      const yesterday = new Date(Date.now() - 86400000)
+        .toISOString()
+        .split('T')[0]
+      const twoDaysAgo = new Date(Date.now() - 172800000)
+        .toISOString()
+        .split('T')[0]
+
       const habit = {
         completions: [twoDaysAgo, today],
         vacationDays: [yesterday]
       }
-      
+
       const result = calculateStreak(habit)
       expect(result).toBe(2) // Vacation day doesn't break streak
     })
@@ -363,7 +387,7 @@ describe('Habits Manager', () => {
   describe('getTodayStats', () => {
     test('should return zero stats when no habits exist', async () => {
       const stats = await getTodayStats()
-      
+
       expect(stats.total).toBe(0)
       expect(stats.completed).toBe(0)
       expect(stats.percentage).toBe(0)
@@ -375,13 +399,13 @@ describe('Habits Manager', () => {
       await createHabit({ name: 'Habit 2' })
       await new Promise((resolve) => setTimeout(resolve, 10))
       await createHabit({ name: 'Habit 3' })
-      
+
       const habits = await getHabits()
       await toggleCompletion(habits[0].id)
       await toggleCompletion(habits[1].id)
-      
+
       const stats = await getTodayStats()
-      
+
       expect(stats.total).toBe(3)
       expect(stats.completed).toBe(2)
       expect(stats.percentage).toBeCloseTo(66.67, 1)
@@ -393,10 +417,10 @@ describe('Habits Manager', () => {
       await createHabit({ name: 'Export Habit 1' })
       await new Promise((resolve) => setTimeout(resolve, 10))
       await createHabit({ name: 'Export Habit 2' })
-      
+
       const exported = await exportHabits()
       const parsed = JSON.parse(exported)
-      
+
       expect(parsed.habits).toHaveLength(2)
       expect(parsed.exportDate).toBeDefined()
     })
@@ -404,15 +428,25 @@ describe('Habits Manager', () => {
     test('should import habits from JSON', async () => {
       const exportData = {
         habits: [
-          { name: 'Import Habit 1', category: 'blue', completions: [], streak: 0 },
-          { name: 'Import Habit 2', category: 'violet', completions: [], streak: 0 }
+          {
+            name: 'Import Habit 1',
+            category: 'blue',
+            completions: [],
+            streak: 0
+          },
+          {
+            name: 'Import Habit 2',
+            category: 'violet',
+            completions: [],
+            streak: 0
+          }
         ],
         exportDate: new Date().toISOString()
       }
-      
+
       const result = await importHabits(JSON.stringify(exportData))
       const habits = await getHabits()
-      
+
       expect(result.imported).toBe(2)
       expect(result.skipped).toBe(0)
       expect(habits).toHaveLength(2)
@@ -420,17 +454,17 @@ describe('Habits Manager', () => {
 
     test('should handle duplicate IDs during import', async () => {
       const id = await createHabit({ name: 'Existing Habit' })
-      
+
       const exportData = {
         habits: [
           { id, name: 'Duplicate ID Habit', completions: [], streak: 0 }
         ],
         exportDate: new Date().toISOString()
       }
-      
+
       const result = await importHabits(JSON.stringify(exportData))
       const habits = await getHabits()
-      
+
       // Should skip the duplicate ID
       expect(result.imported).toBe(0)
       expect(result.skipped).toBe(1)
@@ -440,7 +474,7 @@ describe('Habits Manager', () => {
 
     test('should validate imported data', async () => {
       const invalidData = '{ "invalid": "data" }'
-      
+
       await expect(importHabits(invalidData)).rejects.toThrow()
     })
   })

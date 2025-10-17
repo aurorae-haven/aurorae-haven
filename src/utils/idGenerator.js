@@ -141,7 +141,7 @@ let lastTimestamp = 0
  */
 export function normalizeEntity(entity, options = {}) {
   const metadata = generateMetadata()
-  
+
   // Generate unique ID - add counter to handle same-millisecond creates
   let id
   if (entity.id) {
@@ -158,7 +158,7 @@ export function normalizeEntity(entity, options = {}) {
     }
     id = metadata.timestamp + idCounter
   }
-  
+
   return {
     ...entity,
     id,

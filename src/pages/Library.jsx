@@ -138,7 +138,9 @@ function Library() {
   }
 
   const handleSaveTemplate = async (templateData) => {
-    const successMessage = editingTemplate ? 'Template updated' : 'Template created'
+    const successMessage = editingTemplate
+      ? 'Template updated'
+      : 'Template created'
 
     await withErrorHandling(
       async () => {

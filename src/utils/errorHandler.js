@@ -68,13 +68,17 @@ export function handleError(error, context, options = {}) {
   // Show user notification if requested
   if (showToast && typeof window !== 'undefined') {
     let displayMessage
-    if (customMessageFormatter && typeof customMessageFormatter === 'function') {
+    if (
+      customMessageFormatter &&
+      typeof customMessageFormatter === 'function'
+    ) {
       try {
         displayMessage = customMessageFormatter(errorObj, context)
       } catch (formatterError) {
         logger.error('Error in customMessageFormatter:', formatterError)
         // Fall back to toastMessage or default message
-        displayMessage = toastMessage || getUserFriendlyMessage(errorObj, context)
+        displayMessage =
+          toastMessage || getUserFriendlyMessage(errorObj, context)
       }
     } else if (toastMessage) {
       displayMessage = toastMessage
@@ -247,7 +251,7 @@ function showToastNotification(message) {
   if (toastElement) {
     toastElement.textContent = message
     toastElement.style.display = 'block'
-    
+
     // Add accessibility attributes if not present
     if (!toastElement.getAttribute('role')) {
       toastElement.setAttribute('role', 'status')
@@ -255,7 +259,7 @@ function showToastNotification(message) {
     if (!toastElement.getAttribute('aria-live')) {
       toastElement.setAttribute('aria-live', 'polite')
     }
-    
+
     setTimeout(() => {
       toastElement.style.display = 'none'
     }, 3000)
@@ -293,10 +297,11 @@ export function decorateWithErrorHandling(fn, context, options = {}) {
     // Validate parameters if validation is requested
     if (validateParams) {
       // Allow validateParams to be a function that receives args and returns validation map
-      const params = typeof validateParams === 'function' 
-        ? validateParams(...args) 
-        : validateParams
-      
+      const params =
+        typeof validateParams === 'function'
+          ? validateParams(...args)
+          : validateParams
+
       const validationError = validateParameters(params)
       if (validationError) {
         // Force rethrow: false for validation errors to keep them consistently 'handled'
@@ -362,9 +367,7 @@ function validateParameters(validateParams) {
 
     // Check if required parameter is missing
     if (required && (value === undefined || value === null)) {
-      return new Error(
-        `Required parameter '${paramName}' is missing or null`
-      )
+      return new Error(`Required parameter '${paramName}' is missing or null`)
     }
 
     // Skip type check if value is optional and not provided
@@ -407,18 +410,16 @@ function shouldCatchError(error, expectedErrors) {
  * @returns {boolean} True if quota exceeded error
  */
 export function isQuotaExceededError(error) {
-  const msg = (error && error.message ? error.message : '').toLowerCase();
+  const msg = (error && error.message ? error.message : '').toLowerCase()
   return (
     error &&
-    (
-      error.name === 'QuotaExceededError' ||
+    (error.name === 'QuotaExceededError' ||
       error.code === 22 ||
       error.code === 1014 ||
       error.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
       msg.includes('quota') ||
-      msg.includes('storage quota')
-    )
-  );
+      msg.includes('storage quota'))
+  )
 }
 
 /**
@@ -428,15 +429,15 @@ export function isQuotaExceededError(error) {
  * @returns {boolean} True if network error
  */
 export function isNetworkError(error) {
-  if (!error) return false;
-  const msg = error.message ? error.message.toLowerCase() : '';
-  const name = error.name ? error.name.toLowerCase() : '';
+  if (!error) return false
+  const msg = error.message ? error.message.toLowerCase() : ''
+  const name = error.name ? error.name.toLowerCase() : ''
   return (
     msg.includes('network') ||
     msg.includes('fetch') ||
     msg.includes('networkerror') ||
     name === 'networkerror'
-  );
+  )
 }
 
 /**
@@ -446,12 +447,12 @@ export function isNetworkError(error) {
  * @returns {boolean} True if validation error
  */
 export function isValidationError(error) {
-  if (!error) return false;
-  const msg = error.message ? error.message.toLowerCase() : '';
-  const name = error.name ? error.name.toLowerCase() : '';
+  if (!error) return false
+  const msg = error.message ? error.message.toLowerCase() : ''
+  const name = error.name ? error.name.toLowerCase() : ''
   return (
     msg.includes('validation') ||
     msg.includes('invalid') ||
     name === 'validationerror'
-  );
+  )
 }

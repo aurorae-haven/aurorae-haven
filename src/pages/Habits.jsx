@@ -27,10 +27,11 @@ function announceToScreenReader(message) {
   announcement.setAttribute('role', 'status')
   announcement.setAttribute('aria-live', 'polite')
   announcement.setAttribute('aria-atomic', 'true')
-  announcement.style.cssText = 'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;'
+  announcement.style.cssText =
+    'position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden;'
   announcement.textContent = message
   document.body.appendChild(announcement)
-  
+
   setTimeout(() => {
     announcement.remove()
   }, 1000)
@@ -42,7 +43,11 @@ function announceToScreenReader(message) {
  */
 function Habits() {
   const [habits, setHabits] = useState([])
-  const [todayStats, setTodayStats] = useState({ total: 0, completed: 0, percentage: 0 })
+  const [todayStats, setTodayStats] = useState({
+    total: 0,
+    completed: 0,
+    percentage: 0
+  })
   const [loading, setLoading] = useState(true)
   const [showNewHabitModal, setShowNewHabitModal] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
@@ -53,7 +58,7 @@ function Habits() {
   const [newHabitCategory, setNewHabitCategory] = useState('default')
   const [sortBy, setSortBy] = useState('title')
   const [filters, setFilters] = useState({})
-  
+
   // Phase 5: Touch gesture tracking
   const touchStartX = useRef(null)
   const touchStartY = useRef(null)
@@ -99,33 +104,44 @@ function Habits() {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (!habits.length) return
-      
+
       // Only handle if not in modal/drawer and not typing in input
-      if (showNewHabitModal || selectedHabit || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+      if (
+        showNewHabitModal ||
+        selectedHabit ||
+        e.target.tagName === 'INPUT' ||
+        e.target.tagName === 'TEXTAREA'
+      ) {
         return
       }
 
-      const currentIndex = habits.findIndex(h => h.id === focusedHabitId)
+      const currentIndex = habits.findIndex((h) => h.id === focusedHabitId)
 
       if (e.key === 'ArrowDown') {
         e.preventDefault()
-        const nextIndex = currentIndex < habits.length - 1 ? currentIndex + 1 : 0
+        const nextIndex =
+          currentIndex < habits.length - 1 ? currentIndex + 1 : 0
         setFocusedHabitId(habits[nextIndex].id)
-        document.querySelector(`[data-habit-id="${habits[nextIndex].id}"]`)?.focus()
+        document
+          .querySelector(`[data-habit-id="${habits[nextIndex].id}"]`)
+          ?.focus()
       } else if (e.key === 'ArrowUp') {
         e.preventDefault()
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : habits.length - 1
+        const prevIndex =
+          currentIndex > 0 ? currentIndex - 1 : habits.length - 1
         setFocusedHabitId(habits[prevIndex].id)
-        document.querySelector(`[data-habit-id="${habits[prevIndex].id}"]`)?.focus()
+        document
+          .querySelector(`[data-habit-id="${habits[prevIndex].id}"]`)
+          ?.focus()
       } else if (e.key === ' ' && focusedHabitId) {
         e.preventDefault()
-        const habit = habits.find(h => h.id === focusedHabitId)
+        const habit = habits.find((h) => h.id === focusedHabitId)
         if (habit && !habit.paused) {
           handleToggleCompletion(focusedHabitId)
         }
       } else if (e.key === 'Enter' && focusedHabitId) {
         e.preventDefault()
-        const habit = habits.find(h => h.id === focusedHabitId)
+        const habit = habits.find((h) => h.id === focusedHabitId)
         if (habit) {
           setSelectedHabit(habit)
         }
@@ -136,45 +152,48 @@ function Habits() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [habits, focusedHabitId, showNewHabitModal, selectedHabit])
 
-  const handleToggleCompletion = useCallback(async (habitId) => {
-    try {
-      const result = await toggleHabitToday(habitId)
-      const habit = habits.find(h => h.id === habitId)
-      
-      if (result.completed) {
-        // Show confetti on milestones
-        const milestones = [7, 14, 28, 50, 100, 250, 500, 1000]
-        if (milestones.includes(result.currentStreak)) {
-          triggerConfetti()
+  const handleToggleCompletion = useCallback(
+    async (habitId) => {
+      try {
+        const result = await toggleHabitToday(habitId)
+        const habit = habits.find((h) => h.id === habitId)
+
+        if (result.completed) {
+          // Show confetti on milestones
+          const milestones = [7, 14, 28, 50, 100, 250, 500, 1000]
+          if (milestones.includes(result.currentStreak)) {
+            triggerConfetti()
+          }
+
+          // Screen reader announcement
+          announceToScreenReader(
+            `${habit.name} completed today. Current streak: ${result.currentStreak} days. +${result.xpEarned} XP.`
+          )
+
+          setToast({
+            type: 'success',
+            message: `${habit.name} done! +${result.xpEarned} XP 🎉`
+          })
+
+          // Haptic feedback for mobile
+          if (navigator.vibrate) {
+            navigator.vibrate(50)
+          }
+        } else {
+          setToast({
+            type: 'info',
+            message: `${habit.name} unmarked`
+          })
         }
-        
-        // Screen reader announcement
-        announceToScreenReader(
-          `${habit.name} completed today. Current streak: ${result.currentStreak} days. +${result.xpEarned} XP.`
-        )
-        
-        setToast({
-          type: 'success',
-          message: `${habit.name} done! +${result.xpEarned} XP 🎉`
-        })
-        
-        // Haptic feedback for mobile
-        if (navigator.vibrate) {
-          navigator.vibrate(50)
-        }
-      } else {
-        setToast({
-          type: 'info',
-          message: `${habit.name} unmarked`
-        })
+
+        await loadHabits()
+      } catch (error) {
+        logger.error('Failed to toggle habit', error)
+        setToast({ type: 'error', message: 'Failed to update habit' })
       }
-      
-      await loadHabits()
-    } catch (error) {
-      logger.error('Failed to toggle habit', error)
-      setToast({ type: 'error', message: 'Failed to update habit' })
-    }
-  }, [habits, loadHabits])
+    },
+    [habits, loadHabits]
+  )
 
   const handleCreateHabit = async (e) => {
     e.preventDefault()
@@ -212,7 +231,7 @@ function Habits() {
 
   const handlePauseHabit = async (habitId) => {
     try {
-      const habit = habits.find(h => h.id === habitId)
+      const habit = habits.find((h) => h.id === habitId)
       await pauseHabit(habitId, !habit.paused)
       setToast({
         type: 'success',
@@ -272,7 +291,7 @@ function Habits() {
 
     // Swipe right to complete (>= 80px)
     if (diffX > 80) {
-      const habit = habits.find(h => h.id === habitId)
+      const habit = habits.find((h) => h.id === habitId)
       if (!habit.paused) {
         await handleToggleCompletion(habitId)
         if (navigator.vibrate) {
@@ -299,11 +318,12 @@ function Habits() {
     setShowFilterModal(false)
   }
 
-  const hasActiveFilters = filters.categories?.length > 0 || filters.statuses?.length > 0
+  const hasActiveFilters =
+    filters.categories?.length > 0 || filters.statuses?.length > 0
 
   if (loading) {
     return (
-      <div className="habits-page">
+      <div className='habits-page'>
         <div style={{ textAlign: 'center', padding: '2rem' }}>
           <p>Loading habits...</p>
         </div>
@@ -312,82 +332,88 @@ function Habits() {
   }
 
   return (
-    <div className="habits-page">
+    <div className='habits-page'>
       {/* Today Panel - TAB-HAB-10 */}
-      <div className="habits-today-panel">
-        <div className="completion-ring-container">
-          <svg className="completion-ring" viewBox="0 0 120 120" width="120" height="120">
+      <div className='habits-today-panel'>
+        <div className='completion-ring-container'>
+          <svg
+            className='completion-ring'
+            viewBox='0 0 120 120'
+            width='120'
+            height='120'
+          >
             <circle
-              cx="60"
-              cy="60"
-              r="52"
-              fill="none"
-              stroke="var(--line)"
-              strokeWidth="8"
+              cx='60'
+              cy='60'
+              r='52'
+              fill='none'
+              stroke='var(--line)'
+              strokeWidth='8'
             />
             <circle
-              cx="60"
-              cy="60"
-              r="52"
-              fill="none"
-              stroke="var(--mint)"
-              strokeWidth="8"
+              cx='60'
+              cy='60'
+              r='52'
+              fill='none'
+              stroke='var(--mint)'
+              strokeWidth='8'
               strokeDasharray={`${(todayStats.percentage / 100) * 326.73} 326.73`}
-              strokeLinecap="round"
-              transform="rotate(-90 60 60)"
+              strokeLinecap='round'
+              transform='rotate(-90 60 60)'
               style={{ transition: 'stroke-dasharray 0.5s ease' }}
             />
             <text
-              x="60"
-              y="60"
-              textAnchor="middle"
-              dy="0.3em"
-              fontSize="28"
-              fill="var(--ink)"
-              fontWeight="bold"
+              x='60'
+              y='60'
+              textAnchor='middle'
+              dy='0.3em'
+              fontSize='28'
+              fill='var(--ink)'
+              fontWeight='bold'
             >
               {todayStats.completed}/{todayStats.total}
             </text>
             <text
-              x="60"
-              y="85"
-              textAnchor="middle"
-              fontSize="12"
-              fill="var(--dim)"
+              x='60'
+              y='85'
+              textAnchor='middle'
+              fontSize='12'
+              fill='var(--dim)'
             >
               habits
             </text>
           </svg>
         </div>
-        <div className="today-stats">
+        <div className='today-stats'>
           <h2>{Math.round(todayStats.percentage)}% complete</h2>
           <p>
             {todayStats.total - todayStats.completed}{' '}
-            {todayStats.total - todayStats.completed === 1 ? 'habit' : 'habits'} remaining
+            {todayStats.total - todayStats.completed === 1 ? 'habit' : 'habits'}{' '}
+            remaining
           </p>
         </div>
       </div>
 
       {/* Toolbar - TAB-HAB-03 */}
-      <div className="habits-toolbar">
+      <div className='habits-toolbar'>
         <h3>Habits ({habits.length})</h3>
-        <div className="habits-actions">
+        <div className='habits-actions'>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="sort-select"
-            aria-label="Sort habits by"
+            className='sort-select'
+            aria-label='Sort habits by'
           >
-            <option value="title">Sort: Title</option>
-            <option value="currentStreak">Sort: Current Streak</option>
-            <option value="longestStreak">Sort: Longest Streak</option>
-            <option value="lastDone">Sort: Last Done</option>
+            <option value='title'>Sort: Title</option>
+            <option value='currentStreak'>Sort: Current Streak</option>
+            <option value='longestStreak'>Sort: Longest Streak</option>
+            <option value='lastDone'>Sort: Last Done</option>
           </select>
 
           <button
             onClick={() => setShowFilterModal(true)}
-            className="btn btn-secondary"
-            aria-label="Filter habits"
+            className='btn btn-secondary'
+            aria-label='Filter habits'
             style={{ position: 'relative' }}
           >
             🔍 Filter
@@ -403,14 +429,14 @@ function Habits() {
                   background: 'var(--mint)',
                   border: '2px solid var(--bg)'
                 }}
-                aria-label="Filters active"
+                aria-label='Filters active'
               />
             )}
           </button>
 
           <button
             onClick={() => setShowNewHabitModal(true)}
-            className="btn btn-primary"
+            className='btn btn-primary'
           >
             + New Habit
           </button>
@@ -419,11 +445,11 @@ function Habits() {
 
       {/* Habit Cards - TAB-HAB-06 */}
       {habits.length === 0 ? (
-        <div className="empty-state">
+        <div className='empty-state'>
           <p>No habits yet. Create your first habit to get started!</p>
         </div>
       ) : (
-        <div className="habits-list">
+        <div className='habits-list'>
           {habits.map((habit) => {
             const isCompletedToday = habit.completions?.includes(
               new Date().toISOString().split('T')[0]
@@ -434,9 +460,9 @@ function Habits() {
               <div
                 key={habit.id}
                 data-habit-id={habit.id}
-                className="habit-card"
+                className='habit-card'
                 tabIndex={0}
-                role="button"
+                role='button'
                 aria-label={`${habit.name}, ${habit.streak} day streak, ${isCompletedToday ? 'completed today' : 'not completed today'}. Press Enter to view details, Space to toggle completion.`}
                 onClick={(e) => {
                   // Don't open drawer if clicking checkbox
@@ -445,7 +471,10 @@ function Habits() {
                   }
                 }}
                 onKeyPress={(e) => {
-                  if ((e.key === 'Enter' || e.key === ' ') && e.target.type !== 'checkbox') {
+                  if (
+                    (e.key === 'Enter' || e.key === ' ') &&
+                    e.target.type !== 'checkbox'
+                  ) {
                     e.preventDefault()
                     setSelectedHabit(habit)
                   }
@@ -457,17 +486,23 @@ function Habits() {
                 style={{
                   cursor: 'pointer',
                   opacity: habit.paused ? 0.6 : 1,
-                  outline: focusedHabitId === habit.id ? '3px solid var(--mint)' : 'none',
+                  outline:
+                    focusedHabitId === habit.id
+                      ? '3px solid var(--mint)'
+                      : 'none',
                   outlineOffset: '2px',
-                  transform: swipingHabitId === habit.id ? 'translateX(-20px)' : 'translateX(0)',
+                  transform:
+                    swipingHabitId === habit.id
+                      ? 'translateX(-20px)'
+                      : 'translateX(0)',
                   transition: 'transform 0.2s ease'
                 }}
               >
-                <div className="habit-card-header">
-                  <div className="habit-info">
+                <div className='habit-card-header'>
+                  <div className='habit-info'>
                     {habit.category !== 'default' && (
                       <span
-                        className="category-dot"
+                        className='category-dot'
                         style={{
                           display: 'inline-block',
                           width: '10px',
@@ -481,13 +516,13 @@ function Habits() {
                     )}
                     <h4>{habit.name}</h4>
                   </div>
-                  <div className="habit-actions">
+                  <div className='habit-actions'>
                     <input
-                      type="checkbox"
+                      type='checkbox'
                       checked={isCompletedToday}
                       onChange={() => handleToggleCompletion(habit.id)}
                       disabled={habit.paused}
-                      className="today-checkbox"
+                      className='today-checkbox'
                       aria-label={`Mark ${habit.name} as ${isCompletedToday ? 'incomplete' : 'complete'} today`}
                       style={{
                         width: '32px',
@@ -499,7 +534,7 @@ function Habits() {
                   </div>
                 </div>
 
-                <div className="habit-streak">
+                <div className='habit-streak'>
                   <span>
                     🔥 {habit.streak} day streak
                     {habit.longestStreak > habit.streak && (
@@ -514,14 +549,17 @@ function Habits() {
                 <HeatmapStrip habit={habit} days={28} />
 
                 {swipingHabitId === habit.id && (
-                  <div className="swipe-actions" style={{ marginTop: '8px', display: 'flex', gap: '8px' }}>
+                  <div
+                    className='swipe-actions'
+                    style={{ marginTop: '8px', display: 'flex', gap: '8px' }}
+                  >
                     <button
                       onClick={(e) => {
                         e.stopPropagation()
                         handlePauseHabit(habit.id)
                         setSwipingHabitId(null)
                       }}
-                      className="btn btn-secondary btn-sm"
+                      className='btn btn-secondary btn-sm'
                     >
                       {habit.paused ? 'Resume' : 'Pause'}
                     </button>
@@ -531,7 +569,7 @@ function Habits() {
                         handleDeleteHabit(habit.id)
                         setSwipingHabitId(null)
                       }}
-                      className="btn btn-danger btn-sm"
+                      className='btn btn-danger btn-sm'
                     >
                       Delete
                     </button>
@@ -546,7 +584,7 @@ function Habits() {
       {/* New Habit Modal - TAB-HAB-11 */}
       {showNewHabitModal && (
         <div
-          className="modal-overlay"
+          className='modal-overlay'
           onClick={(e) => {
             if (e.target.className === 'modal-overlay') {
               setShowNewHabitModal(false)
@@ -557,30 +595,34 @@ function Habits() {
               setShowNewHabitModal(false)
             }
           }}
-          role="presentation"
+          role='presentation'
         >
-          <div className="modal-content" role="dialog" aria-labelledby="new-habit-title">
-            <h3 id="new-habit-title">Create New Habit</h3>
+          <div
+            className='modal-content'
+            role='dialog'
+            aria-labelledby='new-habit-title'
+          >
+            <h3 id='new-habit-title'>Create New Habit</h3>
             <form onSubmit={handleCreateHabit}>
-              <div className="form-group">
-                <label htmlFor="habit-name">
+              <div className='form-group'>
+                <label htmlFor='habit-name'>
                   Habit Name <span style={{ color: 'var(--error)' }}>*</span>
                 </label>
                 <input
-                  id="habit-name"
-                  type="text"
+                  id='habit-name'
+                  type='text'
                   value={newHabitName}
                   onChange={(e) => setNewHabitName(e.target.value)}
-                  placeholder="e.g., Morning Meditation"
+                  placeholder='e.g., Morning Meditation'
                   required
-                  aria-required="true"
+                  aria-required='true'
                 />
               </div>
 
-              <div className="form-group">
-                <label htmlFor="habit-category">Category</label>
+              <div className='form-group'>
+                <label htmlFor='habit-category'>Category</label>
                 <select
-                  id="habit-category"
+                  id='habit-category'
                   value={newHabitCategory}
                   onChange={(e) => setNewHabitCategory(e.target.value)}
                 >
@@ -592,15 +634,15 @@ function Habits() {
                 </select>
               </div>
 
-              <div className="modal-actions">
+              <div className='modal-actions'>
                 <button
-                  type="button"
+                  type='button'
                   onClick={() => setShowNewHabitModal(false)}
-                  className="btn btn-secondary"
+                  className='btn btn-secondary'
                 >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary">
+                <button type='submit' className='btn btn-primary'>
                   Create Habit
                 </button>
               </div>

@@ -18,11 +18,14 @@ import { normalizeEntity, updateMetadata } from './idGenerator'
  */
 export async function createRoutine(routine) {
   // TODO: Implement routine validation and step validation
-  const newRoutine = normalizeEntity({
-    ...routine,
-    steps: routine.steps || [],
-    totalDuration: calculateTotalDuration(routine.steps || [])
-  }, { idPrefix: 'routine' })
+  const newRoutine = normalizeEntity(
+    {
+      ...routine,
+      steps: routine.steps || [],
+      totalDuration: calculateTotalDuration(routine.steps || [])
+    },
+    { idPrefix: 'routine' }
+  )
   await put(STORES.ROUTINES, newRoutine)
   return newRoutine.id
 }
@@ -52,12 +55,12 @@ export async function createRoutineBatch(routines) {
       steps: routine.steps || [],
       totalDuration: calculateTotalDuration(routine.steps || [])
     }
-    
+
     // If routine lacks an ID, generate unique ID with index suffix to prevent collisions
     if (!routine.id) {
       routineData.id = `routine_${baseTimestamp}_${index}`
     }
-    
+
     return normalizeEntity(routineData)
   })
 
@@ -165,7 +168,7 @@ export async function addStep(routineId, step) {
 
   routine.steps.push(newStep)
   routine.totalDuration = calculateTotalDuration(routine.steps)
-  
+
   const updated = updateMetadata(routine)
   await put(STORES.ROUTINES, updated)
   return updated
@@ -225,7 +228,7 @@ export async function removeStep(routineId, stepId) {
     step.order = index
   })
   routine.totalDuration = calculateTotalDuration(routine.steps)
-  
+
   const updated = updateMetadata(routine)
   await put(STORES.ROUTINES, updated)
   return updated
@@ -296,7 +299,7 @@ export async function reorderStep(routineId, stepId, newOrder) {
   routine.steps.forEach((s, index) => {
     s.order = index
   })
-  
+
   const updated = updateMetadata(routine)
   await put(STORES.ROUTINES, updated)
   return updated
@@ -330,11 +333,14 @@ export async function cloneRoutine(routineId, newName) {
   delete routineData.timestamp
   delete routineData.createdAt
   delete routineData.updatedAt
-  
-  const cloned = normalizeEntity({
-    ...routineData,
-    name: newName || `${routine.name} (Copy)`
-  }, { idPrefix: 'routine' })
+
+  const cloned = normalizeEntity(
+    {
+      ...routineData,
+      name: newName || `${routine.name} (Copy)`
+    },
+    { idPrefix: 'routine' }
+  )
 
   await put(STORES.ROUTINES, cloned)
   return cloned.id
@@ -445,15 +451,15 @@ export async function startRoutine(routineId) {
 /**
  * Export routines to JSON format.
  * TAB-RTN-47: Export routine data including id, title, tags, steps, etc.
- * 
+ *
  * @param {Array<string>} routineIds - Routine IDs to export (empty = all routines)
  * @returns {Promise<Object>} Resolves to an object with the following properties:
  *   - version {string}: Export format version (e.g., "1.0")
  *   - exportDate {string}: ISO date string of export time
  *   - routines {Array<Object>}: Array of exported routine objects
- * 
+ *
  * @throws {Error} If routines cannot be retrieved from the database
- * 
+ *
  * Example return value:
  * {
  *   version: "1.0",
@@ -635,7 +641,7 @@ export async function updateLastUsed(routineId) {
 
   routine.lastUsed = Date.now()
   routine.usageCount = (routine.usageCount || 0) + 1
-  
+
   const updated = updateMetadata(routine)
   await put(STORES.ROUTINES, updated)
   return updated

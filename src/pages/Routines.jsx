@@ -15,10 +15,10 @@ function Routines() {
   const [toastMessage, setToastMessage] = useState('')
   const [showToast, setShowToast] = useState(false)
   const fileInputRef = useRef(null)
-  
+
   // TAB-RTN-18: Cancel confirmation modal state
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
-  
+
   // TAB-RTN-45: Reduced motion detection
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
 
@@ -28,10 +28,10 @@ function Routines() {
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     setPrefersReducedMotion(mediaQuery.matches)
-    
+
     const handleChange = (e) => setPrefersReducedMotion(e.matches)
     mediaQuery.addEventListener('change', handleChange)
-    
+
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
 
@@ -54,7 +54,7 @@ function Routines() {
 
     const handleSwipeGesture = () => {
       const swipeDistance = touchEndX - touchStartX
-      
+
       // Swipe left to skip step
       if (swipeDistance < -minSwipeDistance && runner.skip) {
         // TAB-RTN-41: Trigger haptic feedback if available
@@ -63,7 +63,7 @@ function Routines() {
         }
         runner.skip()
       }
-      
+
       // Swipe right to complete step
       if (swipeDistance > minSwipeDistance && runner.complete) {
         // TAB-RTN-41: Trigger haptic feedback if available

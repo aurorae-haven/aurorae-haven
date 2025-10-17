@@ -79,18 +79,19 @@ export function instantiateTaskFromTemplate(template) {
   const task = createTaskFromTemplate(template, quadrant)
 
   // Load existing tasks from localStorage
-  const tasks = tryCatch(
-    () => {
-      const savedTasks = localStorage.getItem('aurorae_tasks')
-      return savedTasks
-        ? JSON.parse(savedTasks)
-        : createDefaultEisenhowerTasks()
-    },
-    `Loading tasks for template "${template.title || '[unknown title]'}"`,
-    {
-      showToast: false
-    }
-  ) || createDefaultEisenhowerTasks()
+  const tasks =
+    tryCatch(
+      () => {
+        const savedTasks = localStorage.getItem('aurorae_tasks')
+        return savedTasks
+          ? JSON.parse(savedTasks)
+          : createDefaultEisenhowerTasks()
+      },
+      `Loading tasks for template "${template.title || '[unknown title]'}"`,
+      {
+        showToast: false
+      }
+    ) || createDefaultEisenhowerTasks()
 
   // Add task to appropriate quadrant
   if (!tasks[quadrant]) {
@@ -278,18 +279,19 @@ export async function instantiateTemplatesBatch(templates) {
     }
 
     // Load existing tasks once
-    const tasks = tryCatch(
-      () => {
-        const savedTasks = localStorage.getItem('aurorae_tasks')
-        return savedTasks
-          ? JSON.parse(savedTasks)
-          : createDefaultEisenhowerTasks()
-      },
-      'Loading tasks for batch template instantiation',
-      {
-        showToast: false
-      }
-    ) || createDefaultEisenhowerTasks()
+    const tasks =
+      tryCatch(
+        () => {
+          const savedTasks = localStorage.getItem('aurorae_tasks')
+          return savedTasks
+            ? JSON.parse(savedTasks)
+            : createDefaultEisenhowerTasks()
+        },
+        'Loading tasks for batch template instantiation',
+        {
+          showToast: false
+        }
+      ) || createDefaultEisenhowerTasks()
 
     // Create all tasks after validation passes
     for (const template of taskTemplates) {

@@ -84,49 +84,90 @@ function FilterModal({ isOpen, currentFilters, onApply, onClose }) {
         aria-modal='true'
         aria-label='Filter Habits'
       >
-        <strong id='filter-modal-title' style={{ fontSize: '1.25rem', display: 'block', marginBottom: '1rem' }}>
+        <strong
+          id='filter-modal-title'
+          style={{
+            fontSize: '1.25rem',
+            display: 'block',
+            marginBottom: '1rem'
+          }}
+        >
           Filter Habits
         </strong>
 
         {/* Category Filter */}
         <div style={{ marginBottom: '1rem' }}>
           <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-            <legend style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            <legend
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: 'bold'
+              }}
+            >
               Categories
             </legend>
-            {CATEGORY_OPTIONS.filter(cat => cat.value !== 'default').map(cat => (
-              <div key={cat.value} style={{ marginBottom: '0.5rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
-                  <input
-                    type='checkbox'
-                    checked={localFilters.categories.includes(cat.value)}
-                    onChange={() => handleCategoryToggle(cat.value)}
-                    aria-label={cat.label}
-                    style={{ marginRight: '0.5rem' }}
-                  />
-                  {cat.label}
-                </label>
-              </div>
-            ))}
+            {CATEGORY_OPTIONS.filter((cat) => cat.value !== 'default').map(
+              (cat) => (
+                <div key={cat.value} style={{ marginBottom: '0.5rem' }}>
+                  <label
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <input
+                      type='checkbox'
+                      checked={localFilters.categories.includes(cat.value)}
+                      onChange={() => handleCategoryToggle(cat.value)}
+                      aria-label={cat.label}
+                      style={{ marginRight: '0.5rem' }}
+                    />
+                    {cat.label}
+                  </label>
+                </div>
+              )
+            )}
           </fieldset>
         </div>
 
         {/* Status Filter */}
         <div style={{ marginBottom: '1rem' }}>
           <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
-            <legend style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
+            <legend
+              style={{
+                display: 'block',
+                marginBottom: '0.5rem',
+                fontWeight: 'bold'
+              }}
+            >
               Status
             </legend>
-            {['all', 'active', 'paused'].map(statusOption => (
+            {['all', 'active', 'paused'].map((statusOption) => (
               <div key={statusOption} style={{ marginBottom: '0.5rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    cursor: 'pointer'
+                  }}
+                >
                   <input
                     type='radio'
                     name='status'
                     value={statusOption}
                     checked={localFilters.status === statusOption}
-                    onChange={(e) => setLocalFilters({ ...localFilters, status: e.target.value })}
-                    aria-label={statusOption.charAt(0).toUpperCase() + statusOption.slice(1)}
+                    onChange={(e) =>
+                      setLocalFilters({
+                        ...localFilters,
+                        status: e.target.value
+                      })
+                    }
+                    aria-label={
+                      statusOption.charAt(0).toUpperCase() +
+                      statusOption.slice(1)
+                    }
                     style={{ marginRight: '0.5rem' }}
                   />
                   {statusOption.charAt(0).toUpperCase() + statusOption.slice(1)}
@@ -137,7 +178,14 @@ function FilterModal({ isOpen, currentFilters, onApply, onClose }) {
         </div>
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '1.5rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '0.5rem',
+            justifyContent: 'flex-end',
+            marginTop: '1.5rem'
+          }}
+        >
           <button
             className='btn-outline'
             onClick={handleReset}

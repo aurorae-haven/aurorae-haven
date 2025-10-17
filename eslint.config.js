@@ -81,7 +81,12 @@ export default [
   },
   // Test environment configuration
   {
-    files: ['**/setupTests.js', '**/__tests__/**/*.js', '**/*.test.js', '**/*.test.jsx'],
+    files: [
+      '**/setupTests.js',
+      '**/__tests__/**/*.js',
+      '**/*.test.js',
+      '**/*.test.jsx'
+    ],
     languageOptions: {
       globals: {
         jest: 'readonly',
