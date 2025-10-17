@@ -442,7 +442,8 @@ export async function importHabits(jsonData) {
   let data
   try {
     data = JSON.parse(jsonData)
-  } catch {
+  } catch (error) {
+    logger.error('Failed to parse import JSON:', error)
     throw new Error('Invalid JSON data')
   }
 
