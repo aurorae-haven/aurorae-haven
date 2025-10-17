@@ -1,4 +1,4 @@
-import { generateSecureUUID } from '../uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import {
   generateBrainDumpFilename,
   extractTitleFromFilename

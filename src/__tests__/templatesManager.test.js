@@ -13,11 +13,11 @@ import {
   templatesDBManager
 } from '../utils/templatesManager'
 import * as indexedDBManager from '../utils/indexedDBManager'
-import * as uuidGenerator from '../utils/uuidGenerator'
+import { v4 as uuidv4 } from 'uuid'
 
 // Mock dependencies
 jest.mock('../utils/indexedDBManager')
-jest.mock('../utils/uuidGenerator')
+jest.mock('uuid')
 
 describe('templatesManager', () => {
   let mockDB
@@ -109,7 +109,7 @@ describe('templatesManager', () => {
 
     indexedDBManager.isIndexedDBAvailable.mockReturnValue(true)
     indexedDBManager.openDB.mockResolvedValue(mockDB)
-    uuidGenerator.generateSecureUUID.mockReturnValue('test-uuid-123')
+    uuidv4.mockReturnValue('test-uuid-123')
   })
 
   describe('getAllTemplates', () => {
@@ -539,7 +539,7 @@ describe('templatesManager', () => {
       const result = await importTemplates(importData)
 
       expect(result.imported).toBe(1)
-      expect(uuidGenerator.generateSecureUUID).toHaveBeenCalled()
+      expect(uuidv4).toHaveBeenCalled()
     })
 
     test('throws error for missing version field', async () => {

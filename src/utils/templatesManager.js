@@ -4,7 +4,7 @@
  */
 
 import { openDB, isIndexedDBAvailable } from './indexedDBManager'
-import { generateSecureUUID } from './uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { validateTemplateData } from './validation'
 import semver from 'semver'
 import { createLogger } from './logger'

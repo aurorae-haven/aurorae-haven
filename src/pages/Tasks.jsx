@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { generateSecureUUID } from '../utils/uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { useTasksState } from '../hooks/useTasksState'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import TaskForm from '../components/Tasks/TaskForm'

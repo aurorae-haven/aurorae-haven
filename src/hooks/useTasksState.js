@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { generateSecureUUID } from '../utils/uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { createLogger } from '../utils/logger'
 
 const logger = createLogger('useTasksState')

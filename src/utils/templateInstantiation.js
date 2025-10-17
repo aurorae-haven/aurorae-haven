@@ -3,7 +3,7 @@
  * Implements TAB-LIB-13: Spawn new Tasks or Routines from templates
  */
 
-import { generateSecureUUID } from './uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { createRoutine, createRoutineBatch } from './routinesManager'
 import { validateTemplateData } from './validation'
 import { MS_PER_DAY } from './timeConstants'
