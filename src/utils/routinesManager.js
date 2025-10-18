@@ -100,6 +100,13 @@ export async function getRoutines(options = {}) {
           : titleA.localeCompare(titleB)
       }
 
+      // Special handling for lastUsed which may be ISO string
+      if (options.sortBy === 'lastUsed') {
+        const aTime = aVal ? new Date(aVal).getTime() : 0
+        const bTime = bVal ? new Date(bVal).getTime() : 0
+        return options.order === 'desc' ? bTime - aTime : aTime - bTime
+      }
+
       // Numeric comparison for duration and timestamps
       if (options.order === 'desc') {
         return bVal - aVal

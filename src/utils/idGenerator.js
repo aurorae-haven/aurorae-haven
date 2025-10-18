@@ -126,39 +126,29 @@ export function generateMetadata() {
   }
 }
 
-// Counter to ensure unique IDs even within the same millisecond
-let idCounter = 0
-let lastTimestamp = 0
-
 /**
  * Normalize entity with ID and metadata
  * Combines entity data with generated ID and metadata fields
  * @param {Object} entity - Entity to normalize
  * @param {Object} options - Normalization options
- * @param {string} options.idPrefix - Optional prefix for timestamp-based IDs
+ * @param {string} options.idPrefix - Optional prefix for UUID-based IDs
  * @returns {Object} Normalized entity with ID and metadata
  * @example
  * normalizeEntity({ name: 'Test' }, { idPrefix: 'routine' })
- * // Returns: { name: 'Test', id: 'routine_1697234567890', timestamp: 1697234567890, createdAt: '...', updatedAt: '...' }
+ * // Returns: { name: 'Test', id: 'routine_550e8400-...', timestamp: 1697234567890, createdAt: '...', updatedAt: '...' }
  */
 export function normalizeEntity(entity, options = {}) {
   const metadata = generateMetadata()
 
-  // Generate unique ID - add counter to handle same-millisecond creates
+  // Generate unique ID using UUID for better uniqueness
   let id
   if (entity.id) {
     id = entity.id
   } else if (options.idPrefix) {
-    id = generateTimestampId(options.idPrefix)
+    id = generateUniqueId(options.idPrefix)
   } else {
-    // Use timestamp + counter for uniqueness
-    if (metadata.timestamp === lastTimestamp) {
-      idCounter++
-    } else {
-      idCounter = 0
-      lastTimestamp = metadata.timestamp
-    }
-    id = metadata.timestamp + idCounter
+    // Use UUID for entities without prefix
+    id = generateSecureUUID()
   }
 
   return {

@@ -208,20 +208,25 @@ describe('idGenerator', () => {
       expect(result.updatedAt).toBeDefined()
     })
 
-    test('generates numeric timestamp ID without prefix', () => {
+    test('generates UUID ID without prefix', () => {
       const entity = { name: 'Test' }
       const result = normalizeEntity(entity)
 
-      expect(typeof result.id).toBe('number')
-      expect(result.id).toBeGreaterThan(0)
+      expect(typeof result.id).toBe('string')
+      expect(result.id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      )
+      expect(result.id.length).toBeGreaterThan(0)
     })
 
-    test('generates prefixed timestamp ID with idPrefix option', () => {
+    test('generates prefixed UUID ID with idPrefix option', () => {
       const entity = { name: 'Test Routine' }
       const result = normalizeEntity(entity, { idPrefix: 'routine' })
 
       expect(typeof result.id).toBe('string')
-      expect(result.id).toMatch(/^routine_\d+$/)
+      expect(result.id).toMatch(
+        /^routine_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      )
     })
 
     test('preserves all entity properties', () => {
