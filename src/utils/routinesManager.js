@@ -9,11 +9,7 @@ import {
   deleteById,
   STORES
 } from './indexedDBManager'
-import {
-  normalizeEntity,
-  updateMetadata,
-  generateStepId
-} from './idGenerator'
+import { normalizeEntity, updateMetadata, generateStepId } from './idGenerator'
 
 /**
  * Create a new routine

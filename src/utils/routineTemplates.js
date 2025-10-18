@@ -2,11 +2,7 @@
 // TAB-RTN-08, TAB-RTN-32, TAB-RTN-50: Template management system
 
 import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
-import {
-  normalizeEntity,
-  updateMetadata,
-  generateStepId
-} from './idGenerator'
+import { normalizeEntity, updateMetadata, generateStepId } from './idGenerator'
 import { createRoutine } from './routinesManager'
 
 /**

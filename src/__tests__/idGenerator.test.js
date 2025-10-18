@@ -58,27 +58,35 @@ describe('idGenerator', () => {
   describe('specific ID generators', () => {
     test('generateRoutineId returns routine_ prefixed UUID', () => {
       const id = generateRoutineId()
-      expect(id).toMatch(/^routine_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+      expect(id).toMatch(
+        /^routine_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      )
       expect(typeof id).toBe('string')
     })
 
     test('generateStepId returns step_ prefixed UUID', () => {
       const id = generateStepId()
-      expect(id).toMatch(/^step_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+      expect(id).toMatch(
+        /^step_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      )
       expect(typeof id).toBe('string')
     })
 
     test('generateHabitId returns UUID string', () => {
       const id = generateHabitId()
       expect(typeof id).toBe('string')
-      expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+      expect(id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      )
       expect(id.length).toBeGreaterThan(0)
     })
 
     test('generateScheduleId returns UUID string', () => {
       const id = generateScheduleId()
       expect(typeof id).toBe('string')
-      expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+      expect(id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+      )
       expect(id.length).toBeGreaterThan(0)
     })
 
