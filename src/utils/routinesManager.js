@@ -9,7 +9,11 @@ import {
   deleteById,
   STORES
 } from './indexedDBManager'
-import { normalizeEntity, updateMetadata } from './idGenerator'
+import {
+  normalizeEntity,
+  updateMetadata,
+  generateStepId
+} from './idGenerator'
 
 /**
  * Create a new routine
@@ -161,7 +165,7 @@ export async function addStep(routineId, step) {
 
   const newStep = {
     ...step,
-    id: step.id || `step_${Date.now()}`,
+    id: step.id || generateStepId(),
     order: routine.steps.length,
     duration: step.duration || 60 // Default 60 seconds
   }
@@ -255,7 +259,7 @@ export async function duplicateStep(routineId, stepId) {
   const stepToDuplicate = routine.steps[stepIndex]
   const newStep = {
     ...stepToDuplicate,
-    id: `step_${Date.now()}`,
+    id: generateStepId(),
     order: stepIndex + 1,
     label: `${stepToDuplicate.label} (Copy)`
   }

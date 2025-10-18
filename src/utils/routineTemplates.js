@@ -2,7 +2,11 @@
 // TAB-RTN-08, TAB-RTN-32, TAB-RTN-50: Template management system
 
 import { put, getAll, getById, deleteById, STORES } from './indexedDBManager'
-import { normalizeEntity, updateMetadata } from './idGenerator'
+import {
+  normalizeEntity,
+  updateMetadata,
+  generateStepId
+} from './idGenerator'
 import { createRoutine } from './routinesManager'
 
 /**
@@ -288,7 +292,7 @@ export async function instantiateTemplate(templateId, routineName) {
     tags: [...(template.tags || [])],
     steps: template.steps.map((step, index) => ({
       ...step,
-      id: `step_${Date.now()}_${index}`,
+      id: generateStepId(),
       order: index
     })),
     templateId: templateId

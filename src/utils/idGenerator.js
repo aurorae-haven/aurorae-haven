@@ -34,36 +34,38 @@ export function generateUniqueId(prefix = '') {
 
 /**
  * Generate a routine ID
- * Maintained for backward compatibility with existing code
- * @returns {string} Routine ID in format 'routine_timestamp'
+ * Uses UUID for better uniqueness and import/export compatibility
+ * @returns {string} Routine ID in format 'routine_uuid'
  */
 export function generateRoutineId() {
-  return generateTimestampId('routine')
+  return generateUniqueId('routine')
 }
 
 /**
  * Generate a step ID
- * Maintained for backward compatibility with existing code
- * @returns {string} Step ID in format 'step_timestamp'
+ * Uses UUID for better uniqueness and collision prevention
+ * @returns {string} Step ID in format 'step_uuid'
  */
 export function generateStepId() {
-  return generateTimestampId('step')
+  return generateUniqueId('step')
 }
 
 /**
  * Generate a habit ID
- * @returns {number} Numeric timestamp ID
+ * Uses UUID for better uniqueness and import/export compatibility
+ * @returns {string} Habit ID
  */
 export function generateHabitId() {
-  return Date.now()
+  return generateSecureUUID()
 }
 
 /**
  * Generate a schedule event ID
- * @returns {number} Numeric timestamp ID
+ * Uses UUID for better uniqueness and import/export compatibility
+ * @returns {string} Schedule event ID
  */
 export function generateScheduleId() {
-  return Date.now()
+  return generateSecureUUID()
 }
 
 /**
