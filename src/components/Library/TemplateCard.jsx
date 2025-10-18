@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 import { createLogger } from '../../utils/logger'
 import { sanitizeFilename } from '../../utils/fileHelpers'
 import { formatDurationVerbose } from '../../utils/timeUtils'
@@ -51,7 +52,7 @@ function TemplateCard({
 
   return (
     <div
-      className={`template-card ${template.pinned ? 'pinned' : ''}`}
+      className={clsx('template-card', { pinned: template.pinned })}
       role={viewMode === 'grid' ? 'gridcell' : 'listitem'}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
@@ -127,8 +128,12 @@ function TemplateCard({
         )}
 
         {template.type === 'routine' && template.estimatedDuration && (
-          <div className='template-duration small' aria-label={`Duration: ${formatDurationVerbose(template.estimatedDuration)}`}>
-            <span aria-hidden='true'>⏱️</span> {formatDurationVerbose(template.estimatedDuration)}
+          <div
+            className='template-duration small'
+            aria-label={`Duration: ${formatDurationVerbose(template.estimatedDuration)}`}
+          >
+            <span aria-hidden='true'>⏱️</span>{' '}
+            {formatDurationVerbose(template.estimatedDuration)}
           </div>
         )}
 
@@ -138,7 +143,7 @@ function TemplateCard({
       </div>
 
       {/* Template actions */}
-      <div className={`template-actions ${showActions ? 'visible' : ''}`}>
+      <div className={clsx('template-actions', { visible: showActions })}>
         <button
           className='btn btn-sm'
           onClick={onUse}

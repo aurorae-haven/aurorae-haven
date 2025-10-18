@@ -90,7 +90,7 @@ Copilot suggestions must be structured as:
 
 ## Documentation & Release Notes
 
-- **Be smart about documentation:**  
+- **Be smart about documentation:**
   - Update docs only for specification/user-facing feature changes.
   - Create/update user manuals and examples for significant/new features.
   - Release notes must summarise key changes.

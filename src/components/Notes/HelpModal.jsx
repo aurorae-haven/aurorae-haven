@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 import '../../assets/styles/help-modal.css'
 
 /**
@@ -363,7 +364,7 @@ $$`}
                 aria-selected={activeTab === tab.id}
                 aria-controls={`panel-${tab.id}`}
                 id={`tab-${tab.id}`}
-                className={`help-tab ${activeTab === tab.id ? 'active' : ''}`}
+                className={clsx('help-tab', { active: activeTab === tab.id })}
                 onClick={() => setActiveTab(tab.id)}
               >
                 {tab.label}

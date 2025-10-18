@@ -580,7 +580,6 @@ import { v4 as generateSecureUUID } from 'uuid'
 const id = generateSecureUUID()
 ```
 
-
 **Applied To**:
 
 - Tasks export (`src/pages/Tasks.jsx`)

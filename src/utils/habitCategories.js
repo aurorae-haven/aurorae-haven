@@ -17,11 +17,13 @@ export const CATEGORY_COLORS = {
   purple: { bg: '#6c5ce7', text: '#ffffff', name: 'Purple' }
 }
 
-export const CATEGORY_OPTIONS = Object.entries(CATEGORY_COLORS).map(([key, value]) => ({
-  value: key,
-  label: value.name,
-  ...value
-}))
+export const CATEGORY_OPTIONS = Object.entries(CATEGORY_COLORS).map(
+  ([key, value]) => ({
+    value: key,
+    label: value.name,
+    ...value
+  })
+)
 
 export function getCategoryColor(category) {
   return CATEGORY_COLORS[category] || CATEGORY_COLORS.default

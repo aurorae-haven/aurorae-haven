@@ -6,6 +6,7 @@
 
 import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
 import Icon from '../common/Icon'
 
 function TemplateToolbar({
@@ -108,7 +109,7 @@ function TemplateToolbar({
 
         <div className='view-toggle' role='group' aria-label='View mode'>
           <button
-            className={`btn btn-icon ${viewMode === 'grid' ? 'active' : ''}`}
+            className={clsx('btn', 'btn-icon', { active: viewMode === 'grid' })}
             onClick={() => onViewModeChange('grid')}
             aria-label='Grid view'
             aria-pressed={viewMode === 'grid'}
@@ -116,7 +117,7 @@ function TemplateToolbar({
             <Icon name='grid' />
           </button>
           <button
-            className={`btn btn-icon ${viewMode === 'list' ? 'active' : ''}`}
+            className={clsx('btn', 'btn-icon', { active: viewMode === 'list' })}
             onClick={() => onViewModeChange('list')}
             aria-label='List view'
             aria-pressed={viewMode === 'list'}

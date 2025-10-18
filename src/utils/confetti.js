@@ -32,7 +32,7 @@ export function triggerConfetti({ reducedMotion = false } = {}) {
     `
     celebrationDiv.textContent = '🎉 Milestone!'
     document.body.appendChild(celebrationDiv)
-    
+
     setTimeout(() => {
       celebrationDiv.remove()
     }, 2000)
@@ -41,7 +41,7 @@ export function triggerConfetti({ reducedMotion = false } = {}) {
 
   // Full animation using canvas-confetti library
   const colors = ['#86f5e0', '#4a7dff', '#ff6b6b', '#ffd93d', '#a78bfa']
-  
+
   confetti({
     particleCount: 50,
     spread: 70,

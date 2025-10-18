@@ -60,16 +60,17 @@ export async function getDataTemplate() {
 
   // Load all data fields from localStorage
   for (const field of Object.values(DATA_FIELDS)) {
-    data[field] = tryCatch(
-      () => {
-        const raw = localStorage.getItem(field)
-        return raw ? JSON.parse(raw) : []
-      },
-      `Loading ${field} from localStorage`,
-      {
-        showToast: false
-      }
-    ) || []
+    data[field] =
+      tryCatch(
+        () => {
+          const raw = localStorage.getItem(field)
+          return raw ? JSON.parse(raw) : []
+        },
+        `Loading ${field} from localStorage`,
+        {
+          showToast: false
+        }
+      ) || []
   }
 
   // Backward compatibility: check for old 'sequences' localStorage key
@@ -110,36 +111,38 @@ export async function getDataTemplate() {
   )
 
   // Parse brainDumpEntries once for both dumps override and brainDump.entries
-  const entries = tryCatch(
-    () => {
-      const entriesStr = localStorage.getItem('brainDumpEntries')
-      if (entriesStr) {
-        const parsed = JSON.parse(entriesStr)
-        // Override dumps field with brainDumpEntries if it exists
-        if (Array.isArray(parsed)) {
-          data.dumps = parsed
+  const entries =
+    tryCatch(
+      () => {
+        const entriesStr = localStorage.getItem('brainDumpEntries')
+        if (entriesStr) {
+          const parsed = JSON.parse(entriesStr)
+          // Override dumps field with brainDumpEntries if it exists
+          if (Array.isArray(parsed)) {
+            data.dumps = parsed
+          }
+          return parsed
         }
-        return parsed
+        return []
+      },
+      'Loading brainDumpEntries from localStorage',
+      {
+        showToast: false
       }
-      return []
-    },
-    'Loading brainDumpEntries from localStorage',
-    {
-      showToast: false
-    }
-  ) || []
+    ) || []
 
   // Parse brainDumpVersions for backward compatibility
-  const versions = tryCatch(
-    () => {
-      const versionsStr = localStorage.getItem('brainDumpVersions')
-      return versionsStr ? JSON.parse(versionsStr) : []
-    },
-    'Loading brainDumpVersions from localStorage',
-    {
-      showToast: false
-    }
-  ) || []
+  const versions =
+    tryCatch(
+      () => {
+        const versionsStr = localStorage.getItem('brainDumpVersions')
+        return versionsStr ? JSON.parse(versionsStr) : []
+      },
+      'Loading brainDumpVersions from localStorage',
+      {
+        showToast: false
+      }
+    ) || []
 
   // Include brain dump data for backward compatibility
   data.brainDump = {
@@ -166,9 +169,7 @@ export async function exportJSON() {
   // Validate data before export (includes serialization test)
   const validation = validateExportData(dataTemplate)
   if (!validation.valid) {
-    throw new Error(
-      `Export validation failed: ${validation.errors.join(', ')}`
-    )
+    throw new Error(`Export validation failed: ${validation.errors.join(', ')}`)
   }
 
   // Serialize data for export (reuse validation.stringified to avoid redundant serialization)

@@ -30,9 +30,7 @@ test.describe('Routine High-Priority Features', () => {
       // Check if routine is running
       const runningIndicator = page.locator('text=/Current Routine/i')
       if (
-        await runningIndicator
-          .isVisible({ timeout: 2000 })
-          .catch(() => false)
+        await runningIndicator.isVisible({ timeout: 2000 }).catch(() => false)
       ) {
         // Test Space key for Complete (if complete button exists)
         const completeButton = page.locator('button:has-text("Complete")')
@@ -104,9 +102,7 @@ test.describe('Routine High-Priority Features', () => {
 
       // Check if routine is running
       const cancelButton = page.locator('button:has-text("Cancel")')
-      if (
-        await cancelButton.isVisible({ timeout: 2000 }).catch(() => false)
-      ) {
+      if (await cancelButton.isVisible({ timeout: 2000 }).catch(() => false)) {
         // Click Cancel button
         await cancelButton.click()
         await page.waitForTimeout(500)
