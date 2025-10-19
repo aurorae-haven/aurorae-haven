@@ -102,8 +102,10 @@ export async function getRoutines(options = {}) {
 
       // Special handling for lastUsed which may be ISO string
       if (options.sortBy === 'lastUsed') {
-        const aTime = aVal ? new Date(aVal).getTime() : 0
-        const bTime = bVal ? new Date(bVal).getTime() : 0
+        let aTime = aVal ? new Date(aVal).getTime() : 0
+        let bTime = bVal ? new Date(bVal).getTime() : 0
+        if (!Number.isFinite(aTime)) aTime = 0
+        if (!Number.isFinite(bTime)) bTime = 0
         return options.order === 'desc' ? bTime - aTime : aTime - bTime
       }
 
