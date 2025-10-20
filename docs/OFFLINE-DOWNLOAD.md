@@ -81,7 +81,8 @@ The offline package comes as either a `.zip` or `.tar.gz` archive. Extract it:
 
 **For TAR.GZ files (.tar.gz):**
 
-- **Windows 10/11**: ✅ **Built-in support!** Right-click → **Extract All...** (or use 7-Zip/WinRAR/PeaZip)
+- **Windows**: Use PowerShell or Command Prompt: `tar -xf aurorae-haven-offline-*.tar.gz` (or use 7-Zip/WinRAR/PeaZip).  
+  **Note:** Windows File Explorer does not natively extract `.tar.gz` files.
 - **Linux/macOS**: `tar -xzf aurorae-haven-offline-*.tar.gz`
 
 **Note**: Both archives contain identical content - choose whichever format you prefer!
