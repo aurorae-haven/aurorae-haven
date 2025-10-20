@@ -11,6 +11,8 @@ export default [
       'node_modules/**',
       'build/**',
       'dist/**',
+      'dist-offline/**',
+      'dist-offline-build/**',
       'coverage/**',
       '*.config.js',
       'public/service-worker.js',

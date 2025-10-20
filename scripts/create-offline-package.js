@@ -470,38 +470,35 @@ async function createZip() {
     process.exit(1)
   }
 
-  let tarGzSuccess = false
-  let zipSuccess = false
-
   // Step 2: Create tar.gz archive
+  let tarGzSuccess = false
   try {
     tarGzSuccess = await createTarGz()
   } catch (error) {
     console.warn('⚠️  tar.gz creation failed:', error.message)
   }
 
-  // Step 3: Create ZIP archive
-  try {
-    zipSuccess = await createZip()
-  } catch (error) {
-    console.warn('⚠️  ZIP creation failed:', error.message)
-  }
-
-  // Clean up the temporary offline build directory
-  if (existsSync(DIST_OFFLINE_DIR)) {
-    rmSync(DIST_OFFLINE_DIR, { recursive: true, force: true })
-    console.log('  ✓ Cleaned up temporary build directory')
-  }
+  // Note: We no longer create a ZIP archive here because GitHub Actions
+  // will automatically create one from the dist-offline-build directory.
+  // Creating a ZIP here would result in nested archives (zip-in-zip).
 
   // Report results
   console.log('\n' + '='.repeat(70))
-  if (tarGzSuccess || zipSuccess) {
+  if (tarGzSuccess) {
     console.log('✅ Offline package creation complete!')
-    if (tarGzSuccess) console.log('  ✓ tar.gz created')
-    if (zipSuccess) console.log('  ✓ ZIP created')
+    console.log('  ✓ tar.gz created for releases and offline-releases branch')
+    console.log('  ℹ️  GitHub Actions will create a ZIP from dist-offline-build/ for artifacts')
+    
+    // Keep the temporary build directory for GitHub Actions to use
+    console.log('  ℹ️  Keeping dist-offline-build/ for GitHub Actions artifact upload')
     process.exit(0)
   } else {
-    console.error('❌ Failed to create offline packages')
+    // Clean up on failure
+    if (existsSync(DIST_OFFLINE_DIR)) {
+      rmSync(DIST_OFFLINE_DIR, { recursive: true, force: true })
+      console.log('  ✓ Cleaned up temporary build directory')
+    }
+    console.error('❌ Failed to create offline package')
     process.exit(1)
   }
 })()
