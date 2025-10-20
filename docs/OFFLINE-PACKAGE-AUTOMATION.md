@@ -80,18 +80,19 @@ The offline package is automatically generated and uploaded to multiple location
 **Process**:
 
 1. Build the offline package
-2. Upload as workflow artifact
+2. Upload as workflow artifact (ZIP format)
 3. Retain for 90 days
 
 **Access**:
 
-- Actions page → Workflow run → Artifacts section
+- Actions page → Workflow run → Artifacts section → "AuroraeHaven"
 
 **Benefits**:
 
 - Includes all development builds
 - Useful for testing
 - Automatic cleanup after 90 days
+- Single ZIP file (no nested archives)
 
 ## Implementation Details
 
@@ -352,7 +353,7 @@ When modifying the workflows:
 
 - Visit <https://github.com/aurorae-haven/aurorae-haven/actions>
 - Click on recent workflow run
-- Verify "offline-package" artifact exists
+- Verify "AuroraeHaven" artifact exists (ZIP format)
 
 ## Security Considerations
 
