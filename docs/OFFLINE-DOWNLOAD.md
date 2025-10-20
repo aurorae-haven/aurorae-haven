@@ -27,10 +27,7 @@ The latest offline package is always available on the `offline-releases` branch:
 3. Click on the file to view it, then click the "Download" button
 4. The file will be named something like `aurorae-haven-offline-v1.0.0.zip` or `aurorae-haven-offline-v1.0.0.tar.gz`
 
-**Direct Download Links** (replace `v1.0.0` with the desired version):
-
-- [ZIP Package](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip)
-- [TAR.GZ Package](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz)
+**Note**: Visit the branch above to see the current version and download directly from there.
 
 ### Option 2: Download from GitHub Releases (Stable Versions)
 
