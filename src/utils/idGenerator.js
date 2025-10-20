@@ -34,7 +34,7 @@ export function generateUniqueId(prefix = '') {
 
 /**
  * Generate a routine ID
- * Uses UUID for better uniqueness and import/export compatibility
+ * Uses UUID v4 for better uniqueness and import/export compatibility
  * @returns {string} Routine ID in format 'routine_uuid'
  */
 export function generateRoutineId() {
@@ -43,7 +43,7 @@ export function generateRoutineId() {
 
 /**
  * Generate a step ID
- * Uses UUID for better uniqueness and collision prevention
+ * Uses UUID v4 for better uniqueness and collision prevention
  * @returns {string} Step ID in format 'step_uuid'
  */
 export function generateStepId() {
@@ -52,26 +52,26 @@ export function generateStepId() {
 
 /**
  * Generate a habit ID
- * Uses UUID for better uniqueness and import/export compatibility
- * @returns {string} Habit ID
+ * Uses UUID v4 for better uniqueness and import/export compatibility
+ * @returns {string} Habit ID in format 'habit_uuid'
  */
 export function generateHabitId() {
-  return generateSecureUUID()
+  return generateUniqueId('habit')
 }
 
 /**
  * Generate a schedule event ID
- * Uses UUID for better uniqueness and import/export compatibility
- * @returns {string} Schedule event ID
+ * Uses UUID v4 for better uniqueness and import/export compatibility
+ * @returns {string} Schedule event ID in format 'schedule_uuid'
  */
 export function generateScheduleId() {
-  return generateSecureUUID()
+  return generateUniqueId('schedule')
 }
 
 /**
  * Generate a template ID
- * Uses UUID for better uniqueness and import/export compatibility
- * @returns {string} Template ID
+ * Uses UUID v4 for better uniqueness and import/export compatibility
+ * @returns {string} UUID v4 string
  */
 export function generateTemplateId() {
   return generateSecureUUID()
@@ -79,8 +79,8 @@ export function generateTemplateId() {
 
 /**
  * Generate a note/dump ID
- * Uses UUID for better uniqueness
- * @returns {string} Note ID
+ * Uses UUID v4 for better uniqueness
+ * @returns {string} UUID v4 string
  */
 export function generateNoteId() {
   return generateSecureUUID()

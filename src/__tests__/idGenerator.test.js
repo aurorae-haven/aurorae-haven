@@ -72,20 +72,20 @@ describe('idGenerator', () => {
       expect(typeof id).toBe('string')
     })
 
-    test('generateHabitId returns UUID string', () => {
+    test('generateHabitId returns habit_ prefixed UUID', () => {
       const id = generateHabitId()
       expect(typeof id).toBe('string')
       expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+        /^habit_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
       expect(id.length).toBeGreaterThan(0)
     })
 
-    test('generateScheduleId returns UUID string', () => {
+    test('generateScheduleId returns schedule_ prefixed UUID', () => {
       const id = generateScheduleId()
       expect(typeof id).toBe('string')
       expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+        /^schedule_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
       expect(id.length).toBeGreaterThan(0)
     })
