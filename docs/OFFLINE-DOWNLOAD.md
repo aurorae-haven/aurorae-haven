@@ -21,11 +21,16 @@ This is ideal for:
 The latest offline package is always available on the `offline-releases` branch:
 
 1. Visit the [offline-releases branch](https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases)
-2. Click on the `.tar.gz` file to view it
-3. Click the "Download" button to download the package
-4. The file will be named something like `aurorae-haven-offline-v1.0.0.tar.gz`
+2. Choose your preferred format:
+   - `.zip` file for Windows users or those who prefer ZIP archives
+   - `.tar.gz` file for Linux/macOS users or those who prefer tarballs
+3. Click on the file to view it, then click the "Download" button
+4. The file will be named something like `aurorae-haven-offline-v1.0.0.zip` or `aurorae-haven-offline-v1.0.0.tar.gz`
 
-**Direct Download Link** (replace `v1.0.0` with the desired version): [Offline Package](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz)
+**Direct Download Links** (replace `v1.0.0` with the desired version):
+
+- [ZIP Package](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.zip)
+- [TAR.GZ Package](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v1.0.0.tar.gz)
 
 ### Option 2: Download from GitHub Releases (Stable Versions)
 
@@ -33,7 +38,9 @@ For stable, tagged releases:
 
 1. Visit the [Releases page](https://github.com/aurorae-haven/aurorae-haven/releases)
 2. Find the latest release (or the version you want)
-3. Download the `.tar.gz` file under "Assets"
+3. Choose your preferred format under "Assets":
+   - `.zip` file for Windows users or those who prefer ZIP archives
+   - `.tar.gz` file for Linux/macOS users or those who prefer tarballs
 4. Tagged releases are versioned and include changelogs
 
 ### Option 3: Download from GitHub Actions (Development Builds)
@@ -43,7 +50,7 @@ For the absolute latest build from CI/CD:
 1. Visit the [GitHub Actions workflows page](https://github.com/aurorae-haven/aurorae-haven/actions/workflows/upload-pages-artifact.yml)
 2. Click on the most recent successful workflow run (look for a green checkmark ✓)
 3. Scroll down to the **Artifacts** section at the bottom of the page
-4. Click on `offline-package` to download the `.zip` file
+4. Click on `AuroraeHaven` to download the `.zip` file
 5. Note: Artifacts expire after 90 days
 
 ### Option 4: Build Locally (Requires Node.js)
@@ -64,21 +71,20 @@ The package will be created in `dist-offline/` directory.
 
 ### Step 1: Extract the Archive
 
-The offline package comes as a `.tar.gz` archive. Extract it:
+The offline package comes as either a `.zip` or `.tar.gz` archive. Extract it:
 
-**On Windows 10/11:** ✅ **Built-in support!**
+**For ZIP files (.zip):**
 
-- Right-click the `.tar.gz` file → **Extract All...**
-- Or use File Explorer: Double-click the file, then extract the inner folder
-- Alternative: Use 7-Zip, WinRAR, or PeaZip
+- **Windows**: Right-click → **Extract All...**
+- **macOS**: Double-click the file
+- **Linux**: `unzip aurorae-haven-offline-*.zip`
 
-**On Linux/macOS:**
+**For TAR.GZ files (.tar.gz):**
 
-```bash
-tar -xzf aurorae-haven-offline-*.tar.gz
-```
+- **Windows 10/11**: ✅ **Built-in support!** Right-click → **Extract All...** (or use 7-Zip/WinRAR/PeaZip)
+- **Linux/macOS**: `tar -xzf aurorae-haven-offline-*.tar.gz`
 
-**Note**: Windows 10 and later have native `.tar.gz` support built into File Explorer!
+**Note**: Both archives contain identical content - choose whichever format you prefer!
 
 ### Step 2: Start a Local Web Server
 
@@ -155,11 +161,11 @@ The offline package is automatically generated during the CI/CD pipeline:
 1. Vite builds the React application (`npm run build`)
 2. PWA assets are generated automatically (service worker, manifest)
 3. All files are bundled and optimized
-4. A `.tar.gz` archive is created containing everything
-5. The archive is uploaded to multiple locations:
-   - **Repository Branch**: Pushed to `offline-releases` branch (always available)
-   - **GitHub Releases**: Attached to tagged releases (stable versions)
-   - **GitHub Actions Artifacts**: Available for 90 days (development builds)
+4. Both `.zip` and `.tar.gz` archives are created containing everything
+5. The archives are uploaded to multiple locations:
+   - **Repository Branch**: Pushed to `offline-releases` branch (always available, both formats)
+   - **GitHub Releases**: Attached to tagged releases (stable versions, both formats)
+   - **GitHub Actions Artifacts**: Available for 90 days (development builds, ZIP format only)
 
 ### Browser Compatibility
 
