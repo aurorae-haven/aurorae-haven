@@ -59,7 +59,7 @@ describe('idGenerator', () => {
     test('generateRoutineId returns routine_ prefixed UUID', () => {
       const id = generateRoutineId()
       expect(id).toMatch(
-        /^routine_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        /^routine_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
       expect(typeof id).toBe('string')
     })
@@ -67,7 +67,7 @@ describe('idGenerator', () => {
     test('generateStepId returns step_ prefixed UUID', () => {
       const id = generateStepId()
       expect(id).toMatch(
-        /^step_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        /^step_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
       expect(typeof id).toBe('string')
     })
@@ -76,7 +76,7 @@ describe('idGenerator', () => {
       const id = generateHabitId()
       expect(typeof id).toBe('string')
       expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
       expect(id.length).toBeGreaterThan(0)
     })
@@ -85,7 +85,7 @@ describe('idGenerator', () => {
       const id = generateScheduleId()
       expect(typeof id).toBe('string')
       expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
       expect(id.length).toBeGreaterThan(0)
     })
@@ -214,7 +214,7 @@ describe('idGenerator', () => {
 
       expect(typeof result.id).toBe('string')
       expect(result.id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
       expect(result.id.length).toBeGreaterThan(0)
     })
@@ -225,7 +225,7 @@ describe('idGenerator', () => {
 
       expect(typeof result.id).toBe('string')
       expect(result.id).toMatch(
-        /^routine_[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
+        /^routine_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
       )
     })
 
