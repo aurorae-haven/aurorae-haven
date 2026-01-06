@@ -21,11 +21,8 @@ This is ideal for:
 The latest offline package is always available on the `offline-releases` branch:
 
 1. Visit the [offline-releases branch](https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases)
-2. Choose your preferred format:
-   - `.zip` file for Windows users or those who prefer ZIP archives
-   - `.tar.gz` file for Linux/macOS users or those who prefer tarballs
+2. Download the `.tar.gz` file (e.g., `aurorae-haven-offline-v1.0.0.tar.gz`)
 3. Click on the file to view it, then click the "Download" button
-4. The file will be named something like `aurorae-haven-offline-v1.0.0.zip` or `aurorae-haven-offline-v1.0.0.tar.gz`
 
 **Note**: Visit the branch above to see the current version and download directly from there.
 
@@ -35,9 +32,7 @@ For stable, tagged releases:
 
 1. Visit the [Releases page](https://github.com/aurorae-haven/aurorae-haven/releases)
 2. Find the latest release (or the version you want)
-3. Choose your preferred format under "Assets":
-   - `.zip` file for Windows users or those who prefer ZIP archives
-   - `.tar.gz` file for Linux/macOS users or those who prefer tarballs
+3. Download the `.tar.gz` file under "Assets" (e.g., `aurorae-haven-offline-v1.0.0.tar.gz`)
 4. Tagged releases are versioned and include changelogs
 
 ### Option 3: Download from GitHub Actions (Development Builds)
@@ -47,8 +42,10 @@ For the absolute latest build from CI/CD:
 1. Visit the [GitHub Actions workflows page](https://github.com/aurorae-haven/aurorae-haven/actions/workflows/upload-pages-artifact.yml)
 2. Click on the most recent successful workflow run (look for a green checkmark ✓)
 3. Scroll down to the **Artifacts** section at the bottom of the page
-4. Click on `AuroraeHaven` to download the `.zip` file
+4. Click on `AuroraeHaven` to download the automatically-generated `.zip` file
 5. Note: Artifacts expire after 90 days
+
+**Format Note**: GitHub Actions artifacts are automatically packaged as ZIP files by GitHub.
 
 ### Option 4: Build Locally (Requires Node.js)
 
@@ -70,19 +67,19 @@ The package will be created in `dist-offline/` directory.
 
 The offline package comes as either a `.zip` or `.tar.gz` archive. Extract it:
 
-**For ZIP files (.zip):**
+**For ZIP files (.zip)** - from GitHub Actions artifacts:
 
 - **Windows**: Right-click → **Extract All...**
 - **macOS**: Double-click the file
-- **Linux**: `unzip aurorae-haven-offline-*.zip`
+- **Linux**: `unzip AuroraeHaven.zip`
 
-**For TAR.GZ files (.tar.gz):**
+**For TAR.GZ files (.tar.gz)** - from releases or offline-releases branch:
 
 - **Windows**: Use PowerShell or Command Prompt: `tar -xf aurorae-haven-offline-*.tar.gz` (or use 7-Zip/WinRAR/PeaZip).  
   **Note:** Windows File Explorer does not natively extract `.tar.gz` files.
 - **Linux/macOS**: `tar -xzf aurorae-haven-offline-*.tar.gz`
 
-**Note**: Both archives contain identical content - choose whichever format you prefer!
+**Note**: ZIP files (from GitHub Actions) and TAR.GZ files (from releases/offline-releases) contain identical content - choose whichever format is available or you prefer!
 
 ### Step 2: Start a Local Web Server
 
@@ -159,11 +156,11 @@ The offline package is automatically generated during the CI/CD pipeline:
 1. Vite builds the React application (`npm run build`)
 2. PWA assets are generated automatically (service worker, manifest)
 3. All files are bundled and optimized
-4. Both `.zip` and `.tar.gz` archives are created containing everything
+4. A `.tar.gz` archive is created for releases and the offline-releases branch
 5. The archives are uploaded to multiple locations:
-   - **Repository Branch**: Pushed to `offline-releases` branch (always available, both formats)
-   - **GitHub Releases**: Attached to tagged releases (stable versions, both formats)
-   - **GitHub Actions Artifacts**: Available for 90 days (development builds, ZIP format only)
+   - **Repository Branch**: Pushed to `offline-releases` branch (always available, tar.gz format)
+   - **GitHub Releases**: Attached to tagged releases (stable versions, tar.gz format)
+   - **GitHub Actions Artifacts**: Available for 90 days (development builds, auto-zipped by GitHub)
 
 ### Browser Compatibility
 
