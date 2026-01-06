@@ -34,56 +34,56 @@ export function generateUniqueId(prefix = '') {
 
 /**
  * Generate a routine ID
- * Uses UUID v4 for better uniqueness and import/export compatibility
- * @returns {string} Routine ID in format 'routine_uuid'
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {string} Routine ID in format 'routine_timestamp'
  */
 export function generateRoutineId() {
-  return generateUniqueId('routine')
+  return generateTimestampId('routine')
 }
 
 /**
  * Generate a step ID
- * Uses UUID v4 for better uniqueness and collision prevention
- * @returns {string} Step ID in format 'step_uuid'
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {string} Step ID in format 'step_timestamp'
  */
 export function generateStepId() {
-  return generateUniqueId('step')
+  return generateTimestampId('step')
 }
 
 /**
  * Generate a habit ID
- * Uses UUID v4 for better uniqueness and import/export compatibility
- * @returns {string} Habit ID in format 'habit_uuid'
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {number} Numeric timestamp ID
  */
 export function generateHabitId() {
-  return generateUniqueId('habit')
+  return Date.now()
 }
 
 /**
  * Generate a schedule event ID
- * Uses UUID v4 for better uniqueness and import/export compatibility
- * @returns {string} Schedule event ID in format 'schedule_uuid'
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {number} Numeric timestamp ID
  */
 export function generateScheduleId() {
-  return generateUniqueId('schedule')
+  return Date.now()
 }
 
 /**
  * Generate a template ID
- * Uses UUID v4 for better uniqueness and import/export compatibility
- * @returns {string} UUID v4 string
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {number} Numeric timestamp ID
  */
 export function generateTemplateId() {
-  return generateSecureUUID()
+  return Date.now()
 }
 
 /**
  * Generate a note/dump ID
- * Uses UUID v4 for better uniqueness
- * @returns {string} UUID v4 string
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {number} Numeric timestamp ID
  */
 export function generateNoteId() {
-  return generateSecureUUID()
+  return Date.now()
 }
 
 /**
@@ -126,29 +126,39 @@ export function generateMetadata() {
   }
 }
 
+// Counter to ensure unique IDs even within the same millisecond
+let idCounter = 0
+let lastTimestamp = 0
+
 /**
  * Normalize entity with ID and metadata
  * Combines entity data with generated ID and metadata fields
  * @param {Object} entity - Entity to normalize
  * @param {Object} options - Normalization options
- * @param {string} options.idPrefix - Optional prefix for UUID-based IDs
+ * @param {string} options.idPrefix - Optional prefix for timestamp-based IDs
  * @returns {Object} Normalized entity with ID and metadata
  * @example
  * normalizeEntity({ name: 'Test' }, { idPrefix: 'routine' })
- * // Returns: { name: 'Test', id: 'routine_550e8400-...', timestamp: 1697234567890, createdAt: '...', updatedAt: '...' }
+ * // Returns: { name: 'Test', id: 'routine_1697234567890', timestamp: 1697234567890, createdAt: '...', updatedAt: '...' }
  */
 export function normalizeEntity(entity, options = {}) {
   const metadata = generateMetadata()
 
-  // Generate unique ID using UUID for better uniqueness
+  // Generate unique ID - add counter to handle same-millisecond creates
   let id
   if (entity.id) {
     id = entity.id
   } else if (options.idPrefix) {
-    id = generateUniqueId(options.idPrefix)
+    id = generateTimestampId(options.idPrefix)
   } else {
-    // Use UUID for entities without prefix
-    id = generateSecureUUID()
+    // Use timestamp + counter for uniqueness
+    if (metadata.timestamp === lastTimestamp) {
+      idCounter++
+    } else {
+      idCounter = 0
+      lastTimestamp = metadata.timestamp
+    }
+    id = metadata.timestamp + idCounter
   }
 
   return {

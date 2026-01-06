@@ -1,7 +1,6 @@
 // TAB-BDP-VSH-01: Version history management
 // Implements auto-save snapshots, diff viewer, and restore functionality
 import { createLogger } from '../logger'
-import { generateUniqueId } from '../idGenerator'
 
 const logger = createLogger('VersionHistory')
 
@@ -23,7 +22,7 @@ export class VersionHistory {
   save(content) {
     const versions = this.getAll()
     const newVersion = {
-      id: generateUniqueId(),
+      id: Date.now(),
       content,
       timestamp: new Date().toISOString(),
       preview: content.substring(0, 100)
