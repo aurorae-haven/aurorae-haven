@@ -479,7 +479,7 @@ async function createZip() {
   }
 
   // Note: We no longer create a ZIP archive here because GitHub Actions
-  // will automatically create one from the dist-offline-build directory.
+  // will automatically create one from the directory specified by DIST_OFFLINE_DIR.
   // Creating a ZIP here would result in nested archives (zip-in-zip).
 
   // Report results
@@ -487,10 +487,10 @@ async function createZip() {
   if (tarGzSuccess) {
     console.log('✅ Offline package creation complete!')
     console.log('  ✓ tar.gz created for releases and offline-releases branch')
-    console.log('  ℹ️  GitHub Actions will create a ZIP from dist-offline-build/ for artifacts')
+    console.log(`  ℹ️  GitHub Actions will create a ZIP from ${DIST_OFFLINE_DIR}/ for artifacts`)
     
     // Keep the temporary build directory for GitHub Actions to use
-    console.log('  ℹ️  Keeping dist-offline-build/ for GitHub Actions artifact upload')
+    console.log(`  ℹ️  Keeping ${DIST_OFFLINE_DIR}/ for GitHub Actions artifact upload`)
     process.exit(0)
   } else {
     // Clean up on failure
