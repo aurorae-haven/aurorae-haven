@@ -133,7 +133,7 @@ let idCounter = 0
 let lastTimestamp = 0
 
 // Separate counter for prefixed IDs (e.g., step_123, routine_123)
-const prefixCounters = {}
+let prefixCounters = {}
 let lastPrefixTimestamp = 0
 
 /**
@@ -153,16 +153,13 @@ function generateTimestampIdWithCollisionPrevention(prefix = '') {
         prefixCounters[prefix] = 0
       }
       prefixCounters[prefix]++
+      return `${prefix}_${timestamp}_${prefixCounters[prefix]}`
     } else {
       // Reset all prefix counters when timestamp changes to prevent memory accumulation
-      for (const key in prefixCounters) {
-        delete prefixCounters[key]
-      }
+      prefixCounters = {}
       lastPrefixTimestamp = timestamp
+      return `${prefix}_${timestamp}`
     }
-
-    const counter = prefixCounters[prefix] || 0
-    return counter > 0 ? `${prefix}_${timestamp}_${counter}` : `${prefix}_${timestamp}`
   } else {
     // Handle numeric IDs with global counter
     if (timestamp === lastTimestamp) {
