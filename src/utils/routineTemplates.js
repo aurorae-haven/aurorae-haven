@@ -288,7 +288,7 @@ export async function instantiateTemplate(templateId, routineName) {
     tags: [...(template.tags || [])],
     steps: template.steps.map((step, index) => ({
       ...step,
-      id: generateStepId(),
+      id: `${generateStepId()}_${index}`,
       order: index
     })),
     templateId: templateId
