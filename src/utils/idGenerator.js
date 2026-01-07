@@ -39,7 +39,7 @@ export function generateUniqueId(prefix = '') {
  * @returns {string} Routine ID in format 'routine_timestamp' or 'routine_timestamp_counter'
  */
 export function generateRoutineId() {
-  return generateUniqueTimestampId('routine')
+  return generateTimestampIdWithCollisionPrevention('routine')
 }
 
 /**
@@ -49,7 +49,7 @@ export function generateRoutineId() {
  * @returns {string} Step ID in format 'step_timestamp' or 'step_timestamp_counter'
  */
 export function generateStepId() {
-  return generateUniqueTimestampId('step')
+  return generateTimestampIdWithCollisionPrevention('step')
 }
 
 /**
@@ -137,13 +137,13 @@ const prefixCounters = {}
 let lastPrefixTimestamp = 0
 
 /**
- * Generate a unique timestamp-based ID with counter support
- * Ensures uniqueness even for same-millisecond operations
+ * Generate a timestamp-based ID with collision prevention
+ * Ensures uniqueness even for same-millisecond operations by using counters
  * @param {string} prefix - Optional prefix for the ID
- * @returns {string|number} Unique timestamp ID with counter if needed
+ * @returns {string|number} Unique timestamp ID (prefixed string or numeric)
  * @private
  */
-function generateUniqueTimestampId(prefix = '') {
+function generateTimestampIdWithCollisionPrevention(prefix = '') {
   const timestamp = Date.now()
 
   if (prefix) {
@@ -154,10 +154,10 @@ function generateUniqueTimestampId(prefix = '') {
       }
       prefixCounters[prefix]++
     } else {
-      // Reset all prefix counters when timestamp changes
-      Object.keys(prefixCounters).forEach((key) => {
-        prefixCounters[key] = 0
-      })
+      // Reset all prefix counters when timestamp changes to prevent memory accumulation
+      for (const key in prefixCounters) {
+        delete prefixCounters[key]
+      }
       lastPrefixTimestamp = timestamp
     }
 
@@ -194,7 +194,7 @@ export function normalizeEntity(entity, options = {}) {
   if (entity.id) {
     id = entity.id
   } else {
-    id = generateUniqueTimestampId(options.idPrefix)
+    id = generateTimestampIdWithCollisionPrevention(options.idPrefix)
   }
 
   return {
