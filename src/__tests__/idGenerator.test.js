@@ -58,12 +58,30 @@ describe('idGenerator', () => {
   describe('specific ID generators', () => {
     test('generateRoutineId returns routine_ prefixed ID', () => {
       const id = generateRoutineId()
-      expect(id).toMatch(/^routine_\d+$/)
+      expect(id).toMatch(/^routine_\d+(_\d+)?$/)
     })
 
     test('generateStepId returns step_ prefixed ID', () => {
       const id = generateStepId()
-      expect(id).toMatch(/^step_\d+$/)
+      expect(id).toMatch(/^step_\d+(_\d+)?$/)
+    })
+
+    test('generateRoutineId generates unique IDs for same-millisecond calls', () => {
+      const ids = []
+      for (let i = 0; i < 5; i++) {
+        ids.push(generateRoutineId())
+      }
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(ids.length)
+    })
+
+    test('generateStepId generates unique IDs for same-millisecond calls', () => {
+      const ids = []
+      for (let i = 0; i < 5; i++) {
+        ids.push(generateStepId())
+      }
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(ids.length)
     })
 
     test('generateHabitId returns numeric timestamp', () => {
@@ -209,7 +227,7 @@ describe('idGenerator', () => {
       const result = normalizeEntity(entity, { idPrefix: 'routine' })
 
       expect(typeof result.id).toBe('string')
-      expect(result.id).toMatch(/^routine_\d+$/)
+      expect(result.id).toMatch(/^routine_\d+(_\d+)?$/)
     })
 
     test('preserves all entity properties', () => {
@@ -231,6 +249,60 @@ describe('idGenerator', () => {
 
       expect(result.createdAt).toBe(result.updatedAt)
       expect(new Date(result.createdAt).getTime()).toBe(result.timestamp)
+    })
+
+    test('generates unique IDs for same-millisecond creates without prefix', () => {
+      // Create multiple entities synchronously (within same millisecond)
+      const entities = []
+      for (let i = 0; i < 5; i++) {
+        entities.push(normalizeEntity({ name: `Entity ${i}` }))
+      }
+
+      // Verify all IDs are unique
+      const ids = entities.map((e) => e.id)
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(ids.length)
+
+      // Verify IDs are numeric
+      ids.forEach((id) => {
+        expect(typeof id).toBe('number')
+        expect(id).toBeGreaterThan(0)
+      })
+    })
+
+    test('generates unique IDs for same-millisecond creates with prefix', () => {
+      // Create multiple entities synchronously with prefix
+      const entities = []
+      for (let i = 0; i < 5; i++) {
+        entities.push(
+          normalizeEntity({ name: `Entity ${i}` }, { idPrefix: 'test' })
+        )
+      }
+
+      // Verify all IDs are unique
+      const ids = entities.map((e) => e.id)
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(ids.length)
+
+      // Verify IDs match the expected format (with optional counter)
+      ids.forEach((id) => {
+        expect(typeof id).toBe('string')
+        expect(id).toMatch(/^test_\d+(_\d+)?$/)
+      })
+    })
+
+    test('counter resets when timestamp changes', async () => {
+      // Create first entity
+      const entity1 = normalizeEntity({ name: 'Entity 1' })
+
+      // Wait for timestamp to change
+      await new Promise((resolve) => setTimeout(resolve, 5))
+
+      // Create second entity - should have different timestamp, no counter needed
+      const entity2 = normalizeEntity({ name: 'Entity 2' })
+
+      expect(entity1.id).not.toBe(entity2.id)
+      expect(entity2.timestamp).toBeGreaterThan(entity1.timestamp)
     })
   })
 

@@ -35,19 +35,21 @@ export function generateUniqueId(prefix = '') {
 /**
  * Generate a routine ID
  * Uses timestamp for simplicity and natural ordering
- * @returns {string} Routine ID in format 'routine_timestamp'
+ * Includes counter to prevent same-millisecond collisions
+ * @returns {string} Routine ID in format 'routine_timestamp' or 'routine_timestamp_counter'
  */
 export function generateRoutineId() {
-  return generateTimestampId('routine')
+  return generateUniqueTimestampId('routine')
 }
 
 /**
  * Generate a step ID
  * Uses timestamp for simplicity and natural ordering
- * @returns {string} Step ID in format 'step_timestamp'
+ * Includes counter to prevent same-millisecond collisions
+ * @returns {string} Step ID in format 'step_timestamp' or 'step_timestamp_counter'
  */
 export function generateStepId() {
-  return generateTimestampId('step')
+  return generateUniqueTimestampId('step')
 }
 
 /**
@@ -126,9 +128,52 @@ export function generateMetadata() {
   }
 }
 
-// Counter to ensure unique IDs even within the same millisecond
+// Counters to ensure unique IDs even within the same millisecond
 let idCounter = 0
 let lastTimestamp = 0
+
+// Separate counter for prefixed IDs (e.g., step_123, routine_123)
+const prefixCounters = {}
+let lastPrefixTimestamp = 0
+
+/**
+ * Generate a unique timestamp-based ID with counter support
+ * Ensures uniqueness even for same-millisecond operations
+ * @param {string} prefix - Optional prefix for the ID
+ * @returns {string|number} Unique timestamp ID with counter if needed
+ * @private
+ */
+function generateUniqueTimestampId(prefix = '') {
+  const timestamp = Date.now()
+
+  if (prefix) {
+    // Handle prefixed IDs with per-prefix counter
+    if (timestamp === lastPrefixTimestamp) {
+      if (!prefixCounters[prefix]) {
+        prefixCounters[prefix] = 0
+      }
+      prefixCounters[prefix]++
+    } else {
+      // Reset all prefix counters when timestamp changes
+      Object.keys(prefixCounters).forEach((key) => {
+        prefixCounters[key] = 0
+      })
+      lastPrefixTimestamp = timestamp
+    }
+
+    const counter = prefixCounters[prefix] || 0
+    return counter > 0 ? `${prefix}_${timestamp}_${counter}` : `${prefix}_${timestamp}`
+  } else {
+    // Handle numeric IDs with global counter
+    if (timestamp === lastTimestamp) {
+      idCounter++
+    } else {
+      idCounter = 0
+      lastTimestamp = timestamp
+    }
+    return timestamp + idCounter
+  }
+}
 
 /**
  * Normalize entity with ID and metadata
@@ -148,17 +193,8 @@ export function normalizeEntity(entity, options = {}) {
   let id
   if (entity.id) {
     id = entity.id
-  } else if (options.idPrefix) {
-    id = generateTimestampId(options.idPrefix)
   } else {
-    // Use timestamp + counter for uniqueness
-    if (metadata.timestamp === lastTimestamp) {
-      idCounter++
-    } else {
-      idCounter = 0
-      lastTimestamp = metadata.timestamp
-    }
-    id = metadata.timestamp + idCounter
+    id = generateUniqueTimestampId(options.idPrefix)
   }
 
   return {
