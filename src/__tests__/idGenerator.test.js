@@ -90,10 +90,6 @@ describe('idGenerator', () => {
       expect(id).toBeGreaterThan(0)
     })
   })
-      expect(id.length).toBeGreaterThan(0)
-    })
-
-  })
 
   describe('shouldRegenerateId', () => {
     test('returns true for missing IDs', () => {
