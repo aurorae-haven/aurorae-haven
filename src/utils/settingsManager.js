@@ -12,6 +12,12 @@ const DEFAULT_SETTINGS = {
   backupEnabled: true,
   backupInterval: 24, // hours
   backupRetention: 10, // number of backups to keep
+  autoSave: {
+    enabled: false,
+    intervalMinutes: 5, // minutes between auto-saves
+    keepCount: 10, // number of save files to keep
+    directoryConfigured: false // whether user has selected a directory
+  },
   notifications: {
     enabled: false,
     tasks: true,
