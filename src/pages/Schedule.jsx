@@ -85,7 +85,7 @@ function Schedule() {
                   </div>
                   <div
                     className='block task not-urgent-important'
-                    style={{ top: '460px', height: '50px' }}
+                    style={{ top: '460px', height: '60px' }}
                     role='button'
                     tabIndex={0}
                     aria-label='Task: Buy groceries at 16:00, Not Urgent but Important'
