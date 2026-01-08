@@ -44,6 +44,7 @@ import routineWeeklyReview from '../data/templates/routine-weekly-review.json'
 import routineCleaning from '../data/templates/routine-cleaning.json'
 import routineLitterBoxes from '../data/templates/routine-litter-boxes.json'
 import routinePomodoro from '../data/templates/routine-pomodoro.json'
+import routineWorkReview from '../data/templates/routine-work-review.json'
 
 // Collect all templates in a single array
 const allTemplates = [
@@ -69,7 +70,8 @@ const allTemplates = [
   routineWeeklyReview,
   routineCleaning,
   routineLitterBoxes,
-  routinePomodoro
+  routinePomodoro,
+  routineWorkReview
 ]
 
 /**
