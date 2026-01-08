@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { getSettings, updateSetting } from '../utils/settingsManager'
 import {
   isFileSystemAccessSupported,
@@ -14,6 +14,7 @@ import {
   loadAndImportLastSave
 } from '../utils/autoSaveFS'
 import { reloadPageAfterDelay, IMPORT_SUCCESS_MESSAGE } from '../utils/importData'
+import '../assets/styles/settings.css'
 
 // Time constant
 const MS_PER_MINUTE = 60 * 1000 // 60 seconds * 1000 milliseconds
@@ -22,8 +23,14 @@ function Settings() {
   const [settings, setSettingsState] = useState(getSettings())
   const [directoryName, setDirectoryName] = useState(null)
   const [lastSaveTime, setLastSaveTime] = useState(null)
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState({ text: '', isError: false })
   const [isConfiguring, setIsConfiguring] = useState(false)
+  
+  // Use refs to avoid stale closures
+  const settingsRef = useRef(settings)
+  useEffect(() => {
+    settingsRef.current = settings
+  }, [settings])
 
   // Check if File System Access API is supported
   const fsSupported = isFileSystemAccessSupported()
@@ -53,43 +60,46 @@ function Settings() {
     return () => clearInterval(interval)
   }, [])
 
-  const showMessage = useCallback((msg, duration = 3000) => {
-    setMessage(msg)
-    setTimeout(() => setMessage(''), duration)
+  const showMessage = useCallback((text, isError = false, duration = 3000) => {
+    setMessage({ text, isError })
+    setTimeout(() => setMessage({ text: '', isError: false }), duration)
   }, [])
 
-  const handleSelectDirectory = useCallback(async () => {
-    setIsConfiguring(true)
-    try {
-      const handle = await requestDirectoryAccess()
-      if (handle) {
-        setDirectoryName(handle.name)
-        setDirectoryHandle(handle)
+  const handleSelectDirectory = useCallback(
+    async () => {
+      setIsConfiguring(true)
+      try {
+        const handle = await requestDirectoryAccess()
+        if (handle) {
+          setDirectoryName(handle.name)
+          setDirectoryHandle(handle)
 
-        // Update settings
-        const newSettings = updateSetting('autoSave.directoryConfigured', true)
-        setSettingsState(newSettings)
+          // Update settings and get fresh settings
+          const newSettings = updateSetting('autoSave.directoryConfigured', true)
+          setSettingsState(newSettings)
 
-        showMessage(`Directory selected: ${handle.name}`)
+          showMessage(`Directory selected: ${handle.name}`)
 
-        // If auto-save is enabled, restart it
-        if (settings.autoSave.enabled) {
-          stopAutoSave()
-          startAutoSave(settings.autoSave.intervalMinutes * MS_PER_MINUTE)
+          // If auto-save is enabled, restart it with current settings
+          if (newSettings.autoSave.enabled) {
+            stopAutoSave()
+            startAutoSave(newSettings.autoSave.intervalMinutes * MS_PER_MINUTE)
+          }
         }
+      } catch (error) {
+        showMessage('Failed to select directory: ' + error.message, true)
+      } finally {
+        setIsConfiguring(false)
       }
-    } catch (error) {
-      showMessage('Failed to select directory: ' + error.message)
-    } finally {
-      setIsConfiguring(false)
-    }
-  }, [settings.autoSave.enabled, settings.autoSave.intervalMinutes, showMessage])
+    },
+    [showMessage]
+  )
 
   const handleToggleAutoSave = useCallback(
     async (enabled) => {
       // Check if directory is configured
       if (enabled && !getCurrentDirectoryHandle()) {
-        showMessage('Please select a directory first')
+        showMessage('Please select a directory first', true)
         return
       }
 
@@ -98,7 +108,7 @@ function Settings() {
       if (enabled && handle) {
         const isValid = await verifyDirectoryHandle(handle)
         if (!isValid) {
-          showMessage('Directory access expired. Please select the directory again.')
+          showMessage('Directory access expired. Please select the directory again.', true)
           setDirectoryName(null)
           return
         }
@@ -108,14 +118,14 @@ function Settings() {
       setSettingsState(newSettings)
 
       if (enabled) {
-        startAutoSave(settings.autoSave.intervalMinutes * MS_PER_MINUTE)
+        startAutoSave(newSettings.autoSave.intervalMinutes * MS_PER_MINUTE)
         showMessage('Auto-save enabled')
       } else {
         stopAutoSave()
         showMessage('Auto-save disabled')
       }
     },
-    [settings.autoSave.intervalMinutes, showMessage]
+    [showMessage]
   )
 
   const handleIntervalChange = useCallback(
@@ -123,22 +133,25 @@ function Settings() {
       const newSettings = updateSetting('autoSave.intervalMinutes', intervalMinutes)
       setSettingsState(newSettings)
 
-      // Restart auto-save if enabled
-      if (settings.autoSave.enabled) {
+      // Restart auto-save if enabled with new interval
+      if (newSettings.autoSave.enabled) {
         stopAutoSave()
         startAutoSave(intervalMinutes * MS_PER_MINUTE)
       }
 
       showMessage(`Save interval updated to ${intervalMinutes} minutes`)
     },
-    [settings.autoSave.enabled, showMessage]
+    [showMessage]
   )
 
-  const handleKeepCountChange = useCallback((keepCount) => {
-    const newSettings = updateSetting('autoSave.keepCount', keepCount)
-    setSettingsState(newSettings)
-    showMessage(`Will keep ${keepCount} most recent save files`)
-  }, [showMessage])
+  const handleKeepCountChange = useCallback(
+    (keepCount) => {
+      const newSettings = updateSetting('autoSave.keepCount', keepCount)
+      setSettingsState(newSettings)
+      showMessage(`Will keep ${keepCount} most recent save files`)
+    },
+    [showMessage]
+  )
 
   const handleManualSave = useCallback(async () => {
     setIsConfiguring(true)
@@ -148,10 +161,10 @@ function Settings() {
         setLastSaveTime(new Date(result.timestamp))
         showMessage('Data saved successfully')
       } else {
-        showMessage('Save failed: ' + result.error)
+        showMessage('Save failed: ' + result.error, true)
       }
     } catch (error) {
-      showMessage('Save failed: ' + error.message)
+      showMessage('Save failed: ' + error.message, true)
     } finally {
       setIsConfiguring(false)
     }
@@ -160,14 +173,14 @@ function Settings() {
   const handleCleanOldFiles = useCallback(async () => {
     setIsConfiguring(true)
     try {
-      const deletedCount = await cleanOldSaveFiles(settings.autoSave.keepCount)
+      const deletedCount = await cleanOldSaveFiles(settingsRef.current.autoSave.keepCount)
       showMessage(`Cleaned up ${deletedCount} old save file(s)`)
     } catch (error) {
-      showMessage('Cleanup failed: ' + error.message)
+      showMessage('Cleanup failed: ' + error.message, true)
     } finally {
       setIsConfiguring(false)
     }
-  }, [settings.autoSave.keepCount, showMessage])
+  }, [showMessage])
 
   const handleLoadLastSave = useCallback(async () => {
     setIsConfiguring(true)
@@ -178,14 +191,34 @@ function Settings() {
         // Reload page after delay to apply imported data
         reloadPageAfterDelay(1500)
       } else {
-        showMessage('Load failed: ' + result.error)
+        showMessage('Load failed: ' + result.error, true)
         setIsConfiguring(false)
       }
     } catch (error) {
-      showMessage('Load failed: ' + error.message)
+      showMessage('Load failed: ' + error.message, true)
       setIsConfiguring(false)
     }
   }, [showMessage])
+
+  const handleIntervalInput = useCallback(
+    (e) => {
+      let value = parseInt(e.target.value, 10)
+      if (isNaN(value) || value < 1) value = 1
+      if (value > 60) value = 60
+      handleIntervalChange(value)
+    },
+    [handleIntervalChange]
+  )
+
+  const handleKeepCountInput = useCallback(
+    (e) => {
+      let value = parseInt(e.target.value, 10)
+      if (isNaN(value) || value < 1) value = 1
+      if (value > 100) value = 100
+      handleKeepCountChange(value)
+    },
+    [handleKeepCountChange]
+  )
 
   const formatTimeSince = (date) => {
     if (!date) return 'Never'
@@ -211,26 +244,16 @@ function Settings() {
       </div>
       <div className='card-b'>
         {/* Auto-Save Settings Section */}
-        <div style={{ marginBottom: '2rem' }}>
-          <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem' }}>
-            Automatic Save
-          </h3>
+        <div className='settings-section'>
+          <h3 className='settings-section-title'>Automatic Save</h3>
 
           {!fsSupported && (
-            <div
-              style={{
-                padding: '1rem',
-                marginBottom: '1rem',
-                backgroundColor: '#fff3cd',
-                border: '1px solid #ffc107',
-                borderRadius: '4px'
-              }}
-            >
-              <strong>⚠️ Not Supported</strong>
-              <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.9rem' }}>
-                Your browser does not support the File System Access API. Auto-save
-                to a local directory is not available. Please use the Export button
-                to manually save your data.
+            <div className='settings-warning' role='alert'>
+              <strong className='settings-warning-title'>⚠️ Not Supported</strong>
+              <p className='settings-warning-text'>
+                Your browser does not support the File System Access API. Auto-save to a
+                local directory is not available. Please use the Export button to manually
+                save your data.
               </p>
             </div>
           )}
@@ -238,71 +261,59 @@ function Settings() {
           {fsSupported && (
             <>
               {/* Directory Configuration */}
-              <div style={{ marginBottom: '1rem' }}>
-                <label
-                  htmlFor='save-directory'
-                  style={{ display: 'block', marginBottom: '0.5rem' }}
-                >
-                  <strong>Save Directory</strong>
+              <div className='settings-field'>
+                <label htmlFor='save-directory' className='settings-label'>
+                  Save Directory
                 </label>
-                <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <div className='settings-input-group'>
                   <input
                     id='save-directory'
                     type='text'
                     value={directoryName || 'Not configured'}
                     readOnly
-                    style={{
-                      flex: 1,
-                      padding: '0.5rem',
-                      border: '1px solid #ccc',
-                      borderRadius: '4px',
-                      backgroundColor: '#f5f5f5'
-                    }}
+                    className='settings-input'
+                    aria-describedby='save-directory-hint'
                   />
                   <button
                     onClick={handleSelectDirectory}
                     disabled={isConfiguring}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      backgroundColor: '#007bff',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: isConfiguring ? 'not-allowed' : 'pointer'
-                    }}
+                    className='settings-button settings-button-primary'
+                    aria-label={
+                      directoryName
+                        ? 'Change save directory'
+                        : 'Select save directory'
+                    }
                   >
                     {directoryName ? 'Change' : 'Select'} Directory
                   </button>
                 </div>
-                <small style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+                <small id='save-directory-hint' className='settings-hint'>
                   Choose a folder where automatic saves will be stored
                 </small>
               </div>
 
               {/* Enable/Disable Auto-Save */}
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+              <div className='settings-field'>
+                <label className='settings-checkbox-label'>
                   <input
                     type='checkbox'
                     checked={settings.autoSave.enabled}
                     onChange={(e) => handleToggleAutoSave(e.target.checked)}
                     disabled={!directoryName}
-                    style={{ marginRight: '0.5rem' }}
+                    className='settings-checkbox'
+                    aria-describedby='auto-save-toggle-hint'
                   />
                   <strong>Enable Automatic Save</strong>
                 </label>
-                <small style={{ display: 'block', marginTop: '0.25rem', marginLeft: '1.5rem', color: '#666' }}>
+                <small id='auto-save-toggle-hint' className='settings-checkbox-hint'>
                   Automatically save all data at regular intervals
                 </small>
               </div>
 
               {/* Save Interval */}
-              <div style={{ marginBottom: '1rem' }}>
-                <label
-                  htmlFor='save-interval'
-                  style={{ display: 'block', marginBottom: '0.5rem' }}
-                >
-                  <strong>Save Interval (minutes)</strong>
+              <div className='settings-field'>
+                <label htmlFor='save-interval' className='settings-label'>
+                  Save Interval (minutes)
                 </label>
                 <input
                   id='save-interval'
@@ -310,29 +321,21 @@ function Settings() {
                   min='1'
                   max='60'
                   value={settings.autoSave.intervalMinutes}
-                  onChange={(e) =>
-                    handleIntervalChange(parseInt(e.target.value, 10) || 5)
-                  }
+                  onChange={handleIntervalInput}
+                  onBlur={handleIntervalInput}
                   disabled={!settings.autoSave.enabled}
-                  style={{
-                    width: '100px',
-                    padding: '0.5rem',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px'
-                  }}
+                  className='settings-input-number'
+                  aria-describedby='save-interval-hint'
                 />
-                <small style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+                <small id='save-interval-hint' className='settings-hint'>
                   How often to automatically save (1-60 minutes)
                 </small>
               </div>
 
               {/* Keep Count */}
-              <div style={{ marginBottom: '1rem' }}>
-                <label
-                  htmlFor='keep-count'
-                  style={{ display: 'block', marginBottom: '0.5rem' }}
-                >
-                  <strong>Keep Recent Files</strong>
+              <div className='settings-field'>
+                <label htmlFor='keep-count' className='settings-label'>
+                  Keep Recent Files
                 </label>
                 <input
                   id='keep-count'
@@ -340,68 +343,48 @@ function Settings() {
                   min='1'
                   max='100'
                   value={settings.autoSave.keepCount}
-                  onChange={(e) =>
-                    handleKeepCountChange(parseInt(e.target.value, 10) || 10)
-                  }
-                  style={{
-                    width: '100px',
-                    padding: '0.5rem',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px'
-                  }}
+                  onChange={handleKeepCountInput}
+                  onBlur={handleKeepCountInput}
+                  className='settings-input-number'
+                  aria-describedby='keep-count-hint'
                 />
-                <small style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+                <small id='keep-count-hint' className='settings-hint'>
                   Number of most recent save files to keep (older files will be deleted)
                 </small>
               </div>
 
               {/* Last Save Time */}
-              <div style={{ marginBottom: '1rem' }}>
-                <strong>Last Save: </strong>
+              <div className='settings-status'>
+                <span className='settings-status-label'>Last Save: </span>
                 <span>{formatTimeSince(lastSaveTime)}</span>
               </div>
 
               {/* Action Buttons */}
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <div className='settings-button-group' role='group' aria-label='Auto-save actions'>
                 <button
                   onClick={handleManualSave}
                   disabled={!directoryName || isConfiguring}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: !directoryName || isConfiguring ? 'not-allowed' : 'pointer'
-                  }}
+                  className='settings-button settings-button-success'
+                  aria-label='Save data now'
+                  aria-busy={isConfiguring}
                 >
                   Save Now
                 </button>
                 <button
                   onClick={handleLoadLastSave}
                   disabled={!directoryName || isConfiguring}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: !directoryName || isConfiguring ? 'not-allowed' : 'pointer'
-                  }}
+                  className='settings-button settings-button-info'
+                  aria-label='Load most recent save file'
+                  aria-busy={isConfiguring}
                 >
                   Load Last Save
                 </button>
                 <button
                   onClick={handleCleanOldFiles}
                   disabled={!directoryName || isConfiguring}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    backgroundColor: '#ffc107',
-                    color: '#333',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: !directoryName || isConfiguring ? 'not-allowed' : 'pointer'
-                  }}
+                  className='settings-button settings-button-warning'
+                  aria-label='Clean up old save files'
+                  aria-busy={isConfiguring}
                 >
                   Clean Old Files
                 </button>
@@ -411,25 +394,20 @@ function Settings() {
         </div>
 
         {/* Message Display */}
-        {message && (
+        {message.text && (
           <div
-            style={{
-              padding: '0.75rem',
-              marginTop: '1rem',
-              backgroundColor: '#d4edda',
-              border: '1px solid #c3e6cb',
-              borderRadius: '4px',
-              color: '#155724'
-            }}
+            className={`settings-message ${message.isError ? 'settings-message-error' : ''}`}
+            role='status'
+            aria-live='polite'
           >
-            {message}
+            {message.text}
           </div>
         )}
 
         {/* Other Settings Placeholder */}
-        <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #ddd' }}>
-          <h3 style={{ marginBottom: '1rem', fontSize: '1.2rem' }}>Other Settings</h3>
-          <p className='small' style={{ color: '#666' }}>
+        <div className='settings-divider'>
+          <h3 className='settings-section-title'>Other Settings</h3>
+          <p className='settings-placeholder-text'>
             Additional settings will be available here in future updates...
           </p>
         </div>

@@ -779,7 +779,7 @@ The files are standard JSON format and can be:
 - Opened with any text editor
 - Imported using the Import button in the app
 - Shared with other Aurorae Haven users
-- Backed up to cloud storage manually
+- Manually copied to cloud storage or backup services
 
 ### Browser Compatibility
 

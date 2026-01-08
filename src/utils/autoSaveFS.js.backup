@@ -9,7 +9,6 @@ import {
   importAllData as importToIndexedDB
 } from './indexedDBManager'
 import { importToLocalStorage } from './importData'
-import { getSetting } from './settingsManager'
 
 const logger = createLogger('AutoSave')
 
@@ -182,16 +181,6 @@ export async function performAutoSave() {
     localStorage.setItem(LAST_SAVE_KEY, timestamp.toString())
 
     logger.log('Auto-save completed:', filename)
-
-    // Automatically clean up old files
-    try {
-      const keepCount = getSetting('autoSave.keepCount') || 10
-      await cleanOldSaveFiles(keepCount)
-    } catch (cleanupError) {
-      // Log but don't fail the save operation if cleanup fails
-      logger.warn('Automatic cleanup failed:', cleanupError)
-    }
-
     return {
       success: true,
       filename,
@@ -207,10 +196,10 @@ export async function performAutoSave() {
 }
 
 /**
- * Get metadata for the most recent save file from the directory
- * @returns {Promise<object|null>} File metadata with handle, name, and modified timestamp
+ * Get the most recent save file from the directory
+ * @returns {Promise<object|null>} File info with handle, name, and modified timestamp
  */
-export async function getMostRecentSaveFileInfo() {
+export async function getMostRecentSaveFile() {
   if (!currentDirectoryHandle) {
     throw new Error('No directory configured')
   }
@@ -284,7 +273,7 @@ export async function loadLastSave() {
     }
 
     // Get the most recent save file
-    const fileInfo = await getMostRecentSaveFileInfo()
+    const fileInfo = await getMostRecentSaveFile()
     if (!fileInfo) {
       return {
         success: false,
@@ -371,33 +360,17 @@ export function startAutoSave(intervalMs = DEFAULT_SAVE_INTERVAL) {
   // Stop existing timer if any
   stopAutoSave()
 
-  // Only start if we have a valid directory
-  if (!currentDirectoryHandle) {
-    logger.warn('Cannot start auto-save: No directory configured')
-    return
-  }
-
   logger.log(`Starting auto-save with interval: ${intervalMs / 1000}s`)
 
-  // Set up periodic save that respects tab visibility
+  // Set up periodic save
   autoSaveTimer = setInterval(async () => {
-    // Skip save if tab is not visible
-    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
-      logger.log('Auto-save skipped: Tab not visible')
-      return
-    }
     await performAutoSave()
   }, intervalMs)
 
-  // Perform initial save only if tab is visible and directory is configured
-  if (
-    currentDirectoryHandle &&
-    (typeof document === 'undefined' || document.visibilityState === 'visible')
-  ) {
-    performAutoSave().catch((error) => {
-      logger.error('Initial auto-save failed:', error)
-    })
-  }
+  // Perform initial save
+  performAutoSave().catch((error) => {
+    logger.error('Initial auto-save failed:', error)
+  })
 }
 
 /**
