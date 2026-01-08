@@ -9,7 +9,7 @@ import {
   deleteById,
   STORES
 } from './indexedDBManager'
-import { normalizeEntity, updateMetadata } from './idGenerator'
+import { normalizeEntity, updateMetadata, generateStepId } from './idGenerator'
 
 /**
  * Create a new routine
@@ -100,6 +100,15 @@ export async function getRoutines(options = {}) {
           : titleA.localeCompare(titleB)
       }
 
+      // Special handling for lastUsed which may be ISO string
+      if (options.sortBy === 'lastUsed') {
+        let aTime = aVal ? new Date(aVal).getTime() : 0
+        let bTime = bVal ? new Date(bVal).getTime() : 0
+        if (!Number.isFinite(aTime)) aTime = 0
+        if (!Number.isFinite(bTime)) bTime = 0
+        return options.order === 'desc' ? bTime - aTime : aTime - bTime
+      }
+
       // Numeric comparison for duration and timestamps
       if (options.order === 'desc') {
         return bVal - aVal
@@ -161,7 +170,7 @@ export async function addStep(routineId, step) {
 
   const newStep = {
     ...step,
-    id: step.id || `step_${Date.now()}`,
+    id: step.id || generateStepId(),
     order: routine.steps.length,
     duration: step.duration || 60 // Default 60 seconds
   }
@@ -255,7 +264,7 @@ export async function duplicateStep(routineId, stepId) {
   const stepToDuplicate = routine.steps[stepIndex]
   const newStep = {
     ...stepToDuplicate,
-    id: `step_${Date.now()}`,
+    id: generateStepId(),
     order: stepIndex + 1,
     label: `${stepToDuplicate.label} (Copy)`
   }

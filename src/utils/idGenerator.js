@@ -34,24 +34,27 @@ export function generateUniqueId(prefix = '') {
 
 /**
  * Generate a routine ID
- * Maintained for backward compatibility with existing code
- * @returns {string} Routine ID in format 'routine_timestamp'
+ * Uses timestamp for simplicity and natural ordering
+ * Includes counter to prevent same-millisecond collisions
+ * @returns {string} Routine ID in format 'routine_timestamp' or 'routine_timestamp_counter'
  */
 export function generateRoutineId() {
-  return generateTimestampId('routine')
+  return generateTimestampIdWithCollisionPrevention('routine')
 }
 
 /**
  * Generate a step ID
- * Maintained for backward compatibility with existing code
- * @returns {string} Step ID in format 'step_timestamp'
+ * Uses timestamp for simplicity and natural ordering
+ * Includes counter to prevent same-millisecond collisions
+ * @returns {string} Step ID in format 'step_timestamp' or 'step_timestamp_counter'
  */
 export function generateStepId() {
-  return generateTimestampId('step')
+  return generateTimestampIdWithCollisionPrevention('step')
 }
 
 /**
  * Generate a habit ID
+ * Uses timestamp for simplicity and natural ordering
  * @returns {number} Numeric timestamp ID
  */
 export function generateHabitId() {
@@ -60,6 +63,7 @@ export function generateHabitId() {
 
 /**
  * Generate a schedule event ID
+ * Uses timestamp for simplicity and natural ordering
  * @returns {number} Numeric timestamp ID
  */
 export function generateScheduleId() {
@@ -68,20 +72,20 @@ export function generateScheduleId() {
 
 /**
  * Generate a template ID
- * Uses UUID for better uniqueness and import/export compatibility
- * @returns {string} Template ID
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {number} Numeric timestamp ID
  */
 export function generateTemplateId() {
-  return generateSecureUUID()
+  return Date.now()
 }
 
 /**
  * Generate a note/dump ID
- * Uses UUID for better uniqueness
- * @returns {string} Note ID
+ * Uses timestamp for simplicity and natural ordering
+ * @returns {number} Numeric timestamp ID
  */
 export function generateNoteId() {
-  return generateSecureUUID()
+  return Date.now()
 }
 
 /**
@@ -124,9 +128,49 @@ export function generateMetadata() {
   }
 }
 
-// Counter to ensure unique IDs even within the same millisecond
+// Counters to ensure unique IDs even within the same millisecond
 let idCounter = 0
 let lastTimestamp = 0
+
+// Separate counter for prefixed IDs (e.g., step_123, routine_123)
+let prefixCounters = {}
+let lastPrefixTimestamp = 0
+
+/**
+ * Generate a timestamp-based ID with collision prevention
+ * Ensures uniqueness even for same-millisecond operations by using counters
+ * @param {string} prefix - Optional prefix for the ID
+ * @returns {string|number} Unique timestamp ID (prefixed string or numeric)
+ * @private
+ */
+function generateTimestampIdWithCollisionPrevention(prefix = '') {
+  const timestamp = Date.now()
+
+  if (prefix) {
+    // Handle prefixed IDs with per-prefix counter
+    if (timestamp === lastPrefixTimestamp) {
+      if (!prefixCounters[prefix]) {
+        prefixCounters[prefix] = 0
+      }
+      prefixCounters[prefix]++
+      return `${prefix}_${timestamp}_${prefixCounters[prefix]}`
+    } else {
+      // Reset all prefix counters when timestamp changes to prevent memory accumulation
+      prefixCounters = {}
+      lastPrefixTimestamp = timestamp
+      return `${prefix}_${timestamp}`
+    }
+  } else {
+    // Handle numeric IDs with global counter
+    if (timestamp === lastTimestamp) {
+      idCounter++
+    } else {
+      idCounter = 0
+      lastTimestamp = timestamp
+    }
+    return timestamp + idCounter
+  }
+}
 
 /**
  * Normalize entity with ID and metadata
@@ -146,17 +190,8 @@ export function normalizeEntity(entity, options = {}) {
   let id
   if (entity.id) {
     id = entity.id
-  } else if (options.idPrefix) {
-    id = generateTimestampId(options.idPrefix)
   } else {
-    // Use timestamp + counter for uniqueness
-    if (metadata.timestamp === lastTimestamp) {
-      idCounter++
-    } else {
-      idCounter = 0
-      lastTimestamp = metadata.timestamp
-    }
-    id = metadata.timestamp + idCounter
+    id = generateTimestampIdWithCollisionPrevention(options.idPrefix)
   }
 
   return {

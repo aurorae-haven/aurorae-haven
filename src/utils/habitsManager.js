@@ -95,6 +95,21 @@ export async function getHabits(options = {}) {
       default:
         break
     }
+  } else {
+    // Default sort by creation time (oldest first) for predictable ordering
+    habits.sort((a, b) => {
+      let timeA = Number.isFinite(a.timestamp)
+        ? a.timestamp
+        : Number.isFinite(new Date(a.createdAt).getTime())
+          ? new Date(a.createdAt).getTime()
+          : 0
+      let timeB = Number.isFinite(b.timestamp)
+        ? b.timestamp
+        : Number.isFinite(new Date(b.createdAt).getTime())
+          ? new Date(b.createdAt).getTime()
+          : 0
+      return timeA - timeB
+    })
   }
 
   return habits
