@@ -29,6 +29,44 @@ function Schedule() {
         </div>
         <div className='card-b layout-schedule'>
           <aside className='sidebar'>
+            {showRunner && (
+              <div className='card' style={{ marginBottom: '12px' }}>
+                <div className='card-h'>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <strong>Routine timer</strong>
+                    <div style={{ fontWeight: '700' }}>00:12:34</div>
+                  </div>
+                </div>
+                <div className='card-b'>
+                  <div className='timer-progress'>
+                    <i style={{ width: '45%' }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button className='btn'>
+                      <Icon name='play' /> Start
+                    </button>
+                    <button className='btn'>
+                      <Icon name='pause' /> Pause
+                    </button>
+                    <button className='btn'>
+                      <Icon name='x' /> Stop
+                    </button>
+                    <button className='btn'>
+                      <Icon name='skip' /> Skip
+                    </button>
+                    <button className='btn' onClick={() => toggleRunner(false)}>
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className='card'>
               <div className='card-h'>
                 <strong>Today&apos;s queue</strong>
@@ -37,7 +75,11 @@ function Schedule() {
                 <div className='list'>
                   <div className='list-row'>
                     <span>Deep Work Warmup</span>
-                    <button className='btn' onClick={() => toggleRunner(true)}>
+                    <button
+                      className='btn'
+                      onClick={() => toggleRunner(true)}
+                      aria-label='Start Deep Work Warmup routine'
+                    >
                       <Icon name='play' />
                     </button>
                   </div>
@@ -81,7 +123,7 @@ function Schedule() {
                 <div className='slots' style={{ height: '736px' }}>
                   <div
                     className='block'
-                    style={{ top: '46px', height: '23.0px' }}
+                    style={{ top: '46px', height: '60px' }}
                     onClick={() => toggleRunner(true)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -91,6 +133,7 @@ function Schedule() {
                     }}
                     role='button'
                     tabIndex={0}
+                    aria-label='Morning Launch routine, 07:00–07:30, 30% complete'
                   >
                     <div className='title'>Morning Launch</div>
                     <div className='meta'>07:00–07:30</div>
@@ -100,7 +143,10 @@ function Schedule() {
                   </div>
                   <div
                     className='block task'
-                    style={{ top: '460px', height: '23.0px' }}
+                    style={{ top: '460px', height: '46px' }}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Task: Buy groceries at 16:00'
                   >
                     <div className='title'>Buy groceries</div>
                     <div className='meta'>16:00</div>
@@ -109,42 +155,6 @@ function Schedule() {
               </div>
             </div>
           </section>
-        </div>
-      </div>
-
-      {/* Runner overlay */}
-      <div id='runner' style={{ display: showRunner ? 'flex' : 'none' }}>
-        <div className='panel'>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}
-          >
-            <div className='small'>Routine timer</div>
-            <div style={{ fontWeight: '700' }}>00:12:34</div>
-          </div>
-          <div style={{ marginTop: '8px' }} className='progress'>
-            <i style={{ width: '45%' }} />
-          </div>
-          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-            <button className='btn'>
-              <Icon name='play' /> Start
-            </button>
-            <button className='btn'>
-              <Icon name='pause' /> Pause
-            </button>
-            <button className='btn'>
-              <Icon name='x' /> Stop
-            </button>
-            <button className='btn'>
-              <Icon name='skip' /> Skip
-            </button>
-            <button className='btn' onClick={() => toggleRunner(false)}>
-              Close
-            </button>
-          </div>
         </div>
       </div>
     </>

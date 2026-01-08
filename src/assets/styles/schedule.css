@@ -50,6 +50,8 @@
   border: 1px solid rgba(150, 200, 255, 0.24);
   z-index: 2;
   overflow: hidden;
+  min-height: 46px;
+  cursor: pointer;
 }
 .block.task {
   background: rgba(200, 180, 255, 0.14);
@@ -84,22 +86,17 @@
   width: 50%;
   background: linear-gradient(90deg, #8ec8ff, #86f5e0);
 }
-
-/* Runner overlay */
-#runner {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 50;
+.timer-progress {
+  position: relative;
+  height: 6px;
+  background: rgba(120, 140, 200, 0.16);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 12px;
 }
-#runner .panel {
-  width: min(760px, 92vw);
-  background: linear-gradient(180deg, var(--glass-lo), rgba(18, 22, 52, 0.22));
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  padding: 16px;
+.timer-progress i {
+  display: block;
+  height: 100%;
+  width: 50%;
+  background: linear-gradient(90deg, #8ec8ff, #86f5e0);
 }
