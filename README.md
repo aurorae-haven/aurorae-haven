@@ -153,9 +153,7 @@ Aurorae Haven is now a Progressive Web App! You can install it on your device:
 
 ### Documentation
 
-- [Data Management Architecture](./docs/DATA_MANAGEMENT.md) - Full technical documentation
-- [Migration Guide](./docs/MIGRATION_GUIDE.md) - Upgrade from localStorage
-- [Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md) - Backup and restore instructions
+See the [User Manual](./USER_MANUAL.md) for complete documentation on features and usage.
 
 ---
 
@@ -214,15 +212,14 @@ The deployment workflow:
 
 ### Data Management
 
-- **[Data Management Architecture](./docs/DATA_MANAGEMENT.md)**: Technical documentation on IndexedDB, OPFS, and backups
-- **[Migration Guide](./docs/MIGRATION_GUIDE.md)**: Upgrade from localStorage to IndexedDB
-- **[Import/Export Guide](./docs/IMPORT_EXPORT_GUIDE.md)**: Back up, transfer, and restore your data
+- **Export/Import**: Use the Settings page to export your data as JSON for backup or migration
+- **Automatic Backups**: Daily backups stored locally in IndexedDB
+- **Storage**: All data stored locally on your device using IndexedDB and OPFS
 
 ### Feature Specifications
 
 - **[Notes Specifications](./docs/NOTES_SPECS.md)**: Technical details about Notes features
 - **[Tasks Specifications](./docs/TASKS_SPECS.md)**: Technical details about Tasks and Eisenhower Matrix
-- **[ARC-APP Compliance](./docs/ARC-APP-COMPLIANCE.md)**: PWA architecture compliance report
 
 ### Project Information
 
@@ -239,7 +236,7 @@ Contributions, feedback, and ideas are welcome!
 
 Want to contribute task or routine templates? We welcome community contributions!
 
-- See **[Contributing Templates Guide](./docs/CONTRIBUTING_TEMPLATES.md)** for detailed instructions
 - Templates are stored in `src/data/templates/` as JSON files
 - 13+ predefined templates already included to help users get started
-- Easy to add: just follow the schema, test locally, and submit a PR
+- Easy to add: just follow the schema in existing templates, test locally, and submit a PR
+- See the template files in `src/data/templates/` for examples

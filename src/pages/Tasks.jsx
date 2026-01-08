@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import { generateSecureUUID } from '../utils/uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { useTasksState } from '../hooks/useTasksState'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import TaskForm from '../components/Tasks/TaskForm'
 import TaskQuadrant from '../components/Tasks/TaskQuadrant'
+import Icon from '../components/common/Icon'
 import { URL_REVOKE_TIMEOUT_MS } from '../utils/timeConstants'
 import { TASK_TEXT_MAX_LENGTH } from '../utils/validationConstants'
 
@@ -216,19 +217,11 @@ function Tasks() {
               onClick={exportTasks}
               aria-label='Export tasks'
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-                <polyline points='7 10 12 15 17 10' />
-                <line x1='12' y1='15' x2='12' y2='3' />
-              </svg>
+              <Icon name='download' />
               Export
             </button>
             <label className='btn' aria-label='Import tasks'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-                <polyline points='17 8 12 3 7 8' />
-                <line x1='12' y1='3' x2='12' y2='15' />
-              </svg>
+              <Icon name='upload' />
               Import
               <input
                 type='file'

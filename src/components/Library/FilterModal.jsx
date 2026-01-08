@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../common/Icon'
 
 function FilterModal({ filters, onFilterChange, onClose }) {
   const [localFilters, setLocalFilters] = useState(filters)
@@ -54,13 +55,7 @@ function FilterModal({ filters, onFilterChange, onClose }) {
             onClick={onClose}
             aria-label='Close filter'
           >
-            <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-              <path
-                d='M18 6L6 18M6 6l12 12'
-                stroke='currentColor'
-                strokeWidth='2'
-              />
-            </svg>
+            <Icon name='x' />
           </button>
         </div>
 

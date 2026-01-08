@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import Icon from './common/Icon'
 import MobileMenu from './Layout/MobileMenu'
 
 function Layout({ children, onExport, onImport }) {
@@ -182,9 +183,7 @@ function Layout({ children, onExport, onImport }) {
             aria-label='Settings'
             title='Settings'
           >
-            <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-              <path d='M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z' />
-            </svg>
+            <Icon name='settings' />
           </Link>
 
           {/* TAB-NAV-13: Mobile hamburger button */}
@@ -196,13 +195,7 @@ function Layout({ children, onExport, onImport }) {
             aria-label='Toggle navigation menu'
             aria-controls='mobile-menu'
           >
-            <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-              {mobileMenuOpen ? (
-                <path d='M18 6L6 18M6 6l12 12' />
-              ) : (
-                <path d='M3 12h18M3 6h18M3 18h18' />
-              )}
-            </svg>
+            <Icon name={mobileMenuOpen ? 'x' : 'menu'} />
           </button>
 
           {/* TAB-NAV-10: Right Zone - Global Actions */}
@@ -213,10 +206,7 @@ function Layout({ children, onExport, onImport }) {
               aria-label='Search'
               title='Search (Coming soon)'
             >
-              <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-                <circle cx='11' cy='11' r='8' />
-                <path d='M21 21l-4.35-4.35' />
-              </svg>
+              <Icon name='search' />
             </button>
 
             {/* TAB-NAV-10: Theme toggle (placeholder for future) */}
@@ -225,9 +215,7 @@ function Layout({ children, onExport, onImport }) {
               aria-label='Toggle theme'
               title='Theme (Coming soon)'
             >
-              <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-                <path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' />
-              </svg>
+              <Icon name='moon' />
             </button>
 
             {/* Export/Import buttons */}

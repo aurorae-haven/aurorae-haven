@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../common/Icon'
 
 /**
  * Context menu for note operations (right-click menu)
@@ -55,11 +56,7 @@ function ContextMenu({
         }}
         role='menuitem'
       >
-        <svg className='icon' viewBox='0 0 24 24'>
-          <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-          <polyline points='7 10 12 15 17 10' />
-          <line x1='12' y1='15' x2='12' y2='3' />
-        </svg>
+        <Icon name='download' />
         Export Note
       </button>
       <button
@@ -70,19 +67,7 @@ function ContextMenu({
         }}
         role='menuitem'
       >
-        <svg className='icon' viewBox='0 0 24 24'>
-          {contextMenu.note.locked ? (
-            <>
-              <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
-              <path d='M7 11V7a5 5 0 0 1 9.9-1' />
-            </>
-          ) : (
-            <>
-              <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
-              <path d='M7 11V7a5 5 0 0 1 10 0v4' />
-            </>
-          )}
-        </svg>
+        <Icon name={contextMenu.note.locked ? 'unlock' : 'lock'} />
         {contextMenu.note.locked ? 'Unlock Note' : 'Lock Note'}
       </button>
       <button
@@ -94,10 +79,7 @@ function ContextMenu({
         role='menuitem'
         disabled={contextMenu.note.locked}
       >
-        <svg className='icon' viewBox='0 0 24 24'>
-          <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
-          <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
-        </svg>
+        <Icon name='trashAlt' />
         Delete Note
       </button>
     </div>

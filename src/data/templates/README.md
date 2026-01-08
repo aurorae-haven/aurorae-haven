@@ -30,7 +30,7 @@ Each template is stored as a **separate JSON file**. Adding a new template is as
 11. **Pet Care Tasks** - General pet maintenance
 12. **Make Phone Calls** - Communication and admin calls
 
-### Routines (9 templates)
+### Routines (10 templates)
 
 1. **Morning Launch Routine** - 14-minute energizing start (stretch, hydrate, plan)
 2. **Deep Focus Work Session** - 36-minute productivity block
@@ -41,10 +41,11 @@ Each template is stored as a **separate JSON file**. Adding a new template is as
 7. **House Cleaning Routine** - 71-minute comprehensive cleaning
 8. **Clean Litter Boxes** - 15-minute pet care routine
 9. **Pomodoro Work Session** - 32-minute focused work block
+10. **Work Review Session** - 20-minute work progress review
 
 ## Adding New Templates
 
-See the **[Contributing Templates Guide](../../../docs/CONTRIBUTING_TEMPLATES.md)** for detailed instructions.
+To add a new template, examine the existing template files in this directory to understand the schema structure, then create your own following the same pattern. Test your template locally before submitting a PR.
 
 ### Quick Start
 
@@ -166,9 +167,8 @@ npm run format
 
 ## Resources
 
-- [Contributing Templates Guide](../../../docs/CONTRIBUTING_TEMPLATES.md) - Complete documentation
-- [Template Import/Export Guide](../../../docs/TEMPLATE_IMPORT_EXPORT.md) - Schema details
 - [Main Contributing Guide](../../../CONTRIBUTING.md) - General guidelines
+- See template files in this directory for schema examples
 
 ---
 

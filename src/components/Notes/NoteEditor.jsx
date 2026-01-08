@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../common/Icon'
 import { handleEnterKey } from '../../utils/listContinuation'
 import { getUniqueCategories } from '../../utils/notes/noteFilters'
 
@@ -142,11 +143,7 @@ function NoteEditor({
         </div>
         <div className='toolbar'>
           <label className='btn' aria-label='Import' title='Import'>
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-              <polyline points='17 8 12 3 7 8' />
-              <line x1='12' y1='3' x2='12' y2='15' />
-            </svg>
+            <Icon name='upload' />
             <input
               type='file'
               accept='.md,.markdown,.txt'
@@ -162,11 +159,7 @@ function NoteEditor({
             title='Export'
             disabled={!currentNoteId}
           >
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' />
-              <polyline points='7 10 12 15 17 10' />
-              <line x1='12' y1='15' x2='12' y2='3' />
-            </svg>
+            <Icon name='download' />
           </button>
           <button
             className='btn btn-delete'
@@ -175,10 +168,7 @@ function NoteEditor({
             title='Delete'
             disabled={!currentNoteId || currentNote?.locked}
           >
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6' />
-              <path d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
-            </svg>
+            <Icon name='trashAlt' />
           </button>
           <button
             className='btn'
@@ -186,9 +176,7 @@ function NoteEditor({
             aria-label='New note'
             title='New note'
           >
-            <svg className='icon' viewBox='0 0 24 24'>
-              <path d='M12 5v14M5 12h14' />
-            </svg>
+            <Icon name='plus' />
           </button>
           <button
             className='btn'
@@ -197,19 +185,7 @@ function NoteEditor({
             title={currentNote?.locked ? 'Unlock note' : 'Lock note'}
             disabled={!currentNoteId}
           >
-            <svg className='icon' viewBox='0 0 24 24'>
-              {currentNote?.locked ? (
-                <>
-                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
-                  <path d='M7 11V7a5 5 0 0 1 10 0v4' />
-                </>
-              ) : (
-                <>
-                  <rect x='5' y='11' width='14' height='10' rx='2' ry='2' />
-                  <path d='M7 11V7a5 5 0 0 1 9.9-1' />
-                </>
-              )}
-            </svg>
+            <Icon name={currentNote?.locked ? 'lock' : 'unlock'} />
           </button>
           <button
             className='btn'
@@ -218,11 +194,7 @@ function NoteEditor({
             title='Show note details'
             disabled={!currentNoteId}
           >
-            <svg className='icon' viewBox='0 0 24 24'>
-              <circle cx='12' cy='12' r='10' />
-              <line x1='12' y1='16' x2='12' y2='12' />
-              <line x1='12' y1='8' x2='12.01' y2='8' />
-            </svg>
+            <Icon name='info' />
           </button>
         </div>
       </div>

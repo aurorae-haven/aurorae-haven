@@ -285,13 +285,7 @@ When adding new features:
 
 Want to add predefined task or routine templates to help users get started?
 
-See the **[Contributing Templates Guide](./docs/CONTRIBUTING_TEMPLATES.md)** for:
-
-- Template schemas and structure
-- File locations and naming conventions
-- Validation requirements
-- Testing guidelines
-- Submission process
+Templates are stored in `src/data/templates/` as JSON files. See existing templates for the schema structure, validation requirements, and testing guidelines. Submit a PR with your new template following the same pattern.
 
 Quick summary:
 

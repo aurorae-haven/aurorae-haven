@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../common/Icon'
 
 /**
  * Component for displaying and editing a single task
@@ -106,19 +107,14 @@ function TaskItem({
               onClick={onSaveEdit}
               aria-label='Save task'
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <polyline points='20 6 9 17 4 12' />
-              </svg>
+              <Icon name='check' />
             </button>
             <button
               className='btn-cancel'
               onClick={onCancelEdit}
               aria-label='Cancel editing'
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <line x1='18' y1='6' x2='6' y2='18' />
-                <line x1='6' y1='6' x2='18' y2='18' />
-              </svg>
+              <Icon name='x' />
             </button>
           </>
         ) : (
@@ -128,20 +124,14 @@ function TaskItem({
               onClick={() => onEdit(quadrant, task)}
               aria-label={`Edit task "${task.text}"`}
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7' />
-                <path d='M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z' />
-              </svg>
+              <Icon name='edit' />
             </button>
             <button
               className='btn-delete'
               onClick={() => onDelete(quadrant, task.id)}
               aria-label={`Delete task "${task.text}"`}
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <polyline points='3 6 5 6 21 6' />
-                <path d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2' />
-              </svg>
+              <Icon name='trash' />
             </button>
           </>
         )}

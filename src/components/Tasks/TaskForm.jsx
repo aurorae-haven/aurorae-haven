@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import Icon from '../common/Icon'
 
 /**
  * Component for adding new tasks
@@ -35,9 +36,7 @@ function TaskForm({
         </option>
       </select>
       <button type='submit' className='btn btn-primary'>
-        <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
-          <path d='M12 5v14M5 12h14' />
-        </svg>
+        <Icon name='plus' />
         Add Task
       </button>
     </form>

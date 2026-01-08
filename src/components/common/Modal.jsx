@@ -1,5 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import clsx from 'clsx'
+import Icon from './Icon'
 
 /**
  * Reusable modal wrapper component
@@ -22,7 +24,7 @@ function Modal({ isOpen, onClose, title, children, className = '' }) {
     >
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
-        className={`modal-content ${className}`}
+        className={clsx('modal-content', className)}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => e.stopPropagation()}
         role='document'
@@ -35,10 +37,7 @@ function Modal({ isOpen, onClose, title, children, className = '' }) {
               onClick={onClose}
               aria-label='Close'
             >
-              <svg className='icon' viewBox='0 0 24 24'>
-                <line x1='18' y1='6' x2='6' y2='18' />
-                <line x1='6' y1='6' x2='18' y2='18' />
-              </svg>
+              <Icon name='x' />
             </button>
           </div>
         )}

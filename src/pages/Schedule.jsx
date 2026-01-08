@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import Icon from '../components/common/Icon'
 
 function Schedule() {
   const [showRunner, setShowRunner] = useState(false)
@@ -19,16 +20,10 @@ function Schedule() {
             <button className='btn'>Day</button>
             <button className='btn'>Week</button>
             <button className='btn'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M12 5v14M5 12h14' />
-              </svg>{' '}
-              Routine
+              <Icon name='plus' /> Routine
             </button>
             <button className='btn'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <path d='M12 5v14M5 12h14' />
-              </svg>{' '}
-              Task
+              <Icon name='plus' /> Task
             </button>
           </div>
         </div>
@@ -43,9 +38,7 @@ function Schedule() {
                   <div className='list-row'>
                     <span>Deep Work Warmup</span>
                     <button className='btn' onClick={() => toggleRunner(true)}>
-                      <svg className='icon' viewBox='0 0 24 24'>
-                        <polygon points='5 3 19 12 5 21 5 3' />
-                      </svg>
+                      <Icon name='play' />
                     </button>
                   </div>
                 </div>
@@ -137,30 +130,16 @@ function Schedule() {
           </div>
           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
             <button className='btn'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <polygon points='5 3 19 12 5 21 5 3' />
-              </svg>{' '}
-              Start
+              <Icon name='play' /> Start
             </button>
             <button className='btn'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <rect x='6' y='4' width='4' height='16' />
-                <rect x='14' y='4' width='4' height='16' />
-              </svg>{' '}
-              Pause
+              <Icon name='pause' /> Pause
             </button>
             <button className='btn'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <rect x='6' y='6' width='12' height='12' rx='2' />
-              </svg>{' '}
-              Stop
+              <Icon name='x' /> Stop
             </button>
             <button className='btn'>
-              <svg className='icon' viewBox='0 0 24 24'>
-                <polygon points='5 4 15 12 5 20 5 4' />
-                <rect x='17' y='4' width='2' height='16' />
-              </svg>{' '}
-              Skip
+              <Icon name='skip' /> Skip
             </button>
             <button className='btn' onClick={() => toggleRunner(false)}>
               Close

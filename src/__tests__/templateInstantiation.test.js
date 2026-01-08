@@ -4,18 +4,18 @@ import {
   instantiateTemplate,
   instantiateTemplatesBatch
 } from '../utils/templateInstantiation'
-import * as uuidGenerator from '../utils/uuidGenerator'
 import * as routinesManager from '../utils/routinesManager'
+import { v4 as uuidv4 } from 'uuid'
 
 // Mock dependencies
-jest.mock('../utils/uuidGenerator')
+jest.mock('uuid')
 jest.mock('../utils/routinesManager')
 
 describe('templateInstantiation', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     localStorage.clear()
-    uuidGenerator.generateSecureUUID.mockReturnValue('test-task-uuid-123')
+    uuidv4.mockReturnValue('test-task-uuid-123')
   })
 
   describe('instantiateTaskFromTemplate', () => {
@@ -447,7 +447,7 @@ describe('templateInstantiation', () => {
   describe('instantiateTemplatesBatch', () => {
     beforeEach(() => {
       let counter = 0
-      uuidGenerator.generateSecureUUID.mockImplementation(() => {
+      uuidv4.mockImplementation(() => {
         counter++
         return `test-uuid-${counter}`
       })

@@ -199,3 +199,187 @@
   border: 1px solid var(--line);
   border-radius: 12px;
 }
+
+/* ===== Mobile/Tablet Responsiveness ===== */
+
+/* TAB-RTN-38: Sticky bottom control bar for mobile */
+@media (max-width: 768px) {
+  .routine-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--glass-hi);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+    padding: 12px;
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+    justify-content: space-around;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .routine-controls button {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.9rem;
+  }
+
+  /* Add padding to content to account for fixed control bar */
+  .runner-top {
+    padding-bottom: 80px;
+  }
+
+  /* TAB-RTN-37: Optimize triptych for mobile swipe view */
+  .triptych {
+    grid-template-columns: 0.8fr 2fr 0.8fr;
+    gap: 8px;
+  }
+
+  .panel.dim {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+
+  .panel {
+    padding: 10px;
+  }
+
+  /* Make current step more prominent on mobile */
+  .panel:not(.dim) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(134, 245, 224, 0.2);
+  }
+
+  .routine-toolbar {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .routine-toolbar button {
+    width: 100%;
+  }
+}
+
+/* TAB-RTN-38: Tablet optimization (768px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .triptych {
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 12px;
+  }
+
+  .routine-controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .routine-controls button {
+    flex: 1 1 calc(50% - 5px);
+    min-width: 120px;
+  }
+}
+
+/* TAB-RTN-39: Touch-optimized buttons for mobile */
+@media (max-width: 768px) {
+  button {
+    min-height: 44px; /* iOS minimum touch target */
+    padding: 12px 16px;
+  }
+
+  .btn {
+    touch-action: manipulation; /* Disable double-tap zoom */
+  }
+
+  /* Add visual feedback for touch */
+  .btn:active {
+    transform: scale(0.97);
+  }
+}
+
+/* TAB-RTN-37: Swipe gesture visual hints */
+@media (max-width: 768px) {
+  .panel {
+    position: relative;
+  }
+
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    opacity: 0.3;
+    transition: opacity 0.2s;
+  }
+
+  .triptych .panel:first-child::before {
+    /* Previous step - swipe right hint */
+    right: -15px;
+    border-width: 8px 0 8px 12px;
+    border-color: transparent transparent transparent var(--dim);
+  }
+
+  .triptych .panel:last-child::before {
+    /* Next step - swipe left hint */
+    left: -15px;
+    border-width: 8px 12px 8px 0;
+    border-color: transparent var(--dim) transparent transparent;
+  }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 968px) and (orientation: landscape) {
+  .triptych {
+    grid-template-columns: 1fr 1.5fr 1fr;
+  }
+
+  .routine-controls {
+    padding: 8px;
+  }
+
+  .routine-controls button {
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+}
+
+/* Small phone optimization */
+@media (max-width: 480px) {
+  .routine-time {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .panel {
+    padding: 8px;
+  }
+
+  .step-title {
+    font-size: 0.95rem;
+  }
+
+  .step-meta {
+    font-size: 0.8rem;
+  }
+
+  /* Hide previous/next steps on very small screens, show only current */
+  .triptych {
+    grid-template-columns: 0.5fr 3fr 0.5fr;
+  }
+
+  .panel.dim .step-title {
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .panel.dim .step-meta {
+    display: none;
+  }
+}

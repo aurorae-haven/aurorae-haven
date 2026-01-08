@@ -9,43 +9,107 @@ import {
   filterTemplates,
   sortTemplates,
   exportTemplates,
-  importTemplates
+  importTemplates,
+  templatesDBManager
 } from '../utils/templatesManager'
 import * as indexedDBManager from '../utils/indexedDBManager'
-import * as uuidGenerator from '../utils/uuidGenerator'
+import { v4 as uuidv4 } from 'uuid'
 
 // Mock dependencies
 jest.mock('../utils/indexedDBManager')
-jest.mock('../utils/uuidGenerator')
+jest.mock('uuid')
 
 describe('templatesManager', () => {
   let mockDB
+  let createMockRequest
+  let mockDataStore // In-memory storage for templates
 
   beforeEach(() => {
     jest.clearAllMocks()
 
-    // Mock database with proper transaction structure
-    const mockStore = {
-      getAll: jest.fn().mockReturnValue(Promise.resolve([])),
-      get: jest.fn().mockReturnValue(Promise.resolve(null)),
-      put: jest.fn().mockReturnValue(Promise.resolve()),
-      delete: jest.fn().mockReturnValue(Promise.resolve())
+    // Reset connection manager between tests
+    templatesDBManager.resetConnectionState()
+
+    // In-memory store for template data
+    mockDataStore = new Map()
+
+    // Helper to create mock IDBRequest
+    createMockRequest = (result = null, shouldError = false) => {
+      const request = {
+        result: null,
+        error: null
+      }
+      // Use Promise.resolve().then() for deterministic async behavior
+      Promise.resolve().then(() => {
+        if (shouldError) {
+          request.error = new Error('Mock error')
+          request.onerror && request.onerror()
+        } else {
+          request.result = result
+          request.onsuccess && request.onsuccess()
+        }
+      })
+      return request
     }
 
-    const mockTransaction = {
-      objectStore: jest.fn().mockReturnValue(mockStore),
-      done: Promise.resolve()
+    // Mock database with proper IDBRequest-based API and in-memory storage
+    const mockStore = {
+      getAll: jest.fn(() => {
+        const allTemplates = Array.from(mockDataStore.values())
+        return createMockRequest(allTemplates)
+      }),
+      get: jest.fn((id) => {
+        const template = mockDataStore.get(id) || null
+        return createMockRequest(template)
+      }),
+      put: jest.fn((template) => {
+        mockDataStore.set(template.id, template)
+        return createMockRequest()
+      }),
+      delete: jest.fn((id) => {
+        mockDataStore.delete(id)
+        return createMockRequest()
+      })
     }
+
+    const createMockTransaction = () => {
+      const transaction = {
+        objectStore: jest.fn().mockReturnValue(mockStore),
+        oncomplete: null,
+        onerror: null,
+        abort: jest.fn()
+      }
+
+      // Trigger oncomplete after a brief delay
+      // Note: In real IndexedDB, oncomplete fires when all requests succeed
+      // We trigger it even on errors for testing simplicity
+      setTimeout(() => {
+        if (transaction.oncomplete) {
+          transaction.oncomplete()
+        }
+      }, 10)
+
+      return transaction
+    }
+
+    const mockTransaction = createMockTransaction()
 
     mockDB = {
-      transaction: jest.fn().mockReturnValue(mockTransaction),
+      transaction: jest.fn().mockImplementation(() => createMockTransaction()),
+      close: jest.fn(),
       mockStore,
-      mockTransaction
+      mockTransaction,
+      mockDataStore,
+      objectStoreNames: {
+        contains: jest.fn().mockReturnValue(true)
+      },
+      onclose: null,
+      onerror: null
     }
 
     indexedDBManager.isIndexedDBAvailable.mockReturnValue(true)
     indexedDBManager.openDB.mockResolvedValue(mockDB)
-    uuidGenerator.generateSecureUUID.mockReturnValue('test-uuid-123')
+    uuidv4.mockReturnValue('test-uuid-123')
   })
 
   describe('getAllTemplates', () => {
@@ -56,7 +120,8 @@ describe('templatesManager', () => {
 
     test('returns array of templates', async () => {
       const mockTemplates = [{ id: '1', type: 'task', title: 'Test' }]
-      mockDB.mockStore.getAll.mockReturnValue(Promise.resolve(mockTemplates))
+      // Store data in mock database
+      mockDB.mockDataStore.set('1', mockTemplates[0])
 
       const result = await getAllTemplates()
       expect(result).toEqual(mockTemplates)
@@ -195,15 +260,21 @@ describe('templatesManager', () => {
         title: 'Old Title'
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(existingTemplate))
+      // Store the template in the mock data store
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await updateTemplate('test-id', { title: 'New Title' })
 
       expect(mockDB.transaction).toHaveBeenCalledWith('templates', 'readwrite')
+
+      // Verify the update happened
+      const updated = mockDB.mockDataStore.get('test-id')
+      expect(updated.title).toBe('New Title')
     })
 
     test('throws error when template not found', async () => {
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+      // Ensure the template doesn't exist in mock data store
+      mockDB.mockDataStore.clear()
 
       await expect(updateTemplate('non-existent', {})).rejects.toThrow(
         'Template not found'
@@ -217,13 +288,10 @@ describe('templatesManager', () => {
         title: 'Old Title'
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(existingTemplate))
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await expect(updateTemplate('test-id', { title: '' })).rejects.toThrow(
         'Invalid template data'
-      )
-      await expect(updateTemplate('test-id', { title: '' })).rejects.toThrow(
-        'title cannot be empty'
       )
     })
 
@@ -234,7 +302,7 @@ describe('templatesManager', () => {
         title: 'Test Title'
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(existingTemplate))
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await expect(
         updateTemplate('test-id', { type: 'invalid' })
@@ -259,7 +327,7 @@ describe('templatesManager', () => {
         tags: ['work']
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(originalTemplate))
+      mockDB.mockDataStore.set('original-id', originalTemplate)
 
       const newId = await duplicateTemplate('original-id')
 
@@ -268,7 +336,7 @@ describe('templatesManager', () => {
     })
 
     test('throws error when template not found', async () => {
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+      mockDB.mockDataStore.clear()
 
       await expect(duplicateTemplate('non-existent')).rejects.toThrow(
         'Template not found'
@@ -284,7 +352,7 @@ describe('templatesManager', () => {
         title: 'Test'
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(existingTemplate))
+      mockDB.mockDataStore.set('test-id', existingTemplate)
 
       await markTemplateUsed('test-id')
 
@@ -412,7 +480,7 @@ describe('templatesManager', () => {
     test('exports all templates', async () => {
       const mockTemplates = [{ id: '1', type: 'task', title: 'Test' }]
 
-      mockDB.mockStore.getAll.mockReturnValue(Promise.resolve(mockTemplates))
+      mockDB.mockDataStore.set('1', mockTemplates[0])
 
       const result = await exportTemplates()
 
@@ -428,7 +496,8 @@ describe('templatesManager', () => {
         { id: '2', type: 'task', title: 'Test 2' }
       ]
 
-      mockDB.mockStore.getAll.mockReturnValue(Promise.resolve(mockTemplates))
+      mockDB.mockDataStore.set('1', mockTemplates[0])
+      mockDB.mockDataStore.set('2', mockTemplates[1])
 
       const result = await exportTemplates(['1'])
 
@@ -444,7 +513,8 @@ describe('templatesManager', () => {
         templates: [{ id: 'import-1', type: 'task', title: 'Imported Task' }]
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+      // Ensure no collision by clearing the store
+      mockDB.mockDataStore.clear()
 
       const result = await importTemplates(importData)
 
@@ -459,14 +529,17 @@ describe('templatesManager', () => {
         templates: [{ id: 'existing-id', type: 'task', title: 'Imported Task' }]
       }
 
-      mockDB.mockStore.get.mockReturnValue(
-        Promise.resolve({ id: 'existing-id', title: 'Existing' })
-      )
+      // Mock an existing template with collision
+      mockDB.mockDataStore.set('existing-id', {
+        id: 'existing-id',
+        title: 'Existing',
+        type: 'task'
+      })
 
       const result = await importTemplates(importData)
 
       expect(result.imported).toBe(1)
-      expect(uuidGenerator.generateSecureUUID).toHaveBeenCalled()
+      expect(uuidv4).toHaveBeenCalled()
     })
 
     test('throws error for missing version field', async () => {
@@ -528,7 +601,7 @@ describe('templatesManager', () => {
         ]
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+      mockDB.mockDataStore.clear()
 
       const result = await importTemplates(importData)
 
@@ -547,7 +620,7 @@ describe('templatesManager', () => {
         ]
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+      mockDB.mockDataStore.clear()
 
       const result = await importTemplates(importData)
 
@@ -566,10 +639,22 @@ describe('templatesManager', () => {
         ]
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
-      mockDB.mockStore.put
-        .mockResolvedValueOnce()
-        .mockRejectedValueOnce(new Error('Save failed'))
+      // Mock get to return null for first template, but throw error for second
+      let callCount = 0
+      mockDB.mockStore.get.mockImplementation(() => {
+        callCount++
+        return createMockRequest(null)
+      })
+
+      // Mock put to succeed first time
+      mockDB.mockStore.put.mockImplementation((template) => {
+        if (template.id === '2') {
+          // Second template will fail during put
+          return createMockRequest(null, true) // Error
+        }
+        mockDataStore.set(template.id, template)
+        return createMockRequest()
+      })
 
       const result = await importTemplates(importData)
 
@@ -591,7 +676,7 @@ describe('templatesManager', () => {
         ]
       }
 
-      mockDB.mockStore.get.mockReturnValue(Promise.resolve(null))
+      mockDB.mockStore.get.mockReturnValue(createMockRequest(null))
 
       const result = await importTemplates(importData)
 

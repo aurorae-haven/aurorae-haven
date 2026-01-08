@@ -112,6 +112,33 @@
   height: 18px;
 }
 
+/* Template Section Headers */
+.template-section {
+  margin-bottom: 36px;
+}
+
+.template-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--line);
+}
+
+.template-section-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.template-section-header .small {
+  color: var(--dim);
+  font-size: 14px;
+  font-weight: 400;
+}
+
 /* Template Grid Layout - TAB-LIB-01, TAB-LIB-02 */
 .template-grid {
   display: grid;

@@ -4,10 +4,11 @@
  */
 
 import { openDB, isIndexedDBAvailable } from './indexedDBManager'
-import { generateSecureUUID } from './uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { validateTemplateData } from './validation'
 import semver from 'semver'
 import { createLogger } from './logger'
+import { updateMetadata, getCurrentTimestamp } from './idGenerator'
 
 const logger = createLogger('Templates')
 
@@ -16,6 +17,89 @@ const TEMPLATES_STORE = 'templates'
 // Supported template export version range (semver)
 const SUPPORTED_VERSION_RANGE = '>=1.0 <2.0'
 const CURRENT_VERSION = '1.0'
+
+// Database connection management encapsulated in a class
+class TemplatesDBManager {
+  constructor() {
+    this.dbConnection = null
+    this.connectionPromise = null
+  }
+
+  /**
+   * Get or create database connection
+   * Reuses existing connection to avoid frequent open/close cycles
+   * @returns {Promise<IDBDatabase>}
+   */
+  async getDBConnection() {
+    if (this.dbConnection) {
+      return this.dbConnection
+    }
+
+    if (this.connectionPromise) {
+      return this.connectionPromise
+    }
+
+    this.connectionPromise = openDB()
+      .then((db) => {
+        this.dbConnection = db
+        this.connectionPromise = null
+
+        // Handle connection close/error events with proper cleanup
+        const handleDisconnect = () => {
+          // Remove event handlers to prevent memory leaks
+          if (this.dbConnection) {
+            this.dbConnection.onclose = null
+            this.dbConnection.onerror = null
+          }
+          this.dbConnection = null
+        }
+
+        db.onclose = handleDisconnect
+        db.onerror = handleDisconnect
+
+        return db
+      })
+      .catch((error) => {
+        this.connectionPromise = null
+        throw error
+      })
+
+    return this.connectionPromise
+  }
+
+  /**
+   * Close database connection
+   * Should only be called when application unloads or no longer needs DB access
+   */
+  closeDBConnection() {
+    if (this.dbConnection) {
+      // Clean up event handlers before closing
+      this.dbConnection.onclose = null
+      this.dbConnection.onerror = null
+      this.dbConnection.close()
+      this.dbConnection = null
+    }
+  }
+
+  /**
+   * Reset connection state (for testing)
+   */
+  resetConnectionState() {
+    this.dbConnection = null
+    this.connectionPromise = null
+  }
+}
+
+// Export a singleton instance for default use
+export const templatesDBManager = new TemplatesDBManager()
+// Export the class for testing/multi-instance scenarios
+export { TemplatesDBManager }
+
+// Export convenience functions for backward compatibility
+const getDBConnection = () => templatesDBManager.getDBConnection()
+const closeDBConnection = () => templatesDBManager.closeDBConnection()
+
+export { getDBConnection, closeDBConnection }
 
 /**
  * Check if a template version is supported
@@ -36,7 +120,7 @@ function isSupportedVersion(version) {
 export async function initializeTemplates() {
   if (!isIndexedDBAvailable()) return
 
-  const db = await openDB()
+  const db = await getDBConnection()
   if (!db.objectStoreNames.contains(TEMPLATES_STORE)) {
     logger.warn('Templates store not found in IndexedDB')
   }
@@ -50,21 +134,33 @@ export async function getAllTemplates() {
   if (!isIndexedDBAvailable()) return []
 
   try {
-    const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readonly')
-    const store = tx.objectStore(TEMPLATES_STORE)
-    const templates = await store.getAll()
-    await tx.done
+    const db = await getDBConnection()
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readonly')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.getAll()
 
-    // Ensure we always return an array
-    if (!Array.isArray(templates)) {
-      logger.warn(
-        'getAllTemplates: store.getAll() did not return an array, returning empty array'
-      )
-      return []
-    }
+      request.onerror = () => {
+        logger.error('Error loading templates:', request.error)
+        reject(request.error)
+      }
 
-    return templates
+      request.onsuccess = () => {
+        const templates = request.result || []
+
+        // Ensure we always return an array
+        if (!Array.isArray(templates)) {
+          logger.warn(
+            'getAllTemplates: store.getAll() did not return an array, returning empty array'
+          )
+          resolve([])
+        } else {
+          resolve(templates)
+        }
+      }
+
+      // Note: DB connection is kept open for reuse, not closed after transaction
+    })
   } catch (error) {
     logger.error('Error loading templates:', error)
     return []
@@ -80,12 +176,17 @@ export async function getTemplate(templateId) {
   if (!isIndexedDBAvailable()) return null
 
   try {
-    const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readonly')
-    const store = tx.objectStore(TEMPLATES_STORE)
-    const template = await store.get(templateId)
-    await tx.done
-    return template || null
+    const db = await getDBConnection()
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readonly')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.get(templateId)
+
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(request.result || null)
+
+      // Note: DB connection is kept open for reuse
+    })
   } catch (error) {
     logger.error('Error loading template:', error)
     return null
@@ -109,9 +210,7 @@ export async function saveTemplate(template) {
   }
 
   try {
-    const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readwrite')
-    const store = tx.objectStore(TEMPLATES_STORE)
+    const db = await getDBConnection()
 
     const templateData = {
       id: template.id || generateSecureUUID(),
@@ -133,9 +232,16 @@ export async function saveTemplate(template) {
       pinned: template.pinned || false
     }
 
-    await store.put(templateData)
-    await tx.done
-    return templateData.id
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.put(templateData)
+
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve(templateData.id)
+
+      // Note: DB connection is kept open for reuse
+    })
   } catch (error) {
     logger.error('Error saving template:', error)
     throw error
@@ -154,30 +260,43 @@ export async function updateTemplate(templateId, updates) {
   }
 
   try {
-    const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readwrite')
-    const store = tx.objectStore(TEMPLATES_STORE)
+    const db = await getDBConnection()
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
+      const store = transaction.objectStore(TEMPLATES_STORE)
 
-    const existing = await store.get(templateId)
-    if (!existing) {
-      throw new Error('Template not found')
-    }
+      const getRequest = store.get(templateId)
 
-    const updated = {
-      ...existing,
-      ...updates,
-      id: templateId, // Ensure ID doesn't change
-      updatedAt: new Date().toISOString()
-    }
+      getRequest.onerror = () => reject(getRequest.error)
+      getRequest.onsuccess = () => {
+        const existing = getRequest.result
+        if (!existing) {
+          reject(new Error('Template not found'))
+          return
+        }
 
-    // Validate the updated template data
-    const validation = validateTemplateData(updated)
-    if (!validation.valid) {
-      throw new Error(`Invalid template data: ${validation.errors.join('; ')}`)
-    }
+        const updated = updateMetadata({
+          ...existing,
+          ...updates,
+          id: templateId // Ensure ID doesn't change
+        })
 
-    await store.put(updated)
-    await tx.done
+        // Validate the updated template data
+        const validation = validateTemplateData(updated)
+        if (!validation.valid) {
+          reject(
+            new Error(`Invalid template data: ${validation.errors.join('; ')}`)
+          )
+          return
+        }
+
+        const putRequest = store.put(updated)
+        putRequest.onerror = () => reject(putRequest.error)
+        putRequest.onsuccess = () => resolve()
+      }
+
+      // Note: DB connection is kept open for reuse
+    })
   } catch (error) {
     logger.error('Error updating template:', error)
     throw error
@@ -195,11 +314,17 @@ export async function deleteTemplate(templateId) {
   }
 
   try {
-    const db = await openDB()
-    const tx = db.transaction(TEMPLATES_STORE, 'readwrite')
-    const store = tx.objectStore(TEMPLATES_STORE)
-    await store.delete(templateId)
-    await tx.done
+    const db = await getDBConnection()
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(TEMPLATES_STORE, 'readwrite')
+      const store = transaction.objectStore(TEMPLATES_STORE)
+      const request = store.delete(templateId)
+
+      request.onerror = () => reject(request.error)
+      request.onsuccess = () => resolve()
+
+      // Note: DB connection is kept open for reuse
+    })
   } catch (error) {
     logger.error('Error deleting template:', error)
     throw error
@@ -235,7 +360,7 @@ export async function duplicateTemplate(templateId) {
  */
 export async function markTemplateUsed(templateId) {
   await updateTemplate(templateId, {
-    lastUsed: new Date().toISOString()
+    lastUsed: getCurrentTimestamp()
   })
 }
 

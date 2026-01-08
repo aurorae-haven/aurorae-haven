@@ -5,7 +5,7 @@ import {
   reloadPageAfterDelay,
   IMPORT_SUCCESS_MESSAGE
 } from './dataManager'
-import { generateSecureUUID } from './uuidGenerator'
+import { v4 as generateSecureUUID } from 'uuid'
 import { createLogger } from './logger'
 import {
   PAGE_RELOAD_DELAY_MS,
