@@ -1,13 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Icon from '../components/common/Icon'
 
 function Schedule() {
-  const [showRunner, setShowRunner] = useState(false)
-
-  const toggleRunner = (show) => {
-    setShowRunner(show)
-  }
-
   return (
     <>
       <div className='card'>
@@ -29,51 +23,6 @@ function Schedule() {
         </div>
         <div className='card-b layout-schedule'>
           <aside className='sidebar'>
-            {showRunner && (
-              <div className='card' style={{ marginBottom: '12px' }}>
-                <div className='card-h'>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <strong>Routine timer</strong>
-                    <div style={{ fontWeight: '700' }}>00:12:34</div>
-                  </div>
-                </div>
-                <div className='card-b'>
-                  <div
-                    className='timer-progress'
-                    role='progressbar'
-                    aria-valuenow={45}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label='Routine progress'
-                  >
-                    <i style={{ width: '45%' }} />
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <button className='btn' aria-label='Start timer'>
-                      <Icon name='play' /> Start
-                    </button>
-                    <button className='btn' aria-label='Pause timer'>
-                      <Icon name='pause' /> Pause
-                    </button>
-                    <button className='btn' aria-label='Stop timer'>
-                      <Icon name='x' /> Stop
-                    </button>
-                    <button className='btn' aria-label='Skip current task'>
-                      <Icon name='skip' /> Skip
-                    </button>
-                    <button className='btn' onClick={() => toggleRunner(false)}>
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
             <div className='card'>
               <div className='card-h'>
                 <strong>Today&apos;s queue</strong>
@@ -82,13 +31,6 @@ function Schedule() {
                 <div className='list'>
                   <div className='list-row'>
                     <span>Deep Work Warmup</span>
-                    <button
-                      className='btn'
-                      onClick={() => toggleRunner(true)}
-                      aria-label='Start Deep Work Warmup routine'
-                    >
-                      <Icon name='play' />
-                    </button>
                   </div>
                 </div>
               </div>
@@ -131,13 +73,6 @@ function Schedule() {
                   <div
                     className='block'
                     style={{ top: '46px', height: '80px' }}
-                    onClick={() => toggleRunner(true)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault()
-                        toggleRunner(true)
-                      }
-                    }}
                     role='button'
                     tabIndex={0}
                     aria-label='Morning Launch routine, 07:00–07:30, 30% complete'
