@@ -48,14 +48,51 @@
   padding: 12px 14px;
   background: rgba(142, 200, 255, 0.14);
   border: 1px solid rgba(150, 200, 255, 0.24);
+  border-left: 3px solid #86f5e0;
   z-index: 2;
   overflow: hidden;
   min-height: 50px;
   cursor: pointer;
 }
+
+/* Routine blocks - mint/teal accent (default) */
+.block.routine {
+  background: rgba(142, 200, 255, 0.14);
+  border-color: rgba(150, 200, 255, 0.24);
+  border-left: 3px solid #86f5e0;
+}
+
+/* Task blocks - Eisenhower Matrix colors */
 .block.task {
   background: rgba(200, 180, 255, 0.14);
   border-color: rgba(200, 180, 255, 0.24);
+}
+
+/* Urgent & Important (Do First) - Red */
+.block.task.urgent-important {
+  border-left: 3px solid #ef4444;
+}
+
+/* Not Urgent & Important (Schedule) - Yellow/Amber */
+.block.task.not-urgent-important {
+  border-left: 3px solid #f59e0b;
+}
+
+/* Urgent & Not Important (Delegate) - Blue */
+.block.task.urgent-not-important {
+  border-left: 3px solid #3b82f6;
+}
+
+/* Not Urgent & Not Important (Eliminate) - Green */
+.block.task.not-urgent-not-important {
+  border-left: 3px solid #10b981;
+}
+
+/* Meeting blocks - grey accent */
+.block.meeting {
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.24);
+  border-left: 3px solid #94a3b8;
 }
 .block .title {
   position: absolute;

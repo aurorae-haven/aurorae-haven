@@ -71,7 +71,7 @@ function Schedule() {
                 </div>
                 <div className='slots' style={{ height: '736px' }}>
                   <div
-                    className='block'
+                    className='block routine'
                     style={{ top: '46px', height: '80px' }}
                     role='button'
                     tabIndex={0}
@@ -84,11 +84,11 @@ function Schedule() {
                     </div>
                   </div>
                   <div
-                    className='block task'
+                    className='block task not-urgent-important'
                     style={{ top: '460px', height: '50px' }}
                     role='button'
                     tabIndex={0}
-                    aria-label='Task: Buy groceries at 16:00'
+                    aria-label='Task: Buy groceries at 16:00, Not Urgent but Important'
                   >
                     <div className='title'>Buy groceries</div>
                     <div className='meta'>16:00</div>
