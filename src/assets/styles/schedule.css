@@ -97,21 +97,23 @@
 .block .title {
   position: absolute;
   left: 14px;
-  top: 12px;
+  top: 10px;
   font-weight: 700;
+  line-height: 1.2;
 }
 .block .meta {
   position: absolute;
   left: 14px;
-  bottom: 12px;
+  bottom: 10px;
   font-size: 0.9rem;
   color: var(--dim);
+  line-height: 1.2;
 }
 .progress {
   position: absolute;
   left: 14px;
   right: 14px;
-  bottom: 34px;
+  bottom: 32px;
   height: 6px;
   background: rgba(120, 140, 200, 0.16);
   border-radius: 999px;
@@ -122,4 +124,65 @@
   height: 100%;
   width: 50%;
   background: linear-gradient(90deg, #8ec8ff, #86f5e0);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .layout-schedule {
+    grid-template-columns: 250px 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout-schedule {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .sidebar {
+    order: 2;
+  }
+  
+  section {
+    order: 1;
+  }
+  
+  .hours {
+    grid-template-columns: 60px 1fr;
+  }
+  
+  .calendar {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .block {
+    padding: 10px 12px;
+  }
+  
+  .block .title {
+    left: 12px;
+    font-size: 0.95rem;
+  }
+  
+  .block .meta {
+    left: 12px;
+    font-size: 0.85rem;
+  }
+  
+  .progress {
+    left: 12px;
+    right: 12px;
+  }
+  
+  .hours {
+    grid-template-columns: 50px 1fr;
+  }
+  
+  .hour-col .h {
+    font-size: 0.85rem;
+    padding: 4px 6px;
+  }
 }
