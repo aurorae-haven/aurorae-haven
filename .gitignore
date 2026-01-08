@@ -43,3 +43,4 @@ audit-report.txt
 
 # Tools and binaries
 actionlint
+*.backup
