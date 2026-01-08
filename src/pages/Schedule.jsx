@@ -44,20 +44,27 @@ function Schedule() {
                   </div>
                 </div>
                 <div className='card-b'>
-                  <div className='timer-progress'>
+                  <div
+                    className='timer-progress'
+                    role='progressbar'
+                    aria-valuenow={45}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label='Routine progress'
+                  >
                     <i style={{ width: '45%' }} />
                   </div>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                    <button className='btn'>
+                    <button className='btn' aria-label='Start timer'>
                       <Icon name='play' /> Start
                     </button>
-                    <button className='btn'>
+                    <button className='btn' aria-label='Pause timer'>
                       <Icon name='pause' /> Pause
                     </button>
-                    <button className='btn'>
+                    <button className='btn' aria-label='Stop timer'>
                       <Icon name='x' /> Stop
                     </button>
-                    <button className='btn'>
+                    <button className='btn' aria-label='Skip current task'>
                       <Icon name='skip' /> Skip
                     </button>
                     <button className='btn' onClick={() => toggleRunner(false)}>
