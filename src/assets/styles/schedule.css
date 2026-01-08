@@ -50,7 +50,7 @@
   border: 1px solid rgba(150, 200, 255, 0.24);
   z-index: 2;
   overflow: hidden;
-  min-height: 46px;
+  min-height: 50px;
   cursor: pointer;
 }
 .block.task {

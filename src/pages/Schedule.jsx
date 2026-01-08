@@ -130,7 +130,7 @@ function Schedule() {
                 <div className='slots' style={{ height: '736px' }}>
                   <div
                     className='block'
-                    style={{ top: '46px', height: '60px' }}
+                    style={{ top: '46px', height: '80px' }}
                     onClick={() => toggleRunner(true)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -150,7 +150,7 @@ function Schedule() {
                   </div>
                   <div
                     className='block task'
-                    style={{ top: '460px', height: '46px' }}
+                    style={{ top: '460px', height: '50px' }}
                     role='button'
                     tabIndex={0}
                     aria-label='Task: Buy groceries at 16:00'
