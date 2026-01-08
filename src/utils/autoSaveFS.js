@@ -15,6 +15,7 @@ const logger = createLogger('AutoSave')
 
 // Storage keys
 const LAST_SAVE_KEY = 'aurorae_last_save'
+const LAST_SAVE_HASH_KEY = 'aurorae_last_save_hash'
 const DIRECTORY_NAME_KEY = 'aurorae_save_directory_name'
 
 // Time constants
@@ -153,12 +154,9 @@ export async function saveToFile(data, filename = null) {
 
   // Generate filename if not provided
   if (!filename) {
-    const date = new Date().toISOString().split('T')[0]
-    const time = new Date()
-      .toISOString()
-      .split('T')[1]
-      .split('.')[0]
-      .replace(/:/g, '')
+    const isoTimestamp = new Date().toISOString()
+    const [date, timeWithMs] = isoTimestamp.split('T')
+    const time = timeWithMs.split('.')[0].replace(/:/g, '')
     const uuid = generateSecureUUID().slice(0, 8) // Short UUID
     filename = `${SAVE_FILE_PREFIX}${date}_${time}_${uuid}${SAVE_FILE_EXTENSION}`
   }
@@ -186,6 +184,22 @@ export async function saveToFile(data, filename = null) {
 }
 
 /**
+ * Generate a simple hash from data for change detection
+ * @param {object} data - Data to hash
+ * @returns {string} Hash string
+ */
+function generateDataHash(data) {
+  const jsonString = JSON.stringify(data)
+  let hash = 0
+  for (let i = 0; i < jsonString.length; i++) {
+    const char = jsonString.charCodeAt(i)
+    hash = (hash << 5) - hash + char
+    hash = hash & hash // Convert to 32bit integer
+  }
+  return hash.toString(36)
+}
+
+/**
  * Perform automatic save
  * @returns {Promise<object>} Save result with filename and timestamp
  */
@@ -199,12 +213,31 @@ export async function performAutoSave() {
     // Get current data
     const data = await getDataTemplate()
 
+    // Generate hash of current data
+    const currentHash = generateDataHash(data)
+    const lastHash = localStorage.getItem(LAST_SAVE_HASH_KEY)
+
+    // Check if data has changed since last save
+    if (lastHash && currentHash === lastHash) {
+      logger.log('Auto-save skipped: No changes detected')
+      // Update timestamp to show we checked
+      const timestamp = Date.now()
+      localStorage.setItem(LAST_SAVE_KEY, timestamp.toString())
+      return {
+        success: true,
+        skipped: true,
+        reason: 'No changes detected',
+        timestamp
+      }
+    }
+
     // Save to file
     const filename = await saveToFile(data)
 
-    // Update last save timestamp
+    // Update last save timestamp and hash
     const timestamp = Date.now()
     localStorage.setItem(LAST_SAVE_KEY, timestamp.toString())
+    localStorage.setItem(LAST_SAVE_HASH_KEY, currentHash)
 
     logger.log('Auto-save completed:', filename)
 

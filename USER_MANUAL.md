@@ -788,7 +788,9 @@ The files are standard JSON format and can be:
 | Chrome 86+ | ✅ Full | Recommended |
 | Edge 86+ | ✅ Full | Recommended |
 | Firefox | ❌ Not supported | Use manual Export instead |
-| Safari | ⚠️ Partial | May require enabling experimental features |
+| Safari 15.2+ | ⚠️ Partial | Enable **Develop → Experimental Features → "File System Access API"** (if available) |
+
+**Note for Safari users**: If you do **not** see a "File System Access API" option under **Develop → Experimental Features**, your Safari version does not support directory-based auto-save. You can still use manual Export/Import as described below.
 
 **Fallback**: If your browser doesn't support the File System Access API, you can still use:
 - Manual Export/Import buttons (always available)

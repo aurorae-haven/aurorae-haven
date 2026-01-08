@@ -30,9 +30,20 @@ function Settings() {
   
   // Use refs to avoid stale closures
   const settingsRef = useRef(settings)
+  const messageTimeoutRef = useRef(null)
+  
   useEffect(() => {
     settingsRef.current = settings
   }, [settings])
+  
+  // Cleanup message timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (messageTimeoutRef.current) {
+        clearTimeout(messageTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Check if File System Access API is supported
   const fsSupported = isFileSystemAccessSupported()
@@ -55,7 +66,7 @@ function Settings() {
     if (lastSave) {
       setLastSaveTime(new Date(lastSave))
     }
-  }, [settings.autoSave.directoryConfigured])
+  }, [settings])
 
   // Update last save time periodically
   useEffect(() => {
@@ -70,8 +81,16 @@ function Settings() {
   }, [])
 
   const showMessage = useCallback((text, isError = false, duration = 3000) => {
+    // Clear any existing timeout
+    if (messageTimeoutRef.current) {
+      clearTimeout(messageTimeoutRef.current)
+    }
+    
     setMessage({ text, isError })
-    setTimeout(() => setMessage({ text: '', isError: false }), duration)
+    messageTimeoutRef.current = setTimeout(() => {
+      setMessage({ text: '', isError: false })
+      messageTimeoutRef.current = null
+    }, duration)
   }, [])
 
   const handleSelectDirectory = useCallback(
@@ -102,7 +121,7 @@ function Settings() {
         setIsConfiguring(false)
       }
     },
-    [showMessage]
+    [showMessage, setDirectoryName, setDirectoryHandleLost, setSettingsState]
   )
 
   const handleToggleAutoSave = useCallback(
@@ -272,7 +291,7 @@ function Settings() {
             <>
               {/* Warning when directory handle is lost */}
               {directoryHandleLost && (
-                <div className='settings-warning' role='alert' style={{ backgroundColor: '#fff3cd', borderColor: '#ffc107' }}>
+                <div className='settings-warning settings-warning-directory-lost' role='alert'>
                   <strong className='settings-warning-title'>⚠️ Directory Access Required</strong>
                   <p className='settings-warning-text'>
                     The directory &quot;{directoryName}&quot; was previously selected, but access has been lost after page reload.
