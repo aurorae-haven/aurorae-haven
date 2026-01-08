@@ -64,20 +64,22 @@
     "identity-obj-proxy": "^3.0.0",
     "jest": "^30.2.0",
     "jest-environment-jsdom": "^30.2.0",
-    "markdownlint-cli": "^0.43.0",
+    "markdownlint-cli": "^0.47.0",
     "prettier": "^3.6.2",
     "stylelint": "^16.25.0",
     "vite": "^7.1.9",
     "vite-plugin-pwa": "^1.0.3"
   },
   "overrides": {
-    "@babel/preset-env": {
-      "glob": "11.0.0"
-    },
     "babel-jest": {
       "test-exclude": "7.0.1",
       "source-map": "0.7.4",
-      "magic-string": "0.30.19"
+      "magic-string": "0.30.19",
+      "babel-plugin-istanbul": {
+        "@istanbuljs/load-nyc-config": {
+          "js-yaml": "^3.14.2"
+        }
+      }
     }
   },
   "browserslist": {
