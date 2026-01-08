@@ -4,7 +4,7 @@
 
 The `feature-routine_tab` branch was created with grafted commits (unrelated history to `main`), causing Git to refuse merging with the error:
 
-```
+```text
 fatal: refusing to merge unrelated histories
 ```
 
@@ -71,16 +71,17 @@ When merging with `--allow-unrelated-histories`, there are **52 merge conflicts*
 
 ### Conflict Categories
 
-1. **Configuration Files (7)**: .github/*, .gitignore, .markdownlint.json
-2. **Documentation (11)**: CONTRIBUTING.md, README.md, docs/*
+1. **Configuration Files (7)**: .github/\*, .gitignore, .markdownlint.json
+2. **Documentation (11)**: CONTRIBUTING.md, README.md, docs/\*
 3. **Build Configuration (6)**: eslint.config.js, package.json, etc.
-4. **Source Files (15)**: src/components/*, src/pages/*, src/utils/*
-5. **Test Files (11)**: src/__tests__/*
+4. **Source Files (15)**: src/components/_, src/pages/_, src/utils/\*
+5. **Test Files (11)**: src/**tests**/\*
 6. **Other (2)**: Scripts and public files
 
 ### Recommended Resolution Strategy
 
 For most files, accept the **feature-routine_tab version** (`--theirs`) because:
+
 - It represents the newer development work
 - It includes all the routine functionality
 - It has updated dependencies and configurations
@@ -89,6 +90,7 @@ For most files, accept the **feature-routine_tab version** (`--theirs`) because:
 ### Files Requiring Manual Review
 
 These files might need manual merge consideration:
+
 - `package.json` and `package-lock.json` - Check for dependency conflicts
 - Configuration files (.eslintrc, jest.config, etc.) - Ensure settings are compatible
 - GitHub workflows - Verify CI/CD configurations work together
