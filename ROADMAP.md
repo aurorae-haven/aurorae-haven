@@ -34,6 +34,10 @@
 - Documentation (README, specs, security notes)
 - Stats foundation (track routine time, structured data)
 - Export/import across all modules
+- **Automatic save feature with File System Access API** ✅
+  - Configurable save intervals and directory
+  - Load last save functionality
+  - Automatic cleanup of old save files
 - Consistent design tokens + Glass-UI visuals
 
 ---

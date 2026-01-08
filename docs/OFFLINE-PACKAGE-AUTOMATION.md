@@ -20,15 +20,14 @@ The offline package is automatically generated and uploaded to multiple location
 
 1. Build the offline package with relative paths
 2. Create/update the `offline-releases` orphan branch
-3. Upload the `.tar.gz` and `.zip` packages
-4. Generate an `index.html` for easy browsing
+3. Upload the `.tar.gz` package
+4. Generate an `index.html` and README for easy browsing
 5. Push to the branch
 
 **Access**:
 
 - Branch: <https://github.com/aurorae-haven/aurorae-haven/tree/offline-releases>
 - Direct download (tar.gz): [https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz)
-- Direct download (zip): [https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip](https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip)
 
 **Benefits**:
 
@@ -53,7 +52,7 @@ The offline package is automatically generated and uploaded to multiple location
 1. Build the offline package
 2. Extract version from package name
 3. Create GitHub Release with tag (only when triggered by version tag)
-4. Attach `.tar.gz` and `.zip` as release assets
+4. Attach `.tar.gz` as release asset
 5. Generate release notes with installation instructions
 
 **Note**: Manual workflow runs (`workflow_dispatch`) will build the package successfully but skip release creation. This is useful for testing the build process without creating a release.
@@ -80,18 +79,20 @@ The offline package is automatically generated and uploaded to multiple location
 **Process**:
 
 1. Build the offline package
-2. Upload as workflow artifact
-3. Retain for 90 days
+2. Upload directory contents as workflow artifact
+3. GitHub Actions automatically creates a ZIP archive
+4. Retain for 90 days
 
 **Access**:
 
-- Actions page → Workflow run → Artifacts section
+- Actions page → Workflow run → Artifacts section → "AuroraeHaven"
 
 **Benefits**:
 
 - Includes all development builds
 - Useful for testing
 - Automatic cleanup after 90 days
+- ZIP format automatically created by GitHub Actions (no nested archives)
 
 ## Implementation Details
 
@@ -108,8 +109,9 @@ npm run build:offline
 1. Clean previous builds
 2. Build with Vite using relative paths (`VITE_BASE_URL='./'`)
 3. Generate PWA assets (service worker, manifest)
-4. Create `.tar.gz` and '.zip` archive
+4. Create `.tar.gz` archive
 5. Output to `dist-offline/` directory
+6. Keep build directory (`dist-offline-build/`) for GitHub Actions artifact upload
 
 **Package Contents**:
 
@@ -136,7 +138,29 @@ git checkout offline-releases
 # Clean and upload new package
 git rm -rf .
 cp package.tar.gz .
-cp package.zip .
+cat > README.md <<EOF
+# 🌌 Aurorae Haven - Offline Packages
+
+Welcome to the offline packages branch! This branch contains the latest offline build of Aurorae Haven.
+
+## 📦 Download
+
+Click on the \`.tar.gz\` file above to download the latest offline package.
+
+## 🚀 Quick Start
+
+1. **Download** the \`.tar.gz\` file above
+2. **Extract** it (Windows 10+: PowerShell \`tar -xzf\` or 7-Zip)
+3. **Serve** with a local web server (required for ES modules)
+4. **Open** \`http://localhost:8000\` in your browser
+
+✨ **Full documentation**: [Offline Download Guide](https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md)
+
+---
+
+**Built with** ❤️ **by the Aurorae Haven team**
+EOF
+
 cat > index.html <<EOF
 <!DOCTYPE html>
 <html lang="en">
@@ -147,10 +171,9 @@ cat > index.html <<EOF
 <body>
   <h1>Download Offline Package</h1>
   <p>
-    <a href="package.tar.gz" download>Click here to download the latest offline package (tarball)</a>
-    <a href="package.zip" download>Click here to download the latest offline package (zip)</a>
-
+    <a href="package.tar.gz" download>Click here to download the latest offline package (tar.gz)</a>
   </p>
+  <p><a href="https://github.com/aurorae-haven/aurorae-haven/blob/main/docs/OFFLINE-DOWNLOAD.md">Installation Instructions</a></p>
 </body>
 </html>
 EOF
@@ -175,9 +198,7 @@ The release workflow uses `softprops/action-gh-release@v2`:
 - name: Create Release
   uses: softprops/action-gh-release@v2
   with:
-    files:
-      - dist-offline/*.tar.gz
-      - dist-offline/*.zip
+    files: dist-offline/*.tar.gz
     tag_name: ${{ github.ref_name }}
     name: Aurorae Haven v${{ steps.package.outputs.version }}
     body: |
@@ -198,18 +219,16 @@ VERSION="1.0.0"  # Replace with actual version
 
 # From offline-releases branch
 wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.tar.gz
-# or
-wget https://github.com/aurorae-haven/aurorae-haven/raw/offline-releases/aurorae-haven-offline-v${VERSION}.zip
 
 # Extract
 tar -xzf aurorae-haven-offline-v${VERSION}.tar.gz
-# or
-unzip aurorae-haven-offline-v${VERSION}.zip
+
+# Serve with local web server (required for ES modules)
+cd aurorae-haven-offline-v${VERSION}
+python3 -m http.server 8000
 
 # Open in browser
-open index.html  # macOS
-xdg-open index.html  # Linux
-start index.html  # Windows
+# Navigate to http://localhost:8000
 ```
 
 **Download stable release:**
@@ -217,7 +236,6 @@ start index.html  # Windows
 1. Visit <https://github.com/aurorae-haven/aurorae-haven/releases>
 2. Click on the latest release
 3. Download the `.tar.gz` file under "Assets"
-4. Download the `.zip` file under "Assets"
 
 ### For Developers
 
@@ -352,7 +370,7 @@ When modifying the workflows:
 
 - Visit <https://github.com/aurorae-haven/aurorae-haven/actions>
 - Click on recent workflow run
-- Verify "offline-package" artifact exists
+- Verify "AuroraeHaven" artifact exists (automatically zipped by GitHub Actions)
 
 ## Security Considerations
 
