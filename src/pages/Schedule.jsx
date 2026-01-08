@@ -19,6 +19,9 @@ function Schedule() {
             <button className='btn'>
               <Icon name='plus' /> Task
             </button>
+            <button className='btn'>
+              <Icon name='plus' /> Meeting
+            </button>
           </div>
         </div>
         <div className='card-b layout-schedule'>
