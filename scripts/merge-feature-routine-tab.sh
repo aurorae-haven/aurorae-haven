@@ -62,11 +62,11 @@ else
     
     # Get list of conflicted files
     conflicted_files=$(git diff --name-only --diff-filter=U)
-    conflict_count=$(echo "$conflicted_files" | wc -l)
     
     if [ -z "$conflicted_files" ]; then
         echo "No conflicts to resolve"
     else
+        conflict_count=$(echo "$conflicted_files" | wc -l)
         echo "Found $conflict_count conflicted files"
         echo ""
         
@@ -86,13 +86,17 @@ fi
 
 echo ""
 echo "Step 4: Committing merge..."
-git commit -m "Merge feature-routine_tab into main using --allow-unrelated-histories
+
+# Prepare commit message
+commit_message="Merge feature-routine_tab into main using --allow-unrelated-histories
 
 - Resolved merge conflicts automatically
 - Accepted feature-routine_tab versions (newer development)
 - All conflicts were add/add type from unrelated histories
 
 This merge brings in the routine functionality and all related updates."
+
+git commit -m "$commit_message"
 
 echo ""
 echo "=========================================="
