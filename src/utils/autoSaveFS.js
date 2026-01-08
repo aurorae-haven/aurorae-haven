@@ -15,6 +15,7 @@ const logger = createLogger('AutoSave')
 
 // Storage keys
 const LAST_SAVE_KEY = 'aurorae_last_save'
+const DIRECTORY_NAME_KEY = 'aurorae_save_directory_name'
 
 // Time constants
 const MS_PER_MINUTE = 60 * 1000 // 60 seconds * 1000 milliseconds
@@ -24,8 +25,14 @@ const DEFAULT_SAVE_INTERVAL = 5 * MS_PER_MINUTE // 5 minutes default
 const SAVE_FILE_PREFIX = 'aurorae_save_'
 const SAVE_FILE_EXTENSION = '.json'
 
+// Multi-tab coordination
 let autoSaveTimer = null
 let currentDirectoryHandle = null
+let autoSaveChannel = null
+let autoSaveTabId = null
+let isAutoSaveLeader = true
+let lastAutoSaveInterval = null
+let visibilityListenerAttached = false
 
 /**
  * Check if File System Access API is supported
@@ -54,8 +61,8 @@ export async function requestDirectoryAccess() {
       startIn: 'documents'
     })
     currentDirectoryHandle = handle
-    // Note: We cannot persist the handle in localStorage as it's not serializable
-    // User will need to re-grant access after page reload
+    // Store directory name in localStorage for UI persistence
+    localStorage.setItem(DIRECTORY_NAME_KEY, handle.name)
     logger.log('Directory access granted:', handle.name)
     return handle
   } catch (error) {
@@ -77,11 +84,29 @@ export function getCurrentDirectoryHandle() {
 }
 
 /**
+ * Get stored directory name (persists across reloads even when handle is lost)
+ * @returns {string|null}
+ */
+export function getStoredDirectoryName() {
+  return localStorage.getItem(DIRECTORY_NAME_KEY)
+}
+
+/**
+ * Clear stored directory name
+ */
+export function clearStoredDirectoryName() {
+  localStorage.removeItem(DIRECTORY_NAME_KEY)
+}
+
+/**
  * Set directory handle (used for restoring after page load)
  * @param {FileSystemDirectoryHandle} handle
  */
 export function setDirectoryHandle(handle) {
   currentDirectoryHandle = handle
+  if (handle) {
+    localStorage.setItem(DIRECTORY_NAME_KEY, handle.name)
+  }
 }
 
 /**
@@ -364,39 +389,163 @@ export async function loadAndImportLastSave() {
 }
 
 /**
- * Start automatic save timer
+ * Ensure auto-save tab ID exists
+ */
+function ensureAutoSaveTabId() {
+  if (!autoSaveTabId) {
+    autoSaveTabId = generateSecureUUID()
+  }
+}
+
+/**
+ * Initialize BroadcastChannel for multi-tab coordination
+ */
+function initAutoSaveChannel() {
+  if (typeof window === 'undefined' || typeof BroadcastChannel === 'undefined') {
+    return
+  }
+
+  if (autoSaveChannel) {
+    return
+  }
+
+  ensureAutoSaveTabId()
+
+  autoSaveChannel = new window.BroadcastChannel('aurorae_autosave')
+  autoSaveChannel.onmessage = (event) => {
+    const data = event?.data
+    if (!data || typeof data.type !== 'string') {
+      return
+    }
+
+    if (data.type === 'autosave-leader' && data.tabId !== autoSaveTabId) {
+      if (isAutoSaveLeader) {
+        isAutoSaveLeader = false
+        internalStopAutoSaveTimer()
+        logger.log('Auto-save leadership transferred to another tab')
+      }
+    } else if (data.type === 'autosave-request-leader' && isAutoSaveLeader) {
+      autoSaveChannel.postMessage({
+        type: 'autosave-leader',
+        tabId: autoSaveTabId
+      })
+    }
+  }
+}
+
+/**
+ * Schedule auto-save work using requestIdleCallback if available
+ */
+function scheduleAutoSaveWork() {
+  const run = async () => {
+    try {
+      await performAutoSave()
+    } catch (error) {
+      logger.error('Auto-save failed:', error)
+    }
+  }
+
+  if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(() => {
+      void run()
+    })
+  } else {
+    void run()
+  }
+}
+
+/**
+ * Internal function to start auto-save timer
+ * @param {number} intervalMs - Interval in milliseconds
+ */
+function internalStartAutoSaveTimer(intervalMs) {
+  internalStopAutoSaveTimer()
+  lastAutoSaveInterval = intervalMs
+
+  logger.log(`Starting auto-save with interval: ${intervalMs / 1000}s`)
+
+  autoSaveTimer = setInterval(() => {
+    if (!isAutoSaveLeader) {
+      return
+    }
+
+    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+      return
+    }
+
+    scheduleAutoSaveWork()
+  }, intervalMs)
+}
+
+/**
+ * Internal function to stop auto-save timer
+ */
+function internalStopAutoSaveTimer() {
+  if (autoSaveTimer) {
+    clearInterval(autoSaveTimer)
+    autoSaveTimer = null
+    logger.log('Auto-save timer stopped')
+  }
+}
+
+/**
+ * Ensure visibility listener is attached
+ */
+function ensureVisibilityListener() {
+  if (visibilityListenerAttached || typeof document === 'undefined') {
+    return
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (!lastAutoSaveInterval) {
+      return
+    }
+
+    if (document.visibilityState === 'visible') {
+      if (isAutoSaveLeader && !autoSaveTimer) {
+        internalStartAutoSaveTimer(lastAutoSaveInterval)
+      }
+    } else if (document.visibilityState === 'hidden') {
+      internalStopAutoSaveTimer()
+    }
+  })
+
+  visibilityListenerAttached = true
+}
+
+/**
+ * Start automatic save timer with multi-tab coordination
  * @param {number} intervalMs - Interval in milliseconds
  */
 export function startAutoSave(intervalMs = DEFAULT_SAVE_INTERVAL) {
-  // Stop existing timer if any
-  stopAutoSave()
-
   // Only start if we have a valid directory
   if (!currentDirectoryHandle) {
     logger.warn('Cannot start auto-save: No directory configured')
     return
   }
 
-  logger.log(`Starting auto-save with interval: ${intervalMs / 1000}s`)
+  ensureAutoSaveTabId()
+  initAutoSaveChannel()
+  ensureVisibilityListener()
 
-  // Set up periodic save that respects tab visibility
-  autoSaveTimer = setInterval(async () => {
-    // Skip save if tab is not visible
-    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
-      logger.log('Auto-save skipped: Tab not visible')
-      return
-    }
-    await performAutoSave()
-  }, intervalMs)
+  // This tab becomes the leader and informs other tabs, if coordination is available
+  isAutoSaveLeader = true
+  if (autoSaveChannel) {
+    autoSaveChannel.postMessage({
+      type: 'autosave-leader',
+      tabId: autoSaveTabId
+    })
+  }
 
-  // Perform initial save only if tab is visible and directory is configured
+  internalStartAutoSaveTimer(intervalMs)
+
+  // Perform initial save if we're the leader and the tab is visible
   if (
+    isAutoSaveLeader &&
     currentDirectoryHandle &&
     (typeof document === 'undefined' || document.visibilityState === 'visible')
   ) {
-    performAutoSave().catch((error) => {
-      logger.error('Initial auto-save failed:', error)
-    })
+    scheduleAutoSaveWork()
   }
 }
 
@@ -404,11 +553,8 @@ export function startAutoSave(intervalMs = DEFAULT_SAVE_INTERVAL) {
  * Stop automatic save timer
  */
 export function stopAutoSave() {
-  if (autoSaveTimer) {
-    clearInterval(autoSaveTimer)
-    autoSaveTimer = null
-    logger.log('Auto-save stopped')
-  }
+  isAutoSaveLeader = false
+  internalStopAutoSaveTimer()
 }
 
 /**

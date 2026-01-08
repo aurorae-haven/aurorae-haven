@@ -23,7 +23,9 @@ jest.mock('../utils/autoSaveFS', () => ({
   performAutoSave: jest.fn(),
   getLastSaveTimestamp: jest.fn(() => null),
   cleanOldSaveFiles: jest.fn(),
-  loadAndImportLastSave: jest.fn()
+  loadAndImportLastSave: jest.fn(),
+  getStoredDirectoryName: jest.fn(() => null),
+  clearStoredDirectoryName: jest.fn()
 }))
 
 // Mock the settingsManager module

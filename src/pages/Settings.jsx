@@ -11,7 +11,8 @@ import {
   performAutoSave,
   getLastSaveTimestamp,
   cleanOldSaveFiles,
-  loadAndImportLastSave
+  loadAndImportLastSave,
+  getStoredDirectoryName
 } from '../utils/autoSaveFS'
 import { reloadPageAfterDelay, IMPORT_SUCCESS_MESSAGE } from '../utils/importData'
 import '../assets/styles/settings.css'
@@ -22,6 +23,7 @@ const MS_PER_MINUTE = 60 * 1000 // 60 seconds * 1000 milliseconds
 function Settings() {
   const [settings, setSettingsState] = useState(getSettings())
   const [directoryName, setDirectoryName] = useState(null)
+  const [directoryHandleLost, setDirectoryHandleLost] = useState(false)
   const [lastSaveTime, setLastSaveTime] = useState(null)
   const [message, setMessage] = useState({ text: '', isError: false })
   const [isConfiguring, setIsConfiguring] = useState(false)
@@ -38,15 +40,22 @@ function Settings() {
   // Load directory handle and last save time on mount
   useEffect(() => {
     const handle = getCurrentDirectoryHandle()
+    const storedName = getStoredDirectoryName()
+    
     if (handle) {
       setDirectoryName(handle.name)
+      setDirectoryHandleLost(false)
+    } else if (storedName && settings.autoSave.directoryConfigured) {
+      // Handle was lost but we have the directory name
+      setDirectoryName(storedName)
+      setDirectoryHandleLost(true)
     }
 
     const lastSave = getLastSaveTimestamp()
     if (lastSave) {
       setLastSaveTime(new Date(lastSave))
     }
-  }, [])
+  }, [settings.autoSave.directoryConfigured])
 
   // Update last save time periodically
   useEffect(() => {
@@ -73,6 +82,7 @@ function Settings() {
         if (handle) {
           setDirectoryName(handle.name)
           setDirectoryHandle(handle)
+          setDirectoryHandleLost(false)
 
           // Update settings and get fresh settings
           const newSettings = updateSetting('autoSave.directoryConfigured', true)
@@ -260,6 +270,17 @@ function Settings() {
 
           {fsSupported && (
             <>
+              {/* Warning when directory handle is lost */}
+              {directoryHandleLost && (
+                <div className='settings-warning' role='alert' style={{ backgroundColor: '#fff3cd', borderColor: '#ffc107' }}>
+                  <strong className='settings-warning-title'>⚠️ Directory Access Required</strong>
+                  <p className='settings-warning-text'>
+                    The directory &quot;{directoryName}&quot; was previously selected, but access has been lost after page reload.
+                    Please click &quot;Change Directory&quot; to re-grant access and resume auto-save functionality.
+                  </p>
+                </div>
+              )}
+
               {/* Directory Configuration */}
               <div className='settings-field'>
                 <label htmlFor='save-directory' className='settings-label'>
