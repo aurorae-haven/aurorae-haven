@@ -1,7 +1,7 @@
 // Auto-save utility for saving data to File System Access API
 // Implements automatic periodic saves to a user-configured directory
 import { getDataTemplate } from './exportData'
-import { generateSecureUUID } from './uuidGenerator'
+import { generateUniqueId as generateSecureUUID } from './idGenerator'
 import { createLogger } from './logger'
 import { validateImportData } from './validation'
 import {
