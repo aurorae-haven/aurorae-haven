@@ -1,0 +1,39 @@
+{
+  "id": "routine-work-review",
+  "type": "routine",
+  "title": "Work Review Session",
+  "tags": ["work", "review", "planning"],
+  "steps": [
+    {
+      "label": "Review completed tasks",
+      "duration": 300,
+      "description": "Check off finished work and reflect on accomplishments"
+    },
+    {
+      "label": "Identify blockers",
+      "duration": 180,
+      "description": "Note any obstacles or challenges encountered"
+    },
+    {
+      "label": "Update priorities",
+      "duration": 240,
+      "description": "Adjust task priorities based on current status"
+    },
+    {
+      "label": "Plan next steps",
+      "duration": 300,
+      "description": "Define clear actions for upcoming work"
+    },
+    {
+      "label": "Document insights",
+      "duration": 180,
+      "description": "Record learnings and ideas for improvement"
+    }
+  ],
+  "energyTag": "medium",
+  "estimatedDuration": 1200,
+  "version": 1,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "lastUsed": null,
+  "pinned": false
+}
