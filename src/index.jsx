@@ -35,6 +35,8 @@ import {
 } from './utils/dataManager'
 import { normalizeRedirectPath } from './utils/redirectHelpers'
 import { createLogger } from './utils/logger'
+import { getSettings } from './utils/settingsManager'
+import { initAutoSave } from './utils/autoSaveFS'
 
 // Create namespaced loggers for different concerns
 const redirectLogger = createLogger('RedirectHandler')
@@ -119,6 +121,16 @@ function RouterApp() {
   routerLogger.log('BASE_URL:', import.meta.env.BASE_URL)
   routerLogger.log('baseUrl:', baseUrl)
   routerLogger.log('basename for BrowserRouter:', basename)
+
+  // Initialize auto-save system on mount
+  useEffect(() => {
+    const settings = getSettings()
+    if (settings.autoSave) {
+      initAutoSave(settings.autoSave).catch((error) => {
+        routerLogger.error('Failed to initialize auto-save:', error)
+      })
+    }
+  }, [])
 
   return (
     <BrowserRouter basename={basename}>
