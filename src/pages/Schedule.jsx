@@ -72,10 +72,10 @@ function Schedule() {
                   <div className='h'>20:00</div>
                   <div className='h'>21:00</div>
                 </div>
-                <div className='slots' style={{ height: '2240px' }}>
+                <div className='slots' style={{ height: '1920px' }}>
                   <div
                     className='block routine'
-                    style={{ top: '146px', height: '80px' }}
+                    style={{ top: '126px', height: '60px' }}
                     role='button'
                     tabIndex={0}
                     aria-label='Morning Launch routine, 07:00–07:30, 30% complete'
@@ -88,23 +88,23 @@ function Schedule() {
                   </div>
                   <div
                     className='block meeting'
-                    style={{ top: '566px', height: '70px' }}
+                    style={{ top: '486px', height: '60px' }}
                     role='button'
                     tabIndex={0}
                     aria-label='Meeting: Team Standup at 10:00'
                   >
                     <div className='title'>Team Standup</div>
-                    <div className='meta'>10:00</div>
+                    <div className='meta'>10:00–10:30</div>
                   </div>
                   <div
                     className='block task not-urgent-important'
-                    style={{ top: '1406px', height: '70px' }}
+                    style={{ top: '1206px', height: '60px' }}
                     role='button'
                     tabIndex={0}
                     aria-label='Task: Buy groceries at 16:00, Not Urgent but Important'
                   >
                     <div className='title'>Buy groceries</div>
-                    <div className='meta'>16:00</div>
+                    <div className='meta'>16:00–16:30</div>
                   </div>
                 </div>
               </div>
