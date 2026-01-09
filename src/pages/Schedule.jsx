@@ -91,7 +91,7 @@ function Schedule() {
                     style={{ top: '486px', height: '60px' }}
                     role='button'
                     tabIndex={0}
-                    aria-label='Meeting: Team Standup at 10:00'
+                    aria-label='Meeting: Team Standup at 10:00–10:30'
                   >
                     <div className='title'>Team Standup</div>
                     <div className='meta'>10:00–10:30</div>
