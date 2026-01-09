@@ -87,6 +87,16 @@ function Schedule() {
                     </div>
                   </div>
                   <div
+                    className='block meeting'
+                    style={{ top: '566px', height: '70px' }}
+                    role='button'
+                    tabIndex={0}
+                    aria-label='Meeting: Team Standup at 10:00'
+                  >
+                    <div className='title'>Team Standup</div>
+                    <div className='meta'>10:00</div>
+                  </div>
+                  <div
                     className='block task not-urgent-important'
                     style={{ top: '1406px', height: '70px' }}
                     role='button'
