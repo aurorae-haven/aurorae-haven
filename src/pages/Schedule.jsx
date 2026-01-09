@@ -78,7 +78,7 @@ function Schedule() {
                     style={{ top: '126px', height: '60px' }}
                     role='button'
                     tabIndex={0}
-                    aria-label='Morning Launch routine, 07:00–07:30, 30% complete'
+                    aria-label='Routine: Morning Launch at 07:00–07:30, 30% complete'
                   >
                     <div className='title'>Morning Launch</div>
                     <div className='meta'>07:00–07:30</div>

@@ -52,15 +52,9 @@
   z-index: 2;
   overflow: hidden;
   min-height: 50px;
-  cursor: pointer;
 }
 
-/* Routine blocks - mint/teal accent (default) */
-.block.routine {
-  background: rgba(142, 200, 255, 0.14);
-  border-color: rgba(150, 200, 255, 0.24);
-  border-left: 3px solid #86f5e0;
-}
+/* Routine blocks use default styling from .block */
 
 /* Task blocks - Eisenhower Matrix colors */
 .block.task {
@@ -70,21 +64,29 @@
 
 /* Urgent & Important (Do First) - Red */
 .block.task.urgent-important {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.24);
   border-left: 3px solid #ef4444;
 }
 
 /* Not Urgent & Important (Schedule) - Yellow/Amber */
 .block.task.not-urgent-important {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.24);
   border-left: 3px solid #f59e0b;
 }
 
 /* Urgent & Not Important (Delegate) - Blue */
 .block.task.urgent-not-important {
+  background: rgba(59, 130, 246, 0.14);
+  border-color: rgba(59, 130, 246, 0.24);
   border-left: 3px solid #3b82f6;
 }
 
 /* Not Urgent & Not Important (Eliminate) - Green */
 .block.task.not-urgent-not-important {
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(16, 185, 129, 0.24);
   border-left: 3px solid #10b981;
 }
 
@@ -139,19 +141,19 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  
+
   .sidebar {
     order: 2;
   }
-  
+
   section {
     order: 1;
   }
-  
+
   .hours {
     grid-template-columns: 60px 1fr;
   }
-  
+
   .calendar {
     overflow-x: auto;
   }
@@ -161,26 +163,26 @@
   .block {
     padding: 10px 12px;
   }
-  
+
   .block .title {
     left: 12px;
     font-size: 0.95rem;
   }
-  
+
   .block .meta {
     left: 12px;
     font-size: 0.85rem;
   }
-  
+
   .progress {
     left: 12px;
     right: 12px;
   }
-  
+
   .hours {
     grid-template-columns: 50px 1fr;
   }
-  
+
   .hour-col .h {
     font-size: 0.85rem;
     padding: 4px 6px;
