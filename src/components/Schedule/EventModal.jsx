@@ -111,7 +111,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
             type='text'
             value={formData.title}
             onChange={(e) => handleChange('title', e.target.value)}
-            placeholder={`Enter ${eventType || 'event'} title`}
+            placeholder='Enter title'
             disabled={isSubmitting}
             required
             aria-required='true'

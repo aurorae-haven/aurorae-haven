@@ -4,6 +4,7 @@ import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
 import { createEvent, getEventsForDay, getEventsForWeek } from '../utils/scheduleManager'
 import { createLogger } from '../utils/logger'
+import { getCurrentDateISO } from '../utils/timeUtils'
 
 const logger = createLogger('Schedule')
 
@@ -111,15 +112,23 @@ function Schedule() {
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
 
+  // Utility function to load events based on view mode
+  const loadEventsForCurrentView = async (dateOverride = null) => {
+    if (viewMode === 'day') {
+      const date = dateOverride || getCurrentDateISO()
+      return await getEventsForDay(date)
+    } else {
+      return await getEventsForWeek()
+    }
+  }
+
   // Load events based on view mode
   useEffect(() => {
     const loadEvents = async () => {
       setIsLoading(true)
       setError('')
       try {
-        const loadedEvents = viewMode === 'day' 
-          ? await getEventsForDay(new Date().toISOString().split('T')[0])
-          : await getEventsForWeek()
+        const loadedEvents = await loadEventsForCurrentView()
         setEvents(loadedEvents)
       } catch (err) {
         logger.error('Failed to load events:', err)
@@ -165,9 +174,7 @@ function Schedule() {
     try {
       await createEvent(eventData)
       // Reload events after creating new one
-      const loadedEvents = viewMode === 'day' 
-        ? await getEventsForDay(eventData.day)
-        : await getEventsForWeek()
+      const loadedEvents = await loadEventsForCurrentView(eventData.day)
       setEvents(loadedEvents)
       logger.log(`${eventData.type} event created successfully`)
     } catch (err) {
