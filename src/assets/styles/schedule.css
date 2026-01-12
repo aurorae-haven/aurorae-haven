@@ -487,17 +487,8 @@
 
 /* Respect user's reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
-  @keyframes dropdownFadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-  
   .schedule-dropdown-menu {
-    animation: dropdownFadeIn 0.05s ease-out;
+    animation: none;
   }
 }
 

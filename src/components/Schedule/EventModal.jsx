@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Modal from '../common/Modal'
 import Icon from '../common/Icon'
@@ -17,6 +17,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
   })
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const titleInputRef = useRef(null)
 
   // Reset form when modal opens or event type changes
   useEffect(() => {
@@ -134,6 +135,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
             required
             aria-required='true'
             maxLength={200}
+            ref={titleInputRef}
           />
         </div>
 

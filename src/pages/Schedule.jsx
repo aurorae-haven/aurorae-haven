@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
@@ -188,6 +188,9 @@ function Schedule() {
   
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  
+  // Ref for timeout cleanup
+  const tabTimeoutRef = useRef(null)
   
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
@@ -435,6 +438,7 @@ function Schedule() {
               <button 
                 className='btn'
                 onClick={toggleDropdown}
+                onKeyDown={toggleDropdown}
                 aria-label='Schedule an event'
                 aria-expanded={isDropdownOpen}
                 aria-haspopup='menu'
@@ -584,8 +588,13 @@ function Schedule() {
                       This logging behavior is documented in our privacy policy. */}
                   {events
                     .filter((event) => {
-                      // Filter out invalid events
-                      if (!event || !event.startTime || !event.endTime || !event.title || !event.id) {
+                      // Filter out invalid events with proper ID validation
+                      const hasValidId =
+                        typeof event?.id === 'number' &&
+                        Number.isFinite(event.id) &&
+                        event.id > 0
+                      
+                      if (!event || !event.startTime || !event.endTime || !event.title || !hasValidId) {
                         return false
                       }
                       // Filter out events completely outside schedule range

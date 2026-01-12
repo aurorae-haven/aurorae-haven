@@ -165,7 +165,7 @@ This guide provides step-by-step instructions for manually testing all button fu
 **Purpose:** Verify validation prevents submission without a title.
 
 **Steps:**
-1. Click any "+ [Type]" button
+1. Click the Schedule dropdown button and select any event type
 2. Leave Title field empty
 3. Fill in date and times
 4. Try to submit
@@ -182,7 +182,7 @@ This guide provides step-by-step instructions for manually testing all button fu
 **Purpose:** Verify validation prevents titles over 200 characters.
 
 **Steps:**
-1. Click any "+ [Type]" button
+1. Click the Schedule dropdown button and select any event type
 2. Enter a title with 201 characters (copy/paste: "A" × 201)
 3. Fill in date and times
 4. Click "Create"
