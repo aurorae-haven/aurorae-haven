@@ -175,6 +175,9 @@ function Schedule() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   
+  // Dropdown state for event type selector
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
 
@@ -226,7 +229,25 @@ function Schedule() {
   const handleAddEvent = (eventType) => {
     setSelectedEventType(eventType)
     setIsModalOpen(true)
+    setIsDropdownOpen(false) // Close dropdown when opening modal
   }
+  
+  // Toggle dropdown menu
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen)
+  }
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen && !event.target.closest('.schedule-dropdown')) {
+        setIsDropdownOpen(false)
+      }
+    }
+    
+    document.addEventListener('click', handleClickOutside)
+    return () => document.removeEventListener('click', handleClickOutside)
+  }, [isDropdownOpen])
 
   // Handle saving event
   const handleSaveEvent = async (eventData) => {
@@ -305,27 +326,54 @@ function Schedule() {
             >
               Week
             </button>
-            <button 
-              className='btn'
-              onClick={() => handleAddEvent('routine')}
-              aria-label='Add routine to schedule'
-            >
-              <Icon name='plus' /> Routine
-            </button>
-            <button 
-              className='btn'
-              onClick={() => handleAddEvent('task')}
-              aria-label='Add task to schedule'
-            >
-              <Icon name='plus' /> Task
-            </button>
-            <button 
-              className='btn'
-              onClick={() => handleAddEvent('meeting')}
-              aria-label='Add meeting to schedule'
-            >
-              <Icon name='plus' /> Meeting
-            </button>
+            {/* Unified dropdown for scheduling all event types */}
+            <div className='schedule-dropdown'>
+              <button 
+                className='btn'
+                onClick={toggleDropdown}
+                aria-label='Schedule an event'
+                aria-expanded={isDropdownOpen}
+                aria-haspopup='menu'
+              >
+                <Icon name='plus' /> Schedule <Icon name='chevronDown' />
+              </button>
+              {isDropdownOpen && (
+                <div className='schedule-dropdown-menu' role='menu'>
+                  <button
+                    className='schedule-dropdown-item'
+                    role='menuitem'
+                    onClick={() => handleAddEvent('routine')}
+                    aria-label='Schedule a routine'
+                  >
+                    <Icon name='repeat' /> Routine
+                  </button>
+                  <button
+                    className='schedule-dropdown-item'
+                    role='menuitem'
+                    onClick={() => handleAddEvent('task')}
+                    aria-label='Schedule a task'
+                  >
+                    <Icon name='checkCircle' /> Task
+                  </button>
+                  <button
+                    className='schedule-dropdown-item'
+                    role='menuitem'
+                    onClick={() => handleAddEvent('meeting')}
+                    aria-label='Schedule a meeting'
+                  >
+                    <Icon name='users' /> Meeting
+                  </button>
+                  <button
+                    className='schedule-dropdown-item'
+                    role='menuitem'
+                    onClick={() => handleAddEvent('habit')}
+                    aria-label='Schedule a habit'
+                  >
+                    <Icon name='target' /> Habit
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className='card-b layout-schedule'>

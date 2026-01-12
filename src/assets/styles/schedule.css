@@ -412,8 +412,76 @@
   color: var(--mint);
 }
 
+/* Schedule Dropdown Menu */
+.schedule-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.schedule-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--bg);
+  border: 1px solid var(--base);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ink) 15%, transparent);
+  z-index: 1000;
+  min-width: 160px;
+  overflow: hidden;
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.schedule-dropdown-item {
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 14px;
+  transition: background-color 0.15s ease;
+}
+
+.schedule-dropdown-item:hover,
+.schedule-dropdown-item:focus {
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  outline: none;
+}
+
+.schedule-dropdown-item:active {
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+}
+
+.schedule-dropdown-item svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
   .event-form .form-row {
     grid-template-columns: 1fr;
+  }
+  
+  .schedule-dropdown-menu {
+    right: auto;
+    left: 0;
   }
 }

@@ -197,22 +197,12 @@ describe('Schedule Component', () => {
       expect(weekButton).toHaveAttribute('aria-pressed', 'false')
     })
 
-    test('Add Routine button has correct ARIA label', () => {
+    test('Schedule dropdown button has correct ARIA attributes', () => {
       render(<Schedule />)
-      const routineButton = screen.getByRole('button', { name: /Add routine to schedule/i })
-      expect(routineButton).toBeInTheDocument()
-    })
-
-    test('Add Task button has correct ARIA label', () => {
-      render(<Schedule />)
-      const taskButton = screen.getByRole('button', { name: /Add task to schedule/i })
-      expect(taskButton).toBeInTheDocument()
-    })
-
-    test('Add Meeting button has correct ARIA label', () => {
-      render(<Schedule />)
-      const meetingButton = screen.getByRole('button', { name: /Add meeting to schedule/i })
-      expect(meetingButton).toBeInTheDocument()
+      const scheduleButton = screen.getByRole('button', { name: /Schedule an event/i })
+      expect(scheduleButton).toBeInTheDocument()
+      expect(scheduleButton).toHaveAttribute('aria-expanded', 'false')
+      expect(scheduleButton).toHaveAttribute('aria-haspopup', 'menu')
     })
 
     test('loads day events on initial render', () => {
