@@ -24,6 +24,11 @@ jest.mock('../components/common/Modal', () => {
   }
 })
 
+// Mock getCurrentDateISO to return consistent date for testing
+jest.mock('../utils/timeUtils', () => ({
+  getCurrentDateISO: jest.fn(() => '2025-09-16')
+}))
+
 describe('EventModal Component', () => {
   const mockOnClose = jest.fn()
   const mockOnSave = jest.fn()

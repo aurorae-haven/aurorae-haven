@@ -33,6 +33,11 @@ jest.mock('../utils/logger', () => ({
   }))
 }))
 
+// Mock getCurrentDateISO to return consistent date for testing
+jest.mock('../utils/timeUtils', () => ({
+  getCurrentDateISO: jest.fn(() => '2025-09-16')
+}))
+
 describe('Schedule Component', () => {
   const mockGetEventsForDay = require('../utils/scheduleManager').getEventsForDay
   const mockGetEventsForWeek = require('../utils/scheduleManager').getEventsForWeek
