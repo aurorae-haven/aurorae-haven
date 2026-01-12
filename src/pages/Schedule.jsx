@@ -245,6 +245,11 @@ function Schedule() {
   
   // Toggle dropdown menu with keyboard support
   const toggleDropdown = (event) => {
+    // Prevent default for Space key to avoid page scrolling
+    if (event?.key === ' ') {
+      event.preventDefault()
+    }
+    
     const wasClosedBefore = !isDropdownOpen
     setIsDropdownOpen(!isDropdownOpen)
     
@@ -284,8 +289,13 @@ function Schedule() {
 
       // When tabbing, close the dropdown once focus leaves it
       if (event.key === 'Tab') {
+        // Clear any existing timeout
+        if (tabTimeoutRef.current) {
+          clearTimeout(tabTimeoutRef.current)
+        }
+        
         // Wait for focus to move before checking the active element
-        window.setTimeout(() => {
+        tabTimeoutRef.current = window.setTimeout(() => {
           const activeElement = document.activeElement
           const isInsideDropdown =
             activeElement && activeElement.closest && activeElement.closest('.schedule-dropdown')
@@ -293,6 +303,7 @@ function Schedule() {
           if (!isInsideDropdown) {
             setIsDropdownOpen(false)
           }
+          tabTimeoutRef.current = null
         }, 0)
       }
 
@@ -335,6 +346,10 @@ function Schedule() {
     return () => {
       document.removeEventListener('click', handleClickOutside)
       document.removeEventListener('keydown', handleKeyDown)
+      // Cleanup any pending Tab timeout
+      if (tabTimeoutRef.current) {
+        clearTimeout(tabTimeoutRef.current)
+      }
     }
   }, [isDropdownOpen])
 

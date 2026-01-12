@@ -39,20 +39,16 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
         })
       }
       setError('')
-
-      // Move focus to the title input when the modal opens for better accessibility
-      // Using a timeout ensures the input is mounted before we try to focus it.
-      window.setTimeout(() => {
-        const titleInput = document.querySelector('#event-title')
-        if (titleInput && typeof titleInput.focus === 'function') {
-          titleInput.focus()
-          if (typeof titleInput.select === 'function') {
-            titleInput.select()
-          }
-        }
-      }, 0)
     }
   }, [isOpen, eventType, initialData])
+
+  // Focus management - auto-focus title input when modal opens
+  useEffect(() => {
+    if (isOpen && titleInputRef.current) {
+      titleInputRef.current.focus()
+      titleInputRef.current.select()
+    }
+  }, [isOpen])
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
