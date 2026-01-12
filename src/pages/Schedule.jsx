@@ -546,12 +546,19 @@ function Schedule() {
                   {/* Note: User event interactions are logged for debugging purposes. 
                       This logging behavior is documented in our privacy policy. */}
                   {events
-                    .filter((event) => event && event.startTime && event.endTime && event.title && event.id)
+                    .filter((event) => {
+                      // Filter out invalid events
+                      if (!event || !event.startTime || !event.endTime || !event.title || !event.id) {
+                        return false
+                      }
+                      // Filter out events completely outside schedule range
+                      const top = timeToPosition(event.startTime)
+                      const height = durationToHeight(event.startTime, event.endTime)
+                      return top >= 0 && height > 0
+                    })
                     .map((event) => {
                       const top = timeToPosition(event.startTime)
                       const height = durationToHeight(event.startTime, event.endTime)
-                      // Skip events completely outside schedule range
-                      if (top < 0 || height === 0) return null
 
                       return (
                         <ScheduleBlock

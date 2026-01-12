@@ -173,8 +173,21 @@
   transition: all 0.2s ease;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .block[role='button']:hover {
+    transform: none;
+    transition: none;
+  }
+}
+
 .block[role='button']:active {
   transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block[role='button']:active {
+    transform: none;
+  }
 }
 
 /* Routine blocks use default styling from .block */
@@ -331,6 +344,14 @@
   outline: none;
   border-color: var(--mint);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 60%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-form input[type='text'],
+  .event-form input[type='date'],
+  .event-form input[type='time'] {
+    transition: none;
+  }
 }
 
 .event-form input:disabled {
@@ -501,6 +522,12 @@
 
 .schedule-dropdown-item:active {
   background: color-mix(in srgb, var(--mint) 15%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .schedule-dropdown-item {
+    transition: none;
+  }
 }
 
 .schedule-dropdown-item svg {

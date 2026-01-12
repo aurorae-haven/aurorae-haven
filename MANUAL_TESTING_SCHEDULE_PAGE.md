@@ -436,9 +436,9 @@ Use this template to log your testing results:
 |--------|-----------|-----------|-------|--------|------|
 | 1 | Day View Button | | | | |
 | 2 | Week View Button | | | | |
-| 3 | Add Routine Button | | | | |
-| 4 | Add Task Button | | | | |
-| 5 | Add Meeting Button | | | | |
+| 3 | Schedule Dropdown – Routine Option | | | | |
+| 4 | Schedule Dropdown – Task Option | | | | |
+| 5 | Schedule Dropdown – Meeting Option | | | | |
 | 6 | Event Creation - Valid | | | | |
 | 7 | Event Creation - Empty Title | | | | |
 | 8 | Event Creation - Long Title | | | | |

@@ -43,7 +43,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       // Move focus to the title input when the modal opens for better accessibility
       // Using a timeout ensures the input is mounted before we try to focus it.
       window.setTimeout(() => {
-        const titleInput = document.querySelector('input[name="title"]')
+        const titleInput = document.querySelector('#event-title')
         if (titleInput && typeof titleInput.focus === 'function') {
           titleInput.focus()
           if (typeof titleInput.select === 'function') {
@@ -78,7 +78,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       return false
     }
     if (formData.startTime >= formData.endTime) {
-      setError('End time must be after start time (events cannot have zero duration)')
+      setError('End time must be after start time')
       return false
     }
     return true
