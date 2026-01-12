@@ -391,15 +391,25 @@ function Schedule() {
                     const height = durationToHeight(event.startTime, event.endTime)
                     // Skip events completely outside schedule range
                     if (top < 0 || height === 0) return null
+
+                    const userEventTitle = `${event.title} (My event)`
                     
                     return (
                       <ScheduleBlock
-                        key={`dynamic-event-${event.id}`}
+                        key={`event-${event.id}`}
                         type={event.type}
-                        title={event.title}
+                        title={userEventTitle}
                         time={`${event.startTime}–${event.endTime}`}
                         top={top}
                         height={height}
+                        onClick={() =>
+                          logger.info('User interacted with schedule event', {
+                            id: event.id,
+                            title: event.title,
+                            startTime: event.startTime,
+                            endTime: event.endTime
+                          })
+                        }
                       />
                     )
                   })}
