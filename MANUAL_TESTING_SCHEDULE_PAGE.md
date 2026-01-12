@@ -257,7 +257,7 @@ This guide provides step-by-step instructions for manually testing all button fu
 - ✅ Static demo blocks still visible
 - ✅ No overlap or collision between events
 - ✅ Events have unique keys (check in React DevTools)
-- ✅ Dynamic events use `dynamic-event-${id}` key prefix
+- ✅ Dynamic events use `event-${id}` key prefix
 
 ---
 
