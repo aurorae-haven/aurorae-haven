@@ -389,7 +389,8 @@ function Schedule() {
                   {events.map((event) => {
                     const top = timeToPosition(event.startTime)
                     const height = durationToHeight(event.startTime, event.endTime)
-                    if (top < 0) return null // Skip events outside schedule range
+                    // Skip events completely outside schedule range
+                    if (top < 0 || height === 0) return null
                     
                     return (
                       <ScheduleBlock

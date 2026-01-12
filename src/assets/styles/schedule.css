@@ -397,7 +397,7 @@
 }
 
 .error-notification__close:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, white 10%, transparent);
 }
 
 .error-notification__close .icon {
