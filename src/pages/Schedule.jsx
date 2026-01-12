@@ -392,13 +392,11 @@ function Schedule() {
                     // Skip events completely outside schedule range
                     if (top < 0 || height === 0) return null
 
-                    const userEventTitle = `${event.title} (My event)`
-                    
                     return (
                       <ScheduleBlock
                         key={`event-${event.id}`}
                         type={event.type}
-                        title={userEventTitle}
+                        title={event.title}
                         time={`${event.startTime}–${event.endTime}`}
                         top={top}
                         height={height}
