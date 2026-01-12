@@ -209,7 +209,7 @@ EventModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  eventType: PropTypes.oneOf(['task', 'routine', 'meeting']),
+  eventType: PropTypes.oneOf(['task', 'routine', 'meeting', 'habit']),
   initialData: PropTypes.shape({
     id: PropTypes.number,
     title: PropTypes.string,

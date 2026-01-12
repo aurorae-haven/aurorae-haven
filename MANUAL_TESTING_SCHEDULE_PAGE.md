@@ -69,13 +69,14 @@ This guide provides step-by-step instructions for manually testing all button fu
 
 ---
 
-### Test 3: Add Routine Button
-**Purpose:** Verify clicking "+ Routine" opens the event creation modal.
+### Test 3: Schedule Dropdown – Add Routine Option
+**Purpose:** Verify selecting "Add Routine" from the Schedule dropdown opens the event creation modal.
 
 **Steps:**
 1. Navigate to Schedule page
-2. Click the "+ Routine" button
-3. Observe modal behavior
+2. Click the "Schedule" button to open the unified dropdown menu
+3. In the dropdown, click the "Add Routine" option
+4. Observe modal behavior
 
 **Expected Results:**
 - ✅ Modal appears with title "Add Routine"
@@ -97,13 +98,14 @@ This guide provides step-by-step instructions for manually testing all button fu
 
 ---
 
-### Test 4: Add Task Button
-**Purpose:** Verify clicking "+ Task" opens the event creation modal for tasks.
+### Test 4: Schedule Dropdown – Add Task Option
+**Purpose:** Verify selecting "Task" from the Schedule dropdown opens the event creation modal for tasks.
 
 **Steps:**
 1. Navigate to Schedule page
-2. Click the "+ Task" button
-3. Observe modal behavior
+2. Click the "Schedule" button to open the dropdown menu
+3. From the dropdown, select "Task"
+4. Observe modal behavior
 
 **Expected Results:**
 - ✅ Modal appears with title "Add Task"
@@ -113,13 +115,14 @@ This guide provides step-by-step instructions for manually testing all button fu
 
 ---
 
-### Test 5: Add Meeting Button
-**Purpose:** Verify clicking "+ Meeting" opens the event creation modal for meetings.
+### Test 5: Add Meeting via Schedule Dropdown
+**Purpose:** Verify selecting "Meeting" from the Schedule dropdown opens the event creation modal for meetings.
 
 **Steps:**
 1. Navigate to Schedule page
-2. Click the "+ Meeting" button
-3. Observe modal behavior
+2. Click the "Schedule" button
+3. In the dropdown menu, select "Meeting"
+4. Observe modal behavior
 
 **Expected Results:**
 - ✅ Modal appears with title "Add Meeting"
@@ -133,7 +136,7 @@ This guide provides step-by-step instructions for manually testing all button fu
 **Purpose:** Verify creating an event with valid data works correctly.
 
 **Steps:**
-1. Click any "+ [Type]" button (Routine, Task, or Meeting)
+1. Click the Schedule dropdown button and select any event type (Routine, Task, Meeting, or Habit)
 2. Fill in the form:
    - Title: "Test Event"
    - Date: Select today's date
