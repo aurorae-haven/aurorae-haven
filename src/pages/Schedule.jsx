@@ -80,20 +80,46 @@ const TIME_PERIODS = [
 
 const SEPARATOR_POSITIONS = [126, 726, 1446]
 
+// Schedule configuration constants
+const SCHEDULE_START_HOUR = 6
+const SCHEDULE_END_HOUR = 22
+const PIXELS_PER_HOUR = 120
+const SCHEDULE_VERTICAL_OFFSET = 6
+
 // Convert time string (HH:MM) to pixel position
 // Schedule starts at 06:00, each hour is 120px
 const timeToPosition = (timeString) => {
   const [hours, minutes] = timeString.split(':').map(Number)
-  if (hours < 6 || hours >= 22) return -1
-  return (hours - 6) * 120 + (minutes / 60) * 120 + 6
+  if (hours < SCHEDULE_START_HOUR || hours >= SCHEDULE_END_HOUR) return -1
+  return (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
 }
 
 // Convert duration in minutes to pixel height
 const durationToHeight = (startTime, endTime) => {
   const [startHours, startMinutes] = startTime.split(':').map(Number)
   const [endHours, endMinutes] = endTime.split(':').map(Number)
-  const durationMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes)
-  return (durationMinutes / 60) * 120
+  
+  const scheduleStartMinutes = SCHEDULE_START_HOUR * 60
+  const scheduleEndMinutes = SCHEDULE_END_HOUR * 60
+  
+  let startTotalMinutes = startHours * 60 + startMinutes
+  let endTotalMinutes = endHours * 60 + endMinutes
+  
+  // If the event is completely outside the visible schedule, height is zero
+  if (endTotalMinutes <= scheduleStartMinutes || startTotalMinutes >= scheduleEndMinutes) {
+    return 0
+  }
+  
+  // Clamp event times to the visible schedule window
+  if (startTotalMinutes < scheduleStartMinutes) {
+    startTotalMinutes = scheduleStartMinutes
+  }
+  if (endTotalMinutes > scheduleEndMinutes) {
+    endTotalMinutes = scheduleEndMinutes
+  }
+  
+  const visibleDurationMinutes = Math.max(0, endTotalMinutes - startTotalMinutes)
+  return (visibleDurationMinutes / 60) * PIXELS_PER_HOUR
 }
 
 function Schedule() {
@@ -112,26 +138,19 @@ function Schedule() {
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
 
-  // Utility function to load events based on view mode
-  const loadEventsForCurrentView = async (dateOverride = null) => {
-    if (viewMode === 'day') {
-      const date = dateOverride || getCurrentDateISO()
-      return await getEventsForDay(date)
-    } else {
-      return await getEventsForWeek()
-    }
-  }
-
   // Load events based on view mode
   useEffect(() => {
     const loadEvents = async () => {
       setIsLoading(true)
       setError('')
       try {
-        const loadedEvents = await loadEventsForCurrentView()
+        const loadedEvents = viewMode === 'day' 
+          ? await getEventsForDay(getCurrentDateISO())
+          : await getEventsForWeek()
         setEvents(loadedEvents)
       } catch (err) {
         logger.error('Failed to load events:', err)
+        setEvents([])
         setError('Failed to load schedule events')
       } finally {
         setIsLoading(false)
@@ -147,10 +166,9 @@ function Schedule() {
       const hours = now.getHours()
       const minutes = now.getMinutes()
 
-      // Schedule starts at 06:00, each hour is 120px
-      // Position = (hours - 6) * 120px + (minutes / 60) * 120px + 6px padding offset
-      if (hours >= 6 && hours < 22) {
-        const position = (hours - 6) * 120 + (minutes / 60) * 120 + 6
+      // Position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
+      if (hours >= SCHEDULE_START_HOUR && hours < SCHEDULE_END_HOUR) {
+        const position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
         setCurrentTimePosition(position)
       } else {
         setCurrentTimePosition(-1) // Hide if outside schedule range
@@ -173,8 +191,10 @@ function Schedule() {
   const handleSaveEvent = async (eventData) => {
     try {
       await createEvent(eventData)
-      // Reload events after creating new one
-      const loadedEvents = await loadEventsForCurrentView(eventData.day)
+      // Reload events after creating new one, keeping the current view/date
+      const loadedEvents = viewMode === 'day' 
+        ? await getEventsForDay(getCurrentDateISO())
+        : await getEventsForWeek()
       setEvents(loadedEvents)
       logger.log(`${eventData.type} event created successfully`)
     } catch (err) {
@@ -209,6 +229,14 @@ function Schedule() {
         <div className='error-notification' role='alert' aria-live='assertive'>
           <Icon name='alertCircle' />
           <span>{error}</span>
+          <button
+            type='button'
+            className='error-notification__close'
+            onClick={() => setError('')}
+            aria-label='Dismiss error notification'
+          >
+            <Icon name='x' />
+          </button>
         </div>
       )}
 
@@ -365,7 +393,7 @@ function Schedule() {
                     
                     return (
                       <ScheduleBlock
-                        key={`event-${event.id}`}
+                        key={`dynamic-event-${event.id}`}
                         type={event.type}
                         title={event.title}
                         time={`${event.startTime}–${event.endTime}`}

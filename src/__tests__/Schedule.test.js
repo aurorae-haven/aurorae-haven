@@ -214,5 +214,30 @@ describe('Schedule Component', () => {
       expect(mockGetEventsForDay).toHaveBeenCalledWith('2025-09-16')
       expect(mockGetEventsForWeek).not.toHaveBeenCalled()
     })
+
+    test('clicking Week button switches view mode and loads week events', async () => {
+      const { rerender } = render(<Schedule />)
+      const weekButton = screen.getByRole('button', { name: /View week schedule/i })
+      
+      // Click the week button
+      weekButton.click()
+      
+      // Wait for state update
+      await screen.findByRole('button', { name: /View week schedule/i })
+      
+      // Check that week events were loaded
+      expect(mockGetEventsForWeek).toHaveBeenCalled()
+    })
+
+    test('clicking Day button after Week keeps day view active', () => {
+      render(<Schedule />)
+      const dayButton = screen.getByRole('button', { name: /View day schedule/i })
+      
+      // Click day button (already active)
+      dayButton.click()
+      
+      // Day button should still be active
+      expect(dayButton).toHaveClass('btn-active')
+    })
   })
 })

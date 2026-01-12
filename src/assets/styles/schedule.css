@@ -293,7 +293,7 @@
 }
 
 .event-form .required {
-  color: #ff6b6b;
+  color: var(--error);
 }
 
 .event-form input[type='text'],
@@ -312,7 +312,7 @@
 .event-form input:focus {
   outline: none;
   border-color: var(--mint);
-  box-shadow: 0 0 0 3px rgba(134, 245, 224, 0.1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 10%, transparent);
 }
 
 .event-form input:disabled {
@@ -338,10 +338,10 @@
   align-items: center;
   gap: 8px;
   padding: 12px;
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
   border-radius: 8px;
-  color: #ff6b6b;
+  color: var(--error);
   font-size: 14px;
 }
 
@@ -364,8 +364,8 @@
   right: 20px;
   max-width: 400px;
   padding: 12px 16px;
-  background: rgba(255, 107, 107, 0.95);
-  border: 1px solid rgba(255, 107, 107, 0.3);
+  background: color-mix(in srgb, var(--error) 95%, transparent);
+  border: 1px solid color-mix(in srgb, var(--error) 30%, transparent);
   border-radius: 8px;
   color: white;
   font-size: 14px;
@@ -382,11 +382,34 @@
   flex-shrink: 0;
 }
 
+.error-notification__close {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background var(--dur) var(--ease);
+}
+
+.error-notification__close:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.error-notification__close .icon {
+  width: 16px;
+  height: 16px;
+}
+
 /* Active button state */
 .btn-active {
-  background: rgba(134, 245, 224, 0.15);
-  border-color: rgba(134, 245, 224, 0.4);
-  color: #86f5e0;
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+  border-color: color-mix(in srgb, var(--mint) 40%, transparent);
+  color: var(--mint);
 }
 
 @media (max-width: 768px) {

@@ -239,4 +239,53 @@ describe('EventModal Component', () => {
     expect(screen.getByLabelText(/Start Time/i)).toHaveValue('14:00')
     expect(screen.getByLabelText(/End Time/i)).toHaveValue('15:00')
   })
+
+  test('displays error when onSave rejects', async () => {
+    const errorMessage = 'Failed to save event'
+    mockOnSave.mockRejectedValue(new Error(errorMessage))
+    
+    render(
+      <EventModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSave={mockOnSave}
+        eventType='task'
+      />
+    )
+
+    const titleInput = screen.getByLabelText(/Title/i)
+    const submitButton = screen.getByRole('button', { name: /Create/i })
+
+    fireEvent.change(titleInput, { target: { value: 'Test Event' } })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeInTheDocument()
+    })
+    expect(mockOnClose).not.toHaveBeenCalled()
+  })
+
+  test('validates title max length', async () => {
+    render(
+      <EventModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSave={mockOnSave}
+        eventType='task'
+      />
+    )
+
+    const titleInput = screen.getByLabelText(/Title/i)
+    const longTitle = 'a'.repeat(201)
+    
+    fireEvent.change(titleInput, { target: { value: longTitle } })
+    
+    const submitButton = screen.getByRole('button', { name: /Create/i })
+    fireEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(screen.getByText('Title must be 200 characters or less')).toBeInTheDocument()
+    })
+    expect(mockOnSave).not.toHaveBeenCalled()
+  })
 })

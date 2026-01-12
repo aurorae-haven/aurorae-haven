@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Modal from '../common/Modal'
 import Icon from '../common/Icon'
+import { getCurrentDateISO } from '../../utils/timeUtils'
 
 /**
  * Modal for creating and editing schedule events
@@ -9,7 +10,7 @@ import Icon from '../common/Icon'
 function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) {
   const [formData, setFormData] = useState({
     title: '',
-    day: new Date().toISOString().split('T')[0],
+    day: getCurrentDateISO(),
     startTime: '09:00',
     endTime: '10:00',
     type: eventType || 'task'
@@ -23,7 +24,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       if (initialData) {
         setFormData({
           title: initialData.title || '',
-          day: initialData.day || new Date().toISOString().split('T')[0],
+          day: initialData.day || getCurrentDateISO(),
           startTime: initialData.startTime || '09:00',
           endTime: initialData.endTime || '10:00',
           type: initialData.type || eventType || 'task'
@@ -31,7 +32,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       } else {
         setFormData({
           title: '',
-          day: new Date().toISOString().split('T')[0],
+          day: getCurrentDateISO(),
           startTime: '09:00',
           endTime: '10:00',
           type: eventType || 'task'
@@ -47,8 +48,13 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
   }
 
   const validateForm = () => {
-    if (!formData.title.trim()) {
+    const trimmedTitle = formData.title.trim()
+    if (!trimmedTitle) {
       setError('Title is required')
+      return false
+    }
+    if (trimmedTitle.length > 200) {
+      setError('Title must be 200 characters or less')
       return false
     }
     if (!formData.day) {
