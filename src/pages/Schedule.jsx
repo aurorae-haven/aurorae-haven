@@ -5,6 +5,7 @@ import EventModal from '../components/Schedule/EventModal'
 import { createEvent, getEventsForDay, getEventsForWeek } from '../utils/scheduleManager'
 import { createLogger } from '../utils/logger'
 import { getCurrentDateISO } from '../utils/timeUtils'
+import dayjs from 'dayjs'
 
 const logger = createLogger('Schedule')
 
@@ -283,15 +284,7 @@ function Schedule() {
         <div className='card-h'>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <strong>Schedule</strong>
-            <span className='small'>
-              Today ·{' '}
-              {new Intl.DateTimeFormat('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: '2-digit',
-                year: 'numeric'
-              }).format(new Date())}
-            </span>
+            <span className='small'>Today · {dayjs().format('ddd DD/MM/YYYY')}</span>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button 

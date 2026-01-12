@@ -60,7 +60,7 @@ describe('Schedule Component', () => {
   test('renders Schedule component with header', () => {
     render(<Schedule />)
     expect(screen.getByText('Schedule')).toBeInTheDocument()
-    expect(screen.getByText('Today · Tue Sep 16, 2025')).toBeInTheDocument()
+    expect(screen.getByText('Today · Tue 16/09/2025')).toBeInTheDocument()
   })
 
   test('renders action buttons', () => {
