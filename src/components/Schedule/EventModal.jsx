@@ -3,17 +3,21 @@ import PropTypes from 'prop-types'
 import Modal from '../common/Modal'
 import Icon from '../common/Icon'
 import { getCurrentDateISO } from '../../utils/timeUtils'
+import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../constants/scheduleConstants'
 
 /**
  * Modal for creating and editing schedule events
  */
 function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) {
+  // Validate eventType and use default if invalid
+  const validatedEventType = VALID_EVENT_TYPES.includes(eventType) ? eventType : EVENT_TYPES.TASK
+  
   const [formData, setFormData] = useState({
     title: '',
     day: getCurrentDateISO(),
     startTime: '09:00',
     endTime: '10:00',
-    type: eventType || 'task'
+    type: validatedEventType
   })
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -22,13 +26,14 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
   // Reset form when modal opens or event type changes
   useEffect(() => {
     if (isOpen) {
+      const validatedType = VALID_EVENT_TYPES.includes(eventType) ? eventType : EVENT_TYPES.TASK
       if (initialData) {
         setFormData({
           title: initialData.title || '',
           day: initialData.day || getCurrentDateISO(),
           startTime: initialData.startTime || '09:00',
           endTime: initialData.endTime || '10:00',
-          type: initialData.type || eventType || 'task'
+          type: initialData.type || validatedType
         })
       } else {
         setFormData({
@@ -36,7 +41,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
           day: getCurrentDateISO(),
           startTime: '09:00',
           endTime: '10:00',
-          type: eventType || 'task'
+          type: validatedType
         })
       }
       setError('')
@@ -223,7 +228,7 @@ EventModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  eventType: PropTypes.oneOf(['task', 'routine', 'meeting', 'habit']),
+  eventType: PropTypes.oneOf(VALID_EVENT_TYPES),
   initialData: PropTypes.shape({
     id: PropTypes.number,
     title: PropTypes.string,

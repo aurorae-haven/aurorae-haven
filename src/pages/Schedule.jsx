@@ -6,6 +6,7 @@ import { createEvent, getEventsForDay, getEventsForWeek } from '../utils/schedul
 import { createLogger } from '../utils/logger'
 import { getCurrentDateISO } from '../utils/timeUtils'
 import dayjs from 'dayjs'
+import { EVENT_TYPES, SCHEDULE_START_HOUR, SCHEDULE_END_HOUR, PIXELS_PER_HOUR, SCHEDULE_VERTICAL_OFFSET } from '../constants/scheduleConstants'
 
 const logger = createLogger('Schedule')
 
@@ -59,14 +60,14 @@ ScheduleBlock.propTypes = {
 // Static configuration data - defined outside component to prevent recreation on every render
 const SCHEDULE_BLOCKS = [
   {
-    type: 'routine',
+    type: EVENT_TYPES.ROUTINE,
     title: 'Morning Launch',
     time: '07:00–07:30',
     top: 126,
     height: 60
   },
   {
-    type: 'meeting',
+    type: EVENT_TYPES.MEETING,
     title: 'Team Standup',
     time: '10:00–10:30',
     top: 486,
@@ -75,7 +76,7 @@ const SCHEDULE_BLOCKS = [
     isNext: true
   },
   {
-    type: 'task',
+    type: EVENT_TYPES.TASK,
     className: 'not-urgent-important',
     title: 'Buy groceries',
     time: '16:00–16:30',
@@ -91,12 +92,6 @@ const TIME_PERIODS = [
 ]
 
 const SEPARATOR_POSITIONS = [126, 726, 1446]
-
-// Schedule configuration constants
-const SCHEDULE_START_HOUR = 6
-const SCHEDULE_END_HOUR = 22
-const PIXELS_PER_HOUR = 120
-const SCHEDULE_VERTICAL_OFFSET = 6
 
 // Convert time string (HH:MM) to pixel position
 // Schedule starts at 06:00 (SCHEDULE_START_HOUR), each hour is 120px (PIXELS_PER_HOUR)
@@ -450,7 +445,7 @@ function Schedule() {
                   <button
                     className='schedule-dropdown-item'
                     role='menuitem'
-                    onClick={() => handleAddEvent('routine')}
+                    onClick={() => handleAddEvent(EVENT_TYPES.ROUTINE)}
                     aria-label='Schedule a routine'
                   >
                     <Icon name='repeat' /> Routine
@@ -458,7 +453,7 @@ function Schedule() {
                   <button
                     className='schedule-dropdown-item'
                     role='menuitem'
-                    onClick={() => handleAddEvent('task')}
+                    onClick={() => handleAddEvent(EVENT_TYPES.TASK)}
                     aria-label='Schedule a task'
                   >
                     <Icon name='checkCircle' /> Task
@@ -466,7 +461,7 @@ function Schedule() {
                   <button
                     className='schedule-dropdown-item'
                     role='menuitem'
-                    onClick={() => handleAddEvent('meeting')}
+                    onClick={() => handleAddEvent(EVENT_TYPES.MEETING)}
                     aria-label='Schedule a meeting'
                   >
                     <Icon name='users' /> Meeting
@@ -474,7 +469,7 @@ function Schedule() {
                   <button
                     className='schedule-dropdown-item'
                     role='menuitem'
-                    onClick={() => handleAddEvent('habit')}
+                    onClick={() => handleAddEvent(EVENT_TYPES.HABIT)}
                     aria-label='Schedule a habit'
                   >
                     <Icon name='target' /> Habit
@@ -609,7 +604,7 @@ function Schedule() {
                       return (
                         <ScheduleBlock
                           key={`dynamic-event-${event.id}`}
-                          type={event.type || 'task'}
+                          type={event.type || EVENT_TYPES.TASK}
                           title={event.title}
                           time={`${event.startTime}–${event.endTime}`}
                           top={top}
