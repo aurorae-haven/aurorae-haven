@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
+import EventModal from '../components/Schedule/EventModal'
+import { createEvent, getEventsForDay, getEventsForWeek } from '../utils/scheduleManager'
+import { createLogger } from '../utils/logger'
+
+const logger = createLogger('Schedule')
 
 // Reusable ScheduleBlock component
 function ScheduleBlock({
@@ -74,9 +79,58 @@ const TIME_PERIODS = [
 
 const SEPARATOR_POSITIONS = [126, 726, 1446]
 
+// Convert time string (HH:MM) to pixel position
+// Schedule starts at 06:00, each hour is 120px
+const timeToPosition = (timeString) => {
+  const [hours, minutes] = timeString.split(':').map(Number)
+  if (hours < 6 || hours >= 22) return -1
+  return (hours - 6) * 120 + (minutes / 60) * 120 + 6
+}
+
+// Convert duration in minutes to pixel height
+const durationToHeight = (startTime, endTime) => {
+  const [startHours, startMinutes] = startTime.split(':').map(Number)
+  const [endHours, endMinutes] = endTime.split(':').map(Number)
+  const durationMinutes = (endHours * 60 + endMinutes) - (startHours * 60 + startMinutes)
+  return (durationMinutes / 60) * 120
+}
+
 function Schedule() {
+  // View mode state - 'day' or 'week'
+  const [viewMode, setViewMode] = useState('day')
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedEventType, setSelectedEventType] = useState(null)
+  
+  // Events state
+  const [events, setEvents] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
+  
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
+
+  // Load events based on view mode
+  useEffect(() => {
+    const loadEvents = async () => {
+      setIsLoading(true)
+      setError('')
+      try {
+        const loadedEvents = viewMode === 'day' 
+          ? await getEventsForDay(new Date().toISOString().split('T')[0])
+          : await getEventsForWeek()
+        setEvents(loadedEvents)
+      } catch (err) {
+        logger.error('Failed to load events:', err)
+        setError('Failed to load schedule events')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    
+    loadEvents()
+  }, [viewMode])
 
   useEffect(() => {
     const updateCurrentTime = () => {
@@ -100,8 +154,57 @@ function Schedule() {
     return () => clearInterval(interval)
   }, [])
 
+  // Handle opening modal for adding events
+  const handleAddEvent = (eventType) => {
+    setSelectedEventType(eventType)
+    setIsModalOpen(true)
+  }
+
+  // Handle saving event
+  const handleSaveEvent = async (eventData) => {
+    try {
+      await createEvent(eventData)
+      // Reload events after creating new one
+      const loadedEvents = viewMode === 'day' 
+        ? await getEventsForDay(eventData.day)
+        : await getEventsForWeek()
+      setEvents(loadedEvents)
+      logger.log(`${eventData.type} event created successfully`)
+    } catch (err) {
+      logger.error('Failed to save event:', err)
+      throw new Error('Failed to save event. Please try again.')
+    }
+  }
+
+  // Handle closing modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedEventType(null)
+  }
+
+  // Handle view mode change
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode)
+  }
+
   return (
     <>
+      {/* Event Modal */}
+      <EventModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onSave={handleSaveEvent}
+        eventType={selectedEventType}
+      />
+      
+      {/* Error notification */}
+      {error && (
+        <div className='error-notification' role='alert' aria-live='assertive'>
+          <Icon name='alertCircle' />
+          <span>{error}</span>
+        </div>
+      )}
+
       <div className='card'>
         <div className='card-h'>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -109,20 +212,51 @@ function Schedule() {
             <span className='small'>Today · Tue Sep 16, 2025</span>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button className='btn'>Day</button>
-            <button className='btn'>Week</button>
-            <button className='btn'>
+            <button 
+              className={`btn ${viewMode === 'day' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('day')}
+              aria-label='View day schedule'
+              aria-pressed={viewMode === 'day'}
+            >
+              Day
+            </button>
+            <button 
+              className={`btn ${viewMode === 'week' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('week')}
+              aria-label='View week schedule'
+              aria-pressed={viewMode === 'week'}
+            >
+              Week
+            </button>
+            <button 
+              className='btn'
+              onClick={() => handleAddEvent('routine')}
+              aria-label='Add routine to schedule'
+            >
               <Icon name='plus' /> Routine
             </button>
-            <button className='btn'>
+            <button 
+              className='btn'
+              onClick={() => handleAddEvent('task')}
+              aria-label='Add task to schedule'
+            >
               <Icon name='plus' /> Task
             </button>
-            <button className='btn'>
+            <button 
+              className='btn'
+              onClick={() => handleAddEvent('meeting')}
+              aria-label='Add meeting to schedule'
+            >
               <Icon name='plus' /> Meeting
             </button>
           </div>
         </div>
         <div className='card-b layout-schedule'>
+          {isLoading && (
+            <div className='loading-indicator' role='status' aria-live='polite'>
+              <span>Loading schedule...</span>
+            </div>
+          )}
           <aside className='sidebar'>
             <div className='card'>
               <div className='card-h'>
@@ -208,13 +342,31 @@ function Schedule() {
                     </div>
                   )}
 
-                  {/* Schedule blocks */}
+                  {/* Schedule blocks - combine static demo blocks with dynamic events */}
                   {SCHEDULE_BLOCKS.map((block) => (
                     <ScheduleBlock
                       key={`${block.type}-${block.title}-${block.time}-${block.top}`}
                       {...block}
                     />
                   ))}
+                  
+                  {/* Dynamic events from database */}
+                  {events.map((event) => {
+                    const top = timeToPosition(event.startTime)
+                    const height = durationToHeight(event.startTime, event.endTime)
+                    if (top < 0) return null // Skip events outside schedule range
+                    
+                    return (
+                      <ScheduleBlock
+                        key={`event-${event.id}`}
+                        type={event.type}
+                        title={event.title}
+                        time={`${event.startTime}–${event.endTime}`}
+                        top={top}
+                        height={height}
+                      />
+                    )
+                  })}
                 </div>
               </div>
             </div>

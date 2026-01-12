@@ -10,11 +10,42 @@ jest.mock('../components/common/Icon', () => {
   }
 })
 
+// Mock EventModal component
+jest.mock('../components/Schedule/EventModal', () => {
+  return function EventModal() {
+    return null
+  }
+})
+
+// Mock scheduleManager functions
+jest.mock('../utils/scheduleManager', () => ({
+  createEvent: jest.fn(),
+  getEventsForDay: jest.fn().mockResolvedValue([]),
+  getEventsForWeek: jest.fn().mockResolvedValue([])
+}))
+
+// Mock logger
+jest.mock('../utils/logger', () => ({
+  createLogger: jest.fn(() => ({
+    log: jest.fn(),
+    error: jest.fn(),
+    warn: jest.fn()
+  }))
+}))
+
 describe('Schedule Component', () => {
+  const mockGetEventsForDay = require('../utils/scheduleManager').getEventsForDay
+  const mockGetEventsForWeek = require('../utils/scheduleManager').getEventsForWeek
+
   beforeEach(() => {
     // Mock Date to return a consistent time for testing
     jest.useFakeTimers()
     jest.setSystemTime(new Date('2025-09-16T09:15:00'))
+    // Reset mocks
+    mockGetEventsForDay.mockClear()
+    mockGetEventsForWeek.mockClear()
+    mockGetEventsForDay.mockResolvedValue([])
+    mockGetEventsForWeek.mockResolvedValue([])
   })
 
   afterEach(() => {
@@ -133,5 +164,55 @@ describe('Schedule Component', () => {
     expect(routineBlock).toHaveStyle({ top: '126px', height: '60px' })
     expect(meetingBlock).toHaveStyle({ top: '486px', height: '60px' })
     expect(taskBlock).toHaveStyle({ top: '1206px', height: '60px' })
+  })
+
+  describe('Button Functionality', () => {
+    test('Day button is active by default', () => {
+      render(<Schedule />)
+      const dayButton = screen.getByRole('button', { name: /View day schedule/i })
+      expect(dayButton).toHaveClass('btn-active')
+    })
+
+    test('Week button is not active by default', () => {
+      render(<Schedule />)
+      const weekButton = screen.getByRole('button', { name: /View week schedule/i })
+      expect(weekButton).not.toHaveClass('btn-active')
+    })
+
+    test('Day button has correct ARIA attributes', () => {
+      render(<Schedule />)
+      const dayButton = screen.getByRole('button', { name: /View day schedule/i })
+      expect(dayButton).toHaveAttribute('aria-pressed', 'true')
+    })
+
+    test('Week button has correct ARIA attributes when not active', () => {
+      render(<Schedule />)
+      const weekButton = screen.getByRole('button', { name: /View week schedule/i })
+      expect(weekButton).toHaveAttribute('aria-pressed', 'false')
+    })
+
+    test('Add Routine button has correct ARIA label', () => {
+      render(<Schedule />)
+      const routineButton = screen.getByRole('button', { name: /Add routine to schedule/i })
+      expect(routineButton).toBeInTheDocument()
+    })
+
+    test('Add Task button has correct ARIA label', () => {
+      render(<Schedule />)
+      const taskButton = screen.getByRole('button', { name: /Add task to schedule/i })
+      expect(taskButton).toBeInTheDocument()
+    })
+
+    test('Add Meeting button has correct ARIA label', () => {
+      render(<Schedule />)
+      const meetingButton = screen.getByRole('button', { name: /Add meeting to schedule/i })
+      expect(meetingButton).toBeInTheDocument()
+    })
+
+    test('loads day events on initial render', () => {
+      render(<Schedule />)
+      expect(mockGetEventsForDay).toHaveBeenCalledWith('2025-09-16')
+      expect(mockGetEventsForWeek).not.toHaveBeenCalled()
+    })
   })
 })
