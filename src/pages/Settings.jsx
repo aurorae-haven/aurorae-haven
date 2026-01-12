@@ -14,7 +14,10 @@ import {
   loadAndImportLastSave,
   getStoredDirectoryName
 } from '../utils/autoSaveFS'
-import { reloadPageAfterDelay, IMPORT_SUCCESS_MESSAGE } from '../utils/importData'
+import {
+  reloadPageAfterDelay,
+  IMPORT_SUCCESS_MESSAGE
+} from '../utils/importData'
 import '../assets/styles/settings.css'
 
 // Time constant
@@ -27,15 +30,15 @@ function Settings() {
   const [lastSaveTime, setLastSaveTime] = useState(null)
   const [message, setMessage] = useState({ text: '', isError: false })
   const [isConfiguring, setIsConfiguring] = useState(false)
-  
+
   // Use refs to avoid stale closures
   const settingsRef = useRef(settings)
   const messageTimeoutRef = useRef(null)
-  
+
   useEffect(() => {
     settingsRef.current = settings
   }, [settings])
-  
+
   // Cleanup message timeout on unmount
   useEffect(() => {
     return () => {
@@ -52,7 +55,7 @@ function Settings() {
   useEffect(() => {
     const handle = getCurrentDirectoryHandle()
     const storedName = getStoredDirectoryName()
-    
+
     if (handle) {
       setDirectoryName(handle.name)
       setDirectoryHandleLost(false)
@@ -85,7 +88,7 @@ function Settings() {
     if (messageTimeoutRef.current) {
       clearTimeout(messageTimeoutRef.current)
     }
-    
+
     setMessage({ text, isError })
     messageTimeoutRef.current = setTimeout(() => {
       setMessage({ text: '', isError: false })
@@ -93,36 +96,33 @@ function Settings() {
     }, duration)
   }, [])
 
-  const handleSelectDirectory = useCallback(
-    async () => {
-      setIsConfiguring(true)
-      try {
-        const handle = await requestDirectoryAccess()
-        if (handle) {
-          setDirectoryName(handle.name)
-          setDirectoryHandle(handle)
-          setDirectoryHandleLost(false)
+  const handleSelectDirectory = useCallback(async () => {
+    setIsConfiguring(true)
+    try {
+      const handle = await requestDirectoryAccess()
+      if (handle) {
+        setDirectoryName(handle.name)
+        setDirectoryHandle(handle)
+        setDirectoryHandleLost(false)
 
-          // Update settings and get fresh settings
-          const newSettings = updateSetting('autoSave.directoryConfigured', true)
-          setSettingsState(newSettings)
+        // Update settings and get fresh settings
+        const newSettings = updateSetting('autoSave.directoryConfigured', true)
+        setSettingsState(newSettings)
 
-          showMessage(`Directory selected: ${handle.name}`)
+        showMessage(`Directory selected: ${handle.name}`)
 
-          // If auto-save is enabled, restart it with current settings
-          if (newSettings.autoSave.enabled) {
-            stopAutoSave()
-            startAutoSave(newSettings.autoSave.intervalMinutes * MS_PER_MINUTE)
-          }
+        // If auto-save is enabled, restart it with current settings
+        if (newSettings.autoSave.enabled) {
+          stopAutoSave()
+          startAutoSave(newSettings.autoSave.intervalMinutes * MS_PER_MINUTE)
         }
-      } catch (error) {
-        showMessage('Failed to select directory: ' + error.message, true)
-      } finally {
-        setIsConfiguring(false)
       }
-    },
-    [showMessage, setDirectoryName, setDirectoryHandleLost, setSettingsState]
-  )
+    } catch (error) {
+      showMessage('Failed to select directory: ' + error.message, true)
+    } finally {
+      setIsConfiguring(false)
+    }
+  }, [showMessage, setDirectoryName, setDirectoryHandleLost, setSettingsState])
 
   const handleToggleAutoSave = useCallback(
     async (enabled) => {
@@ -137,7 +137,10 @@ function Settings() {
       if (enabled && handle) {
         const isValid = await verifyDirectoryHandle(handle)
         if (!isValid) {
-          showMessage('Directory access expired. Please select the directory again.', true)
+          showMessage(
+            'Directory access expired. Please select the directory again.',
+            true
+          )
           setDirectoryName(null)
           return
         }
@@ -159,7 +162,10 @@ function Settings() {
 
   const handleIntervalChange = useCallback(
     (intervalMinutes) => {
-      const newSettings = updateSetting('autoSave.intervalMinutes', intervalMinutes)
+      const newSettings = updateSetting(
+        'autoSave.intervalMinutes',
+        intervalMinutes
+      )
       setSettingsState(newSettings)
 
       // Restart auto-save if enabled with new interval
@@ -202,7 +208,9 @@ function Settings() {
   const handleCleanOldFiles = useCallback(async () => {
     setIsConfiguring(true)
     try {
-      const deletedCount = await cleanOldSaveFiles(settingsRef.current.autoSave.keepCount)
+      const deletedCount = await cleanOldSaveFiles(
+        settingsRef.current.autoSave.keepCount
+      )
       showMessage(`Cleaned up ${deletedCount} old save file(s)`)
     } catch (error) {
       showMessage('Cleanup failed: ' + error.message, true)
@@ -278,11 +286,13 @@ function Settings() {
 
           {!fsSupported && (
             <div className='settings-warning' role='alert'>
-              <strong className='settings-warning-title'>⚠️ Not Supported</strong>
+              <strong className='settings-warning-title'>
+                ⚠️ Not Supported
+              </strong>
               <p className='settings-warning-text'>
-                Your browser does not support the File System Access API. Auto-save to a
-                local directory is not available. Please use the Export button to manually
-                save your data.
+                Your browser does not support the File System Access API.
+                Auto-save to a local directory is not available. Please use the
+                Export button to manually save your data.
               </p>
             </div>
           )}
@@ -291,11 +301,18 @@ function Settings() {
             <>
               {/* Warning when directory handle is lost */}
               {directoryHandleLost && (
-                <div className='settings-warning settings-warning-directory-lost' role='alert'>
-                  <strong className='settings-warning-title'>⚠️ Directory Access Required</strong>
+                <div
+                  className='settings-warning settings-warning-directory-lost'
+                  role='alert'
+                >
+                  <strong className='settings-warning-title'>
+                    ⚠️ Directory Access Required
+                  </strong>
                   <p className='settings-warning-text'>
-                    The directory &quot;{directoryName}&quot; was previously selected, but access has been lost after page reload.
-                    Please click &quot;Change Directory&quot; to re-grant access and resume auto-save functionality.
+                    The directory &quot;{directoryName}&quot; was previously
+                    selected, but access has been lost after page reload. Please
+                    click &quot;Change Directory&quot; to re-grant access and
+                    resume auto-save functionality.
                   </p>
                 </div>
               )}
@@ -345,7 +362,10 @@ function Settings() {
                   />
                   <strong>Enable Automatic Save</strong>
                 </label>
-                <small id='auto-save-toggle-hint' className='settings-checkbox-hint'>
+                <small
+                  id='auto-save-toggle-hint'
+                  className='settings-checkbox-hint'
+                >
                   Automatically save all data at regular intervals
                 </small>
               </div>
@@ -389,7 +409,8 @@ function Settings() {
                   aria-describedby='keep-count-hint'
                 />
                 <small id='keep-count-hint' className='settings-hint'>
-                  Number of most recent save files to keep (older files will be deleted)
+                  Number of most recent save files to keep (older files will be
+                  deleted)
                 </small>
               </div>
 
@@ -400,7 +421,11 @@ function Settings() {
               </div>
 
               {/* Action Buttons */}
-              <div className='settings-button-group' role='group' aria-label='Auto-save actions'>
+              <div
+                className='settings-button-group'
+                role='group'
+                aria-label='Auto-save actions'
+              >
                 <button
                   onClick={handleManualSave}
                   disabled={!directoryName || isConfiguring}
