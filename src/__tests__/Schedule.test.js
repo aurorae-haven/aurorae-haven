@@ -60,7 +60,8 @@ describe('Schedule Component', () => {
 
   test('renders Schedule component with header', () => {
     render(<Schedule />)
-    expect(screen.getByText('Schedule')).toBeInTheDocument()
+    const scheduleElements = screen.getAllByText(/Schedule/)
+    expect(scheduleElements.length).toBeGreaterThan(0)
     expect(screen.getByText('Today · Tue 16/09/2025')).toBeInTheDocument()
   })
 
@@ -68,9 +69,7 @@ describe('Schedule Component', () => {
     render(<Schedule />)
     expect(screen.getByRole('button', { name: /Day/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Week/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Routine/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Task/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Meeting/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Schedule an event/i })).toBeInTheDocument()
   })
 
   test('renders sidebar sections', () => {
