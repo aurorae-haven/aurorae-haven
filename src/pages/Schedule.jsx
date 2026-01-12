@@ -16,7 +16,8 @@ function ScheduleBlock({
   time,
   top,
   height,
-  isNext = false
+  isNext = false,
+  onClick
 }) {
   const blockClasses = `block ${type} ${className}`.trim()
   const ariaLabel = `${type.charAt(0).toUpperCase() + type.slice(1)}: ${title} at ${time}${isNext ? ' - Next up' : ''}`
@@ -26,6 +27,15 @@ function ScheduleBlock({
       className={blockClasses}
       style={{ top: `${top}px`, height: `${height}px` }}
       aria-label={ariaLabel}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick(e)
+        }
+      } : undefined}
     >
       {isNext && <div className='next-badge'>Next</div>}
       <div className='title'>{title}</div>
@@ -41,7 +51,8 @@ ScheduleBlock.propTypes = {
   time: PropTypes.string.isRequired,
   top: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  isNext: PropTypes.bool
+  isNext: PropTypes.bool,
+  onClick: PropTypes.func
 }
 
 // Static configuration data - defined outside component to prevent recreation on every render
@@ -89,15 +100,43 @@ const SCHEDULE_VERTICAL_OFFSET = 6
 // Convert time string (HH:MM) to pixel position
 // Schedule starts at 06:00, each hour is 120px
 const timeToPosition = (timeString) => {
-  const [hours, minutes] = timeString.split(':').map(Number)
+  if (!timeString || typeof timeString !== 'string' || !timeString.includes(':')) {
+    return -1
+  }
+  const parts = timeString.split(':')
+  if (parts.length !== 2) return -1
+  
+  const hours = Number(parts[0])
+  const minutes = Number(parts[1])
+  
+  if (isNaN(hours) || isNaN(minutes)) return -1
   if (hours < SCHEDULE_START_HOUR || hours >= SCHEDULE_END_HOUR) return -1
+  
   return (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
 }
 
 // Convert duration in minutes to pixel height
 const durationToHeight = (startTime, endTime) => {
-  const [startHours, startMinutes] = startTime.split(':').map(Number)
-  const [endHours, endMinutes] = endTime.split(':').map(Number)
+  if (!startTime || !endTime || typeof startTime !== 'string' || typeof endTime !== 'string') {
+    return 0
+  }
+  if (!startTime.includes(':') || !endTime.includes(':')) {
+    return 0
+  }
+  
+  const startParts = startTime.split(':')
+  const endParts = endTime.split(':')
+  
+  if (startParts.length !== 2 || endParts.length !== 2) return 0
+  
+  const startHours = Number(startParts[0])
+  const startMinutes = Number(startParts[1])
+  const endHours = Number(endParts[0])
+  const endMinutes = Number(endParts[1])
+  
+  if (isNaN(startHours) || isNaN(startMinutes) || isNaN(endHours) || isNaN(endMinutes)) {
+    return 0
+  }
   
   const scheduleStartMinutes = SCHEDULE_START_HOUR * 60
   const scheduleEndMinutes = SCHEDULE_END_HOUR * 60
