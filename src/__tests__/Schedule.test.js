@@ -221,7 +221,7 @@ describe('Schedule Component', () => {
     })
 
     test('clicking Week button switches view mode and loads week events', async () => {
-      const { rerender } = render(<Schedule />)
+      render(<Schedule />)
       const weekButton = screen.getByRole('button', { name: /View week schedule/i })
       
       // Click the week button
