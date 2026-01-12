@@ -159,6 +159,24 @@
   min-height: 50px;
 }
 
+/* Focus styles for interactive schedule blocks */
+.block[role='button']:focus {
+  outline: 2px solid var(--mint);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mint) 20%, transparent);
+}
+
+.block[role='button']:hover {
+  cursor: pointer;
+  opacity: 0.9;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+.block[role='button']:active {
+  transform: translateY(0);
+}
+
 /* Routine blocks use default styling from .block */
 
 /* Task blocks - Eisenhower Matrix colors */
@@ -312,7 +330,7 @@
 .event-form input:focus {
   outline: none;
   border-color: var(--mint);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 10%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 60%, transparent);
 }
 
 .event-form input:disabled {
@@ -441,6 +459,22 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* Respect user's reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes dropdownFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .schedule-dropdown-menu {
+    animation: dropdownFadeIn 0.05s ease-out;
   }
 }
 

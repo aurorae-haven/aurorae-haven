@@ -99,8 +99,10 @@ const PIXELS_PER_HOUR = 120
 const SCHEDULE_VERTICAL_OFFSET = 6
 
 // Convert time string (HH:MM) to pixel position
-// Schedule starts at 06:00, each hour is 120px
+// Schedule starts at 06:00 (SCHEDULE_START_HOUR), each hour is 120px (PIXELS_PER_HOUR)
+// Returns -1 if time is invalid or outside schedule range
 const timeToPosition = (timeString) => {
+  // Input validation: check for null, type, and format
   if (!timeString || typeof timeString !== 'string' || !timeString.includes(':')) {
     return -1
   }
@@ -110,14 +112,19 @@ const timeToPosition = (timeString) => {
   const hours = Number(parts[0])
   const minutes = Number(parts[1])
   
+  // Validate numeric conversion
   if (isNaN(hours) || isNaN(minutes)) return -1
+  // Check if time falls within schedule window (06:00-22:00)
   if (hours < SCHEDULE_START_HOUR || hours >= SCHEDULE_END_HOUR) return -1
   
+  // Calculate pixel position from schedule start time
   return (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
 }
 
 // Convert duration in minutes to pixel height
+// Clamps event times to visible schedule window (06:00-22:00) to prevent overflow
 const durationToHeight = (startTime, endTime) => {
+  // Input validation: check for null, type, and format
   if (!startTime || !endTime || typeof startTime !== 'string' || typeof endTime !== 'string') {
     return 0
   }
@@ -135,12 +142,14 @@ const durationToHeight = (startTime, endTime) => {
   const endHours = Number(endParts[0])
   const endMinutes = Number(endParts[1])
   
+  // Validate numeric conversion
   if (isNaN(startHours) || isNaN(startMinutes) || isNaN(endHours) || isNaN(endMinutes)) {
     return 0
   }
   
-  const scheduleStartMinutes = SCHEDULE_START_HOUR * 60
-  const scheduleEndMinutes = SCHEDULE_END_HOUR * 60
+  // Convert schedule hours to minutes for easier calculation
+  const scheduleStartMinutes = SCHEDULE_START_HOUR * 60  // 360 minutes (06:00)
+  const scheduleEndMinutes = SCHEDULE_END_HOUR * 60      // 1320 minutes (22:00)
   
   let startTotalMinutes = startHours * 60 + startMinutes
   let endTotalMinutes = endHours * 60 + endMinutes
@@ -150,7 +159,8 @@ const durationToHeight = (startTime, endTime) => {
     return 0
   }
   
-  // Clamp event times to the visible schedule window
+  // Clamp event times to the visible schedule window to prevent overflow rendering
+  // This handles events that start before 06:00 or end after 22:00
   if (startTotalMinutes < scheduleStartMinutes) {
     startTotalMinutes = scheduleStartMinutes
   }
@@ -158,6 +168,7 @@ const durationToHeight = (startTime, endTime) => {
     endTotalMinutes = scheduleEndMinutes
   }
   
+  // Calculate the visible duration and convert to pixels
   const visibleDurationMinutes = Math.max(0, endTotalMinutes - startTotalMinutes)
   return (visibleDurationMinutes / 60) * PIXELS_PER_HOUR
 }
@@ -237,16 +248,72 @@ function Schedule() {
     setIsDropdownOpen(!isDropdownOpen)
   }
   
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside or using keyboard navigation
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isDropdownOpen && !event.target.closest('.schedule-dropdown')) {
         setIsDropdownOpen(false)
       }
     }
+
+    const handleKeyDown = (event) => {
+      if (!isDropdownOpen) {
+        return
+      }
+
+      // Allow users to close the dropdown with Escape
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false)
+        // Return focus to the dropdown button
+        const dropdownButton = document.querySelector('.schedule-dropdown button[aria-haspopup="menu"]')
+        if (dropdownButton) {
+          dropdownButton.focus()
+        }
+        return
+      }
+
+      // When tabbing, close the dropdown once focus leaves it
+      if (event.key === 'Tab') {
+        // Wait for focus to move before checking the active element
+        window.setTimeout(() => {
+          const activeElement = document.activeElement
+          const isInsideDropdown =
+            activeElement && activeElement.closest && activeElement.closest('.schedule-dropdown')
+
+          if (!isInsideDropdown) {
+            setIsDropdownOpen(false)
+          }
+        }, 0)
+      }
+
+      // Arrow key navigation within menu
+      const menuItems = Array.from(document.querySelectorAll('.schedule-dropdown-menu button'))
+      const currentIndex = menuItems.indexOf(document.activeElement)
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        const nextIndex = currentIndex < menuItems.length - 1 ? currentIndex + 1 : 0
+        menuItems[nextIndex]?.focus()
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1
+        menuItems[prevIndex]?.focus()
+      } else if (event.key === 'Home') {
+        event.preventDefault()
+        menuItems[0]?.focus()
+      } else if (event.key === 'End') {
+        event.preventDefault()
+        menuItems[menuItems.length - 1]?.focus()
+      }
+    }
     
     document.addEventListener('click', handleClickOutside)
-    return () => document.removeEventListener('click', handleClickOutside)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
   }, [isDropdownOpen])
 
   // Handle saving event
@@ -476,34 +543,35 @@ function Schedule() {
                   ))}
                   
                   {/* Dynamic events from database */}
-                  {events.map((event) => {
-                    // Skip invalid events
-                    if (!event || !event.startTime || !event.endTime || !event.title) return null
-                    
-                    const top = timeToPosition(event.startTime)
-                    const height = durationToHeight(event.startTime, event.endTime)
-                    // Skip events completely outside schedule range
-                    if (top < 0 || height === 0) return null
+                  {/* Note: User event interactions are logged for debugging purposes. 
+                      This logging behavior is documented in our privacy policy. */}
+                  {events
+                    .filter((event) => event && event.startTime && event.endTime && event.title && event.id)
+                    .map((event) => {
+                      const top = timeToPosition(event.startTime)
+                      const height = durationToHeight(event.startTime, event.endTime)
+                      // Skip events completely outside schedule range
+                      if (top < 0 || height === 0) return null
 
-                    return (
-                      <ScheduleBlock
-                        key={`dynamic-event-${event.id}`}
-                        type={event.type || 'task'}
-                        title={event.title}
-                        time={`${event.startTime}–${event.endTime}`}
-                        top={top}
-                        height={height}
-                        onClick={() =>
-                          logger.info('User interacted with schedule event', {
-                            id: event.id,
-                            title: event.title,
-                            startTime: event.startTime,
-                            endTime: event.endTime
-                          })
-                        }
-                      />
-                    )
-                  })}
+                      return (
+                        <ScheduleBlock
+                          key={`dynamic-event-${event.id}`}
+                          type={event.type || 'task'}
+                          title={event.title}
+                          time={`${event.startTime}–${event.endTime}`}
+                          top={top}
+                          height={height}
+                          onClick={() =>
+                            logger.info('User interacted with schedule event', {
+                              id: event.id,
+                              title: event.title,
+                              startTime: event.startTime,
+                              endTime: event.endTime
+                            })
+                          }
+                        />
+                      )
+                    })}
                 </div>
               </div>
             </div>

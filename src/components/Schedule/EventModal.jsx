@@ -39,6 +39,18 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
         })
       }
       setError('')
+
+      // Move focus to the title input when the modal opens for better accessibility
+      // Using a timeout ensures the input is mounted before we try to focus it.
+      window.setTimeout(() => {
+        const titleInput = document.querySelector('input[name="title"]')
+        if (titleInput && typeof titleInput.focus === 'function') {
+          titleInput.focus()
+          if (typeof titleInput.select === 'function') {
+            titleInput.select()
+          }
+        }
+      }, 0)
     }
   }, [isOpen, eventType, initialData])
 
@@ -66,7 +78,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       return false
     }
     if (formData.startTime >= formData.endTime) {
-      setError('End time must be after start time')
+      setError('End time must be after start time (events cannot have zero duration)')
       return false
     }
     return true
@@ -78,10 +90,13 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
 
     setIsSubmitting(true)
     try {
-      await onSave({
+      // Trim title before saving to prevent whitespace issues
+      const trimmedData = {
         ...formData,
+        title: formData.title.trim(),
         ...(initialData?.id ? { id: initialData.id } : {})
-      })
+      }
+      await onSave(trimmedData)
       onClose()
     } catch (err) {
       setError(err.message || 'Failed to save event')

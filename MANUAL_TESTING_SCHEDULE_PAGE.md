@@ -69,13 +69,13 @@ This guide provides step-by-step instructions for manually testing all button fu
 
 ---
 
-### Test 3: Schedule Dropdown – Add Routine Option
-**Purpose:** Verify selecting "Add Routine" from the Schedule dropdown opens the event creation modal.
+### Test 3: Schedule Dropdown – Routine Option
+**Purpose:** Verify selecting "Routine" from the Schedule dropdown opens the event creation modal.
 
 **Steps:**
 1. Navigate to Schedule page
 2. Click the "Schedule" button to open the unified dropdown menu
-3. In the dropdown, click the "Add Routine" option
+3. In the dropdown, click the "Routine" option
 4. Observe modal behavior
 
 **Expected Results:**
@@ -90,15 +90,17 @@ This guide provides step-by-step instructions for manually testing all button fu
 - ✅ Modal can be closed by clicking Cancel
 - ✅ Modal has proper keyboard navigation (Tab, Enter, Escape)
 - ✅ All form fields have proper labels and aria-attributes
+- ✅ Focus automatically moves to title input when modal opens
 
 **Accessibility Check:**
 - Press Tab key - focus should move through all interactive elements
 - Press Escape key - modal should close
 - Check that all inputs have associated labels
+- Verify title input receives focus on modal open
 
 ---
 
-### Test 4: Schedule Dropdown – Add Task Option
+### Test 4: Schedule Dropdown – Task Option
 **Purpose:** Verify selecting "Task" from the Schedule dropdown opens the event creation modal for tasks.
 
 **Steps:**
@@ -112,10 +114,11 @@ This guide provides step-by-step instructions for manually testing all button fu
 - ✅ All form fields are present
 - ✅ Modal functionality works as expected
 - ✅ No console errors
+- ✅ Title input auto-focused
 
 ---
 
-### Test 5: Add Meeting via Schedule Dropdown
+### Test 5: Schedule Dropdown – Meeting Option
 **Purpose:** Verify selecting "Meeting" from the Schedule dropdown opens the event creation modal for meetings.
 
 **Steps:**
@@ -129,6 +132,7 @@ This guide provides step-by-step instructions for manually testing all button fu
 - ✅ All form fields are present
 - ✅ Modal functionality works as expected
 - ✅ No console errors
+- ✅ Title input auto-focused
 
 ---
 

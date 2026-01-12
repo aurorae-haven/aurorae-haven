@@ -19,7 +19,12 @@ const SECONDS_PER_MINUTE = 60
 
 /**
  * Get current date in ISO format (YYYY-MM-DD)
- * @returns {string} Current date in ISO format
+ * 
+ * Note: This function uses the user's local timezone. When used near midnight,
+ * the "current date" may differ from server timezone. For future internationalization,
+ * consider adding a timezone parameter or using UTC.
+ * 
+ * @returns {string} Current date in ISO format (YYYY-MM-DD)
  */
 export function getCurrentDateISO() {
   return dayjs().format('YYYY-MM-DD')
