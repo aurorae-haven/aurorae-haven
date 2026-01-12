@@ -3,8 +3,16 @@ import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 
 // Reusable ScheduleBlock component
-function ScheduleBlock({ type, className, title, time, top, height, isNext }) {
-  const blockClasses = `block ${type} ${className || ''}`.trim()
+function ScheduleBlock({
+  type,
+  className = '',
+  title,
+  time,
+  top,
+  height,
+  isNext = false
+}) {
+  const blockClasses = `block ${type} ${className}`.trim()
   const ariaLabel = `${type.charAt(0).toUpperCase() + type.slice(1)}: ${title} at ${time}${isNext ? ' - Next up' : ''}`
 
   return (
@@ -30,10 +38,41 @@ ScheduleBlock.propTypes = {
   isNext: PropTypes.bool
 }
 
-ScheduleBlock.defaultProps = {
-  className: '',
-  isNext: false
-}
+// Static configuration data - defined outside component to prevent recreation on every render
+const SCHEDULE_BLOCKS = [
+  {
+    type: 'routine',
+    title: 'Morning Launch',
+    time: '07:00–07:30',
+    top: 126,
+    height: 60
+  },
+  {
+    type: 'meeting',
+    title: 'Team Standup',
+    time: '10:00–10:30',
+    top: 486,
+    height: 60,
+    className: 'next-up',
+    isNext: true
+  },
+  {
+    type: 'task',
+    className: 'not-urgent-important',
+    title: 'Buy groceries',
+    time: '16:00–16:30',
+    top: 1206,
+    height: 60
+  }
+]
+
+const TIME_PERIODS = [
+  { className: 'time-period-morning', top: 0, height: 720 },
+  { className: 'time-period-afternoon', top: 720, height: 720 },
+  { className: 'time-period-evening', top: 1440, height: 480 }
+]
+
+const SEPARATOR_POSITIONS = [126, 726, 1446]
 
 function Schedule() {
   // Calculate current time position for time indicator
@@ -60,44 +99,6 @@ function Schedule() {
 
     return () => clearInterval(interval)
   }, [])
-
-  // Schedule blocks data
-  const scheduleBlocks = [
-    {
-      type: 'routine',
-      title: 'Morning Launch',
-      time: '07:00–07:30',
-      top: 126,
-      height: 60
-    },
-    {
-      type: 'meeting',
-      title: 'Team Standup',
-      time: '10:00–10:30',
-      top: 486,
-      height: 60,
-      className: 'next-up',
-      isNext: true
-    },
-    {
-      type: 'task',
-      className: 'not-urgent-important',
-      title: 'Buy groceries',
-      time: '16:00–16:30',
-      top: 1206,
-      height: 60
-    }
-  ]
-
-  // Time period configurations
-  const timePeriods = [
-    { className: 'time-period-morning', top: 0, height: 720 },
-    { className: 'time-period-afternoon', top: 720, height: 720 },
-    { className: 'time-period-evening', top: 1440, height: 480 }
-  ]
-
-  // Time period separator positions
-  const separatorPositions = [126, 726, 1446]
 
   return (
     <>
@@ -171,9 +172,9 @@ function Schedule() {
                 </div>
                 <div className='slots' style={{ height: '1920px' }}>
                   {/* Time period backgrounds */}
-                  {timePeriods.map((period, index) => (
+                  {TIME_PERIODS.map((period) => (
                     <div
-                      key={index}
+                      key={period.className}
                       className={period.className}
                       style={{
                         position: 'absolute',
@@ -187,9 +188,9 @@ function Schedule() {
                   ))}
 
                   {/* Time period separators */}
-                  {separatorPositions.map((position, index) => (
+                  {SEPARATOR_POSITIONS.map((position) => (
                     <div
-                      key={index}
+                      key={`separator-${position}`}
                       className='time-period-separator'
                       style={{ top: `${position}px` }}
                       aria-hidden='true'
@@ -208,8 +209,11 @@ function Schedule() {
                   )}
 
                   {/* Schedule blocks */}
-                  {scheduleBlocks.map((block, index) => (
-                    <ScheduleBlock key={index} {...block} />
+                  {SCHEDULE_BLOCKS.map((block) => (
+                    <ScheduleBlock
+                      key={`${block.type}-${block.title}-${block.time}-${block.top}`}
+                      {...block}
+                    />
                   ))}
                 </div>
               </div>
