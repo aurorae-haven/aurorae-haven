@@ -149,7 +149,9 @@ export async function saveToFile(data, filename = null) {
   const isValid = await verifyDirectoryHandle(currentDirectoryHandle)
   if (!isValid) {
     currentDirectoryHandle = null
-    throw new Error('Directory access expired. Please select the directory again.')
+    throw new Error(
+      'Directory access expired. Please select the directory again.'
+    )
   }
 
   // Generate filename if not provided
@@ -396,10 +398,7 @@ export async function loadAndImportLastSave() {
       try {
         await importToIndexedDB(loadResult.data)
       } catch (e) {
-        logger.warn(
-          'IndexedDB import failed, falling back to localStorage:',
-          e
-        )
+        logger.warn('IndexedDB import failed, falling back to localStorage:', e)
         importToLocalStorage(loadResult.data)
       }
     } else {
@@ -434,7 +433,10 @@ function ensureAutoSaveTabId() {
  * Initialize BroadcastChannel for multi-tab coordination
  */
 function initAutoSaveChannel() {
-  if (typeof window === 'undefined' || typeof BroadcastChannel === 'undefined') {
+  if (
+    typeof window === 'undefined' ||
+    typeof BroadcastChannel === 'undefined'
+  ) {
     return
   }
 
@@ -478,7 +480,10 @@ function scheduleAutoSaveWork() {
     }
   }
 
-  if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.requestIdleCallback === 'function'
+  ) {
     window.requestIdleCallback(() => {
       void run()
     })
@@ -502,7 +507,10 @@ function internalStartAutoSaveTimer(intervalMs) {
       return
     }
 
-    if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
+    if (
+      typeof document !== 'undefined' &&
+      document.visibilityState === 'hidden'
+    ) {
       return
     }
 

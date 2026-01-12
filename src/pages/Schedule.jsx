@@ -1,5 +1,78 @@
 import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
+
+// Reusable ScheduleBlock component
+function ScheduleBlock({
+  type,
+  className = '',
+  title,
+  time,
+  top,
+  height,
+  isNext = false
+}) {
+  const blockClasses = `block ${type} ${className}`.trim()
+  const ariaLabel = `${type.charAt(0).toUpperCase() + type.slice(1)}: ${title} at ${time}${isNext ? ' - Next up' : ''}`
+
+  return (
+    <div
+      className={blockClasses}
+      style={{ top: `${top}px`, height: `${height}px` }}
+      aria-label={ariaLabel}
+    >
+      {isNext && <div className='next-badge'>Next</div>}
+      <div className='title'>{title}</div>
+      <div className='meta'>{time}</div>
+    </div>
+  )
+}
+
+ScheduleBlock.propTypes = {
+  type: PropTypes.string.isRequired,
+  className: PropTypes.string,
+  title: PropTypes.string.isRequired,
+  time: PropTypes.string.isRequired,
+  top: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  isNext: PropTypes.bool
+}
+
+// Static configuration data - defined outside component to prevent recreation on every render
+const SCHEDULE_BLOCKS = [
+  {
+    type: 'routine',
+    title: 'Morning Launch',
+    time: '07:00–07:30',
+    top: 126,
+    height: 60
+  },
+  {
+    type: 'meeting',
+    title: 'Team Standup',
+    time: '10:00–10:30',
+    top: 486,
+    height: 60,
+    className: 'next-up',
+    isNext: true
+  },
+  {
+    type: 'task',
+    className: 'not-urgent-important',
+    title: 'Buy groceries',
+    time: '16:00–16:30',
+    top: 1206,
+    height: 60
+  }
+]
+
+const TIME_PERIODS = [
+  { className: 'time-period-morning', top: 0, height: 720 },
+  { className: 'time-period-afternoon', top: 720, height: 720 },
+  { className: 'time-period-evening', top: 1440, height: 480 }
+]
+
+const SEPARATOR_POSITIONS = [126, 726, 1446]
 
 function Schedule() {
   // Calculate current time position for time indicator
@@ -26,10 +99,6 @@ function Schedule() {
 
     return () => clearInterval(interval)
   }, [])
-
-  // For demo purposes, let's set a visible time (e.g., 09:15)
-  // Remove this line when using real current time
-  const demoPosition = (9 - 6) * 120 + (15 / 60) * 120 + 6 // 09:15
 
   return (
     <>
@@ -102,62 +171,50 @@ function Schedule() {
                   <div className='h'>21:00</div>
                 </div>
                 <div className='slots' style={{ height: '1920px' }}>
+                  {/* Time period backgrounds */}
+                  {TIME_PERIODS.map((period) => (
+                    <div
+                      key={period.className}
+                      className={period.className}
+                      style={{
+                        position: 'absolute',
+                        top: `${period.top}px`,
+                        left: '0',
+                        right: '0',
+                        height: `${period.height}px`
+                      }}
+                      aria-hidden='true'
+                    />
+                  ))}
+
                   {/* Time period separators */}
-                  <div
-                    className='time-period-separator'
-                    style={{ top: '126px' }}
-                    aria-hidden='true'
-                  />
-                  <div
-                    className='time-period-separator'
-                    style={{ top: '726px' }}
-                    aria-hidden='true'
-                  />
-                  <div
-                    className='time-period-separator'
-                    style={{ top: '1446px' }}
-                    aria-hidden='true'
-                  />
+                  {SEPARATOR_POSITIONS.map((position) => (
+                    <div
+                      key={`separator-${position}`}
+                      className='time-period-separator'
+                      style={{ top: `${position}px` }}
+                      aria-hidden='true'
+                    />
+                  ))}
 
                   {/* Current time indicator */}
-                  {demoPosition > 0 && (
+                  {currentTimePosition > 0 && (
                     <div
                       className='current-time-indicator'
-                      style={{ top: `${demoPosition}px` }}
-                      aria-label='Current time: 09:15'
+                      style={{ top: `${currentTimePosition}px` }}
+                      aria-label='Current time'
                     >
                       <span className='current-time-label'>Now</span>
                     </div>
                   )}
 
-                  <div
-                    className='block routine'
-                    style={{ top: '126px', height: '60px' }}
-                    aria-label='Routine: Morning Launch at 07:00–07:30, 30% complete'
-                  >
-                    <div className='title'>Morning Launch</div>
-                    <div className='meta'>07:00–07:30</div>
-                    <div className='progress'>
-                      <i style={{ width: '30%' }} />
-                    </div>
-                  </div>
-                  <div
-                    className='block meeting next-up'
-                    style={{ top: '486px', height: '60px' }}
-                    aria-label='Meeting: Team Standup at 10:00–10:30 - Next up'
-                  >
-                    <div className='next-badge'>Next</div>
-                    <div className='title'>Team Standup</div>
-                    <div className='meta'>10:00–10:30</div>
-                  </div>
-                  <div
-                    className='block task not-urgent-important'
-                    style={{ top: '1206px', height: '60px' }}
-                    aria-label='Task: Buy groceries at 16:00–16:30, Not Urgent but Important'
-                  >
-                    <div className='title'>Buy groceries</div>
-                    <div className='meta'>16:00–16:30</div>
-                  </div>
+                  {/* Schedule blocks */}
+                  {SCHEDULE_BLOCKS.map((block) => (
+                    <ScheduleBlock
+                      key={`${block.type}-${block.title}-${block.time}-${block.top}`}
+                      {...block}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

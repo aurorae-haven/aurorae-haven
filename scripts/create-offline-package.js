@@ -487,10 +487,14 @@ async function createZip() {
   if (tarGzSuccess) {
     console.log('✅ Offline package creation complete!')
     console.log('  ✓ tar.gz created for releases and offline-releases branch')
-    console.log(`  ℹ️  GitHub Actions will create a ZIP from ${DIST_OFFLINE_DIR}/ for artifacts`)
-    
+    console.log(
+      `  ℹ️  GitHub Actions will create a ZIP from ${DIST_OFFLINE_DIR}/ for artifacts`
+    )
+
     // Keep the temporary build directory for GitHub Actions to use
-    console.log(`  ℹ️  Keeping ${DIST_OFFLINE_DIR}/ for GitHub Actions artifact upload`)
+    console.log(
+      `  ℹ️  Keeping ${DIST_OFFLINE_DIR}/ for GitHub Actions artifact upload`
+    )
     process.exit(0)
   } else {
     // Clean up on failure

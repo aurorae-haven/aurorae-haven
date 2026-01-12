@@ -717,6 +717,7 @@ Aurorae Haven includes an automatic save feature that periodically saves all you
 ### Requirements
 
 The automatic save feature requires:
+
 - A modern browser that supports the **File System Access API** (Chrome 86+, Edge 86+)
 - User permission to access a local directory
 
@@ -738,12 +739,14 @@ The automatic save feature requires:
 ### Configuration Options
 
 #### Save Interval
+
 - **Default**: 5 minutes
 - **Range**: 1-60 minutes
 - **Description**: How often the app automatically saves your data
 - **Tip**: Shorter intervals provide more frequent backups but create more files
 
 #### Keep Recent Files
+
 - **Default**: 10 files
 - **Range**: 1-100 files
 - **Description**: Number of most recent save files to keep (older files are automatically deleted)
@@ -752,10 +755,13 @@ The automatic save feature requires:
 ### Using Auto-Save Features
 
 #### Manual Save
+
 Click the **"Save Now"** button to immediately save your current data without waiting for the next automatic save interval.
 
 #### Load Last Save
+
 Click the **"Load Last Save"** button to restore your data from the most recent save file. This will:
+
 1. Find the most recently saved file in your configured directory
 2. Load and validate the data
 3. Import it into the app (replacing current data)
@@ -764,11 +770,13 @@ Click the **"Load Last Save"** button to restore your data from the most recent 
 **⚠️ Warning**: Loading a save file will replace all current data. Make sure to export your current data first if you want to keep it.
 
 #### Clean Old Files
+
 Click the **"Clean Old Files"** button to manually remove save files that exceed the "Keep Recent Files" limit. This happens automatically during each save, but you can trigger it manually if needed.
 
 ### Save File Format
 
 Auto-save files are stored with the following naming convention:
+
 ```
 aurorae_save_YYYY-MM-DD_HHMMSS_<uuid>.json
 ```
@@ -776,6 +784,7 @@ aurorae_save_YYYY-MM-DD_HHMMSS_<uuid>.json
 Example: `aurorae_save_2026-01-08_143025_a1b2c3d4.json`
 
 The files are standard JSON format and can be:
+
 - Opened with any text editor
 - Imported using the Import button in the app
 - Shared with other Aurorae Haven users
@@ -783,31 +792,36 @@ The files are standard JSON format and can be:
 
 ### Browser Compatibility
 
-| Browser | Support | Notes |
-|---------|---------|-------|
-| Chrome 86+ | ✅ Full | Recommended |
-| Edge 86+ | ✅ Full | Recommended |
-| Firefox | ❌ Not supported | Use manual Export instead |
-| Safari 15.2+ | ⚠️ Partial | Enable **Develop → Experimental Features → "File System Access API"** (if available) |
+| Browser      | Support          | Notes                                                                                |
+| ------------ | ---------------- | ------------------------------------------------------------------------------------ |
+| Chrome 86+   | ✅ Full          | Recommended                                                                          |
+| Edge 86+     | ✅ Full          | Recommended                                                                          |
+| Firefox      | ❌ Not supported | Use manual Export instead                                                            |
+| Safari 15.2+ | ⚠️ Partial       | Enable **Develop → Experimental Features → "File System Access API"** (if available) |
 
 **Note for Safari users**: If you do **not** see a "File System Access API" option under **Develop → Experimental Features**, your Safari version does not support directory-based auto-save. You can still use manual Export/Import as described below.
 
 **Fallback**: If your browser doesn't support the File System Access API, you can still use:
+
 - Manual Export/Import buttons (always available)
 - Built-in IndexedDB automatic backups (every 24 hours)
 
 ### Troubleshooting
 
 #### "No directory configured" Error
+
 - Solution: Click "Select Directory" to choose a save location
 
 #### "Directory access expired" Error
+
 - Solution: Browser permissions may have been revoked. Click "Select Directory" again to re-grant access
 
 #### "No save files found" Error
+
 - Solution: No save files exist yet in the selected directory. Use "Save Now" to create the first save file
 
 #### Auto-save not working
+
 - Check that auto-save is enabled in Settings
 - Verify that you've selected a directory
 - Check browser console for error messages
