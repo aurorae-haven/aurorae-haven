@@ -187,7 +187,8 @@ function Schedule() {
         const loadedEvents = viewMode === 'day' 
           ? await getEventsForDay(getCurrentDateISO())
           : await getEventsForWeek()
-        setEvents(loadedEvents)
+        // Ensure loadedEvents is always an array
+        setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
       } catch (err) {
         logger.error('Failed to load events:', err)
         setEvents([])
@@ -235,7 +236,8 @@ function Schedule() {
       const loadedEvents = viewMode === 'day' 
         ? await getEventsForDay(getCurrentDateISO())
         : await getEventsForWeek()
-      setEvents(loadedEvents)
+      // Ensure loadedEvents is always an array
+      setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
       logger.log(`${eventData.type} event created successfully`)
     } catch (err) {
       logger.error('Failed to save event:', err)
@@ -427,6 +429,9 @@ function Schedule() {
                   
                   {/* Dynamic events from database */}
                   {events.map((event) => {
+                    // Skip invalid events
+                    if (!event || !event.startTime || !event.endTime || !event.title) return null
+                    
                     const top = timeToPosition(event.startTime)
                     const height = durationToHeight(event.startTime, event.endTime)
                     // Skip events completely outside schedule range
@@ -435,7 +440,7 @@ function Schedule() {
                     return (
                       <ScheduleBlock
                         key={`event-${event.id}`}
-                        type={event.type}
+                        type={event.type || 'task'}
                         title={event.title}
                         time={`${event.startTime}–${event.endTime}`}
                         top={top}
