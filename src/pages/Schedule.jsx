@@ -487,7 +487,7 @@ function Schedule() {
 
                     return (
                       <ScheduleBlock
-                        key={`event-${event.id}`}
+                        key={`dynamic-event-${event.id}`}
                         type={event.type || 'task'}
                         title={event.title}
                         time={`${event.startTime}–${event.endTime}`}
