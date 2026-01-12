@@ -6,7 +6,7 @@ import { createEvent, getEventsForDay, getEventsForWeek } from '../utils/schedul
 import { createLogger } from '../utils/logger'
 import { getCurrentDateISO } from '../utils/timeUtils'
 import dayjs from 'dayjs'
-import { EVENT_TYPES, SCHEDULE_START_HOUR, SCHEDULE_END_HOUR, PIXELS_PER_HOUR, SCHEDULE_VERTICAL_OFFSET } from '../constants/scheduleConstants'
+import { EVENT_TYPES, SCHEDULE_START_HOUR, SCHEDULE_END_HOUR, PIXELS_PER_HOUR, SCHEDULE_VERTICAL_OFFSET } from '../utils/scheduleConstants'
 
 const logger = createLogger('Schedule')
 
@@ -92,6 +92,10 @@ const TIME_PERIODS = [
 ]
 
 const SEPARATOR_POSITIONS = [126, 726, 1446]
+
+// TODO: Extract timeToPosition and durationToHeight to a testable utility module
+// These functions contain complex logic for time-to-pixel conversion and boundary clamping
+// that should be thoroughly unit tested with various edge cases
 
 // Convert time string (HH:MM) to pixel position
 // Schedule starts at 06:00 (SCHEDULE_START_HOUR), each hour is 120px (PIXELS_PER_HOUR)
@@ -184,8 +188,10 @@ function Schedule() {
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   
-  // Ref for timeout cleanup
+  // Refs for timeout cleanup and menu items caching
   const tabTimeoutRef = useRef(null)
+  const autoFocusTimeoutRef = useRef(null)
+  const menuItemsRef = useRef(null)
   
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
@@ -253,11 +259,16 @@ function Schedule() {
     
     // Auto-focus first menu item when opened via keyboard (Space or Enter)
     if (wasClosedBefore && (event?.key === 'Enter' || event?.key === ' ')) {
-      // Use setTimeout to ensure the menu is rendered before focusing
-      setTimeout(() => {
-        const firstMenuItem = document.querySelector('.schedule-dropdown-menu button')
-        firstMenuItem?.focus()
+      // Use setTimeout to ensure the menu is rendered before focusing, store ref for cleanup
+      autoFocusTimeoutRef.current = setTimeout(() => {
+        const menuButtons = document.querySelectorAll('.schedule-dropdown-menu button')
+        // Cache menu items in ref for performance (avoid repeated DOM queries in arrow key nav)
+        menuItemsRef.current = Array.from(menuButtons)
+        menuItemsRef.current[0]?.focus()
       }, 0)
+    } else if (!wasClosedBefore) {
+      // Clear cached menu items when dropdown closes
+      menuItemsRef.current = null
     }
   }
   
@@ -305,14 +316,15 @@ function Schedule() {
         }, 0)
       }
 
-      // Arrow key navigation within menu
+      // Arrow key navigation within menu - use cached menu items if available
       if (
         event.key === 'ArrowDown' ||
         event.key === 'ArrowUp' ||
         event.key === 'Home' ||
         event.key === 'End'
       ) {
-        const menuItems = Array.from(document.querySelectorAll('.schedule-dropdown-menu button'))
+        // Use cached menu items or query DOM if not cached
+        const menuItems = menuItemsRef.current || Array.from(document.querySelectorAll('.schedule-dropdown-menu button'))
 
         if (!menuItems.length) {
           return
@@ -344,9 +356,12 @@ function Schedule() {
     return () => {
       document.removeEventListener('click', handleClickOutside)
       document.removeEventListener('keydown', handleKeyDown)
-      // Cleanup any pending Tab timeout
+      // Cleanup any pending dropdown-related timeouts
       if (tabTimeoutRef.current) {
         clearTimeout(tabTimeoutRef.current)
+      }
+      if (autoFocusTimeoutRef.current) {
+        clearTimeout(autoFocusTimeoutRef.current)
       }
     }
   }, [isDropdownOpen])
@@ -432,7 +447,13 @@ function Schedule() {
             <div className='schedule-dropdown'>
               <button 
                 className='btn'
-                onClick={toggleDropdown}
+                onClick={(e) => {
+                  // Only handle mouse clicks; keyboard events are handled by onKeyDown
+                  // Browser automatically fires click after keyboard activation, which would double-trigger
+                  if (e.detail !== 0) {  // detail is 0 for keyboard-initiated clicks
+                    toggleDropdown(e)
+                  }
+                }}
                 onKeyDown={toggleDropdown}
                 aria-label='Schedule an event'
                 aria-expanded={isDropdownOpen}
@@ -579,15 +600,15 @@ function Schedule() {
                   ))}
                   
                   {/* Dynamic events from database */}
-                  {/* Note: User event interactions are logged for debugging purposes. 
-                      This logging behavior is documented in our privacy policy. */}
+                  {/* Note: User event interactions are logged (event ID only) for debugging purposes. */}
                   {events
                     .filter((event) => {
                       // Filter out invalid events with proper ID validation
+                      // Allow ID >= 0 (0 can be valid in some database systems)
                       const hasValidId =
                         typeof event?.id === 'number' &&
                         Number.isFinite(event.id) &&
-                        event.id > 0
+                        event.id >= 0
                       
                       if (!event || !event.startTime || !event.endTime || !event.title || !hasValidId) {
                         return false
@@ -610,8 +631,7 @@ function Schedule() {
                           top={top}
                           height={height}
                           onClick={() =>
-                            // Log interaction for analytics (event ID only, no PII)
-                            // Note: Logging is documented in privacy policy
+                            // Log interaction for debugging (event ID only, no PII)
                             logger.info('User interacted with schedule event', {
                               id: event.id
                             })

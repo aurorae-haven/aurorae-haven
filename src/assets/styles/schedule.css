@@ -232,6 +232,14 @@
   border-color: rgba(148, 163, 184, 0.24);
   border-left: 3px solid #94a3b8;
 }
+
+/* Habit blocks - teal accent */
+.block.habit {
+  background: rgba(20, 184, 166, 0.14);
+  border-color: rgba(20, 184, 166, 0.24);
+  border-left: 3px solid #14b8a6;
+}
+
 .block .title {
   position: absolute;
   left: 14px;
@@ -343,8 +351,12 @@
 .event-form input:focus {
   outline: none;
   border-color: var(--mint);
-  /* Note: 60% opacity provides sufficient contrast ratio (≥3:1) against typical backgrounds
-   * Verified against common UI backgrounds. Adjust if needed for specific color schemes. */
+  /* Focus ring contrast note (WCAG 2.4.13 - Focus Visible, Level AA):
+   * - This 60% var(--mint) mix was contrast-checked to be ≥3:1 against the input background var(--glass-lo)
+   *   in the current theme, meeting WCAG 2.2 Level AA requirements.
+   * - If var(--glass-lo), var(--mint), or the surrounding surface colors change, re-verify this focus
+   *   color against the new backgrounds and adjust the mix percentage as needed to maintain ≥3:1 contrast.
+   * - Tested with: var(--glass-lo) = rgba(16, 20, 44, 0.3), var(--mint) = #86f5e0 */
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 60%, transparent);
 }
 
@@ -411,7 +423,8 @@
   color: white;
   font-size: 14px;
   box-shadow: 0 4px 12px color-mix(in srgb, var(--shadow-color, #000000) 30%, transparent);
-  z-index: 1000;
+  /* Z-index 900: Below modals (z-index 999) to avoid confusion when modal forms fail */
+  z-index: 900;
   display: flex;
   align-items: center;
   gap: 10px;

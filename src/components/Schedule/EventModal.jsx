@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Modal from '../common/Modal'
 import Icon from '../common/Icon'
 import { getCurrentDateISO } from '../../utils/timeUtils'
-import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../constants/scheduleConstants'
+import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../utils/scheduleConstants'
 
 /**
  * Modal for creating and editing schedule events
@@ -11,6 +11,11 @@ import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../constants/scheduleConstant
 function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) {
   // Validate eventType and use default if invalid
   const validatedEventType = VALID_EVENT_TYPES.includes(eventType) ? eventType : EVENT_TYPES.TASK
+  
+  // Log warning in development if invalid event type provided
+  if (process.env.NODE_ENV === 'development' && !VALID_EVENT_TYPES.includes(eventType)) {
+    console.warn(`EventModal received invalid event type: "${eventType}". Defaulting to "${EVENT_TYPES.TASK}".`)
+  }
   
   const [formData, setFormData] = useState({
     title: '',
@@ -52,9 +57,12 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
   useEffect(() => {
     if (isOpen && titleInputRef.current) {
       titleInputRef.current.focus()
-      titleInputRef.current.select()
+      // Only select text if editing existing event with title
+      if (initialData && initialData.title) {
+        titleInputRef.current.select()
+      }
     }
-  }, [isOpen])
+  }, [isOpen, initialData])
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -79,7 +87,9 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       setError('Start and end times are required')
       return false
     }
-    // End time must be after start time (string comparison works for HH:MM format in 24-hour time)
+    // Time validation: End time must be after start time
+    // Note: String comparison works correctly for HH:MM format in 24-hour time (e.g., "09:00" < "17:00")
+    // This assumes times are always in HH:MM 24-hour format; would need Date objects for 12-hour format
     if (formData.startTime >= formData.endTime) {
       setError('End time must be after start time')
       return false

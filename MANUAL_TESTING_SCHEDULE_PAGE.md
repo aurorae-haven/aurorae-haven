@@ -199,7 +199,7 @@ This guide provides step-by-step instructions for manually testing all button fu
 **Purpose:** Verify validation prevents end time before start time.
 
 **Steps:**
-1. Click any "+ [Type]" button
+1. Click the Schedule dropdown button and select any event type
 2. Fill in:
    - Title: "Test"
    - Date: Today
@@ -331,9 +331,10 @@ npm test -- src/__tests__/Schedule.test.js src/__tests__/EventModal.test.js
 ```
 
 **Expected Output:**
-- ✅ 36/36 tests passing
+- ✅ All Schedule-related tests passing
 - ✅ No test failures
 - ✅ Test coverage meets requirements
+- ✅ (Optional) Review test coverage reports if configured
 
 ---
 
