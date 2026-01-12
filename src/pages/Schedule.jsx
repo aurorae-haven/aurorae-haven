@@ -243,9 +243,19 @@ function Schedule() {
     setIsDropdownOpen(false) // Close dropdown when opening modal
   }
   
-  // Toggle dropdown menu
-  const toggleDropdown = () => {
+  // Toggle dropdown menu with keyboard support
+  const toggleDropdown = (event) => {
+    const wasClosedBefore = !isDropdownOpen
     setIsDropdownOpen(!isDropdownOpen)
+    
+    // Auto-focus first menu item when opened via keyboard (Space or Enter)
+    if (wasClosedBefore && (event?.key === 'Enter' || event?.key === ' ')) {
+      // Use setTimeout to ensure the menu is rendered before focusing
+      setTimeout(() => {
+        const firstMenuItem = document.querySelector('.schedule-dropdown-menu button')
+        firstMenuItem?.focus()
+      }, 0)
+    }
   }
   
   // Close dropdown when clicking outside or using keyboard navigation
@@ -287,23 +297,35 @@ function Schedule() {
       }
 
       // Arrow key navigation within menu
-      const menuItems = Array.from(document.querySelectorAll('.schedule-dropdown-menu button'))
-      const currentIndex = menuItems.indexOf(document.activeElement)
+      if (
+        event.key === 'ArrowDown' ||
+        event.key === 'ArrowUp' ||
+        event.key === 'Home' ||
+        event.key === 'End'
+      ) {
+        const menuItems = Array.from(document.querySelectorAll('.schedule-dropdown-menu button'))
 
-      if (event.key === 'ArrowDown') {
-        event.preventDefault()
-        const nextIndex = currentIndex < menuItems.length - 1 ? currentIndex + 1 : 0
-        menuItems[nextIndex]?.focus()
-      } else if (event.key === 'ArrowUp') {
-        event.preventDefault()
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1
-        menuItems[prevIndex]?.focus()
-      } else if (event.key === 'Home') {
-        event.preventDefault()
-        menuItems[0]?.focus()
-      } else if (event.key === 'End') {
-        event.preventDefault()
-        menuItems[menuItems.length - 1]?.focus()
+        if (!menuItems.length) {
+          return
+        }
+
+        const currentIndex = menuItems.indexOf(document.activeElement)
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault()
+          const nextIndex = currentIndex < menuItems.length - 1 ? currentIndex + 1 : 0
+          menuItems[nextIndex]?.focus()
+        } else if (event.key === 'ArrowUp') {
+          event.preventDefault()
+          const prevIndex = currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1
+          menuItems[prevIndex]?.focus()
+        } else if (event.key === 'Home') {
+          event.preventDefault()
+          menuItems[0]?.focus()
+        } else if (event.key === 'End') {
+          event.preventDefault()
+          menuItems[menuItems.length - 1]?.focus()
+        }
       }
     }
     
@@ -569,11 +591,10 @@ function Schedule() {
                           top={top}
                           height={height}
                           onClick={() =>
+                            // Log interaction for analytics (event ID only, no PII)
+                            // Note: Logging is documented in privacy policy
                             logger.info('User interacted with schedule event', {
-                              id: event.id,
-                              title: event.title,
-                              startTime: event.startTime,
-                              endTime: event.endTime
+                              id: event.id
                             })
                           }
                         />

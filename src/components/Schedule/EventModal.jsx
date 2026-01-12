@@ -77,6 +77,7 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       setError('Start and end times are required')
       return false
     }
+    // End time must be after start time (string comparison works for HH:MM format in 24-hour time)
     if (formData.startTime >= formData.endTime) {
       setError('End time must be after start time')
       return false
