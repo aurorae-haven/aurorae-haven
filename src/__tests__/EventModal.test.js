@@ -86,6 +86,18 @@ describe('EventModal Component', () => {
     expect(screen.getByText('Add Meeting')).toBeInTheDocument()
   })
 
+  test('shows correct title for habit type', () => {
+    render(
+      <EventModal
+        isOpen={true}
+        onClose={mockOnClose}
+        onSave={mockOnSave}
+        eventType='habit'
+      />
+    )
+    expect(screen.getByText('Add Habit')).toBeInTheDocument()
+  })
+
   test('shows edit title when initialData provided', () => {
     const initialData = {
       id: 1,

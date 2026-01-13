@@ -214,7 +214,7 @@ describe('Schedule Component', () => {
       render(<Schedule />)
       const weekButton = screen.getByRole('button', { name: /View week schedule/i })
       
-      // Click the week button using RTL's fireEvent for better test reliability
+      // Click the week button using RTL's fireEvent
       fireEvent.click(weekButton)
       
       // Wait for state update
@@ -228,7 +228,7 @@ describe('Schedule Component', () => {
       render(<Schedule />)
       const dayButton = screen.getByRole('button', { name: /View day schedule/i })
       
-      // Click day button (already active) using RTL's fireEvent for better test reliability
+      // Click day button (already active) using RTL's fireEvent
       fireEvent.click(dayButton)
       
       // Day button should still be active

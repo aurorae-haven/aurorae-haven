@@ -257,16 +257,20 @@ function Schedule() {
     const wasClosedBefore = !isDropdownOpen
     setIsDropdownOpen(!isDropdownOpen)
     
-    // Auto-focus first menu item when opened via keyboard (Space or Enter)
-    if (wasClosedBefore && (event?.key === 'Enter' || event?.key === ' ')) {
-      // Use setTimeout to ensure the menu is rendered before focusing, store ref for cleanup
+    // When dropdown opens (via keyboard or mouse), cache menu items for performance
+    if (wasClosedBefore) {
+      // Use setTimeout to ensure the menu is rendered before querying/focusing, store ref for cleanup
       autoFocusTimeoutRef.current = setTimeout(() => {
         const menuButtons = document.querySelectorAll('.schedule-dropdown-menu button')
         // Cache menu items in ref for performance (avoid repeated DOM queries in arrow key nav)
         menuItemsRef.current = Array.from(menuButtons)
-        menuItemsRef.current[0]?.focus()
+        
+        // Only auto-focus first menu item when opened via keyboard (Space or Enter) to preserve UX
+        if (event?.key === 'Enter' || event?.key === ' ') {
+          menuItemsRef.current[0]?.focus()
+        }
       }, 0)
-    } else if (!wasClosedBefore) {
+    } else {
       // Clear cached menu items when dropdown closes
       menuItemsRef.current = null
     }
@@ -448,8 +452,9 @@ function Schedule() {
               <button 
                 className='btn'
                 onClick={(e) => {
-                  // Only handle mouse clicks; keyboard events are handled by onKeyDown
-                  // Browser automatically fires click after keyboard activation, which would double-trigger
+                  // Handle both mouse and keyboard activation
+                  // Keyboard (Space/Enter) activation is handled in onKeyDown to enable preventDefault
+                  // This onClick filters out keyboard-initiated clicks (detail === 0) to prevent double-triggering
                   if (e.detail !== 0) {  // detail is 0 for keyboard-initiated clicks
                     toggleDropdown(e)
                   }
@@ -601,44 +606,45 @@ function Schedule() {
                   
                   {/* Dynamic events from database */}
                   {/* Note: User event interactions are logged (event ID only) for debugging purposes. */}
-                  {events
-                    .filter((event) => {
-                      // Filter out invalid events with proper ID validation
-                      // Allow ID >= 0 (0 can be valid in some database systems)
-                      const hasValidId =
-                        typeof event?.id === 'number' &&
-                        Number.isFinite(event.id) &&
-                        event.id >= 0
-                      
-                      if (!event || !event.startTime || !event.endTime || !event.title || !hasValidId) {
-                        return false
-                      }
-                      // Filter out events completely outside schedule range
-                      const top = timeToPosition(event.startTime)
-                      const height = durationToHeight(event.startTime, event.endTime)
-                      return top >= 0 && height > 0
-                    })
-                    .map((event) => {
-                      const top = timeToPosition(event.startTime)
-                      const height = durationToHeight(event.startTime, event.endTime)
+                  {events.reduce((acc, event) => {
+                    // Filter out invalid events with proper ID validation
+                    // Allow ID >= 0 (0 can be valid in some database systems)
+                    const hasValidId =
+                      typeof event?.id === 'number' &&
+                      Number.isFinite(event.id) &&
+                      event.id >= 0
 
-                      return (
-                        <ScheduleBlock
-                          key={`dynamic-event-${event.id}`}
-                          type={event.type || EVENT_TYPES.TASK}
-                          title={event.title}
-                          time={`${event.startTime}–${event.endTime}`}
-                          top={top}
-                          height={height}
-                          onClick={() =>
-                            // Log interaction for debugging (event ID only, no PII)
-                            logger.info('User interacted with schedule event', {
-                              id: event.id
-                            })
-                          }
-                        />
-                      )
-                    })}
+                    if (!event || !event.startTime || !event.endTime || !event.title || !hasValidId) {
+                      return acc
+                    }
+
+                    // Compute layout metrics once per event (performance optimization)
+                    const top = timeToPosition(event.startTime)
+                    const height = durationToHeight(event.startTime, event.endTime)
+
+                    // Filter out events completely outside schedule range
+                    if (top < 0 || height <= 0) {
+                      return acc
+                    }
+
+                    acc.push(
+                      <ScheduleBlock
+                        key={`dynamic-event-${event.id}`}
+                        type={event.type || EVENT_TYPES.TASK}
+                        title={event.title}
+                        time={`${event.startTime}–${event.endTime}`}
+                        top={top}
+                        height={height}
+                        onClick={() =>
+                          // Log interaction for debugging (event ID only, no PII)
+                          logger.info('User interacted with schedule event', {
+                            id: event.id
+                          })
+                        }
+                      />
+                    )
+                    return acc
+                  }, [])}
                 </div>
               </div>
             </div>

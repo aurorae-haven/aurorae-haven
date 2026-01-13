@@ -10,12 +10,8 @@ import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../utils/scheduleConstants'
  */
 function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) {
   // Validate eventType and use default if invalid
+  // Note: PropTypes validation will also warn about invalid types in development
   const validatedEventType = VALID_EVENT_TYPES.includes(eventType) ? eventType : EVENT_TYPES.TASK
-  
-  // Log warning in development if invalid event type provided
-  if (process.env.NODE_ENV === 'development' && !VALID_EVENT_TYPES.includes(eventType)) {
-    console.warn(`EventModal received invalid event type: "${eventType}". Defaulting to "${EVENT_TYPES.TASK}".`)
-  }
   
   const [formData, setFormData] = useState({
     title: '',
@@ -31,14 +27,13 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
   // Reset form when modal opens or event type changes
   useEffect(() => {
     if (isOpen) {
-      const validatedType = VALID_EVENT_TYPES.includes(eventType) ? eventType : EVENT_TYPES.TASK
       if (initialData) {
         setFormData({
           title: initialData.title || '',
           day: initialData.day || getCurrentDateISO(),
           startTime: initialData.startTime || '09:00',
           endTime: initialData.endTime || '10:00',
-          type: initialData.type || validatedType
+          type: initialData.type || validatedEventType
         })
       } else {
         setFormData({

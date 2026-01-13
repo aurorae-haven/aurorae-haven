@@ -136,6 +136,25 @@ This guide provides step-by-step instructions for manually testing all button fu
 
 ---
 
+### Test 5.5: Schedule Dropdown – Habit Option
+**Purpose:** Verify selecting "Habit" from the Schedule dropdown opens the event creation modal for habits.
+
+**Steps:**
+1. Navigate to Schedule page
+2. Click the "Schedule" button
+3. In the dropdown menu, select "Habit"
+4. Observe modal behavior
+
+**Expected Results:**
+- ✅ Modal appears with title "Add Habit"
+- ✅ All form fields are present
+- ✅ Modal functionality works as expected
+- ✅ No console errors
+- ✅ Title input auto-focused
+- ✅ Habit events display with teal accent styling when created
+
+---
+
 ### Test 6: Event Creation - Valid Form
 **Purpose:** Verify creating an event with valid data works correctly.
 

@@ -351,7 +351,7 @@
 .event-form input:focus {
   outline: none;
   border-color: var(--mint);
-  /* Focus ring contrast note (WCAG 2.4.13 - Focus Visible, Level AA):
+  /* Focus ring contrast note (WCAG 2.4.7 - Focus Visible, Level AA):
    * - This 60% var(--mint) mix was contrast-checked to be ≥3:1 against the input background var(--glass-lo)
    *   in the current theme, meeting WCAG 2.2 Level AA requirements.
    * - If var(--glass-lo), var(--mint), or the surrounding surface colors change, re-verify this focus
