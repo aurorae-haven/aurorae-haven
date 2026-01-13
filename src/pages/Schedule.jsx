@@ -6,7 +6,14 @@ import { createEvent, getEventsForDay, getEventsForWeek } from '../utils/schedul
 import { createLogger } from '../utils/logger'
 import { getCurrentDateISO } from '../utils/timeUtils'
 import dayjs from 'dayjs'
-import { EVENT_TYPES, SCHEDULE_START_HOUR, SCHEDULE_END_HOUR, PIXELS_PER_HOUR, SCHEDULE_VERTICAL_OFFSET } from '../utils/scheduleConstants'
+import {
+  EVENT_TYPES,
+  SCHEDULE_START_HOUR,
+  SCHEDULE_END_HOUR,
+  PIXELS_PER_HOUR,
+  SCHEDULE_VERTICAL_OFFSET,
+  MINUTES_PER_HOUR
+} from '../utils/scheduleConstants'
 
 const logger = createLogger('Schedule')
 
@@ -117,7 +124,7 @@ const timeToPosition = (timeString) => {
   if (hours < SCHEDULE_START_HOUR || hours >= SCHEDULE_END_HOUR) return -1
   
   // Calculate pixel position from schedule start time
-  return (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
+  return (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
 }
 
 // Convert duration in minutes to pixel height
@@ -147,11 +154,11 @@ const durationToHeight = (startTime, endTime) => {
   }
   
   // Convert schedule hours to minutes for easier calculation
-  const scheduleStartMinutes = SCHEDULE_START_HOUR * 60  // 360 minutes (06:00)
-  const scheduleEndMinutes = SCHEDULE_END_HOUR * 60      // 1320 minutes (22:00)
+  const scheduleStartMinutes = SCHEDULE_START_HOUR * MINUTES_PER_HOUR  // 360 minutes (06:00)
+  const scheduleEndMinutes = SCHEDULE_END_HOUR * MINUTES_PER_HOUR      // 1320 minutes (22:00)
   
-  let startTotalMinutes = startHours * 60 + startMinutes
-  let endTotalMinutes = endHours * 60 + endMinutes
+  let startTotalMinutes = startHours * MINUTES_PER_HOUR + startMinutes
+  let endTotalMinutes = endHours * MINUTES_PER_HOUR + endMinutes
   
   // If the event is completely outside the visible schedule, height is zero
   if (endTotalMinutes <= scheduleStartMinutes || startTotalMinutes >= scheduleEndMinutes) {
@@ -169,7 +176,7 @@ const durationToHeight = (startTime, endTime) => {
   
   // Calculate the visible duration and convert to pixels
   const visibleDurationMinutes = Math.max(0, endTotalMinutes - startTotalMinutes)
-  return (visibleDurationMinutes / 60) * PIXELS_PER_HOUR
+  return (visibleDurationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
 }
 
 function Schedule() {
@@ -459,7 +466,14 @@ function Schedule() {
                     toggleDropdown(e)
                   }
                 }}
-                onKeyDown={toggleDropdown}
+                onKeyDown={(e) => {
+                  // Only respond to Enter and Space keys for dropdown toggle
+                  const key = e.key
+                  if (key === 'Enter' || key === ' ' || key === 'Spacebar') {
+                    e.preventDefault() // Prevent default to avoid double-triggering onClick
+                    toggleDropdown(e)
+                  }
+                }}
                 aria-label='Schedule an event'
                 aria-expanded={isDropdownOpen}
                 aria-haspopup='menu'
