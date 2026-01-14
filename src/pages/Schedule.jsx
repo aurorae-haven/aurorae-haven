@@ -232,9 +232,9 @@ function Schedule() {
       const hours = now.getHours()
       const minutes = now.getMinutes()
 
-      // Position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
+      // Position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
       if (hours >= SCHEDULE_START_HOUR && hours < SCHEDULE_END_HOUR) {
-        const position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / 60) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
+        const position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
         setCurrentTimePosition(position)
       } else {
         setCurrentTimePosition(-1) // Hide if outside schedule range
@@ -469,7 +469,7 @@ function Schedule() {
                 onKeyDown={(e) => {
                   // Only respond to Enter and Space keys for dropdown toggle
                   const key = e.key
-                  if (key === 'Enter' || key === ' ' || key === 'Spacebar') {
+                  if (key === 'Enter' || key === ' ') {
                     e.preventDefault() // Prevent default to avoid double-triggering onClick
                     toggleDropdown(e)
                   }
