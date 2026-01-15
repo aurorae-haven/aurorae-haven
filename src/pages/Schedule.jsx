@@ -390,7 +390,9 @@ function Schedule() {
       logger.log(`${eventData.type} event created successfully`)
     } catch (err) {
       logger.error('Failed to save event:', err)
-      throw new Error('Failed to save event. Please try again.')
+      // Provide specific error message if available
+      const reason = err && err.message ? err.message : 'Unknown error'
+      throw new Error(`Failed to save event: ${reason}. Please try again.`)
     }
   }
 
@@ -619,7 +621,8 @@ function Schedule() {
                   ))}
                   
                   {/* Dynamic events from database */}
-                  {/* Note: User event interactions are logged (event ID only) for debugging purposes. */}
+                  {/* Note: User event interactions are logged (event ID only) for debugging purposes.
+                       See PRIVACY.md for detailed information about our logging practices and data handling. */}
                   {events.reduce((acc, event) => {
                     // Filter out invalid events with proper ID validation
                     // Allow ID >= 0 (0 can be valid in some database systems)

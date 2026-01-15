@@ -351,12 +351,14 @@
 .event-form input:focus {
   outline: none;
   border-color: var(--mint);
-  /* Focus ring contrast note (WCAG 2.4.7 - Focus Visible, Level AA):
-   * - This 60% var(--mint) mix was contrast-checked to be ≥3:1 against the input background var(--glass-lo)
-   *   in the current theme, meeting WCAG 2.2 Level AA requirements.
-   * - If var(--glass-lo), var(--mint), or the surrounding surface colors change, re-verify this focus
-   *   color against the new backgrounds and adjust the mix percentage as needed to maintain ≥3:1 contrast.
-   * - Tested with: var(--glass-lo) = rgba(16, 20, 44, 0.3), var(--mint) = #86f5e0 */
+  /* Focus ring contrast (WCAG 2.4.7 - Focus Visible, Level AA):
+   * - This uses 60% opacity of var(--mint) (#86f5e0) mixed with transparent background
+   * - The contrast ratio depends on the underlying background color var(--glass-lo)
+   * - WCAG 2.2 Level AA requires ≥3:1 contrast for focus indicators
+   * - This implementation was tested with var(--glass-lo) = rgba(16, 20, 44, 0.3) and var(--mint) = #86f5e0
+   * - IMPORTANT: If you change theme colors, re-verify this contrast ratio using a contrast checker tool
+   * - Consider increasing opacity to 80-100% if contrast falls below 3:1 in your theme
+   * - Alternative: Use solid var(--mint) without transparency for guaranteed high contrast */
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--mint) 60%, transparent);
 }
 
