@@ -352,7 +352,7 @@
   outline: none;
   border-color: var(--mint);
   /* Focus ring contrast (WCAG 2.4.7 - Focus Visible, Level AA):
-   * - This uses 60% opacity of var(--mint) (#86f5e0) mixed with transparent background
+   * - This uses color-mix to blend 60% var(--mint) (#86f5e0) with transparent, creating a semi-transparent focus ring whose effective contrast depends on the underlying content
    * - The contrast ratio depends on the underlying background color var(--glass-lo)
    * - WCAG 2.2 Level AA requires ≥3:1 contrast for focus indicators
    * - This implementation was tested with var(--glass-lo) = rgba(16, 20, 44, 0.3) and var(--mint) = #86f5e0
