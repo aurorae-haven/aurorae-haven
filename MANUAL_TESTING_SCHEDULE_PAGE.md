@@ -227,7 +227,7 @@ This guide provides step-by-step instructions for manually testing all button fu
 3. Click "Create"
 
 **Expected Results:**
-- ✅ Error message appears: "End time must be after start time"
+- ✅ Error message appears: "End time must be after start time (events cannot have zero duration)"
 - ✅ Form does not submit
 - ✅ Modal remains open
 - ✅ Error message is red/styled appropriately

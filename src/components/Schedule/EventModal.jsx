@@ -82,11 +82,12 @@ function EventModal({ isOpen, onClose, onSave, eventType, initialData = null }) 
       setError('Start and end times are required')
       return false
     }
-    // Time validation: End time must be after start time
+    // Time validation: End time must be after start time (zero-duration events not allowed)
     // Note: String comparison works correctly for HH:MM format in 24-hour time (e.g., "09:00" < "17:00")
     // This assumes times are always in HH:MM 24-hour format; would need Date objects for 12-hour format
+    // Using >= to prevent both backwards time ranges and zero-duration events
     if (formData.startTime >= formData.endTime) {
-      setError('End time must be after start time')
+      setError('End time must be after start time (events cannot have zero duration)')
       return false
     }
     return true
