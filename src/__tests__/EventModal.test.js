@@ -172,7 +172,7 @@ describe('EventModal Component', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText('End time must be after start time')).toBeInTheDocument()
+      expect(screen.getByText('End time must be after start time (events cannot have zero duration)')).toBeInTheDocument()
     })
     expect(mockOnSave).not.toHaveBeenCalled()
   })
