@@ -118,9 +118,8 @@ We may update this privacy policy from time to time. Changes will be:
 
 ## Contact
 
-For privacy-related questions or concerns:
+For privacy-related questions or concerns, please use:
 - **GitHub Issues**: https://github.com/aurorae-haven/aurorae-haven/issues
-- **Email**: [Repository maintainer contact - to be added]
 
 ## Commitment to Privacy
 
