@@ -53,8 +53,13 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
     const performSearch = async () => {
       if (!searchQuery.trim()) {
         // If no search query, show all items
-        const items = await getAllRoutinesAndTasks(eventType)
-        setSearchResults(items)
+        try {
+          const items = await getAllRoutinesAndTasks(eventType)
+          setSearchResults(items)
+        } catch (err) {
+          logger.error('Failed to load items for empty search query:', err)
+          setSearchResults([])
+        }
         return
       }
 

@@ -5,6 +5,33 @@ import { createLogger } from './logger'
 const logger = createLogger('ScheduleHelpers')
 
 /**
+ * Sort items by importance, priority, type, and title
+ * @param {Array} items - Array of items to sort
+ * @returns {Array} Sorted array
+ */
+function sortItemsByPriority(items) {
+  return items.sort((a, b) => {
+    // 1. Important tasks first
+    if (a.isImportant !== b.isImportant) {
+      return a.isImportant ? -1 : 1
+    }
+
+    // 2. Among important tasks, sort by priority
+    if (a.isImportant && b.isImportant && a.priority !== b.priority) {
+      return a.priority - b.priority
+    }
+
+    // 3. Then by type (tasks before routines for consistency)
+    if (a.type !== b.type) {
+      return a.type === 'task' ? -1 : 1
+    }
+
+    // 4. Finally alphabetically by title
+    return a.title.localeCompare(b.title)
+  })
+}
+
+/**
  * Get all available tasks from localStorage (Eisenhower matrix format)
  * @returns {Array} Array of tasks with quadrant information
  */
@@ -127,28 +154,8 @@ export async function searchRoutinesAndTasks(query, eventType = null) {
     })
   }
 
-  // Sort results: Important tasks first, then by type, then alphabetically
-  results.sort((a, b) => {
-    // 1. Important tasks first
-    if (a.isImportant !== b.isImportant) {
-      return a.isImportant ? -1 : 1
-    }
-
-    // 2. Among important tasks, sort by priority
-    if (a.isImportant && b.isImportant && a.priority !== b.priority) {
-      return a.priority - b.priority
-    }
-
-    // 3. Then by type (tasks before routines for consistency)
-    if (a.type !== b.type) {
-      return a.type === 'task' ? -1 : 1
-    }
-
-    // 4. Finally alphabetically by title
-    return a.title.localeCompare(b.title)
-  })
-
-  return results
+  // Sort results using shared sorting function
+  return sortItemsByPriority(results)
 }
 
 /**
@@ -198,26 +205,6 @@ export async function getAllRoutinesAndTasks(eventType = null) {
     })
   }
 
-  // Sort: Important tasks first, then by type, then alphabetically
-  items.sort((a, b) => {
-    // 1. Important tasks first
-    if (a.isImportant !== b.isImportant) {
-      return a.isImportant ? -1 : 1
-    }
-
-    // 2. Among important tasks, sort by priority
-    if (a.isImportant && b.isImportant && a.priority !== b.priority) {
-      return a.priority - b.priority
-    }
-
-    // 3. Then by type (tasks before routines for consistency)
-    if (a.type !== b.type) {
-      return a.type === 'task' ? -1 : 1
-    }
-
-    // 4. Finally alphabetically by title
-    return a.title.localeCompare(b.title)
-  })
-
-  return items
+  // Sort using shared sorting function
+  return sortItemsByPriority(items)
 }
