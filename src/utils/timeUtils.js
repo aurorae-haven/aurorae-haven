@@ -18,6 +18,19 @@ const PADDING_CHAR = '0'
 const SECONDS_PER_MINUTE = 60
 
 /**
+ * Get current date in ISO format (YYYY-MM-DD)
+ * 
+ * Note: This function uses the user's local timezone. When used near midnight,
+ * the "current date" may differ from server timezone. For future internationalization,
+ * consider adding a timezone parameter or using UTC.
+ * 
+ * @returns {string} Current date in ISO format (YYYY-MM-DD)
+ */
+export function getCurrentDateISO() {
+  return dayjs().format('YYYY-MM-DD')
+}
+
+/**
  * Parse time string in HH:MM format to hours and minutes
  * Validates that hours are in range 0-23 and minutes are in range 0-59
  * Returns null for invalid inputs to distinguish from valid '00:00'
