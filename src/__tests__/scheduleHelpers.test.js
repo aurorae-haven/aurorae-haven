@@ -86,6 +86,54 @@ describe('scheduleHelpers', () => {
       const tasks = getAllTasks()
       expect(tasks).toEqual([])
     })
+
+    it('should include completed tasks when includeCompleted is true', () => {
+      const mockTasks = {
+        urgent_important: [
+          {
+            id: '1',
+            text: 'Task 1',
+            completed: false,
+            createdAt: '2025-01-01'
+          },
+          { id: '2', text: 'Task 2', completed: true, createdAt: '2025-01-01' }
+        ],
+        not_urgent_important: [
+          { id: '3', text: 'Task 3', completed: true, createdAt: '2025-01-01' }
+        ],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+
+      localStorage.setItem('aurorae_tasks', JSON.stringify(mockTasks))
+
+      const tasks = getAllTasks({ includeCompleted: true })
+      expect(tasks).toHaveLength(3)
+      expect(tasks.map((t) => t.id)).toEqual(['1', '2', '3'])
+    })
+
+    it('should exclude completed tasks by default', () => {
+      const mockTasks = {
+        urgent_important: [
+          {
+            id: '1',
+            text: 'Task 1',
+            completed: false,
+            createdAt: '2025-01-01'
+          },
+          { id: '2', text: 'Task 2', completed: true, createdAt: '2025-01-01' }
+        ],
+        not_urgent_important: [],
+        urgent_not_important: [],
+        not_urgent_not_important: []
+      }
+
+      localStorage.setItem('aurorae_tasks', JSON.stringify(mockTasks))
+
+      const tasks = getAllTasks()
+      expect(tasks).toHaveLength(1)
+      expect(tasks[0].id).toBe('1')
+    })
   })
 
   describe('searchRoutinesAndTasks', () => {

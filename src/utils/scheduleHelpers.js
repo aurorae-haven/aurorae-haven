@@ -33,9 +33,13 @@ function sortItemsByPriority(items) {
 
 /**
  * Get all available tasks from localStorage (Eisenhower matrix format)
+ * @param {Object} options - Configuration options
+ * @param {boolean} options.includeCompleted - Whether to include completed tasks (default: false)
  * @returns {Array} Array of tasks with quadrant information
  */
-export function getAllTasks() {
+export function getAllTasks(options = {}) {
+  const { includeCompleted = false } = options
+
   try {
     const tasksStr = localStorage.getItem('aurorae_tasks')
     if (!tasksStr) return []
@@ -75,8 +79,7 @@ export function getAllTasks() {
     for (const quadrant of quadrants) {
       const tasks = tasksData[quadrant.key] || []
       tasks.forEach((task) => {
-        if (!task.completed) {
-          // Only include incomplete tasks
+        if (includeCompleted || !task.completed) {
           allTasks.push({
             ...task,
             quadrant: quadrant.key,
