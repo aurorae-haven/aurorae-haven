@@ -29,6 +29,21 @@ jest.mock('../utils/timeUtils', () => ({
   getCurrentDateISO: jest.fn(() => '2025-09-16')
 }))
 
+// Mock SearchableEventSelector to automatically trigger create new
+// This simulates the user clicking "Create New" button immediately
+jest.mock('../components/Schedule/SearchableEventSelector', () => {
+  const React = require('react')
+  return function SearchableEventSelector({ onCreateNew, onSelect }) {
+    // Automatically call onCreateNew to show the form
+    React.useEffect(() => {
+      if (onCreateNew) {
+        onCreateNew()
+      }
+    }, [onCreateNew])
+    return null
+  }
+})
+
 describe('EventModal Component', () => {
   const mockOnClose = jest.fn()
   const mockOnSave = jest.fn()
@@ -47,7 +62,7 @@ describe('EventModal Component', () => {
       />
     )
     expect(screen.getByTestId('modal')).toBeInTheDocument()
-    expect(screen.getByText('Add Task')).toBeInTheDocument()
+    expect(screen.getByText('Schedule Task')).toBeInTheDocument()
   })
 
   test('does not render when closed', () => {
@@ -71,7 +86,7 @@ describe('EventModal Component', () => {
         eventType='routine'
       />
     )
-    expect(screen.getByText('Add Routine')).toBeInTheDocument()
+    expect(screen.getByText('Schedule Routine')).toBeInTheDocument()
   })
 
   test('shows correct title for meeting type', () => {
@@ -83,7 +98,7 @@ describe('EventModal Component', () => {
         eventType='meeting'
       />
     )
-    expect(screen.getByText('Add Meeting')).toBeInTheDocument()
+    expect(screen.getByText('Schedule Meeting')).toBeInTheDocument()
   })
 
   test('shows correct title for habit type', () => {
@@ -95,7 +110,7 @@ describe('EventModal Component', () => {
         eventType='habit'
       />
     )
-    expect(screen.getByText('Add Habit')).toBeInTheDocument()
+    expect(screen.getByText('Schedule Habit')).toBeInTheDocument()
   })
 
   test('shows edit title when initialData provided', () => {
@@ -116,7 +131,7 @@ describe('EventModal Component', () => {
         initialData={initialData}
       />
     )
-    expect(screen.getByText('Edit Task')).toBeInTheDocument()
+    expect(screen.getByText('Save Task')).toBeInTheDocument()
   })
 
   test('renders form fields', () => {
