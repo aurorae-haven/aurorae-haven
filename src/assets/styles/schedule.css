@@ -558,6 +558,7 @@
 
 /* Searchable Event Selector Styles */
 .searchable-event-selector {
+  position: relative;
   margin-bottom: 16px;
 }
 

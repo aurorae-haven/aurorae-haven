@@ -258,7 +258,7 @@ function EventModal({
               type='submit'
               className='btn btn-primary'
               disabled={isSubmitting}
-              aria-label={initialData ? 'Save changes' : 'Schedule event'}
+              aria-label={initialData ? 'Save' : 'Schedule'}
             >
               {isSubmitting ? (
                 <>

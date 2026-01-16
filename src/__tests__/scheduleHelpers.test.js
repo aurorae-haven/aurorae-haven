@@ -1,4 +1,8 @@
-import { getAllTasks, searchRoutinesAndTasks, getAllRoutinesAndTasks } from '../utils/scheduleHelpers'
+import {
+  getAllTasks,
+  searchRoutinesAndTasks,
+  getAllRoutinesAndTasks
+} from '../utils/scheduleHelpers'
 import { getRoutines } from '../utils/routinesManager'
 
 // Mock dependencies
@@ -29,7 +33,12 @@ describe('scheduleHelpers', () => {
     it('should return all incomplete tasks from all quadrants', () => {
       const mockTasks = {
         urgent_important: [
-          { id: '1', text: 'Task 1', completed: false, createdAt: '2025-01-01' },
+          {
+            id: '1',
+            text: 'Task 1',
+            completed: false,
+            createdAt: '2025-01-01'
+          },
           { id: '2', text: 'Task 2', completed: true, createdAt: '2025-01-01' }
         ],
         not_urgent_important: [
@@ -131,7 +140,9 @@ describe('scheduleHelpers', () => {
       ])
 
       const mockTasks = {
-        urgent_important: [{ id: '1', text: 'Launch product', completed: false }],
+        urgent_important: [
+          { id: '1', text: 'Launch product', completed: false }
+        ],
         not_urgent_important: [],
         urgent_not_important: [],
         not_urgent_not_important: []
@@ -152,7 +163,9 @@ describe('scheduleHelpers', () => {
       ])
 
       const mockTasks = {
-        urgent_important: [{ id: '1', text: 'Important task', completed: false }],
+        urgent_important: [
+          { id: '1', text: 'Important task', completed: false }
+        ],
         not_urgent_important: [],
         urgent_not_important: [],
         not_urgent_not_important: [

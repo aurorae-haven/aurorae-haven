@@ -5,6 +5,9 @@ import {
   searchRoutinesAndTasks,
   getAllRoutinesAndTasks
 } from '../../utils/scheduleHelpers'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger('SearchableEventSelector')
 
 /**
  * SearchableEventSelector - Component for searching and selecting existing routines/tasks
@@ -34,8 +37,8 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
         } else {
           setSearchResults([])
         }
-      } catch {
-        // Error is silently handled - user sees empty results
+      } catch (err) {
+        logger.error('Failed to load items:', err)
         setSearchResults([])
       } finally {
         setIsLoading(false)
@@ -59,8 +62,8 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
       try {
         const results = await searchRoutinesAndTasks(searchQuery, eventType)
         setSearchResults(results)
-      } catch {
-        // Error is silently handled - user sees empty results
+      } catch (err) {
+        logger.error('Search failed:', err)
         setSearchResults([])
       } finally {
         setIsLoading(false)
