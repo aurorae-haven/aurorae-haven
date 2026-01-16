@@ -172,14 +172,18 @@ describe('EventModal Component', () => {
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText('End time must be after start time (events cannot have zero duration)')).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          'End time must be after start time (events cannot have zero duration)'
+        )
+      ).toBeInTheDocument()
     })
     expect(mockOnSave).not.toHaveBeenCalled()
   })
 
   test('calls onSave with correct data when form is valid', async () => {
     mockOnSave.mockResolvedValue(undefined)
-    
+
     render(
       <EventModal
         isOpen={true}
@@ -260,7 +264,7 @@ describe('EventModal Component', () => {
   test('displays error when onSave rejects', async () => {
     const errorMessage = 'Failed to save event'
     mockOnSave.mockRejectedValue(new Error(errorMessage))
-    
+
     render(
       <EventModal
         isOpen={true}
@@ -294,14 +298,16 @@ describe('EventModal Component', () => {
 
     const titleInput = screen.getByLabelText(/Title/i)
     const longTitle = 'a'.repeat(201)
-    
+
     fireEvent.change(titleInput, { target: { value: longTitle } })
-    
+
     const submitButton = screen.getByRole('button', { name: /Create/i })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Title must be 200 characters or less')).toBeInTheDocument()
+      expect(
+        screen.getByText('Title must be 200 characters or less')
+      ).toBeInTheDocument()
     })
     expect(mockOnSave).not.toHaveBeenCalled()
   })

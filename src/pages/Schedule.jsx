@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
-import { createEvent, getEventsForDay, getEventsForWeek } from '../utils/scheduleManager'
+import {
+  createEvent,
+  getEventsForDay,
+  getEventsForWeek
+} from '../utils/scheduleManager'
 import { createLogger } from '../utils/logger'
 import { getCurrentDateISO } from '../utils/timeUtils'
 import dayjs from 'dayjs'
@@ -39,12 +43,16 @@ function ScheduleBlock({
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onClick(e)
-        }
-      } : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onClick(e)
+              }
+            }
+          : undefined
+      }
     >
       {isNext && <div className='next-badge'>Next</div>}
       <div className='title'>{title}</div>
@@ -109,62 +117,83 @@ const SEPARATOR_POSITIONS = [126, 726, 1446]
 // Returns -1 if time is invalid or outside schedule range
 const timeToPosition = (timeString) => {
   // Input validation: check for null, type, and format
-  if (!timeString || typeof timeString !== 'string' || !timeString.includes(':')) {
+  if (
+    !timeString ||
+    typeof timeString !== 'string' ||
+    !timeString.includes(':')
+  ) {
     return -1
   }
   const parts = timeString.split(':')
   if (parts.length !== 2) return -1
-  
+
   const hours = Number(parts[0])
   const minutes = Number(parts[1])
-  
+
   // Validate numeric conversion
   if (isNaN(hours) || isNaN(minutes)) return -1
   // Check if time falls within schedule window (06:00-22:00)
   if (hours < SCHEDULE_START_HOUR || hours >= SCHEDULE_END_HOUR) return -1
-  
+
   // Calculate pixel position from schedule start time
-  return (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
+  return (
+    (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+    (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+    SCHEDULE_VERTICAL_OFFSET
+  )
 }
 
 // Convert duration in minutes to pixel height
 // Clamps event times to visible schedule window (06:00-22:00) to prevent overflow
 const durationToHeight = (startTime, endTime) => {
   // Input validation: check for null, type, and format
-  if (!startTime || !endTime || typeof startTime !== 'string' || typeof endTime !== 'string') {
+  if (
+    !startTime ||
+    !endTime ||
+    typeof startTime !== 'string' ||
+    typeof endTime !== 'string'
+  ) {
     return 0
   }
   if (!startTime.includes(':') || !endTime.includes(':')) {
     return 0
   }
-  
+
   const startParts = startTime.split(':')
   const endParts = endTime.split(':')
-  
+
   if (startParts.length !== 2 || endParts.length !== 2) return 0
-  
+
   const startHours = Number(startParts[0])
   const startMinutes = Number(startParts[1])
   const endHours = Number(endParts[0])
   const endMinutes = Number(endParts[1])
-  
+
   // Validate numeric conversion
-  if (isNaN(startHours) || isNaN(startMinutes) || isNaN(endHours) || isNaN(endMinutes)) {
+  if (
+    isNaN(startHours) ||
+    isNaN(startMinutes) ||
+    isNaN(endHours) ||
+    isNaN(endMinutes)
+  ) {
     return 0
   }
-  
+
   // Convert schedule hours to minutes for easier calculation
-  const scheduleStartMinutes = SCHEDULE_START_HOUR * MINUTES_PER_HOUR  // 360 minutes (06:00)
-  const scheduleEndMinutes = SCHEDULE_END_HOUR * MINUTES_PER_HOUR      // 1320 minutes (22:00)
-  
+  const scheduleStartMinutes = SCHEDULE_START_HOUR * MINUTES_PER_HOUR // 360 minutes (06:00)
+  const scheduleEndMinutes = SCHEDULE_END_HOUR * MINUTES_PER_HOUR // 1320 minutes (22:00)
+
   let startTotalMinutes = startHours * MINUTES_PER_HOUR + startMinutes
   let endTotalMinutes = endHours * MINUTES_PER_HOUR + endMinutes
-  
+
   // If the event is completely outside the visible schedule, height is zero
-  if (endTotalMinutes <= scheduleStartMinutes || startTotalMinutes >= scheduleEndMinutes) {
+  if (
+    endTotalMinutes <= scheduleStartMinutes ||
+    startTotalMinutes >= scheduleEndMinutes
+  ) {
     return 0
   }
-  
+
   // Clamp event times to the visible schedule window to prevent overflow rendering
   // This handles events that start before 06:00 or end after 22:00
   if (startTotalMinutes < scheduleStartMinutes) {
@@ -173,33 +202,36 @@ const durationToHeight = (startTime, endTime) => {
   if (endTotalMinutes > scheduleEndMinutes) {
     endTotalMinutes = scheduleEndMinutes
   }
-  
+
   // Calculate the visible duration and convert to pixels
-  const visibleDurationMinutes = Math.max(0, endTotalMinutes - startTotalMinutes)
+  const visibleDurationMinutes = Math.max(
+    0,
+    endTotalMinutes - startTotalMinutes
+  )
   return (visibleDurationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
 }
 
 function Schedule() {
   // View mode state - 'day' or 'week'
   const [viewMode, setViewMode] = useState('day')
-  
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedEventType, setSelectedEventType] = useState(null)
-  
+
   // Events state
   const [events, setEvents] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  
+
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  
+
   // Refs for timeout cleanup and menu items caching
   const tabTimeoutRef = useRef(null)
   const autoFocusTimeoutRef = useRef(null)
   const menuItemsRef = useRef(null)
-  
+
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
 
@@ -209,9 +241,10 @@ function Schedule() {
       setIsLoading(true)
       setError('')
       try {
-        const loadedEvents = viewMode === 'day' 
-          ? await getEventsForDay(getCurrentDateISO())
-          : await getEventsForWeek()
+        const loadedEvents =
+          viewMode === 'day'
+            ? await getEventsForDay(getCurrentDateISO())
+            : await getEventsForWeek()
         // Ensure loadedEvents is always an array
         setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
       } catch (err) {
@@ -222,7 +255,7 @@ function Schedule() {
         setIsLoading(false)
       }
     }
-    
+
     loadEvents()
   }, [viewMode])
 
@@ -234,7 +267,10 @@ function Schedule() {
 
       // Position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
       if (hours >= SCHEDULE_START_HOUR && hours < SCHEDULE_END_HOUR) {
-        const position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
+        const position =
+          (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+          (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+          SCHEDULE_VERTICAL_OFFSET
         setCurrentTimePosition(position)
       } else {
         setCurrentTimePosition(-1) // Hide if outside schedule range
@@ -253,25 +289,27 @@ function Schedule() {
     setIsModalOpen(true)
     setIsDropdownOpen(false) // Close dropdown when opening modal
   }
-  
+
   // Toggle dropdown menu with keyboard support
   const toggleDropdown = (event) => {
     // Prevent default for Space key to avoid page scrolling
     if (event?.key === ' ') {
       event.preventDefault()
     }
-    
+
     const wasClosedBefore = !isDropdownOpen
     setIsDropdownOpen(!isDropdownOpen)
-    
+
     // When dropdown opens (via keyboard or mouse), cache menu items for performance
     if (wasClosedBefore) {
       // Use setTimeout to ensure the menu is rendered before querying/focusing, store ref for cleanup
       autoFocusTimeoutRef.current = setTimeout(() => {
-        const menuButtons = document.querySelectorAll('.schedule-dropdown-menu button')
+        const menuButtons = document.querySelectorAll(
+          '.schedule-dropdown-menu button'
+        )
         // Cache menu items in ref for performance (avoid repeated DOM queries in arrow key nav)
         menuItemsRef.current = Array.from(menuButtons)
-        
+
         // Only auto-focus first menu item when opened via keyboard (Space or Enter) to preserve UX
         if (event?.key === 'Enter' || event?.key === ' ') {
           menuItemsRef.current[0]?.focus()
@@ -282,7 +320,7 @@ function Schedule() {
       menuItemsRef.current = null
     }
   }
-  
+
   // Close dropdown when clicking outside or using keyboard navigation
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -300,7 +338,9 @@ function Schedule() {
       if (event.key === 'Escape') {
         setIsDropdownOpen(false)
         // Return focus to the dropdown button
-        const dropdownButton = document.querySelector('.schedule-dropdown button[aria-haspopup="menu"]')
+        const dropdownButton = document.querySelector(
+          '.schedule-dropdown button[aria-haspopup="menu"]'
+        )
         if (dropdownButton) {
           dropdownButton.focus()
         }
@@ -313,12 +353,14 @@ function Schedule() {
         if (tabTimeoutRef.current) {
           clearTimeout(tabTimeoutRef.current)
         }
-        
+
         // Wait for focus to move before checking the active element
         tabTimeoutRef.current = window.setTimeout(() => {
           const activeElement = document.activeElement
           const isInsideDropdown =
-            activeElement && activeElement.closest && activeElement.closest('.schedule-dropdown')
+            activeElement &&
+            activeElement.closest &&
+            activeElement.closest('.schedule-dropdown')
 
           if (!isInsideDropdown) {
             setIsDropdownOpen(false)
@@ -335,7 +377,11 @@ function Schedule() {
         event.key === 'End'
       ) {
         // Use cached menu items or query DOM if not cached
-        const menuItems = menuItemsRef.current || Array.from(document.querySelectorAll('.schedule-dropdown-menu button'))
+        const menuItems =
+          menuItemsRef.current ||
+          Array.from(
+            document.querySelectorAll('.schedule-dropdown-menu button')
+          )
 
         if (!menuItems.length) {
           return
@@ -345,11 +391,13 @@ function Schedule() {
 
         if (event.key === 'ArrowDown') {
           event.preventDefault()
-          const nextIndex = currentIndex < menuItems.length - 1 ? currentIndex + 1 : 0
+          const nextIndex =
+            currentIndex < menuItems.length - 1 ? currentIndex + 1 : 0
           menuItems[nextIndex]?.focus()
         } else if (event.key === 'ArrowUp') {
           event.preventDefault()
-          const prevIndex = currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1
+          const prevIndex =
+            currentIndex > 0 ? currentIndex - 1 : menuItems.length - 1
           menuItems[prevIndex]?.focus()
         } else if (event.key === 'Home') {
           event.preventDefault()
@@ -360,7 +408,7 @@ function Schedule() {
         }
       }
     }
-    
+
     document.addEventListener('click', handleClickOutside)
     document.addEventListener('keydown', handleKeyDown)
 
@@ -382,9 +430,10 @@ function Schedule() {
     try {
       await createEvent(eventData)
       // Reload events after creating new one, keeping the current view/date
-      const loadedEvents = viewMode === 'day' 
-        ? await getEventsForDay(getCurrentDateISO())
-        : await getEventsForWeek()
+      const loadedEvents =
+        viewMode === 'day'
+          ? await getEventsForDay(getCurrentDateISO())
+          : await getEventsForWeek()
       // Ensure loadedEvents is always an array
       setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
       logger.log(`${eventData.type} event created successfully`)
@@ -416,7 +465,7 @@ function Schedule() {
         onSave={handleSaveEvent}
         eventType={selectedEventType}
       />
-      
+
       {/* Error notification */}
       {error && (
         <div className='error-notification' role='alert' aria-live='assertive'>
@@ -437,10 +486,12 @@ function Schedule() {
         <div className='card-h'>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <strong>Schedule</strong>
-            <span className='small'>Today · {dayjs().format('ddd DD/MM/YYYY')}</span>
+            <span className='small'>
+              Today · {dayjs().format('ddd DD/MM/YYYY')}
+            </span>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <button 
+            <button
               className={`btn ${viewMode === 'day' ? 'btn-active' : ''}`}
               onClick={() => handleViewModeChange('day')}
               aria-label='View day schedule'
@@ -448,7 +499,7 @@ function Schedule() {
             >
               Day
             </button>
-            <button 
+            <button
               className={`btn ${viewMode === 'week' ? 'btn-active' : ''}`}
               onClick={() => handleViewModeChange('week')}
               aria-label='View week schedule'
@@ -458,13 +509,14 @@ function Schedule() {
             </button>
             {/* Unified dropdown for scheduling all event types */}
             <div className='schedule-dropdown'>
-              <button 
+              <button
                 className='btn'
                 onClick={(e) => {
                   // Handle both mouse and keyboard activation
                   // Keyboard (Space/Enter) activation is handled in onKeyDown to enable preventDefault
                   // This onClick filters out keyboard-initiated clicks (detail === 0) to prevent double-triggering
-                  if (e.detail !== 0) {  // detail is 0 for keyboard-initiated clicks
+                  if (e.detail !== 0) {
+                    // detail is 0 for keyboard-initiated clicks
                     toggleDropdown(e)
                   }
                 }}
@@ -619,7 +671,7 @@ function Schedule() {
                       {...block}
                     />
                   ))}
-                  
+
                   {/* Dynamic events from database */}
                   {/* Note: User event interactions are logged (event ID only) for debugging purposes.
                        See PRIVACY.md for detailed information about our logging practices and data handling. */}
@@ -631,13 +683,22 @@ function Schedule() {
                       Number.isFinite(event.id) &&
                       event.id >= 0
 
-                    if (!event || !event.startTime || !event.endTime || !event.title || !hasValidId) {
+                    if (
+                      !event ||
+                      !event.startTime ||
+                      !event.endTime ||
+                      !event.title ||
+                      !hasValidId
+                    ) {
                       return acc
                     }
 
                     // Compute layout metrics once per event (performance optimization)
                     const top = timeToPosition(event.startTime)
-                    const height = durationToHeight(event.startTime, event.endTime)
+                    const height = durationToHeight(
+                      event.startTime,
+                      event.endTime
+                    )
 
                     // Filter out events completely outside schedule range
                     if (top < 0 || height <= 0) {
