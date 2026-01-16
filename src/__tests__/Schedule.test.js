@@ -40,8 +40,10 @@ jest.mock('../utils/timeUtils', () => ({
 }))
 
 describe('Schedule Component', () => {
-  const mockGetEventsForDay = require('../utils/scheduleManager').getEventsForDay
-  const mockGetEventsForWeek = require('../utils/scheduleManager').getEventsForWeek
+  const mockGetEventsForDay =
+    require('../utils/scheduleManager').getEventsForDay
+  const mockGetEventsForWeek =
+    require('../utils/scheduleManager').getEventsForWeek
 
   beforeEach(() => {
     // Mock Date to return a consistent time for testing
@@ -69,7 +71,9 @@ describe('Schedule Component', () => {
     render(<Schedule />)
     expect(screen.getByRole('button', { name: /Day/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Week/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Schedule an event/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Schedule an event/i })
+    ).toBeInTheDocument()
   })
 
   test('renders sidebar sections', () => {
@@ -174,31 +178,41 @@ describe('Schedule Component', () => {
   describe('Button Functionality', () => {
     test('Day button is active by default', () => {
       render(<Schedule />)
-      const dayButton = screen.getByRole('button', { name: /View day schedule/i })
+      const dayButton = screen.getByRole('button', {
+        name: /View day schedule/i
+      })
       expect(dayButton).toHaveClass('btn-active')
     })
 
     test('Week button is not active by default', () => {
       render(<Schedule />)
-      const weekButton = screen.getByRole('button', { name: /View week schedule/i })
+      const weekButton = screen.getByRole('button', {
+        name: /View week schedule/i
+      })
       expect(weekButton).not.toHaveClass('btn-active')
     })
 
     test('Day button has correct ARIA attributes', () => {
       render(<Schedule />)
-      const dayButton = screen.getByRole('button', { name: /View day schedule/i })
+      const dayButton = screen.getByRole('button', {
+        name: /View day schedule/i
+      })
       expect(dayButton).toHaveAttribute('aria-pressed', 'true')
     })
 
     test('Week button has correct ARIA attributes when not active', () => {
       render(<Schedule />)
-      const weekButton = screen.getByRole('button', { name: /View week schedule/i })
+      const weekButton = screen.getByRole('button', {
+        name: /View week schedule/i
+      })
       expect(weekButton).toHaveAttribute('aria-pressed', 'false')
     })
 
     test('Schedule dropdown button has correct ARIA attributes', () => {
       render(<Schedule />)
-      const scheduleButton = screen.getByRole('button', { name: /Schedule an event/i })
+      const scheduleButton = screen.getByRole('button', {
+        name: /Schedule an event/i
+      })
       expect(scheduleButton).toBeInTheDocument()
       expect(scheduleButton).toHaveAttribute('aria-expanded', 'false')
       expect(scheduleButton).toHaveAttribute('aria-haspopup', 'menu')
@@ -212,25 +226,29 @@ describe('Schedule Component', () => {
 
     test('clicking Week button switches view mode and loads week events', async () => {
       render(<Schedule />)
-      const weekButton = screen.getByRole('button', { name: /View week schedule/i })
-      
+      const weekButton = screen.getByRole('button', {
+        name: /View week schedule/i
+      })
+
       // Click the week button using RTL's fireEvent
       fireEvent.click(weekButton)
-      
+
       // Wait for state update
       await screen.findByRole('button', { name: /View week schedule/i })
-      
+
       // Check that week events were loaded
       expect(mockGetEventsForWeek).toHaveBeenCalled()
     })
 
     test('clicking Day button after Week keeps day view active', () => {
       render(<Schedule />)
-      const dayButton = screen.getByRole('button', { name: /View day schedule/i })
-      
+      const dayButton = screen.getByRole('button', {
+        name: /View day schedule/i
+      })
+
       // Click day button (already active) using RTL's fireEvent
       fireEvent.click(dayButton)
-      
+
       // Day button should still be active
       expect(dayButton).toHaveClass('btn-active')
     })
