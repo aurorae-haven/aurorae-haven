@@ -200,6 +200,17 @@ function EventModal({
       } catch (err) {
         logger.error('Failed to instantiate routine from template:', err)
         setError('Failed to create routine from template. Please try again.')
+        // Reset to a safe default state so the user can retry from the search view
+        setFormData({
+          title: '',
+          day: getCurrentDateISO(),
+          startTime: '09:00',
+          endTime: '10:00',
+          type: validatedEventType,
+          travelTime: 0,
+          preparationTime: 0
+        })
+        setShowManualForm(false)
         return
       }
     } else {

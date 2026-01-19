@@ -99,6 +99,60 @@ END:VCALENDAR`
       expect(events).toHaveLength(0)
     })
 
+    test('should parse valid events even when invalid events are present', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:INVALID
+SUMMARY:Bad Event
+UID:event-bad
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20250115T090000Z
+DTEND:20250115T100000Z
+SUMMARY:Good Event
+UID:event-good
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      // Only the valid event should be parsed
+      expect(events).toHaveLength(1)
+      expect(events[0].summary).toBe('Good Event')
+    })
+
+    test('should handle DTSTART with VALUE parameter', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20250115
+DTEND;VALUE=DATE:20250116
+SUMMARY:All Day Event
+UID:event-allday
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      expect(events).toHaveLength(1)
+      expect(events[0].summary).toBe('All Day Event')
+    })
+
+    test('should handle DTSTART with TZID parameter', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART;TZID=America/New_York:20250115T090000
+DTEND;TZID=America/New_York:20250115T100000
+SUMMARY:Meeting with Timezone
+UID:event-tz
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      expect(events).toHaveLength(1)
+      expect(events[0].summary).toBe('Meeting with Timezone')
+    })
+
     test('should parse multiple events', () => {
       const icsData = `BEGIN:VCALENDAR
 VERSION:2.0
@@ -173,6 +227,30 @@ END:VCALENDAR`
       const subscription = {
         name: 'Private Calendar',
         url: 'http://192.168.1.1/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should reject 10.x.x.x private IP range', async () => {
+      const subscription = {
+        name: 'Private Calendar',
+        url: 'http://10.0.0.1/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should reject 172.16-31.x.x private IP range', async () => {
+      const subscription = {
+        name: 'Private Calendar',
+        url: 'http://172.20.0.1/calendar.ics',
         color: '#86f5e0'
       }
 

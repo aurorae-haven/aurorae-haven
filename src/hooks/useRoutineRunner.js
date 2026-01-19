@@ -23,24 +23,19 @@ const TIMER_TICK_INTERVAL_MS = 1000
  * @returns {Object} Runner state and control functions
  */
 export function useRoutineRunner(routine) {
-  // Initialize runner state with lazy initialization
-  const [state, setState] = useState(() => {
-    if (routine) {
-      return createRunnerState(routine)
-    }
-    return null
-  })
+  // Initialize runner state directly from routine parameter
+  const [state, setState] = useState(() => routine ? createRunnerState(routine) : null)
   const [isComplete, setIsComplete] = useState(false)
   const [summary, setSummary] = useState(null)
 
-  // Update runner state when routine changes
+  // Update runner state when routine changes after mount
   useEffect(() => {
-    if (routine && !state) {
-      const initialState = createRunnerState(routine)
+    if (routine) {
+      const newState = createRunnerState(routine)
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setState(initialState)
+      setState(newState)
     }
-  }, [routine, state])
+  }, [routine])
 
   // Timer tick - TAB-RTN-52: Target 60 FPS with requestAnimationFrame
   useEffect(() => {

@@ -39,14 +39,8 @@ export async function createEvent(event) {
     endTime: event.endTime,
     duration:
       event.duration || calculateDuration(event.startTime, event.endTime),
-    travelTime:
-      typeof event.travelTime === 'number'
-        ? event.travelTime
-        : DEFAULT_TRAVEL_TIME_MINUTES,
-    preparationTime:
-      typeof event.preparationTime === 'number'
-        ? event.preparationTime
-        : DEFAULT_PREPARATION_TIME_MINUTES,
+    travelTime: event.travelTime ?? DEFAULT_TRAVEL_TIME_MINUTES,
+    preparationTime: event.preparationTime ?? DEFAULT_PREPARATION_TIME_MINUTES,
     isExternal: event.isExternal || false,
     externalCalendarId: event.externalCalendarId || null
   })
@@ -106,14 +100,8 @@ export async function updateEvent(event) {
     ...event,
     duration:
       event.duration || calculateDuration(event.startTime, event.endTime),
-    travelTime:
-      typeof event.travelTime === 'number'
-        ? event.travelTime
-        : DEFAULT_TRAVEL_TIME_MINUTES,
-    preparationTime:
-      typeof event.preparationTime === 'number'
-        ? event.preparationTime
-        : DEFAULT_PREPARATION_TIME_MINUTES
+    travelTime: event.travelTime ?? DEFAULT_TRAVEL_TIME_MINUTES,
+    preparationTime: event.preparationTime ?? DEFAULT_PREPARATION_TIME_MINUTES
   })
   return await put(STORES.SCHEDULE, updated)
 }

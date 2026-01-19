@@ -100,6 +100,12 @@ export async function deleteCalendarSubscription(id) {
       db.close()
       resolve()
     }
+    
+    transaction.onerror = () => {
+      db.close()
+      const error = transaction.error || new Error('Failed to delete calendar subscription events.')
+      reject(error)
+    }
   })
 }
 
@@ -125,7 +131,8 @@ export function parseICS(icsData) {
       isInEvent = true
       currentEvent = {}
     } else if (line === 'END:VEVENT' && isInEvent) {
-      if (currentEvent && currentEvent.summary && currentEvent.dtstart) {
+      // Only add event if it has required fields AND valid dates
+      if (currentEvent && currentEvent.summary && currentEvent.dtstart && currentEvent.dtstart !== null) {
         events.push(currentEvent)
       }
       currentEvent = null
@@ -135,15 +142,20 @@ export function parseICS(icsData) {
       const colonIndex = line.indexOf(':')
       if (colonIndex === -1) continue
       
-      const propertyKey = line.substring(0, colonIndex)
+      // Extract property name and value, handling parameters like DTSTART;VALUE=DATE
+      const fullPropertyKey = line.substring(0, colonIndex)
       const value = line.substring(colonIndex + 1)
+      
+      // Get base property name (before semicolon if parameters exist)
+      const semicolonIndex = fullPropertyKey.indexOf(';')
+      const propertyKey = semicolonIndex > -1 ? fullPropertyKey.substring(0, semicolonIndex) : fullPropertyKey
       
       if (propertyKey === 'SUMMARY') {
         // Sanitize to prevent XSS
         currentEvent.summary = sanitizeText(value)
-      } else if (propertyKey.startsWith('DTSTART')) {
+      } else if (propertyKey === 'DTSTART') {
         currentEvent.dtstart = parseDateTimeValue(value)
-      } else if (propertyKey.startsWith('DTEND')) {
+      } else if (propertyKey === 'DTEND') {
         currentEvent.dtend = parseDateTimeValue(value)
       } else if (propertyKey === 'DESCRIPTION') {
         // Sanitize to prevent XSS
@@ -260,14 +272,16 @@ function convertICSEventToScheduleEvent(icsEvent, calendarId) {
     endDate.setTime(startDate.getTime() + DEFAULT_EVENT_DURATION_MILLISECONDS)
   }
   
-  // Format date as YYYY-MM-DD (use UTC for consistency)
-  const day = startDate.toISOString().split('T')[0]
+  // Format date as YYYY-MM-DD using local time so events reflect the user's timezone
+  const year = startDate.getFullYear()
+  const month = String(startDate.getMonth() + 1).padStart(2, '0')
+  const date = String(startDate.getDate()).padStart(2, '0')
+  const day = `${year}-${month}-${date}`
   
-  // Format times as HH:MM
-  // For UTC dates (from ICS with 'Z' suffix), use getUTCHours/getUTCMinutes
-  // to preserve the intended time without timezone conversion
-  const startTime = `${String(startDate.getUTCHours()).padStart(2, '0')}:${String(startDate.getUTCMinutes()).padStart(2, '0')}`
-  const endTime = `${String(endDate.getUTCHours()).padStart(2, '0')}:${String(endDate.getUTCMinutes()).padStart(2, '0')}`
+  // Format times as HH:MM in the user's local timezone
+  // UTC times from ICS are automatically converted to local time by Date object
+  const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`
+  const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`
   
   return {
     title: icsEvent.summary,
@@ -315,7 +329,8 @@ function validateCalendarURL(url) {
     const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
     const ipMatch = hostname.match(ipv4Regex)
     if (ipMatch) {
-      const [, a, b] = ipMatch.map(Number)
+      const a = Number(ipMatch[1])
+      const b = Number(ipMatch[2])
       if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) {
         logger.warn('Private IP ranges not allowed for calendar subscriptions')
         return false
@@ -393,6 +408,12 @@ export async function syncCalendar(subscriptionId) {
       transaction.oncomplete = () => {
         db.close()
         resolve()
+      }
+      
+      transaction.onerror = () => {
+        db.close()
+        const error = transaction.error || new Error('Failed to delete old calendar events during sync.')
+        reject(error)
       }
     })
     

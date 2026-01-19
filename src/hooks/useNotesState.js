@@ -74,7 +74,9 @@ export function useNotesState() {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       loadNote(notes[0])
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+    // loadNote is stable via useCallback and should not trigger re-renders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [notes.length, currentNoteId])
 
   // Memoize current note to avoid redundant array searches
   const currentNote = useMemo(
