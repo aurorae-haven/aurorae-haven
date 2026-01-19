@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Modal from '../common/Modal'
 import Icon from '../common/Icon'
+import ConfirmDialog from '../Common/ConfirmDialog'
 import {
   getCalendarSubscriptions,
   addCalendarSubscription,
@@ -21,6 +22,7 @@ function CalendarSubscriptionModal({ isOpen, onClose }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(null) // {id, name} when showing confirm dialog
   const [formData, setFormData] = useState({
     name: '',
     url: '',
@@ -77,15 +79,18 @@ function CalendarSubscriptionModal({ isOpen, onClose }) {
     }
   }
 
-  const handleDeleteSubscription = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this calendar subscription?')) {
-      return
-    }
+  const handleDeleteSubscription = async (id, name) => {
+    // Show confirmation dialog
+    setConfirmDelete({ id, name })
+  }
+
+  const confirmDeleteSubscription = async () => {
+    if (!confirmDelete) return
 
     setIsLoading(true)
     setError('')
     try {
-      await deleteCalendarSubscription(id)
+      await deleteCalendarSubscription(confirmDelete.id)
       await loadSubscriptions()
       logger.log('Calendar subscription deleted')
     } catch (err) {
@@ -93,6 +98,7 @@ function CalendarSubscriptionModal({ isOpen, onClose }) {
       setError('Failed to delete calendar subscription')
     } finally {
       setIsLoading(false)
+      setConfirmDelete(null)
     }
   }
 
@@ -296,7 +302,7 @@ function CalendarSubscriptionModal({ isOpen, onClose }) {
                   <button
                     type='button'
                     className='btn btn-sm btn-danger'
-                    onClick={() => handleDeleteSubscription(sub.id)}
+                    onClick={() => handleDeleteSubscription(sub.id, sub.name)}
                     disabled={isLoading}
                     aria-label='Delete calendar subscription'
                   >
@@ -308,6 +314,18 @@ function CalendarSubscriptionModal({ isOpen, onClose }) {
           </div>
         )}
       </div>
+      
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!confirmDelete}
+        title="Delete Calendar Subscription"
+        message={confirmDelete ? `Are you sure you want to delete "${confirmDelete.name}"? This will remove all synced events from this calendar.` : ''}
+        onConfirm={confirmDeleteSubscription}
+        onCancel={() => setConfirmDelete(null)}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmDanger={true}
+      />
     </Modal>
   )
 }

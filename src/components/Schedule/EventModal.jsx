@@ -126,6 +126,11 @@ function EventModal({
     
     // Validate travel time
     if (typeof formData.travelTime === 'number') {
+      // Explicitly check for NaN
+      if (Number.isNaN(formData.travelTime)) {
+        setError('Travel time must be a valid number')
+        return false
+      }
       if (formData.travelTime < 0) {
         setError('Travel time cannot be negative')
         return false
@@ -138,6 +143,11 @@ function EventModal({
     
     // Validate preparation time
     if (typeof formData.preparationTime === 'number') {
+      // Explicitly check for NaN
+      if (Number.isNaN(formData.preparationTime)) {
+        setError('Preparation time must be a valid number')
+        return false
+      }
       if (formData.preparationTime < 0) {
         setError('Preparation time cannot be negative')
         return false
@@ -200,7 +210,7 @@ function EventModal({
       } catch (err) {
         logger.error('Failed to instantiate routine from template:', err)
         setError('Failed to create routine from template. Please try again.')
-        // Reset to a safe default state so the user can retry from the search view
+        // Reset to a safe state so user can retry
         setFormData({
           title: '',
           day: getCurrentDateISO(),

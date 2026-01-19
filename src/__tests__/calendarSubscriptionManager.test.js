@@ -236,15 +236,19 @@ END:VCALENDAR`
     })
 
     test('should reject 10.x.x.x private IP range', async () => {
-      const subscription = {
-        name: 'Private Calendar',
-        url: 'http://10.0.0.1/calendar.ics',
-        color: '#86f5e0'
-      }
+      const testAddresses = ['10.0.0.1', '10.255.255.255', '10.128.0.1']
+      
+      for (const address of testAddresses) {
+        const subscription = {
+          name: 'Private Calendar',
+          url: `http://${address}/calendar.ics`,
+          color: '#86f5e0'
+        }
 
-      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
-        'Invalid or unsafe calendar URL'
-      )
+        await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+          'Invalid or unsafe calendar URL'
+        )
+      }
     })
 
     test('should reject 172.16-31.x.x private IP range', async () => {
@@ -263,6 +267,46 @@ END:VCALENDAR`
       const subscription = {
         name: 'File Calendar',
         url: 'file:///etc/passwd',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should reject invalid IPv4 addresses (octets > 255)', async () => {
+      const subscription = {
+        name: 'Invalid IP Calendar',
+        url: 'http://999.999.999.999/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should reject private IPv6 addresses', async () => {
+      const testAddresses = ['fc00::1', 'fd00::1', 'fe80::1']
+      
+      for (const address of testAddresses) {
+        const subscription = {
+          name: 'Private IPv6 Calendar',
+          url: `http://[${address}]/calendar.ics`,
+          color: '#86f5e0'
+        }
+
+        await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+          'Invalid or unsafe calendar URL'
+        )
+      }
+    })
+
+    test('should reject IPv4-mapped IPv6 addresses pointing to private ranges', async () => {
+      const subscription = {
+        name: 'IPv4-mapped IPv6 Calendar',
+        url: 'http://[::ffff:192.168.1.1]/calendar.ics',
         color: '#86f5e0'
       }
 

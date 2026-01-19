@@ -110,13 +110,23 @@ export async function deleteCalendarSubscription(id) {
 }
 
 /**
- * Parse ICS data and extract events
- * This is a basic ICS parser suitable for common calendar feeds.
- * Limitations: Does not handle all ICS features (recurrence rules, timezones, exceptions).
- * For more complex calendars, consider integrating a library like ical.js.
+ * Parse ICS (iCalendar) format and extract events
+ * @param {string} icsData - Raw ICS data
+ * @returns {Array<Object>} Array of parsed events
  * 
- * @param {string} icsData - ICS file content
- * @returns {Array<object>} Array of parsed events
+ * Note: This is a basic ICS parser that handles common calendar formats.
+ * It does NOT support:
+ * - Recurrence rules (RRULE, EXDATE, etc.)
+ * - Complex timezone handling (VTIMEZONE) - TZID parameters are parsed but times are treated as UTC
+ * - Exceptions to recurring events
+ * - Line folding (long lines split across multiple lines)
+ * 
+ * IMPORTANT: Events with TZID parameters (e.g., DTSTART;TZID=America/New_York:20250115T090000)
+ * are currently treated as UTC times and converted to local timezone for display. This means
+ * an event at 09:00 in America/New_York timezone will be displayed incorrectly if the source
+ * time is not already in UTC.
+ * 
+ * For more complex calendars with proper timezone support, consider using a library like ical.js
  */
 export function parseICS(icsData) {
   const events = []
@@ -302,6 +312,19 @@ function convertICSEventToScheduleEvent(icsEvent, calendarId) {
  * @param {string} url - URL to validate
  * @returns {boolean} True if URL is valid and safe
  */
+/**
+ * Validate calendar URL to prevent SSRF attacks
+ * @param {string} url - URL to validate
+ * @returns {boolean} True if URL is safe to fetch
+ * 
+ * Note: This validation blocks localhost and private IPv4 addresses.
+ * It does NOT currently block:
+ * - Private IPv6 ranges (fc00::/7, fe80::/10)
+ * - IPv4-mapped IPv6 addresses (::ffff:192.168.1.1)
+ * - DNS rebinding attacks (domain initially resolves to public IP, later to private)
+ * 
+ * For production use in security-sensitive contexts, consider additional safeguards.
+ */
 function validateCalendarURL(url) {
   if (!url || typeof url !== 'string') {
     return false
@@ -325,12 +348,32 @@ function validateCalendarURL(url) {
       return false
     }
     
-    // Block private IP ranges (10.x.x.x, 172.16-31.x.x, 192.168.x.x)
+    // Block private IPv6 ranges
+    if (hostname.includes(':')) {
+      // Check for IPv6 private ranges and IPv4-mapped IPv6
+      if (hostname.startsWith('fc') || hostname.startsWith('fd') || 
+          hostname.startsWith('fe80') || hostname.includes('::ffff:')) {
+        logger.warn('Private IPv6 ranges not allowed for calendar subscriptions')
+        return false
+      }
+    }
+    
+    // Block private IPv4 ranges (10.x.x.x, 172.16-31.x.x, 192.168.x.x)
     const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
     const ipMatch = hostname.match(ipv4Regex)
     if (ipMatch) {
       const a = Number(ipMatch[1])
       const b = Number(ipMatch[2])
+      const c = Number(ipMatch[3])
+      const d = Number(ipMatch[4])
+      
+      // Validate octets are in valid range (0-255)
+      if (a > 255 || b > 255 || c > 255 || d > 255) {
+        logger.warn('Invalid IPv4 address (octets out of range)')
+        return false
+      }
+      
+      // Check for private IP ranges
       if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) {
         logger.warn('Private IP ranges not allowed for calendar subscriptions')
         return false

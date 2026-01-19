@@ -1,7 +1,7 @@
 // React hook for routine runner state management
 // Integrates routine execution with React components
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   createRunnerState,
   completeStep,
@@ -27,12 +27,15 @@ export function useRoutineRunner(routine) {
   const [state, setState] = useState(() => routine ? createRunnerState(routine) : null)
   const [isComplete, setIsComplete] = useState(false)
   const [summary, setSummary] = useState(null)
+  const prevRoutineIdRef = useRef(null)
 
-  // Update runner state when routine changes after mount
+  // Update runner state when routine ID changes (meaningful routine change)
+  // This resets progress if switching to a different routine
   useEffect(() => {
-    if (routine) {
+    if (routine && routine.id !== prevRoutineIdRef.current) {
+      prevRoutineIdRef.current = routine.id
       const newState = createRunnerState(routine)
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset state when routine changes
       setState(newState)
     }
   }, [routine])

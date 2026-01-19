@@ -71,7 +71,6 @@ export function useNotesState() {
   // Load first note on mount if available
   useEffect(() => {
     if (notes.length > 0 && !currentNoteId) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadNote(notes[0])
     }
     // loadNote is stable via useCallback and should not trigger re-renders

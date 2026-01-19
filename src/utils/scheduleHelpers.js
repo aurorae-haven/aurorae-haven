@@ -204,6 +204,8 @@ async function searchRoutineTemplates(query) {
  * Create a routine from a template and add it to the routines tab
  * @param {Object} template - Template data
  * @returns {Promise<Object>} Created routine
+ * @throws {Error} If routine creation fails due to invalid template data or underlying storage errors.
+ * Callers should handle failures with try/catch when instantiating templates.
  */
 export async function instantiateRoutineFromTemplate(template) {
   try {

@@ -84,6 +84,8 @@ function TimePreparationBlock({ type, top, height, time }) {
       className={blockClasses}
       style={{ top: `${top}px`, height: `${height}px` }}
       aria-label={ariaLabel}
+      role="note"
+      aria-live="polite"
     >
       <div className='title preparation-label'>{label}</div>
       <div className='meta'>{time}</div>
@@ -772,14 +774,19 @@ function Schedule() {
 
                     // Render travel time block if present
                     if (event.travelTime && event.travelTime > 0) {
-                      const travelStartTime = subtractDuration(
+                      // Calculate times once to avoid redundant parsing
+                      const prepEndTime = subtractDuration(
                         event.startTime,
-                        (event.preparationTime || 0) + event.travelTime
+                        event.preparationTime || 0
+                      )
+                      const travelStartTime = subtractDuration(
+                        prepEndTime,
+                        event.travelTime
                       )
                       const travelTop = timeToPosition(travelStartTime)
                       const travelHeight = durationToHeight(
                         travelStartTime,
-                        subtractDuration(event.startTime, event.preparationTime || 0)
+                        prepEndTime
                       )
 
                       if (travelTop >= 0 && travelHeight > 0) {
