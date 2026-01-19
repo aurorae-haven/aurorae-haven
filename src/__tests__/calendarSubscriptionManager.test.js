@@ -1,0 +1,311 @@
+// Test suite for Calendar Subscription Manager
+import 'fake-indexeddb/auto'
+import {
+  addCalendarSubscription,
+  getCalendarSubscriptions,
+  getCalendarSubscription,
+  updateCalendarSubscription,
+  deleteCalendarSubscription,
+  parseICS,
+  syncCalendar
+} from '../utils/calendarSubscriptionManager'
+import { clear, STORES } from '../utils/indexedDBManager'
+
+// Mock fetch for testing
+global.fetch = jest.fn()
+
+describe('Calendar Subscription Manager', () => {
+  beforeEach(async () => {
+    await clear(STORES.CALENDAR_SUBSCRIPTIONS)
+    await clear(STORES.SCHEDULE)
+    jest.clearAllMocks()
+  })
+
+  describe('parseICS', () => {
+    test('should parse basic ICS event with DATE-TIME format', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20250115T090000Z
+DTEND:20250115T100000Z
+SUMMARY:Team Meeting
+DESCRIPTION:Weekly standup
+LOCATION:Office
+UID:event-123
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      expect(events).toHaveLength(1)
+      expect(events[0].summary).toBe('Team Meeting')
+      expect(events[0].description).toBe('Weekly standup')
+      expect(events[0].location).toBe('Office')
+      expect(events[0].uid).toBe('event-123')
+      expect(events[0].dtstart).toBeInstanceOf(Date)
+      expect(events[0].dtend).toBeInstanceOf(Date)
+    })
+
+    test('should parse ICS event with DATE format', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20250115
+DTEND:20250116
+SUMMARY:All Day Event
+UID:event-456
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      expect(events).toHaveLength(1)
+      expect(events[0].summary).toBe('All Day Event')
+      expect(events[0].dtstart).toBeInstanceOf(Date)
+    })
+
+    test('should sanitize HTML in event fields', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20250115T090000Z
+DTEND:20250115T100000Z
+SUMMARY:<script>alert('xss')</script>Meeting
+DESCRIPTION:<img src=x onerror=alert('xss')>
+LOCATION:Room <b>101</b>
+UID:event-789
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      expect(events).toHaveLength(1)
+      // Check that HTML characters are escaped
+      expect(events[0].summary).toContain('&lt;script&gt;')
+      expect(events[0].description).toContain('&lt;img')
+      expect(events[0].location).toContain('&lt;b&gt;')
+    })
+
+    test('should handle invalid datetime gracefully', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:INVALID
+DTEND:20250115T100000Z
+SUMMARY:Bad Event
+UID:event-bad
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      // Event should be filtered out if dtstart is invalid
+      expect(events).toHaveLength(0)
+    })
+
+    test('should parse multiple events', () => {
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20250115T090000Z
+DTEND:20250115T100000Z
+SUMMARY:Event 1
+UID:event-1
+END:VEVENT
+BEGIN:VEVENT
+DTSTART:20250116T140000Z
+DTEND:20250116T150000Z
+SUMMARY:Event 2
+UID:event-2
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      expect(events).toHaveLength(2)
+      expect(events[0].summary).toBe('Event 1')
+      expect(events[1].summary).toBe('Event 2')
+    })
+  })
+
+  describe('addCalendarSubscription', () => {
+    test('should add a calendar subscription', async () => {
+      // Mock successful fetch
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: async () => `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20250115T090000Z
+DTEND:20250115T100000Z
+SUMMARY:Test Event
+UID:test-123
+END:VEVENT
+END:VCALENDAR`
+      })
+
+      const subscription = {
+        name: 'Work Calendar',
+        url: 'https://example.com/calendar.ics',
+        color: '#86f5e0',
+        enabled: true
+      }
+
+      const id = await addCalendarSubscription(subscription)
+      expect(id).toBeDefined()
+
+      const subs = await getCalendarSubscriptions()
+      expect(subs).toHaveLength(1)
+      expect(subs[0].name).toBe('Work Calendar')
+      expect(subs[0].url).toBe('https://example.com/calendar.ics')
+    })
+  })
+
+  describe('URL validation', () => {
+    test('should reject localhost URLs', async () => {
+      const subscription = {
+        name: 'Local Calendar',
+        url: 'http://localhost:8080/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should reject private IP addresses', async () => {
+      const subscription = {
+        name: 'Private Calendar',
+        url: 'http://192.168.1.1/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should reject file:// protocol', async () => {
+      const subscription = {
+        name: 'File Calendar',
+        url: 'file:///etc/passwd',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should accept valid HTTPS URL', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: async () => 'BEGIN:VCALENDAR\nEND:VCALENDAR'
+      })
+
+      const subscription = {
+        name: 'Valid Calendar',
+        url: 'https://calendar.google.com/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      const id = await addCalendarSubscription(subscription)
+      expect(id).toBeDefined()
+    })
+  })
+
+  describe('getCalendarSubscription', () => {
+    test('should get a single subscription by ID', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: async () => 'BEGIN:VCALENDAR\nEND:VCALENDAR'
+      })
+
+      const id = await addCalendarSubscription({
+        name: 'Test Calendar',
+        url: 'https://example.com/cal.ics',
+        color: '#86f5e0'
+      })
+
+      const sub = await getCalendarSubscription(id)
+      expect(sub).toBeDefined()
+      expect(sub.name).toBe('Test Calendar')
+    })
+
+    test('should return null for non-existent ID', async () => {
+      const sub = await getCalendarSubscription('non-existent-id')
+      expect(sub).toBeNull()
+    })
+  })
+
+  describe('updateCalendarSubscription', () => {
+    test('should update a subscription', async () => {
+      global.fetch.mockResolvedValue({
+        ok: true,
+        text: async () => 'BEGIN:VCALENDAR\nEND:VCALENDAR'
+      })
+
+      const id = await addCalendarSubscription({
+        name: 'Old Name',
+        url: 'https://example.com/cal.ics',
+        color: '#86f5e0'
+      })
+
+      const sub = await getCalendarSubscription(id)
+      await updateCalendarSubscription({
+        ...sub,
+        name: 'New Name'
+      })
+
+      const updated = await getCalendarSubscription(id)
+      expect(updated.name).toBe('New Name')
+    })
+  })
+
+  describe('deleteCalendarSubscription', () => {
+    test('should delete a subscription and its events', async () => {
+      global.fetch.mockResolvedValue({
+        ok: true,
+        text: async () => `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20250115T090000Z
+DTEND:20250115T100000Z
+SUMMARY:Test Event
+UID:test-123
+END:VEVENT
+END:VCALENDAR`
+      })
+
+      const id = await addCalendarSubscription({
+        name: 'Test Calendar',
+        url: 'https://example.com/cal.ics',
+        color: '#86f5e0'
+      })
+
+      await deleteCalendarSubscription(id)
+
+      const subs = await getCalendarSubscriptions()
+      expect(subs).toHaveLength(0)
+    })
+  })
+
+  describe('syncCalendar error handling', () => {
+    test('should handle fetch errors', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        text: async () => 'BEGIN:VCALENDAR\nEND:VCALENDAR'
+      })
+
+      const id = await addCalendarSubscription({
+        name: 'Test Calendar',
+        url: 'https://example.com/cal.ics',
+        color: '#86f5e0'
+      })
+
+      // Mock fetch failure for sync
+      global.fetch.mockResolvedValueOnce({
+        ok: false,
+        statusText: 'Not Found'
+      })
+
+      await expect(syncCalendar(id)).rejects.toThrow('Failed to fetch calendar')
+    })
+  })
+})
