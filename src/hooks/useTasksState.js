@@ -9,24 +9,23 @@ const logger = createLogger('useTasksState')
  * Handles CRUD operations and localStorage persistence
  */
 export function useTasksState() {
-  const [tasks, setTasks] = useState({
-    urgent_important: [],
-    not_urgent_important: [],
-    urgent_not_important: [],
-    not_urgent_not_important: []
-  })
-
-  // Load tasks from localStorage on mount
-  useEffect(() => {
+  // Initialize tasks from localStorage with lazy initialization
+  const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem('aurorae_tasks')
     if (savedTasks) {
       try {
-        setTasks(JSON.parse(savedTasks))
+        return JSON.parse(savedTasks)
       } catch (e) {
         logger.error('Failed to parse saved tasks:', e)
       }
     }
-  }, [])
+    return {
+      urgent_important: [],
+      not_urgent_important: [],
+      urgent_not_important: [],
+      not_urgent_not_important: []
+    }
+  })
 
   // Save tasks to localStorage whenever they change
   useEffect(() => {

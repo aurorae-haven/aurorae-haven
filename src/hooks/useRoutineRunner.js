@@ -23,14 +23,21 @@ const TIMER_TICK_INTERVAL_MS = 1000
  * @returns {Object} Runner state and control functions
  */
 export function useRoutineRunner(routine) {
-  const [state, setState] = useState(null)
+  // Initialize runner state with lazy initialization
+  const [state, setState] = useState(() => {
+    if (routine) {
+      return createRunnerState(routine)
+    }
+    return null
+  })
   const [isComplete, setIsComplete] = useState(false)
   const [summary, setSummary] = useState(null)
 
-  // Initialize runner state when routine is provided
+  // Update runner state when routine changes
   useEffect(() => {
     if (routine && !state) {
       const initialState = createRunnerState(routine)
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState(initialState)
     }
   }, [routine, state])

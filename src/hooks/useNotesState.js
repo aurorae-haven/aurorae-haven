@@ -13,7 +13,34 @@ import { filterNotes as filterNotesUtil } from '../utils/notes/noteFilters'
  * Handles loading, saving, filtering, and CRUD operations
  */
 export function useNotesState() {
-  const [notes, setNotes] = useState([])
+  // Initialize notes from storage with lazy initialization
+  const [notes, setNotes] = useState(() => {
+    let loadedNotes = loadNotesFromStorage()
+
+    // Migration: if no entries exist, migrate old single-note content
+    if (loadedNotes.length === 0) {
+      const oldContent = localStorage.getItem('brainDumpContent')
+      if (oldContent && oldContent.trim()) {
+        const migratedNote = {
+          ...createNewNote(),
+          title: 'Migrated Note',
+          content: oldContent
+        }
+        loadedNotes = [migratedNote]
+        saveNotesToStorage(loadedNotes)
+      }
+    }
+
+    // Migrate existing notes to add missing fields
+    const { migratedNotes, needsMigration } = migrateNotes(loadedNotes)
+
+    if (needsMigration && migratedNotes.length > 0) {
+      saveNotesToStorage(migratedNotes)
+    }
+
+    return migratedNotes
+  })
+  
   const [currentNoteId, setCurrentNoteId] = useState(null)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -41,38 +68,13 @@ export function useNotesState() {
     setCategory(note.category || '')
   }, [])
 
-  // Load saved notes on mount (migrate old single note if needed)
+  // Load first note on mount if available
   useEffect(() => {
-    let loadedNotes = loadNotesFromStorage()
-
-    // Migration: if no entries exist, migrate old single-note content
-    if (loadedNotes.length === 0) {
-      const oldContent = localStorage.getItem('brainDumpContent')
-      if (oldContent && oldContent.trim()) {
-        const migratedNote = {
-          ...createNewNote(),
-          title: 'Migrated Note',
-          content: oldContent
-        }
-        loadedNotes = [migratedNote]
-        saveNotesToStorage(loadedNotes)
-      }
+    if (notes.length > 0 && !currentNoteId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      loadNote(notes[0])
     }
-
-    // Migrate existing notes to add missing fields
-    const { migratedNotes, needsMigration } = migrateNotes(loadedNotes)
-
-    if (needsMigration && migratedNotes.length > 0) {
-      saveNotesToStorage(migratedNotes)
-    }
-
-    setNotes(migratedNotes)
-
-    // Load first note if available
-    if (migratedNotes.length > 0) {
-      loadNote(migratedNotes[0])
-    }
-  }, [loadNote])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Memoize current note to avoid redundant array searches
   const currentNote = useMemo(

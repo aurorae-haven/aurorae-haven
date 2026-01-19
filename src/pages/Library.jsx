@@ -3,7 +3,7 @@
  * Manages reusable Task and Routine templates
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import {
   getAllTemplates,
   saveTemplate,
@@ -34,7 +34,6 @@ const logger = createLogger('Library')
 
 function Library() {
   const [templates, setTemplates] = useState([])
-  const [filteredTemplates, setFilteredTemplates] = useState([])
   const [loading, setLoading] = useState(true)
   const [useIndexedDB, setUseIndexedDB] = useState(false)
 
@@ -98,11 +97,10 @@ function Library() {
     loadTemplates()
   }, [])
 
-  // Filter and sort templates when dependencies change
-  useEffect(() => {
+  // Filter and sort templates using useMemo
+  const filteredTemplates = useMemo(() => {
     if (!Array.isArray(templates)) {
-      setFilteredTemplates([])
-      return
+      return []
     }
 
     let result = templates
@@ -118,7 +116,7 @@ function Library() {
     // Apply sorting
     result = sortTemplates(result, sortBy)
 
-    setFilteredTemplates(result)
+    return result
   }, [templates, searchQuery, sortBy, filters])
 
   const showToastNotification = (message) => {
