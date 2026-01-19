@@ -10,6 +10,9 @@ import { createEvent } from './scheduleManager'
 
 const logger = createLogger('CalendarSubscription')
 
+// Constants for default event durations
+const DEFAULT_EVENT_DURATION_MILLISECONDS = 60 * 60 * 1000 // 1 hour in milliseconds
+
 /**
  * Add or update a calendar subscription
  * @param {object} subscription - Subscription data
@@ -101,14 +104,15 @@ export async function deleteCalendarSubscription(id) {
 
 /**
  * Parse ICS data and extract events
+ * This is a basic ICS parser suitable for common calendar feeds.
+ * Limitations: Does not handle all ICS features (recurrence rules, timezones, exceptions).
+ * For more complex calendars, consider integrating a library like ical.js.
+ * 
  * @param {string} icsData - ICS file content
  * @returns {Array<object>} Array of parsed events
  */
 export function parseICS(icsData) {
   const events = []
-  
-  // Simple ICS parser - handles basic VEVENT entries
-  // This is a minimal implementation; consider using a library like ical.js for production
   const lines = icsData.split(/\r?\n/)
   let currentEvent = null
   let isInEvent = false
@@ -153,25 +157,51 @@ export function parseICS(icsData) {
 }
 
 /**
- * Parse ICS datetime value
+ * Parse ICS datetime value with validation
  * @param {string} value - Datetime value from ICS
- * @returns {Date} Parsed date
+ * @returns {Date|null} Parsed date or null if invalid
  */
 function parseDateTimeValue(value) {
   // Handle DATE-TIME format: YYYYMMDDTHHmmss or YYYYMMDDTHHmmssZ
   // Handle DATE format: YYYYMMDD
+  
+  if (!value || typeof value !== 'string') {
+    logger.warn('Invalid datetime value: empty or non-string')
+    return null
+  }
   
   if (value.length === 8) {
     // DATE format: YYYYMMDD
     const year = parseInt(value.substring(0, 4), 10)
     const month = parseInt(value.substring(4, 6), 10) - 1
     const day = parseInt(value.substring(6, 8), 10)
+    
+    // Validate parsed values
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      logger.warn('Invalid DATE format: failed to parse numbers', { value })
+      return null
+    }
+    if (year < 1900 || year > 2100 || month < 0 || month > 11 || day < 1 || day > 31) {
+      logger.warn('Invalid DATE format: out of range', { year, month, day })
+      return null
+    }
+    
     return new Date(year, month, day)
   } else if (value.includes('T')) {
     // DATE-TIME format
     const dateTimeParts = value.split('T')
+    if (dateTimeParts.length !== 2) {
+      logger.warn('Invalid DATE-TIME format: missing T separator', { value })
+      return null
+    }
+    
     const datePart = dateTimeParts[0]
     const timePart = dateTimeParts[1].replace('Z', '')
+    
+    if (datePart.length !== 8 || timePart.length < 6) {
+      logger.warn('Invalid DATE-TIME format: incorrect length', { value })
+      return null
+    }
     
     const year = parseInt(datePart.substring(0, 4), 10)
     const month = parseInt(datePart.substring(4, 6), 10) - 1
@@ -180,21 +210,51 @@ function parseDateTimeValue(value) {
     const minutes = parseInt(timePart.substring(2, 4), 10)
     const seconds = parseInt(timePart.substring(4, 6), 10)
     
+    // Validate all parsed values
+    if (isNaN(year) || isNaN(month) || isNaN(day) || 
+        isNaN(hours) || isNaN(minutes) || isNaN(seconds)) {
+      logger.warn('Invalid DATE-TIME format: failed to parse numbers', { value })
+      return null
+    }
+    if (year < 1900 || year > 2100 || month < 0 || month > 11 || 
+        day < 1 || day > 31 || hours < 0 || hours > 23 || 
+        minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) {
+      logger.warn('Invalid DATE-TIME format: out of range', { value })
+      return null
+    }
+    
     return new Date(Date.UTC(year, month, day, hours, minutes, seconds))
   }
   
-  return new Date()
+  logger.warn('Invalid datetime format: unknown format', { value })
+  return null
 }
 
 /**
  * Convert ICS event to schedule event format
  * @param {object} icsEvent - Parsed ICS event
  * @param {string} calendarId - Calendar subscription ID
- * @returns {object} Schedule event data
+ * @returns {object|null} Schedule event data or null if invalid
  */
 function convertICSEventToScheduleEvent(icsEvent, calendarId) {
+  // Validate dates
+  if (!icsEvent.dtstart) {
+    logger.warn('ICS event missing start time', { event: icsEvent })
+    return null
+  }
+  
   const startDate = new Date(icsEvent.dtstart)
-  const endDate = icsEvent.dtend ? new Date(icsEvent.dtend) : new Date(startDate.getTime() + 60 * 60 * 1000)
+  if (isNaN(startDate.getTime())) {
+    logger.warn('Invalid start date in ICS event', { event: icsEvent })
+    return null
+  }
+  
+  // Use end date if available, otherwise default to 1 hour duration
+  const endDate = icsEvent.dtend ? new Date(icsEvent.dtend) : new Date(startDate.getTime() + DEFAULT_EVENT_DURATION_MILLISECONDS)
+  if (isNaN(endDate.getTime())) {
+    logger.warn('Invalid end date in ICS event, using default duration', { event: icsEvent })
+    endDate.setTime(startDate.getTime() + DEFAULT_EVENT_DURATION_MILLISECONDS)
+  }
   
   // Format date as YYYY-MM-DD
   const day = startDate.toISOString().split('T')[0]
@@ -273,7 +333,10 @@ export async function syncCalendar(subscriptionId) {
     // Add new events
     for (const icsEvent of icsEvents) {
       const scheduleEvent = convertICSEventToScheduleEvent(icsEvent, subscriptionId)
-      await createEvent(scheduleEvent)
+      // Skip invalid events
+      if (scheduleEvent) {
+        await createEvent(scheduleEvent)
+      }
     }
     
     // Update sync status
