@@ -170,7 +170,7 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
     })
 
     it('should validate required fields before submission', async () => {
-      render(<CalendarSubscriptionModal isOpen={true} onClose={mockOnClose} />)
+      const { container } = render(<CalendarSubscriptionModal isOpen={true} onClose={mockOnClose} />)
       
       // Wait for loading to finish and click add button
       await waitFor(() => {
@@ -183,8 +183,9 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
         expect(screen.getByLabelText(/calendar name/i)).toBeInTheDocument()
       })
       
-      const submitButton = screen.getByRole('button', { name: /add calendar$/i })
-      fireEvent.click(submitButton)
+      // Submit the form
+      const form = container.querySelector('form')
+      fireEvent.submit(form)
       
       await waitFor(() => {
         expect(screen.getByText(/Name and URL are required/i)).toBeInTheDocument()
@@ -233,7 +234,7 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
         new Error('Invalid URL')
       )
       
-      render(<CalendarSubscriptionModal isOpen={true} onClose={mockOnClose} />)
+      const { container } = render(<CalendarSubscriptionModal isOpen={true} onClose={mockOnClose} />)
       
       // Wait for loading to finish
       await waitFor(() => {
@@ -250,10 +251,11 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
       const urlInput = screen.getByLabelText(/ics url/i)
       
       fireEvent.change(nameInput, { target: { value: 'Test' } })
-      fireEvent.change(urlInput, { target: { value: 'invalid-url' } })
+      fireEvent.change(urlInput, { target: { value: 'https://example.com/invalid.ics' } })
       
-      const submitButton = screen.getByRole('button', { name: /add calendar$/i })
-      fireEvent.click(submitButton)
+      // Submit the form
+      const form = container.querySelector('form')
+      fireEvent.submit(form)
       
       await waitFor(() => {
         expect(screen.getByText(/failed to add calendar subscription/i)).toBeInTheDocument()
