@@ -7,6 +7,7 @@ import { put, getAll, deleteById, openDB, STORES } from './indexedDBManager'
 import { normalizeEntity, updateMetadata } from './idGenerator'
 import { createLogger } from './logger'
 import { createEvent } from './scheduleManager'
+import { sanitizeText } from './sanitization'
 
 const logger = createLogger('CalendarSubscription')
 
@@ -138,15 +139,18 @@ export function parseICS(icsData) {
       const value = line.substring(colonIndex + 1)
       
       if (propertyKey === 'SUMMARY') {
-        currentEvent.summary = value
+        // Sanitize to prevent XSS
+        currentEvent.summary = sanitizeText(value)
       } else if (propertyKey.startsWith('DTSTART')) {
         currentEvent.dtstart = parseDateTimeValue(value)
       } else if (propertyKey.startsWith('DTEND')) {
         currentEvent.dtend = parseDateTimeValue(value)
       } else if (propertyKey === 'DESCRIPTION') {
-        currentEvent.description = value
+        // Sanitize to prevent XSS
+        currentEvent.description = sanitizeText(value)
       } else if (propertyKey === 'LOCATION') {
-        currentEvent.location = value
+        // Sanitize to prevent XSS
+        currentEvent.location = sanitizeText(value)
       } else if (propertyKey === 'UID') {
         currentEvent.uid = value
       }
@@ -256,12 +260,14 @@ function convertICSEventToScheduleEvent(icsEvent, calendarId) {
     endDate.setTime(startDate.getTime() + DEFAULT_EVENT_DURATION_MILLISECONDS)
   }
   
-  // Format date as YYYY-MM-DD
+  // Format date as YYYY-MM-DD (use UTC for consistency)
   const day = startDate.toISOString().split('T')[0]
   
   // Format times as HH:MM
-  const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`
-  const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`
+  // For UTC dates (from ICS with 'Z' suffix), use getUTCHours/getUTCMinutes
+  // to preserve the intended time without timezone conversion
+  const startTime = `${String(startDate.getUTCHours()).padStart(2, '0')}:${String(startDate.getUTCMinutes()).padStart(2, '0')}`
+  const endTime = `${String(endDate.getUTCHours()).padStart(2, '0')}:${String(endDate.getUTCMinutes()).padStart(2, '0')}`
   
   return {
     title: icsEvent.summary,
@@ -278,6 +284,52 @@ function convertICSEventToScheduleEvent(icsEvent, calendarId) {
 }
 
 /**
+ * Validate calendar subscription URL for security
+ * @param {string} url - URL to validate
+ * @returns {boolean} True if URL is valid and safe
+ */
+function validateCalendarURL(url) {
+  if (!url || typeof url !== 'string') {
+    return false
+  }
+  
+  try {
+    const parsedURL = new URL(url)
+    
+    // Only allow https:// and http:// protocols (no file://, javascript:, etc.)
+    if (parsedURL.protocol !== 'https:' && parsedURL.protocol !== 'http:') {
+      logger.warn('Invalid protocol for calendar URL', { protocol: parsedURL.protocol })
+      return false
+    }
+    
+    // Reject localhost and private IP ranges to prevent SSRF
+    const hostname = parsedURL.hostname.toLowerCase()
+    
+    // Block localhost variations
+    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+      logger.warn('Localhost URLs not allowed for calendar subscriptions')
+      return false
+    }
+    
+    // Block private IP ranges (10.x.x.x, 172.16-31.x.x, 192.168.x.x)
+    const ipv4Regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/
+    const ipMatch = hostname.match(ipv4Regex)
+    if (ipMatch) {
+      const [, a, b] = ipMatch.map(Number)
+      if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) {
+        logger.warn('Private IP ranges not allowed for calendar subscriptions')
+        return false
+      }
+    }
+    
+    return true
+  } catch (e) {
+    logger.warn('Invalid URL format for calendar subscription', { url, error: e.message })
+    return false
+  }
+}
+
+/**
  * Sync a calendar subscription
  * @param {string} subscriptionId - Subscription ID
  * @returns {Promise<void>}
@@ -287,6 +339,20 @@ export async function syncCalendar(subscriptionId) {
   
   if (!subscription || !subscription.enabled) {
     return
+  }
+  
+  // Validate URL before fetching
+  if (!validateCalendarURL(subscription.url)) {
+    const error = new Error('Invalid or unsafe calendar URL. Only HTTPS/HTTP URLs to public servers are allowed.')
+    logger.error('Calendar URL validation failed', { url: subscription.url })
+    
+    await updateCalendarSubscription({
+      ...subscription,
+      syncStatus: 'error',
+      lastSyncError: error.message
+    })
+    
+    throw error
   }
   
   try {

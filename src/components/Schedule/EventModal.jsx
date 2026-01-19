@@ -4,7 +4,12 @@ import Modal from '../common/Modal'
 import Icon from '../common/Icon'
 import SearchableEventSelector from './SearchableEventSelector'
 import { getCurrentDateISO } from '../../utils/timeUtils'
-import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../utils/scheduleConstants'
+import { 
+  EVENT_TYPES, 
+  VALID_EVENT_TYPES,
+  MAX_TRAVEL_TIME_MINUTES,
+  MAX_PREPARATION_TIME_MINUTES
+} from '../../utils/scheduleConstants'
 import { instantiateRoutineFromTemplate } from '../../utils/scheduleHelpers'
 import { createLogger } from '../../utils/logger'
 
@@ -118,6 +123,31 @@ function EventModal({
       )
       return false
     }
+    
+    // Validate travel time
+    if (typeof formData.travelTime === 'number') {
+      if (formData.travelTime < 0) {
+        setError('Travel time cannot be negative')
+        return false
+      }
+      if (formData.travelTime > MAX_TRAVEL_TIME_MINUTES) {
+        setError(`Travel time cannot exceed ${MAX_TRAVEL_TIME_MINUTES} minutes`)
+        return false
+      }
+    }
+    
+    // Validate preparation time
+    if (typeof formData.preparationTime === 'number') {
+      if (formData.preparationTime < 0) {
+        setError('Preparation time cannot be negative')
+        return false
+      }
+      if (formData.preparationTime > MAX_PREPARATION_TIME_MINUTES) {
+        setError(`Preparation time cannot exceed ${MAX_PREPARATION_TIME_MINUTES} minutes`)
+        return false
+      }
+    }
+    
     return true
   }
 
@@ -288,14 +318,19 @@ function EventModal({
                 id='event-travel-time'
                 type='number'
                 min='0'
-                max='180'
+                max={MAX_TRAVEL_TIME_MINUTES}
                 value={formData.travelTime}
-                onChange={(e) => handleChange('travelTime', parseInt(e.target.value, 10) || 0)}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10) || 0
+                  // Clamp value to valid range
+                  const clampedValue = Math.max(0, Math.min(value, MAX_TRAVEL_TIME_MINUTES))
+                  handleChange('travelTime', clampedValue)
+                }}
                 disabled={isSubmitting}
                 aria-describedby='travel-time-help'
               />
               <small id='travel-time-help' className='form-help'>
-                Optional time needed to travel to this event
+                Optional time needed to travel to this event (max {MAX_TRAVEL_TIME_MINUTES} minutes)
               </small>
             </div>
 
@@ -307,14 +342,19 @@ function EventModal({
                 id='event-preparation-time'
                 type='number'
                 min='0'
-                max='180'
+                max={MAX_PREPARATION_TIME_MINUTES}
                 value={formData.preparationTime}
-                onChange={(e) => handleChange('preparationTime', parseInt(e.target.value, 10) || 0)}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value, 10) || 0
+                  // Clamp value to valid range
+                  const clampedValue = Math.max(0, Math.min(value, MAX_PREPARATION_TIME_MINUTES))
+                  handleChange('preparationTime', clampedValue)
+                }}
                 disabled={isSubmitting}
                 aria-describedby='preparation-time-help'
               />
               <small id='preparation-time-help' className='form-help'>
-                Optional time needed to prepare for this event
+                Optional time needed to prepare for this event (max {MAX_PREPARATION_TIME_MINUTES} minutes)
               </small>
             </div>
           </div>
