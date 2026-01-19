@@ -1,4 +1,13 @@
-// Schedule Helpers - Utilities for searching and selecting routines/tasks for scheduling
+/**
+ * Schedule Helpers - Utilities for searching and selecting routines/tasks for scheduling
+ *
+ * This module provides functions to:
+ * - Fetch and filter tasks from localStorage (Eisenhower matrix format)
+ * - Search through routines stored in IndexedDB
+ * - Sort and prioritize items with Important tasks at the top
+ *
+ * @module scheduleHelpers
+ */
 import { getRoutines } from './routinesManager'
 import { createLogger } from './logger'
 
@@ -6,8 +15,18 @@ const logger = createLogger('ScheduleHelpers')
 
 /**
  * Sort items by importance, priority, type, and title
- * @param {Array} items - Array of items to sort
- * @returns {Array} Sorted array
+ * Sorting order:
+ * 1. Important tasks first (urgent_important, not_urgent_important)
+ * 2. Among important tasks, sort by priority number (lower = higher priority)
+ * 3. Tasks before routines
+ * 4. Alphabetically by title
+ *
+ * @param {Array<Object>} items - Array of items to sort
+ * @param {boolean} items[].isImportant - Whether the item is important
+ * @param {number} items[].priority - Priority number (1-4, lower is higher priority)
+ * @param {string} items[].type - Type of item ('task' or 'routine')
+ * @param {string} items[].title - Title of the item
+ * @returns {Array<Object>} Sorted array (original array is mutated)
  */
 function sortItemsByPriority(items) {
   return items.sort((a, b) => {
@@ -33,9 +52,27 @@ function sortItemsByPriority(items) {
 
 /**
  * Get all available tasks from localStorage (Eisenhower matrix format)
- * @param {Object} options - Configuration options
- * @param {boolean} options.includeCompleted - Whether to include completed tasks (default: false)
- * @returns {Array} Array of tasks with quadrant information
+ * Tasks are stored in four quadrants based on urgency and importance.
+ *
+ * @param {Object} [options={}] - Configuration options
+ * @param {boolean} [options.includeCompleted=false] - Whether to include completed tasks
+ * @returns {Array<Object>} Array of tasks with quadrant information and metadata
+ * @returns {string} return[].id - Task ID
+ * @returns {string} return[].text - Task text/description
+ * @returns {string} return[].quadrant - Quadrant key (e.g., 'urgent_important')
+ * @returns {string} return[].quadrantLabel - Human-readable quadrant label
+ * @returns {number} return[].priority - Priority number (1-4, lower = higher)
+ * @returns {boolean} return[].isImportant - Whether task is in an important quadrant
+ * @returns {string} return[].type - Always 'task'
+ * @returns {boolean} [return[].completed] - Whether task is completed (if includeCompleted=true)
+ *
+ * @example
+ * // Get only incomplete tasks
+ * const tasks = getAllTasks()
+ *
+ * @example
+ * // Get all tasks including completed ones
+ * const allTasks = getAllTasks({ includeCompleted: true })
  */
 export function getAllTasks(options = {}) {
   const { includeCompleted = false } = options
@@ -101,10 +138,30 @@ export function getAllTasks(options = {}) {
 
 /**
  * Search routines and tasks by query string
- * Important tasks (urgent_important and not_urgent_important) are prioritized
- * @param {string} query - Search query
- * @param {string} eventType - Filter by event type ('routine', 'task', or null for all)
- * @returns {Promise<Array>} Array of matching items sorted by relevance
+ * Performs case-insensitive substring matching on routine titles and task text.
+ * Important tasks (urgent_important and not_urgent_important) are automatically prioritized.
+ *
+ * @param {string} query - Search query (case-insensitive)
+ * @param {('routine'|'task'|null)} [eventType=null] - Filter by event type, or null for all
+ * @returns {Promise<Array<Object>>} Array of matching items sorted by relevance and importance
+ * @returns {string} return[].id - Item ID
+ * @returns {string} return[].title - Item title/text
+ * @returns {string} return[].type - Type ('routine' or 'task')
+ * @returns {string} return[].sourceType - Original source type
+ * @returns {boolean} return[].isImportant - Whether item is important (always false for routines)
+ * @returns {number} return[].priority - Priority number (0 for routines, 1-4 for tasks)
+ * @returns {number} [return[].duration] - Duration in minutes (routines only)
+ * @returns {Array<string>} [return[].tags] - Tags array (routines only)
+ * @returns {string} [return[].quadrant] - Quadrant key (tasks only)
+ * @returns {string} [return[].quadrantLabel] - Quadrant label (tasks only)
+ *
+ * @example
+ * // Search for tasks containing "email"
+ * const results = await searchRoutinesAndTasks('email', 'task')
+ *
+ * @example
+ * // Search all items containing "meeting"
+ * const results = await searchRoutinesAndTasks('meeting')
  */
 export async function searchRoutinesAndTasks(query, eventType = null) {
   const results = []
@@ -163,9 +220,30 @@ export async function searchRoutinesAndTasks(query, eventType = null) {
 
 /**
  * Get all routines and tasks for display in dropdown
- * Important tasks are prioritized at the top
- * @param {string} eventType - Filter by event type ('routine', 'task', or null for all)
- * @returns {Promise<Array>} Array of all items sorted by priority
+ * Fetches all items from both routines (IndexedDB) and tasks (localStorage).
+ * Important tasks are automatically prioritized at the top of results.
+ * Useful for showing a complete list of schedulable items.
+ *
+ * @param {('routine'|'task'|null)} [eventType=null] - Filter by event type, or null for all
+ * @returns {Promise<Array<Object>>} Array of all items sorted by priority and importance
+ * @returns {string} return[].id - Item ID
+ * @returns {string} return[].title - Item title/text
+ * @returns {string} return[].type - Type ('routine' or 'task')
+ * @returns {string} return[].sourceType - Original source type
+ * @returns {boolean} return[].isImportant - Whether item is important (always false for routines)
+ * @returns {number} return[].priority - Priority number (0 for routines, 1-4 for tasks)
+ * @returns {number} [return[].duration] - Duration in minutes (routines only)
+ * @returns {Array<string>} [return[].tags] - Tags array (routines only)
+ * @returns {string} [return[].quadrant] - Quadrant key (tasks only)
+ * @returns {string} [return[].quadrantLabel] - Quadrant label (tasks only)
+ *
+ * @example
+ * // Get all tasks
+ * const tasks = await getAllRoutinesAndTasks('task')
+ *
+ * @example
+ * // Get all routines and tasks
+ * const allItems = await getAllRoutinesAndTasks()
  */
 export async function getAllRoutinesAndTasks(eventType = null) {
   const items = []

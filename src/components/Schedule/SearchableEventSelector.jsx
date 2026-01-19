@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../common/Icon'
 import {
@@ -11,10 +11,22 @@ const logger = createLogger('SearchableEventSelector')
 
 /**
  * SearchableEventSelector - Component for searching and selecting existing routines/tasks
- * @param {Object} props
- * @param {string} props.eventType - Type of event ('routine', 'task', 'meeting', 'habit')
- * @param {Function} props.onSelect - Callback when an item is selected
- * @param {Function} props.onCreateNew - Callback when "create new" is clicked
+ * Provides a search-first workflow with dropdown of existing items before creating new ones.
+ * Important tasks are automatically prioritized at the top of results.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {('routine'|'task'|'meeting'|'habit')} props.eventType - Type of event to search/create
+ * @param {Function} props.onSelect - Callback when an existing item is selected. Receives the selected item object.
+ * @param {Function} props.onCreateNew - Callback when "create new" button is clicked
+ * @returns {React.ReactElement|null} The search component or null if eventType doesn't support search
+ *
+ * @example
+ * <SearchableEventSelector
+ *   eventType="task"
+ *   onSelect={(item) => console.log('Selected:', item)}
+ *   onCreateNew={() => console.log('Create new')}
+ * />
  */
 function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
   const [searchQuery, setSearchQuery] = useState('')
@@ -80,23 +92,36 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
     return () => clearTimeout(timeoutId)
   }, [searchQuery, eventType])
 
-  // Handle input focus
-  const handleInputFocus = () => {
+  /**
+   * Handle input focus - opens dropdown and focuses search input
+   * @callback
+   */
+  const handleInputFocus = useCallback(() => {
     setShowDropdown(true)
-  }
+  }, [])
 
-  // Handle item selection
-  const handleItemSelect = (item) => {
-    onSelect(item)
-    setSearchQuery('')
-    setShowDropdown(false)
-  }
+  /**
+   * Handle item selection from dropdown
+   * @callback
+   * @param {Object} item - The selected item (routine or task)
+   */
+  const handleItemSelect = useCallback(
+    (item) => {
+      onSelect(item)
+      setSearchQuery('')
+      setShowDropdown(false)
+    },
+    [onSelect]
+  )
 
-  // Handle create new
-  const handleCreateNew = () => {
+  /**
+   * Handle create new button click
+   * @callback
+   */
+  const handleCreateNew = useCallback(() => {
     onCreateNew()
     setShowDropdown(false)
-  }
+  }, [onCreateNew])
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -115,16 +140,31 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Handle keyboard navigation
-  const handleKeyDown = (e) => {
+  /**
+   * Handle keyboard navigation
+   * Supports: Escape key to close dropdown
+   * @param {KeyboardEvent} e - Keyboard event
+   */
+  const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') {
       setShowDropdown(false)
       searchInputRef.current?.blur()
     }
-  }
+  }, [])
 
   // Only show search for routines and tasks (not meetings or habits)
   const shouldShowSearch = eventType === 'routine' || eventType === 'task'
+
+  // Memoize result count for better performance
+  const resultCount = useMemo(() => searchResults.length, [searchResults.length])
+
+  // Memoize result count text for UX feedback
+  const resultCountText = useMemo(() => {
+    if (isLoading) return ''
+    if (resultCount === 0) return ''
+    const plural = resultCount === 1 ? '' : 's'
+    return `${resultCount} ${eventType}${plural} found`
+  }, [isLoading, resultCount, eventType])
 
   if (!shouldShowSearch) {
     return null
@@ -150,8 +190,14 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
             onKeyDown={handleKeyDown}
             aria-label={`Search for existing ${eventType}`}
             aria-controls='search-results-dropdown'
+            aria-expanded={showDropdown}
+            aria-busy={isLoading}
+            aria-describedby='search-hint'
             autoComplete='off'
           />
+        </div>
+        <div id='search-hint' className='search-hint' aria-live='polite'>
+          {resultCountText || 'Press Esc to close dropdown'}
         </div>
       </div>
 
@@ -162,16 +208,24 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
           className='search-dropdown'
           role='listbox'
           aria-label='Search results'
+          aria-busy={isLoading}
         >
           {isLoading ? (
-            <div className='search-dropdown-loading' role='status'>
+            <div
+              className='search-dropdown-loading'
+              role='status'
+              aria-live='polite'
+            >
               <Icon name='loader' />
-              <span>Searching...</span>
+              <span>Searching {eventType}s...</span>
             </div>
           ) : searchResults.length > 0 ? (
             <>
               <div className='search-dropdown-header'>
-                Select an existing {eventType}
+                <span>Select an existing {eventType}</span>
+                {resultCountText && (
+                  <span className='search-dropdown-count'>{resultCountText}</span>
+                )}
                 {eventType === 'task' && (
                   <span className='search-dropdown-hint'>
                     Important tasks shown first
@@ -187,6 +241,7 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
                     onClick={() => handleItemSelect(item)}
                     role='option'
                     aria-selected='false'
+                    aria-label={`${item.title}${item.isImportant ? ' (Important)' : ''}${item.quadrantLabel ? ` - ${item.quadrantLabel}` : ''}`}
                   >
                     <div className='search-dropdown-item-content'>
                       <div className='search-dropdown-item-header'>
@@ -215,7 +270,7 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
               </div>
             </>
           ) : (
-            <div className='search-dropdown-empty'>
+            <div className='search-dropdown-empty' role='status'>
               <Icon name='inbox' />
               <p>
                 No {eventType}s found
@@ -229,6 +284,7 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
               type='button'
               className='btn btn-primary'
               onClick={handleCreateNew}
+              aria-label={`Create new ${eventType}`}
             >
               <Icon name='plus' />
               Create new {eventType}

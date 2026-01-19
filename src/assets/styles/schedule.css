@@ -653,6 +653,27 @@
   font-style: italic;
 }
 
+.search-dropdown-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mint);
+  padding: 2px 8px;
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  border-radius: 12px;
+}
+
+.search-hint {
+  font-size: 11px;
+  color: var(--dim);
+  margin-top: 4px;
+  min-height: 16px;
+  font-style: italic;
+}
+
+.search-hint:empty {
+  display: none;
+}
+
 .search-dropdown-list {
   overflow-y: auto;
   max-height: 280px;
