@@ -183,7 +183,7 @@ describe('EventModal Component', () => {
     fireEvent.change(startTimeInput, { target: { value: '10:00' } })
     fireEvent.change(endTimeInput, { target: { value: '09:00' } })
 
-    const submitButton = screen.getByRole('button', { name: /Create/i })
+    const submitButton = screen.getByRole('button', { name: /Schedule/i })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
@@ -218,7 +218,7 @@ describe('EventModal Component', () => {
     fireEvent.change(startTimeInput, { target: { value: '09:00' } })
     fireEvent.change(endTimeInput, { target: { value: '10:00' } })
 
-    const submitButton = screen.getByRole('button', { name: /Create/i })
+    const submitButton = screen.getByRole('button', { name: /Schedule/i })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
@@ -290,7 +290,7 @@ describe('EventModal Component', () => {
     )
 
     const titleInput = screen.getByLabelText(/Title/i)
-    const submitButton = screen.getByRole('button', { name: /Create/i })
+    const submitButton = screen.getByRole('button', { name: /Schedule/i })
 
     fireEvent.change(titleInput, { target: { value: 'Test Event' } })
     fireEvent.click(submitButton)
@@ -316,7 +316,7 @@ describe('EventModal Component', () => {
 
     fireEvent.change(titleInput, { target: { value: longTitle } })
 
-    const submitButton = screen.getByRole('button', { name: /Create/i })
+    const submitButton = screen.getByRole('button', { name: /Schedule/i })
     fireEvent.click(submitButton)
 
     await waitFor(() => {
