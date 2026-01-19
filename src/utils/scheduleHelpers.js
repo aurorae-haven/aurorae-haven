@@ -4,11 +4,14 @@
  * This module provides functions to:
  * - Fetch and filter tasks from localStorage (Eisenhower matrix format)
  * - Search through routines stored in IndexedDB
+ * - Search through routine templates/libraries when no routines found
  * - Sort and prioritize items with Important tasks at the top
  *
  * @module scheduleHelpers
  */
-import { getRoutines } from './routinesManager'
+import { getRoutines, createRoutine } from './routinesManager'
+import { getAllTemplates } from './templatesManager'
+import { getPredefinedTemplates } from './predefinedTemplates'
 import { createLogger } from './logger'
 
 const logger = createLogger('ScheduleHelpers')
@@ -137,9 +140,101 @@ export function getAllTasks(options = {}) {
 }
 
 /**
+ * Search routine templates (both custom and predefined)
+ * @param {string} query - Search query (case-insensitive)
+ * @returns {Promise<Array<Object>>} Array of matching template routines
+ */
+async function searchRoutineTemplates(query) {
+  const results = []
+  const normalizedQuery = query.toLowerCase().trim()
+
+  try {
+    // Search custom templates
+    const customTemplates = await getAllTemplates()
+    const routineTemplates = customTemplates.filter((t) => t.type === 'routine')
+    
+    routineTemplates.forEach((template) => {
+      const title = (template.title || '').toLowerCase()
+      if (title.includes(normalizedQuery)) {
+        results.push({
+          id: template.id,
+          title: template.title,
+          type: 'routine',
+          sourceType: 'template',
+          isTemplate: true,
+          duration: template.estimatedDuration || 0,
+          tags: template.tags || [],
+          steps: template.steps || [],
+          isImportant: false,
+          priority: 0
+        })
+      }
+    })
+
+    // Search predefined templates
+    const predefinedTemplates = getPredefinedTemplates()
+    const predefinedRoutines = predefinedTemplates.filter((t) => t.type === 'routine')
+    
+    predefinedRoutines.forEach((template) => {
+      const title = (template.title || '').toLowerCase()
+      if (title.includes(normalizedQuery)) {
+        results.push({
+          id: template.id,
+          title: template.title,
+          type: 'routine',
+          sourceType: 'predefined-template',
+          isTemplate: true,
+          isPredefined: true,
+          duration: template.estimatedDuration || 0,
+          tags: template.tags || [],
+          steps: template.steps || [],
+          isImportant: false,
+          priority: 0
+        })
+      }
+    })
+  } catch (e) {
+    logger.error('Failed to search routine templates:', e)
+  }
+
+  return results
+}
+
+/**
+ * Create a routine from a template and add it to the routines tab
+ * @param {Object} template - Template data
+ * @returns {Promise<Object>} Created routine
+ */
+export async function instantiateRoutineFromTemplate(template) {
+  try {
+    // Create the routine from the template
+    const routineData = {
+      title: template.title,
+      steps: template.steps || [],
+      tags: template.tags || [],
+      energyTag: template.energyTag,
+      estimatedDuration: template.duration || template.estimatedDuration || 0
+    }
+
+    const routineId = await createRoutine(routineData)
+    logger.log(`Created routine from template: ${template.title}`)
+
+    // Return the created routine with its new ID
+    return {
+      ...routineData,
+      id: routineId
+    }
+  } catch (e) {
+    logger.error('Failed to instantiate routine from template:', e)
+    throw e
+  }
+}
+
+/**
  * Search routines and tasks by query string
  * Performs case-insensitive substring matching on routine titles and task text.
  * Important tasks (urgent_important and not_urgent_important) are automatically prioritized.
+ * If no routines found, also searches in routine templates/libraries.
  *
  * @param {string} query - Search query (case-insensitive)
  * @param {('routine'|'task'|null)} [eventType=null] - Filter by event type, or null for all
@@ -154,6 +249,7 @@ export function getAllTasks(options = {}) {
  * @returns {Array<string>} [return[].tags] - Tags array (routines only)
  * @returns {string} [return[].quadrant] - Quadrant key (tasks only)
  * @returns {string} [return[].quadrantLabel] - Quadrant label (tasks only)
+ * @returns {boolean} [return[].isTemplate] - Whether item is from template library
  *
  * @example
  * // Search for tasks containing "email"
@@ -187,6 +283,12 @@ export async function searchRoutinesAndTasks(query, eventType = null) {
           })
         }
       })
+
+      // If no routines found, search in templates
+      if (results.length === 0) {
+        const templateResults = await searchRoutineTemplates(query)
+        results.push(...templateResults)
+      }
     } catch (e) {
       logger.error('Failed to search routines:', e)
     }
@@ -223,6 +325,7 @@ export async function searchRoutinesAndTasks(query, eventType = null) {
  * Fetches all items from both routines (IndexedDB) and tasks (localStorage).
  * Important tasks are automatically prioritized at the top of results.
  * Useful for showing a complete list of schedulable items.
+ * If no routines found, includes routine templates from library.
  *
  * @param {('routine'|'task'|null)} [eventType=null] - Filter by event type, or null for all
  * @returns {Promise<Array<Object>>} Array of all items sorted by priority and importance
@@ -236,6 +339,7 @@ export async function searchRoutinesAndTasks(query, eventType = null) {
  * @returns {Array<string>} [return[].tags] - Tags array (routines only)
  * @returns {string} [return[].quadrant] - Quadrant key (tasks only)
  * @returns {string} [return[].quadrantLabel] - Quadrant label (tasks only)
+ * @returns {boolean} [return[].isTemplate] - Whether item is from template library
  *
  * @example
  * // Get all tasks
@@ -264,6 +368,48 @@ export async function getAllRoutinesAndTasks(eventType = null) {
           priority: 0
         })
       })
+
+      // If no routines found, include templates
+      if (items.length === 0) {
+        // Get custom templates
+        const customTemplates = await getAllTemplates()
+        const routineTemplates = customTemplates.filter((t) => t.type === 'routine')
+        
+        routineTemplates.forEach((template) => {
+          items.push({
+            id: template.id,
+            title: template.title,
+            type: 'routine',
+            sourceType: 'template',
+            isTemplate: true,
+            duration: template.estimatedDuration || 0,
+            tags: template.tags || [],
+            steps: template.steps || [],
+            isImportant: false,
+            priority: 0
+          })
+        })
+
+        // Get predefined templates
+        const predefinedTemplates = getPredefinedTemplates()
+        const predefinedRoutines = predefinedTemplates.filter((t) => t.type === 'routine')
+        
+        predefinedRoutines.forEach((template) => {
+          items.push({
+            id: template.id,
+            title: template.title,
+            type: 'routine',
+            sourceType: 'predefined-template',
+            isTemplate: true,
+            isPredefined: true,
+            duration: template.estimatedDuration || 0,
+            tags: template.tags || [],
+            steps: template.steps || [],
+            isImportant: false,
+            priority: 0
+          })
+        })
+      }
     } catch (e) {
       logger.error('Failed to load routines:', e)
     }

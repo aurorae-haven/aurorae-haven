@@ -36,3 +36,11 @@ export const HOURS_PER_DAY = 24
 
 // Filter time range (in days)
 export const FILTER_RECENT_DAYS = 30
+
+// Default travel and preparation times (in minutes)
+export const DEFAULT_TRAVEL_TIME_MINUTES = 0
+export const DEFAULT_PREPARATION_TIME_MINUTES = 0
+
+// Maximum allowed travel and preparation times (in minutes)
+export const MAX_TRAVEL_TIME_MINUTES = 180 // 3 hours
+export const MAX_PREPARATION_TIME_MINUTES = 180 // 3 hours

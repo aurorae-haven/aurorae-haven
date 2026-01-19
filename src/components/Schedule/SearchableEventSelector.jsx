@@ -190,10 +190,11 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
             onKeyDown={handleKeyDown}
             aria-label={`Search for existing ${eventType}`}
             aria-controls='search-results-dropdown'
-            aria-expanded={showDropdown}
             aria-busy={isLoading}
             aria-describedby='search-hint'
             autoComplete='off'
+            role='combobox'
+            aria-expanded={showDropdown}
           />
         </div>
         <div id='search-hint' className='search-hint' aria-live='polite'>
@@ -241,7 +242,7 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
                     onClick={() => handleItemSelect(item)}
                     role='option'
                     aria-selected='false'
-                    aria-label={`${item.title}${item.isImportant ? ' (Important)' : ''}${item.quadrantLabel ? ` - ${item.quadrantLabel}` : ''}`}
+                    aria-label={`${item.title}${item.isImportant ? ' (Important)' : ''}${item.quadrantLabel ? ` - ${item.quadrantLabel}` : ''}${item.isTemplate ? ' (From Library)' : ''}`}
                   >
                     <div className='search-dropdown-item-content'>
                       <div className='search-dropdown-item-header'>
@@ -256,6 +257,11 @@ function SearchableEventSelector({ eventType, onSelect, onCreateNew }) {
                         {item.isImportant && (
                           <span className='search-dropdown-item-badge important'>
                             Important
+                          </span>
+                        )}
+                        {item.isTemplate && (
+                          <span className='search-dropdown-item-badge template'>
+                            Library
                           </span>
                         )}
                       </div>

@@ -5,6 +5,10 @@ import Icon from '../common/Icon'
 import SearchableEventSelector from './SearchableEventSelector'
 import { getCurrentDateISO } from '../../utils/timeUtils'
 import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../utils/scheduleConstants'
+import { instantiateRoutineFromTemplate } from '../../utils/scheduleHelpers'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger('EventModal')
 
 /**
  * Modal for creating and editing schedule events
@@ -27,7 +31,9 @@ function EventModal({
     day: getCurrentDateISO(),
     startTime: '09:00',
     endTime: '10:00',
-    type: validatedEventType
+    type: validatedEventType,
+    travelTime: 0,
+    preparationTime: 0
   })
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -43,7 +49,9 @@ function EventModal({
           day: initialData.day || getCurrentDateISO(),
           startTime: initialData.startTime || '09:00',
           endTime: initialData.endTime || '10:00',
-          type: initialData.type || validatedEventType
+          type: initialData.type || validatedEventType,
+          travelTime: initialData.travelTime || 0,
+          preparationTime: initialData.preparationTime || 0
         })
         setShowManualForm(true) // Show form directly if editing
       } else {
@@ -52,7 +60,9 @@ function EventModal({
           day: getCurrentDateISO(),
           startTime: '09:00',
           endTime: '10:00',
-          type: validatedEventType
+          type: validatedEventType,
+          travelTime: 0,
+          preparationTime: 0
         })
         // For routine/task, start with search; for meeting/habit, show form directly
         setShowManualForm(
@@ -141,14 +151,38 @@ function EventModal({
   }
 
   // Handle selecting an existing routine/task
-  const handleItemSelect = (item) => {
-    setFormData({
-      title: item.title,
-      day: getCurrentDateISO(),
-      startTime: '09:00',
-      endTime: '10:00',
-      type: validatedEventType
-    })
+  const handleItemSelect = async (item) => {
+    // If item is a template, instantiate it as a routine first
+    if (item.isTemplate && item.type === 'routine') {
+      try {
+        logger.log('Instantiating routine from template:', item.title)
+        const instantiatedRoutine = await instantiateRoutineFromTemplate(item)
+        // Use the new routine
+        setFormData({
+          title: instantiatedRoutine.title,
+          day: getCurrentDateISO(),
+          startTime: '09:00',
+          endTime: '10:00',
+          type: validatedEventType,
+          travelTime: 0,
+          preparationTime: 0
+        })
+      } catch (err) {
+        logger.error('Failed to instantiate routine from template:', err)
+        setError('Failed to create routine from template. Please try again.')
+        return
+      }
+    } else {
+      setFormData({
+        title: item.title,
+        day: getCurrentDateISO(),
+        startTime: '09:00',
+        endTime: '10:00',
+        type: validatedEventType,
+        travelTime: 0,
+        preparationTime: 0
+      })
+    }
     setShowManualForm(true)
   }
 
@@ -245,6 +279,46 @@ function EventModal({
             </div>
           </div>
 
+          <div className='form-row'>
+            <div className='form-group'>
+              <label htmlFor='event-travel-time'>
+                Travel Time (minutes)
+              </label>
+              <input
+                id='event-travel-time'
+                type='number'
+                min='0'
+                max='180'
+                value={formData.travelTime}
+                onChange={(e) => handleChange('travelTime', parseInt(e.target.value, 10) || 0)}
+                disabled={isSubmitting}
+                aria-describedby='travel-time-help'
+              />
+              <small id='travel-time-help' className='form-help'>
+                Optional time needed to travel to this event
+              </small>
+            </div>
+
+            <div className='form-group'>
+              <label htmlFor='event-preparation-time'>
+                Preparation Time (minutes)
+              </label>
+              <input
+                id='event-preparation-time'
+                type='number'
+                min='0'
+                max='180'
+                value={formData.preparationTime}
+                onChange={(e) => handleChange('preparationTime', parseInt(e.target.value, 10) || 0)}
+                disabled={isSubmitting}
+                aria-describedby='preparation-time-help'
+              />
+              <small id='preparation-time-help' className='form-help'>
+                Optional time needed to prepare for this event
+              </small>
+            </div>
+          </div>
+
           <div className='form-actions'>
             <button
               type='button'
@@ -290,7 +364,9 @@ EventModal.propTypes = {
     day: PropTypes.string,
     startTime: PropTypes.string,
     endTime: PropTypes.string,
-    type: PropTypes.string
+    type: PropTypes.string,
+    travelTime: PropTypes.number,
+    preparationTime: PropTypes.number
   })
 }
 

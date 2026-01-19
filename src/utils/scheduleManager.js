@@ -5,7 +5,9 @@ import { put, getAll, getByIndex, deleteById, STORES } from './indexedDBManager'
 import {
   DEFAULT_EVENT_DURATION_MINUTES,
   BUSINESS_HOURS_START,
-  BUSINESS_HOURS_END
+  BUSINESS_HOURS_END,
+  DEFAULT_TRAVEL_TIME_MINUTES,
+  DEFAULT_PREPARATION_TIME_MINUTES
 } from './scheduleConstants'
 import { ISO_DATE_START_INDEX, ISO_DATE_END_INDEX } from './timeConstants'
 import { normalizeEntity, updateMetadata } from './idGenerator'
@@ -14,6 +16,15 @@ import { calculateDuration, addDuration } from './timeUtils'
 /**
  * Create a schedule event
  * @param {object} event - Event data
+ * @param {string} event.title - Event title
+ * @param {string} event.type - Event type ('task', 'routine', 'break', 'meeting')
+ * @param {string} event.day - Event day (YYYY-MM-DD)
+ * @param {string} event.startTime - Start time (HH:MM)
+ * @param {string} event.endTime - End time (HH:MM)
+ * @param {number} [event.travelTime] - Travel time in minutes (optional)
+ * @param {number} [event.preparationTime] - Preparation time in minutes (optional)
+ * @param {boolean} [event.isExternal] - Whether this is an external calendar event (optional)
+ * @param {string} [event.externalCalendarId] - ID of external calendar source (optional)
  * @returns {Promise<number>} Event ID
  */
 export async function createEvent(event) {
@@ -27,7 +38,17 @@ export async function createEvent(event) {
     startTime: event.startTime,
     endTime: event.endTime,
     duration:
-      event.duration || calculateDuration(event.startTime, event.endTime)
+      event.duration || calculateDuration(event.startTime, event.endTime),
+    travelTime:
+      typeof event.travelTime === 'number'
+        ? event.travelTime
+        : DEFAULT_TRAVEL_TIME_MINUTES,
+    preparationTime:
+      typeof event.preparationTime === 'number'
+        ? event.preparationTime
+        : DEFAULT_PREPARATION_TIME_MINUTES,
+    isExternal: event.isExternal || false,
+    externalCalendarId: event.externalCalendarId || null
   })
   return await put(STORES.SCHEDULE, newEvent)
 }
@@ -84,7 +105,15 @@ export async function updateEvent(event) {
   const updated = updateMetadata({
     ...event,
     duration:
-      event.duration || calculateDuration(event.startTime, event.endTime)
+      event.duration || calculateDuration(event.startTime, event.endTime),
+    travelTime:
+      typeof event.travelTime === 'number'
+        ? event.travelTime
+        : DEFAULT_TRAVEL_TIME_MINUTES,
+    preparationTime:
+      typeof event.preparationTime === 'number'
+        ? event.preparationTime
+        : DEFAULT_PREPARATION_TIME_MINUTES
   })
   return await put(STORES.SCHEDULE, updated)
 }
