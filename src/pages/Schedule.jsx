@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
+import CalendarSubscriptionModal from '../components/Schedule/CalendarSubscriptionModal'
 import {
   createEvent,
   getEventsForDay,
@@ -243,6 +244,7 @@ function Schedule() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedEventType, setSelectedEventType] = useState(null)
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false)
 
   // Events state
   const [events, setEvents] = useState([])
@@ -491,6 +493,12 @@ function Schedule() {
         eventType={selectedEventType}
       />
 
+      {/* Calendar Subscription Modal */}
+      <CalendarSubscriptionModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+      />
+
       {/* Error notification */}
       {error && (
         <div className='error-notification' role='alert' aria-live='assertive'>
@@ -516,6 +524,13 @@ function Schedule() {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              className='btn'
+              onClick={() => setIsCalendarModalOpen(true)}
+              aria-label='Manage calendar subscriptions'
+            >
+              <Icon name='calendar' /> Calendars
+            </button>
             <button
               className={`btn ${viewMode === 'day' ? 'btn-active' : ''}`}
               onClick={() => handleViewModeChange('day')}
