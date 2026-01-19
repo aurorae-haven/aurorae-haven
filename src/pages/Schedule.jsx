@@ -8,7 +8,7 @@ import {
   getEventsForWeek
 } from '../utils/scheduleManager'
 import { createLogger } from '../utils/logger'
-import { getCurrentDateISO } from '../utils/timeUtils'
+import { getCurrentDateISO, subtractDuration } from '../utils/timeUtils'
 import dayjs from 'dayjs'
 import {
   EVENT_TYPES,
@@ -70,6 +70,31 @@ ScheduleBlock.propTypes = {
   height: PropTypes.number.isRequired,
   isNext: PropTypes.bool,
   onClick: PropTypes.func
+}
+
+// Reusable component for travel/preparation time blocks
+function TimePreparationBlock({ type, top, height, time }) {
+  const blockClasses = `block block-preparation ${type}`
+  const label = type === 'travel' ? 'Travel' : 'Prep'
+  const ariaLabel = `${label} time: ${time}`
+
+  return (
+    <div
+      className={blockClasses}
+      style={{ top: `${top}px`, height: `${height}px` }}
+      aria-label={ariaLabel}
+    >
+      <div className='title preparation-label'>{label}</div>
+      <div className='meta'>{time}</div>
+    </div>
+  )
+}
+
+TimePreparationBlock.propTypes = {
+  type: PropTypes.oneOf(['travel', 'preparation']).isRequired,
+  top: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  time: PropTypes.string.isRequired
 }
 
 // Static configuration data - defined outside component to prevent recreation on every render
@@ -705,6 +730,57 @@ function Schedule() {
                       return acc
                     }
 
+                    // Render preparation time block if present
+                    if (event.preparationTime && event.preparationTime > 0) {
+                      const prepStartTime = subtractDuration(
+                        event.startTime,
+                        event.preparationTime
+                      )
+                      const prepTop = timeToPosition(prepStartTime)
+                      const prepHeight = durationToHeight(
+                        prepStartTime,
+                        event.startTime
+                      )
+
+                      if (prepTop >= 0 && prepHeight > 0) {
+                        acc.push(
+                          <TimePreparationBlock
+                            key={`prep-${event.id}`}
+                            type='preparation'
+                            top={prepTop}
+                            height={prepHeight}
+                            time={`${event.preparationTime}m`}
+                          />
+                        )
+                      }
+                    }
+
+                    // Render travel time block if present
+                    if (event.travelTime && event.travelTime > 0) {
+                      const travelStartTime = subtractDuration(
+                        event.startTime,
+                        (event.preparationTime || 0) + event.travelTime
+                      )
+                      const travelTop = timeToPosition(travelStartTime)
+                      const travelHeight = durationToHeight(
+                        travelStartTime,
+                        subtractDuration(event.startTime, event.preparationTime || 0)
+                      )
+
+                      if (travelTop >= 0 && travelHeight > 0) {
+                        acc.push(
+                          <TimePreparationBlock
+                            key={`travel-${event.id}`}
+                            type='travel'
+                            top={travelTop}
+                            height={travelHeight}
+                            time={`${event.travelTime}m`}
+                          />
+                        )
+                      }
+                    }
+
+                    // Render main event block
                     acc.push(
                       <ScheduleBlock
                         key={`dynamic-event-${event.id}`}
