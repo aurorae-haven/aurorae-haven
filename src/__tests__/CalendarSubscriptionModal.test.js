@@ -45,9 +45,6 @@ jest.mock('../utils/logger', () => ({
   })
 }))
 
-// Mock window.confirm
-global.confirm = jest.fn(() => true)
-
 describe('CalendarSubscriptionModal Integration Tests', () => {
   const mockOnClose = jest.fn()
 
@@ -321,7 +318,6 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
       ]
       
       calendarManager.getCalendarSubscriptions.mockResolvedValue(mockSubscriptions)
-      global.confirm.mockReturnValueOnce(false)
       
       render(<CalendarSubscriptionModal isOpen={true} onClose={mockOnClose} />)
       
@@ -332,9 +328,17 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
       const deleteButton = screen.getByLabelText(/delete calendar subscription/i)
       fireEvent.click(deleteButton)
       
-      expect(global.confirm).toHaveBeenCalledWith(
-        'Are you sure you want to delete this calendar subscription?'
-      )
+      // Confirmation dialog should appear
+      await waitFor(() => {
+        expect(screen.getByText('Delete Calendar Subscription')).toBeInTheDocument()
+        expect(screen.getByText(/Are you sure you want to delete "Work Calendar"/)).toBeInTheDocument()
+      })
+      
+      // Click Cancel button
+      const cancelButton = screen.getByLabelText('Cancel')
+      fireEvent.click(cancelButton)
+      
+      // Delete should not be called
       expect(calendarManager.deleteCalendarSubscription).not.toHaveBeenCalled()
     })
 
@@ -343,7 +347,6 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
         { id: 'sub-1', name: 'Work Calendar', url: 'https://example.com/work.ics', enabled: true }
       ]
       
-      global.confirm.mockReturnValueOnce(true)
       calendarManager.getCalendarSubscriptions
         .mockResolvedValueOnce(mockSubscriptions)
         .mockResolvedValueOnce([])
@@ -356,6 +359,15 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
       
       const deleteButton = screen.getByLabelText(/delete calendar subscription/i)
       fireEvent.click(deleteButton)
+      
+      // Confirmation dialog should appear
+      await waitFor(() => {
+        expect(screen.getByText('Delete Calendar Subscription')).toBeInTheDocument()
+      })
+      
+      // Click Delete button in confirmation dialog
+      const confirmDeleteButton = screen.getByLabelText('Delete')
+      fireEvent.click(confirmDeleteButton)
       
       await waitFor(() => {
         expect(calendarManager.deleteCalendarSubscription).toHaveBeenCalledWith('sub-1')
@@ -374,7 +386,6 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
       ]
       
       calendarManager.getCalendarSubscriptions.mockResolvedValue(mockSubscriptions)
-      global.confirm.mockReturnValueOnce(true)
       calendarManager.deleteCalendarSubscription.mockRejectedValue(
         new Error('Database error')
       )
@@ -387,6 +398,15 @@ describe('CalendarSubscriptionModal Integration Tests', () => {
       
       const deleteButton = screen.getByLabelText(/delete calendar subscription/i)
       fireEvent.click(deleteButton)
+      
+      // Confirmation dialog should appear
+      await waitFor(() => {
+        expect(screen.getByText('Delete Calendar Subscription')).toBeInTheDocument()
+      })
+      
+      // Click Delete button in confirmation dialog
+      const confirmDeleteButton = screen.getByLabelText('Delete')
+      fireEvent.click(confirmDeleteButton)
       
       await waitFor(() => {
         expect(screen.getByText(/failed to delete calendar subscription/i)).toBeInTheDocument()
