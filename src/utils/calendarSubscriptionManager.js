@@ -346,9 +346,12 @@ function validateCalendarURL(url) {
     
     // Block private IPv6 ranges
     if (hostname.includes(':')) {
+      // IPv6 addresses in URLs are wrapped in brackets [ipv6], so remove them for checking
+      const ipv6Address = hostname.replace(/^\[|\]$/g, '')
+      
       // Check for IPv6 private ranges and IPv4-mapped IPv6
-      if (hostname.startsWith('fc') || hostname.startsWith('fd') || 
-          hostname.startsWith('fe80') || hostname.includes('::ffff:')) {
+      if (ipv6Address.startsWith('fc') || ipv6Address.startsWith('fd') || 
+          ipv6Address.startsWith('fe80') || ipv6Address.includes('::ffff:')) {
         logger.warn('Private IPv6 ranges not allowed for calendar subscriptions')
         return false
       }
