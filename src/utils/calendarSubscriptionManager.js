@@ -8,6 +8,7 @@ import { normalizeEntity, updateMetadata } from './idGenerator'
 import { createLogger } from './logger'
 import { createEvent } from './scheduleManager'
 import { sanitizeText } from './sanitization'
+import ical from 'node-ical'
 
 const logger = createLogger('CalendarSubscription')
 
@@ -114,200 +115,100 @@ export async function deleteCalendarSubscription(id) {
  * @param {string} icsData - Raw ICS data
  * @returns {Array<Object>} Array of parsed events
  * 
- * Note: This is a basic ICS parser that handles common calendar formats.
- * It does NOT support:
- * - Recurrence rules (RRULE, EXDATE, etc.)
- * - Complex timezone handling (VTIMEZONE) — TZID parameters are parsed but their local times are
- *   incorrectly treated as UTC by this parser.
- * - Exceptions to recurring events
- * - Line folding (RFC 5545 section 3.1) — Long lines split across multiple lines with a leading
- *   space or tab will not be properly concatenated. Events with folded lines in SUMMARY, DESCRIPTION,
- *   or other fields may be parsed incorrectly or have truncated content.
+ * Note: Uses node-ical library for full RFC 5545 compliance, including:
+ * - Line folding (RFC 5545 section 3.1) — properly handles long lines split with leading space/tab
+ * - Complex timezone handling (VTIMEZONE) with proper TZID parameter support
+ * - Recurrence rules (RRULE, EXDATE, etc.) - note: recurrence expansion not included
+ * - Proper date/time parsing and validation
  * 
- * IMPORTANT: Events with TZID parameters (e.g., DTSTART;TZID=America/New_York:20250115T090000)
- * are interpreted as if the wall-clock time were already in UTC and then converted to the local
- * timezone for display. This is incorrect for non-UTC TZIDs and can result in shifted event times.
- * Do not rely on this parser for accurate timezone handling when TZID is present.
- * 
- * For more complex calendars with proper timezone support and full RFC 5545 compliance,
- * consider using a library like ical.js.
+ * The node-ical library is MIT-licensed and provides robust, standards-compliant ICS parsing.
  */
 export function parseICS(icsData) {
-  const events = []
-  const lines = icsData.split(/\r?\n/)
-  let currentEvent = null
-  let isInEvent = false
-  
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim()
+  try {
+    // Parse ICS data using node-ical
+    const parsed = ical.sync.parseICS(icsData)
+    const events = []
     
-    if (line === 'BEGIN:VEVENT') {
-      isInEvent = true
-      currentEvent = {}
-    } else if (line === 'END:VEVENT' && isInEvent) {
-      // Only add event if it has required fields AND valid dates
-      if (currentEvent && currentEvent.summary && currentEvent.dtstart && currentEvent.dtstart !== null) {
-        events.push(currentEvent)
-      }
-      currentEvent = null
-      isInEvent = false
-    } else if (isInEvent && currentEvent) {
-      // Parse event properties
-      const colonIndex = line.indexOf(':')
-      if (colonIndex === -1) continue
-      
-      // Extract property name and value, handling parameters like DTSTART;VALUE=DATE
-      const fullPropertyKey = line.substring(0, colonIndex)
-      const value = line.substring(colonIndex + 1)
-      
-      // Get base property name (before semicolon if parameters exist)
-      const semicolonIndex = fullPropertyKey.indexOf(';')
-      const propertyKey = semicolonIndex > -1 ? fullPropertyKey.substring(0, semicolonIndex) : fullPropertyKey
-      
-      if (propertyKey === 'SUMMARY') {
-        // Sanitize to prevent XSS
-        currentEvent.summary = sanitizeText(value)
-      } else if (propertyKey === 'DTSTART') {
-        currentEvent.dtstart = parseDateTimeValue(value)
-      } else if (propertyKey === 'DTEND') {
-        currentEvent.dtend = parseDateTimeValue(value)
-      } else if (propertyKey === 'DESCRIPTION') {
-        // Sanitize to prevent XSS
-        currentEvent.description = sanitizeText(value)
-      } else if (propertyKey === 'LOCATION') {
-        // Sanitize to prevent XSS
-        currentEvent.location = sanitizeText(value)
-      } else if (propertyKey === 'UID') {
-        currentEvent.uid = value
+    // Extract VEVENT entries
+    for (const key in parsed) {
+      const component = parsed[key]
+      if (component.type === 'VEVENT') {
+        // Validate that we have a start date and it's a valid Date object
+        if (!component.start || !(component.start instanceof Date) || isNaN(component.start.getTime())) {
+          logger.warn('Skipping event with invalid or missing start date', { uid: component.uid })
+          continue
+        }
+        
+        // Convert to our simplified event format
+        const event = {
+          summary: sanitizeText(component.summary || ''),
+          description: sanitizeText(component.description || ''),
+          location: sanitizeText(component.location || ''),
+          uid: component.uid,
+          dtstart: component.start,
+          dtend: component.end
+        }
+        
+        // Only include events with required fields (summary and valid start date)
+        if (event.summary && event.dtstart) {
+          events.push(event)
+        }
       }
     }
+    
+    return events
+  } catch (error) {
+    logger.error('Failed to parse ICS data', { error: error.message })
+    return []
   }
-  
-  return events
-}
-
-/**
- * Parse ICS datetime value with validation
- * @param {string} value - Datetime value from ICS
- * @returns {Date|null} Parsed date or null if invalid
- */
-function parseDateTimeValue(value) {
-  // Handle DATE-TIME format: YYYYMMDDTHHmmss or YYYYMMDDTHHmmssZ
-  // Handle DATE format: YYYYMMDD
-  
-  if (!value || typeof value !== 'string') {
-    logger.warn('Invalid datetime value: empty or non-string')
-    return null
-  }
-  
-  if (value.length === 8) {
-    // DATE format: YYYYMMDD
-    const year = parseInt(value.substring(0, 4), 10)
-    const month = parseInt(value.substring(4, 6), 10) - 1
-    const day = parseInt(value.substring(6, 8), 10)
-    
-    // Validate parsed values
-    if (isNaN(year) || isNaN(month) || isNaN(day)) {
-      logger.warn('Invalid DATE format: failed to parse numbers', { value })
-      return null
-    }
-    if (year < 1900 || year > 2100 || month < 0 || month > 11 || day < 1 || day > 31) {
-      logger.warn('Invalid DATE format: out of range', { year, month, day })
-      return null
-    }
-    
-    return new Date(year, month, day)
-  } else if (value.includes('T')) {
-    // DATE-TIME format
-    const dateTimeParts = value.split('T')
-    if (dateTimeParts.length !== 2) {
-      logger.warn('Invalid DATE-TIME format: missing T separator', { value })
-      return null
-    }
-    
-    const datePart = dateTimeParts[0]
-    const timePart = dateTimeParts[1].replace('Z', '')
-    
-    if (datePart.length !== 8 || timePart.length < 6) {
-      logger.warn('Invalid DATE-TIME format: incorrect length', { value })
-      return null
-    }
-    
-    const year = parseInt(datePart.substring(0, 4), 10)
-    const month = parseInt(datePart.substring(4, 6), 10) - 1
-    const day = parseInt(datePart.substring(6, 8), 10)
-    const hours = parseInt(timePart.substring(0, 2), 10)
-    const minutes = parseInt(timePart.substring(2, 4), 10)
-    const seconds = parseInt(timePart.substring(4, 6), 10)
-    
-    // Validate all parsed values
-    if (isNaN(year) || isNaN(month) || isNaN(day) || 
-        isNaN(hours) || isNaN(minutes) || isNaN(seconds)) {
-      logger.warn('Invalid DATE-TIME format: failed to parse numbers', { value })
-      return null
-    }
-    if (year < 1900 || year > 2100 || month < 0 || month > 11 || 
-        day < 1 || day > 31 || hours < 0 || hours > 23 || 
-        minutes < 0 || minutes > 59 || seconds < 0 || seconds > 59) {
-      logger.warn('Invalid DATE-TIME format: out of range', { value })
-      return null
-    }
-    
-    return new Date(Date.UTC(year, month, day, hours, minutes, seconds))
-  }
-  
-  logger.warn('Invalid datetime format: unknown format', { value })
-  return null
 }
 
 /**
  * Convert ICS event to schedule event format
- * @param {object} icsEvent - Parsed ICS event
+ * @param {object} icsEvent - Parsed ICS event from node-ical
  * @param {string} calendarId - Calendar subscription ID
  * @returns {object|null} Schedule event data or null if invalid
  */
 function convertICSEventToScheduleEvent(icsEvent, calendarId) {
-  // Validate dates
-  if (!icsEvent.dtstart) {
-    logger.warn('ICS event missing start time', { event: icsEvent })
+  // Validate dates (node-ical returns Date objects directly)
+  if (!icsEvent.dtstart || !(icsEvent.dtstart instanceof Date)) {
+    logger.warn('ICS event missing or invalid start time', { event: icsEvent })
     return null
   }
   
-  const startDate = new Date(icsEvent.dtstart)
+  const startDate = icsEvent.dtstart
   if (isNaN(startDate.getTime())) {
     logger.warn('Invalid start date in ICS event', { event: icsEvent })
     return null
   }
   
   // Use end date if available, otherwise default to 1 hour duration
-  const endDate = icsEvent.dtend ? new Date(icsEvent.dtend) : new Date(startDate.getTime() + DEFAULT_EVENT_DURATION_MILLISECONDS)
-  if (isNaN(endDate.getTime())) {
-    logger.warn('Invalid end date in ICS event, using default duration', { event: icsEvent })
-    endDate.setTime(startDate.getTime() + DEFAULT_EVENT_DURATION_MILLISECONDS)
+  let endDate = icsEvent.dtend
+  if (!endDate || !(endDate instanceof Date) || isNaN(endDate.getTime())) {
+    endDate = new Date(startDate.getTime() + DEFAULT_EVENT_DURATION_MILLISECONDS)
   }
   
-  // Format date as YYYY-MM-DD using local time so events reflect the user's timezone
+  // Format date as YYYY-MM-DD using local time
   const year = startDate.getFullYear()
   const month = String(startDate.getMonth() + 1).padStart(2, '0')
   const date = String(startDate.getDate()).padStart(2, '0')
   const day = `${year}-${month}-${date}`
   
-  // Format times as HH:MM in the user's local timezone
-  // UTC times from ICS are automatically converted to local time by Date object
+  // Format times as HH:MM in local timezone
   const startTime = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`
   const endTime = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`
   
   return {
-    title: icsEvent.summary,
+    title: icsEvent.summary || 'Untitled Event',
     day,
     startTime,
     endTime,
-    type: 'meeting', // Default external events to 'meeting' type
+    description: icsEvent.description || '',
+    location: icsEvent.location || '',
+    type: 'event',
     isExternal: true,
     externalCalendarId: calendarId,
-    externalEventId: icsEvent.uid,
-    description: icsEvent.description || '',
-    location: icsEvent.location || ''
+    externalEventId: icsEvent.uid || `${calendarId}-${Date.now()}`
   }
 }
 
