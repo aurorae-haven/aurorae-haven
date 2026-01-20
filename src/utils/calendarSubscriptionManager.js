@@ -216,13 +216,17 @@ function convertICSEventToScheduleEvent(icsEvent, calendarId) {
  * Validate calendar URL to prevent SSRF attacks
  * @param {string} url - URL to validate
  * @returns {boolean} True if URL is safe to fetch
- * 
- * Note: This validation blocks localhost and private IPv4 addresses.
- * It does NOT currently block:
- * - Private IPv6 ranges (fc00::/7, fe80::/10)
- * - IPv4-mapped IPv6 addresses (::ffff:192.168.1.1)
+ *
+ * Note: This validation blocks:
+ * - Localhost (e.g. 127.0.0.1, ::1)
+ * - Private IPv4 ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16)
+ * - Unique-local IPv6 addresses (fc00::/7, fd00::/7)
+ * - Link-local IPv6 addresses (fe80::/10)
+ * - IPv4-mapped IPv6 addresses (::ffff:0:0/96, e.g. ::ffff:192.168.1.1)
+ *
+ * It does NOT currently protect against:
  * - DNS rebinding attacks (domain initially resolves to public IP, later to private)
- * 
+ *
  * For production use in security-sensitive contexts, consider additional safeguards.
  */
 function validateCalendarURL(url) {

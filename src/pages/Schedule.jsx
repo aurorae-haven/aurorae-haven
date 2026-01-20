@@ -775,18 +775,18 @@ function Schedule() {
                     // Render travel time block if present
                     if (event.travelTime && event.travelTime > 0) {
                       // Calculate times once to avoid redundant parsing
-                      const prepEndTime = subtractDuration(
+                      const prepStartTime = subtractDuration(
                         event.startTime,
                         event.preparationTime || 0
                       )
                       const travelStartTime = subtractDuration(
-                        prepEndTime,
+                        prepStartTime,
                         event.travelTime
                       )
                       const travelTop = timeToPosition(travelStartTime)
                       const travelHeight = durationToHeight(
                         travelStartTime,
-                        prepEndTime
+                        prepStartTime
                       )
 
                       if (travelTop >= 0 && travelHeight > 0) {
