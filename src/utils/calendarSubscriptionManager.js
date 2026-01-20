@@ -8,12 +8,14 @@ import { normalizeEntity, updateMetadata } from './idGenerator'
 import { createLogger } from './logger'
 import { createEvent } from './scheduleManager'
 import { sanitizeText } from './sanitization'
+import { DEFAULT_EVENT_DURATION_MINUTES } from './scheduleConstants'
 import ical from 'node-ical'
 
 const logger = createLogger('CalendarSubscription')
 
-// Constants for default event durations
-const DEFAULT_EVENT_DURATION_MILLISECONDS = 60 * 60 * 1000 // 1 hour in milliseconds
+// Convert default event duration from minutes to milliseconds
+const DEFAULT_EVENT_DURATION_MILLISECONDS =
+  DEFAULT_EVENT_DURATION_MINUTES * 60 * 1000
 
 /**
  * Add or update a calendar subscription

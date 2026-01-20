@@ -16,6 +16,16 @@ import { createLogger } from '../../utils/logger'
 const logger = createLogger('EventModal')
 
 /**
+ * Helper function to clamp a time value to a valid range
+ * @param {number} value - The value to clamp
+ * @param {number} max - The maximum allowed value
+ * @returns {number} The clamped value (between 0 and max)
+ */
+const clampTimeValue = (value, max) => {
+  return Math.max(0, Math.min(value, max))
+}
+
+/**
  * Modal for creating and editing schedule events
  */
 function EventModal({
@@ -343,8 +353,7 @@ function EventModal({
                 value={formData.travelTime}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10) || 0
-                  // Clamp value to valid range
-                  const clampedValue = Math.max(0, Math.min(value, MAX_TRAVEL_TIME_MINUTES))
+                  const clampedValue = clampTimeValue(value, MAX_TRAVEL_TIME_MINUTES)
                   handleChange('travelTime', clampedValue)
                 }}
                 disabled={isSubmitting}
@@ -367,8 +376,7 @@ function EventModal({
                 value={formData.preparationTime}
                 onChange={(e) => {
                   const value = parseInt(e.target.value, 10) || 0
-                  // Clamp value to valid range
-                  const clampedValue = Math.max(0, Math.min(value, MAX_PREPARATION_TIME_MINUTES))
+                  const clampedValue = clampTimeValue(value, MAX_PREPARATION_TIME_MINUTES)
                   handleChange('preparationTime', clampedValue)
                 }}
                 disabled={isSubmitting}

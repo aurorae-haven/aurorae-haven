@@ -747,12 +747,14 @@ function Schedule() {
                       return acc
                     }
 
+                    // Calculate preparation start time once (used by both prep and travel blocks)
+                    const prepStartTime = subtractDuration(
+                      event.startTime,
+                      event.preparationTime || 0
+                    )
+
                     // Render preparation time block if present
                     if (event.preparationTime && event.preparationTime > 0) {
-                      const prepStartTime = subtractDuration(
-                        event.startTime,
-                        event.preparationTime
-                      )
                       const prepTop = timeToPosition(prepStartTime)
                       const prepHeight = durationToHeight(
                         prepStartTime,
@@ -774,11 +776,6 @@ function Schedule() {
 
                     // Render travel time block if present
                     if (event.travelTime && event.travelTime > 0) {
-                      // Calculate times once to avoid redundant parsing
-                      const prepStartTime = subtractDuration(
-                        event.startTime,
-                        event.preparationTime || 0
-                      )
                       const travelStartTime = subtractDuration(
                         prepStartTime,
                         event.travelTime

@@ -173,7 +173,8 @@ END:VCALENDAR`
       const events = parseICS(icsData)
       expect(events).toHaveLength(1)
       
-      // With node-ical, line folding is properly handled (spaces are removed, lines concatenated)
+      // With node-ical, line folding is properly handled per RFC 5545:
+      // Leading spaces are removed and lines are concatenated (no extra spaces added)
       expect(events[0].summary).toBe('This is a very long summary that would normally be foldedacross multiple lines with leading spaces')
       expect(events[0].description).toBe('This description also has line foldingwith a continuation line hereand another one here')
     })
