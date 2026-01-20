@@ -153,6 +153,37 @@ END:VCALENDAR`
       expect(events[0].summary).toBe('Meeting with Timezone')
     })
 
+    test('should not unfold line-folded content (RFC 5545 limitation)', () => {
+      // RFC 5545 section 3.1: Long lines can be folded with a leading space or tab
+      // This parser does NOT implement line folding, so continuation lines are treated as separate properties
+      const icsData = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+DTSTART:20250115T090000Z
+DTEND:20250115T100000Z
+SUMMARY:This is a very long summary that would normally be folded
+ across multiple lines with leading spaces
+DESCRIPTION:This description also has line folding
+ with a continuation line here
+ and another one here
+UID:event-folded
+END:VEVENT
+END:VCALENDAR`
+
+      const events = parseICS(icsData)
+      expect(events).toHaveLength(1)
+      
+      // The parser will only capture the first line before the fold
+      // Continuation lines (starting with space) are ignored
+      expect(events[0].summary).toBe('This is a very long summary that would normally be folded')
+      expect(events[0].description).toBe('This description also has line folding')
+      
+      // Note: In a full RFC 5545 compliant parser, the summary would be:
+      // "This is a very long summary that would normally be foldedacross multiple lines with leading spaces"
+      // And description would be:
+      // "This description also has line foldingwith a continuation line hereand another one here"
+    })
+
     test('should parse multiple events', () => {
       const icsData = `BEGIN:VCALENDAR
 VERSION:2.0
