@@ -47,7 +47,9 @@ function TemplateEditor({ template, onSave, onClose }) {
       dueOffset: '',
       steps: [],
       energyTag: '',
-      estimatedDuration: ''
+      estimatedDuration: '',
+      duration: '',
+      description: ''
     }
   })
 

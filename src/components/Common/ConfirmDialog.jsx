@@ -40,7 +40,8 @@ function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel, confirmTex
   }
 
   return (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
+    // Backdrop click is a mouse-only convenience; keyboard users can press Escape or use dialog buttons.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div 
       className="modal-overlay" 
       onClick={handleBackdropClick}
