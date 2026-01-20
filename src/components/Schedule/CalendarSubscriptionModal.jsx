@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Modal from '../common/Modal'
 import Icon from '../common/Icon'
-import ConfirmDialog from '../Common/ConfirmDialog'
+import ConfirmDialog from '../common/ConfirmDialog'
 import {
   getCalendarSubscriptions,
   addCalendarSubscription,

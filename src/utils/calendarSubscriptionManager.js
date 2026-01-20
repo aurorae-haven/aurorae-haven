@@ -120,14 +120,17 @@ export async function deleteCalendarSubscription(id) {
  * - Complex timezone handling (VTIMEZONE) — TZID parameters are parsed but their local times are
  *   incorrectly treated as UTC by this parser.
  * - Exceptions to recurring events
- * - Line folding (long lines split across multiple lines)
+ * - Line folding (RFC 5545 section 3.1) — Long lines split across multiple lines with a leading
+ *   space or tab will not be properly concatenated. Events with folded lines in SUMMARY, DESCRIPTION,
+ *   or other fields may be parsed incorrectly or have truncated content.
  * 
  * IMPORTANT: Events with TZID parameters (e.g., DTSTART;TZID=America/New_York:20250115T090000)
  * are interpreted as if the wall-clock time were already in UTC and then converted to the local
  * timezone for display. This is incorrect for non-UTC TZIDs and can result in shifted event times.
  * Do not rely on this parser for accurate timezone handling when TZID is present.
  * 
- * For more complex calendars with proper timezone support, consider using a library like ical.js
+ * For more complex calendars with proper timezone support and full RFC 5545 compliance,
+ * consider using a library like ical.js.
  */
 export function parseICS(icsData) {
   const events = []
