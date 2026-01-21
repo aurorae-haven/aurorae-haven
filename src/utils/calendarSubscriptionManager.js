@@ -3,6 +3,8 @@
  * Handles external calendar subscriptions (ICS, Google Calendar, etc.)
  */
 
+/* global AbortController */
+
 import { put, getAll, deleteById, openDB, STORES } from './indexedDBManager'
 import { normalizeEntity, updateMetadata } from './idGenerator'
 import { createLogger } from './logger'

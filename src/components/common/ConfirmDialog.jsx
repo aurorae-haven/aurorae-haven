@@ -41,7 +41,6 @@ function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel, confirmTex
 
   return (
     // Backdrop is presentational only; interaction handled via Escape key and dialog buttons
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div 
       className="modal-overlay" 
       onClick={handleBackdropClick}
