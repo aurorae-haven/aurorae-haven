@@ -177,7 +177,7 @@ function Layout({ children, onExport, onImport }) {
     },
     {
       path: '/braindump',
-      label: 'Brain Dump',
+      label: 'Brain\u00A0Dump', // Non-breaking space for line break on mobile
       icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z'
     },
     {

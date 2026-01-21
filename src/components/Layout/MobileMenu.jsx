@@ -29,7 +29,7 @@ function MobileMenu({ isOpen, onClose, tabs, isActive, mobileMenuRef }) {
             aria-label={tab.label}
             title={tab.label}
           >
-            <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
+            <svg className='icon' viewBox='0 0 24 24' aria-hidden='true' fill='none' stroke='currentColor'>
               <path d={tab.icon} />
             </svg>
           </Link>
