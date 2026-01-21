@@ -73,7 +73,8 @@ export function useNotesState() {
     if (notes.length > 0 && !currentNoteId) {
       loadNote(notes[0])
     }
-    // loadNote is stable via useCallback and should not trigger re-renders
+    // loadNote is memoized via useCallback([]) with empty deps and is safe to omit as a dependency.
+    // We depend on notes.length (not the full notes array) to avoid re-loading when only note content changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [notes.length, currentNoteId])
 

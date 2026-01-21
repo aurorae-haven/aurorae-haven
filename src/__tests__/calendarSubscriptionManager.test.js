@@ -341,6 +341,62 @@ END:VCALENDAR`
       )
     })
 
+    test('should reject link-local IP addresses (169.254.x.x)', async () => {
+      const subscription = {
+        name: 'Link-local Calendar',
+        url: 'http://169.254.169.254/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
+    test('should reject loopback range (127.x.x.x)', async () => {
+      const testAddresses = ['127.0.0.1', '127.1.1.1', '127.255.255.255']
+      
+      for (const address of testAddresses) {
+        const subscription = {
+          name: 'Loopback Calendar',
+          url: `http://${address}/calendar.ics`,
+          color: '#86f5e0'
+        }
+
+        await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+          'Invalid or unsafe calendar URL'
+        )
+      }
+    })
+
+    test('should reject carrier-grade NAT range (100.64.x.x - 100.127.x.x)', async () => {
+      const testAddresses = ['100.64.0.1', '100.100.100.100', '100.127.255.255']
+      
+      for (const address of testAddresses) {
+        const subscription = {
+          name: 'CGN Calendar',
+          url: `http://${address}/calendar.ics`,
+          color: '#86f5e0'
+        }
+
+        await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+          'Invalid or unsafe calendar URL'
+        )
+      }
+    })
+
+    test('should reject IETF protocol assignments range (192.0.0.x)', async () => {
+      const subscription = {
+        name: 'IETF Calendar',
+        url: 'http://192.0.0.1/calendar.ics',
+        color: '#86f5e0'
+      }
+
+      await expect(addCalendarSubscription(subscription)).rejects.toThrow(
+        'Invalid or unsafe calendar URL'
+      )
+    })
+
     test('should accept valid HTTPS URL', async () => {
       global.fetch.mockResolvedValueOnce({
         ok: true,

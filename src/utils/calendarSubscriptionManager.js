@@ -282,9 +282,22 @@ function validateCalendarURL(url) {
         return false
       }
       
-      // Check for private IP ranges
-      if (a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168)) {
-        logger.warn('Private IP ranges not allowed for calendar subscriptions')
+      // Check for private and reserved IPv4 ranges to prevent SSRF
+      if (
+        // RFC1918 private ranges
+        a === 10 || // 10.0.0.0/8
+        (a === 172 && b >= 16 && b <= 31) || // 172.16.0.0/12
+        (a === 192 && b === 168) || // 192.168.0.0/16
+        // Loopback
+        a === 127 || // 127.0.0.0/8 (full range, not just 127.0.0.1)
+        // Link-local
+        (a === 169 && b === 254) || // 169.254.0.0/16 (APIPA)
+        // Carrier-grade NAT (RFC 6598)
+        (a === 100 && b >= 64 && b <= 127) || // 100.64.0.0/10
+        // IETF Protocol Assignments
+        (a === 192 && b === 0 && c === 0) // 192.0.0.0/24
+      ) {
+        logger.warn('Private or reserved IP ranges not allowed for calendar subscriptions')
         return false
       }
     }

@@ -352,8 +352,14 @@ function EventModal({
                 max={MAX_TRAVEL_TIME_MINUTES}
                 value={formData.travelTime}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value, 10) || 0
-                  const clampedValue = clampTimeValue(value, MAX_TRAVEL_TIME_MINUTES)
+                  const parsedValue = parseInt(e.target.value, 10)
+                  
+                  // Preserve previous value if input is invalid (NaN)
+                  if (Number.isNaN(parsedValue)) {
+                    return
+                  }
+                  
+                  const clampedValue = clampTimeValue(parsedValue, MAX_TRAVEL_TIME_MINUTES)
                   handleChange('travelTime', clampedValue)
                 }}
                 disabled={isSubmitting}
@@ -375,8 +381,14 @@ function EventModal({
                 max={MAX_PREPARATION_TIME_MINUTES}
                 value={formData.preparationTime}
                 onChange={(e) => {
-                  const value = parseInt(e.target.value, 10) || 0
-                  const clampedValue = clampTimeValue(value, MAX_PREPARATION_TIME_MINUTES)
+                  const parsedValue = parseInt(e.target.value, 10)
+                  
+                  // Preserve previous value if input is invalid (NaN)
+                  if (Number.isNaN(parsedValue)) {
+                    return
+                  }
+                  
+                  const clampedValue = clampTimeValue(parsedValue, MAX_PREPARATION_TIME_MINUTES)
                   handleChange('preparationTime', clampedValue)
                 }}
                 disabled={isSubmitting}
