@@ -225,6 +225,7 @@ function Layout({ children, onExport, onImport }) {
               className='appnav'
               role='tablist'
               aria-label='Primary navigation tabs'
+              data-testid='desktop-tabs'
             >
               {tabs.map((tab, index) => (
                 <Link
@@ -246,16 +247,19 @@ function Layout({ children, onExport, onImport }) {
             </div>
 
             {/* Mobile portrait bottom bar: Primary tabs + More button */}
-            <div className='mobile-bottom-tabs' role='tablist' aria-label='Mobile navigation tabs'>
-              {primaryTabs.map((tab, index) => (
+            <div 
+              className='mobile-bottom-tabs' 
+              role='presentation'
+              aria-hidden='true'
+              data-testid='mobile-tabs'
+            >
+              {primaryTabs.map((tab) => (
                 <Link
-                  key={tab.path}
+                  key={`mobile-${tab.path}`}
                   className={`nav-tab ${isActive(tab.path) ? 'active' : ''}`}
                   to={tab.path}
-                  role='tab'
-                  aria-selected={isActive(tab.path)}
-                  aria-label={tab.label}
-                  tabIndex={isActive(tab.path) ? 0 : -1}
+                  tabIndex={-1}
+                  aria-hidden='true'
                   onClick={() => setMoreMenuOpen(false)}
                 >
                   <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
@@ -270,7 +274,8 @@ function Layout({ children, onExport, onImport }) {
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
                 aria-expanded={moreMenuOpen}
                 aria-label='More options'
-                role='tab'
+                tabIndex={-1}
+                aria-hidden='true'
               >
                 <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                   <path d='M4 6h16M4 12h16M4 18h16' />
