@@ -90,7 +90,6 @@ function TimePreparationBlock({ type, top, height, time }) {
       <div className='meta'>{time}</div>
     </div>
   )
-  )
 }
 
 TimePreparationBlock.propTypes = {
