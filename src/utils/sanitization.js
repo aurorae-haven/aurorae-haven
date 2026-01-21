@@ -176,3 +176,24 @@ export function configureSanitization(DOMPurifyInstance) {
 
   return config
 }
+
+/**
+ * Sanitize plain text to prevent XSS attacks
+ * Escapes HTML special characters
+ * @param {string} text - Text to sanitize
+ * @returns {string} Sanitized text
+ */
+export function sanitizeText(text) {
+  if (!text || typeof text !== 'string') {
+    return ''
+  }
+  
+  // Escape HTML special characters
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;')
+}

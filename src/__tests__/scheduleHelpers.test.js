@@ -1,13 +1,25 @@
 import {
   getAllTasks,
   searchRoutinesAndTasks,
-  getAllRoutinesAndTasks
+  getAllRoutinesAndTasks,
+  instantiateRoutineFromTemplate
 } from '../utils/scheduleHelpers'
-import { getRoutines } from '../utils/routinesManager'
+import { getRoutines, createRoutine } from '../utils/routinesManager'
+import { getAllTemplates } from '../utils/templatesManager'
+import { getPredefinedTemplates } from '../utils/predefinedTemplates'
 
 // Mock dependencies
 jest.mock('../utils/routinesManager', () => ({
-  getRoutines: jest.fn()
+  getRoutines: jest.fn(),
+  createRoutine: jest.fn()
+}))
+
+jest.mock('../utils/templatesManager', () => ({
+  getAllTemplates: jest.fn()
+}))
+
+jest.mock('../utils/predefinedTemplates', () => ({
+  getPredefinedTemplates: jest.fn()
 }))
 
 jest.mock('../utils/logger', () => ({
@@ -240,6 +252,137 @@ describe('scheduleHelpers', () => {
       const results = await getAllRoutinesAndTasks('routine')
       expect(results).toHaveLength(1)
       expect(results[0].type).toBe('routine')
+    })
+  })
+
+  describe('Template search and instantiation', () => {
+    beforeEach(() => {
+      getAllTemplates.mockResolvedValue([])
+      getPredefinedTemplates.mockReturnValue([])
+    })
+
+    it('should search templates when no routines found', async () => {
+      getRoutines.mockResolvedValue([])
+      getAllTemplates.mockResolvedValue([
+        {
+          id: 'template-1',
+          type: 'routine',
+          title: 'Morning Launch',
+          estimatedDuration: 30,
+          tags: ['morning'],
+          steps: [{ label: 'Step 1', duration: 300 }]
+        }
+      ])
+      getPredefinedTemplates.mockReturnValue([])
+
+      const results = await searchRoutinesAndTasks('morning', 'routine')
+      expect(results).toHaveLength(1)
+      expect(results[0].isTemplate).toBe(true)
+      expect(results[0].sourceType).toBe('template')
+      expect(results[0].title).toBe('Morning Launch')
+    })
+
+    it('should search predefined templates when no routines found', async () => {
+      getRoutines.mockResolvedValue([])
+      getAllTemplates.mockResolvedValue([])
+      getPredefinedTemplates.mockReturnValue([
+        {
+          id: 'predefined-1',
+          type: 'routine',
+          title: 'Quick Reset',
+          estimatedDuration: 15,
+          tags: ['break'],
+          steps: []
+        }
+      ])
+
+      const results = await searchRoutinesAndTasks('quick', 'routine')
+      expect(results).toHaveLength(1)
+      expect(results[0].isTemplate).toBe(true)
+      expect(results[0].isPredefined).toBe(true)
+      expect(results[0].sourceType).toBe('predefined-template')
+    })
+
+    it('should not search templates when routines are found', async () => {
+      getRoutines.mockResolvedValue([
+        { id: 'r1', title: 'Morning Routine', totalDuration: 1800 }
+      ])
+
+      const results = await searchRoutinesAndTasks('morning', 'routine')
+      expect(results).toHaveLength(1)
+      expect(results[0].isTemplate).toBeUndefined()
+      // Templates should not be called if routines were found
+      expect(getAllTemplates).not.toHaveBeenCalled()
+    })
+
+    it('should include templates in getAllRoutinesAndTasks when no routines', async () => {
+      getRoutines.mockResolvedValue([])
+      getAllTemplates.mockResolvedValue([
+        {
+          id: 'template-1',
+          type: 'routine',
+          title: 'Template Routine',
+          estimatedDuration: 30,
+          steps: []
+        }
+      ])
+      getPredefinedTemplates.mockReturnValue([
+        {
+          id: 'predefined-1',
+          type: 'routine',
+          title: 'Predefined Routine',
+          estimatedDuration: 20,
+          steps: []
+        }
+      ])
+
+      const results = await getAllRoutinesAndTasks('routine')
+      expect(results.length).toBeGreaterThan(0)
+      expect(results.some((r) => r.isTemplate)).toBe(true)
+    })
+  })
+
+  describe('instantiateRoutineFromTemplate', () => {
+    it('should create a routine from template', async () => {
+      createRoutine.mockResolvedValue('new-routine-id')
+
+      const template = {
+        id: 'template-1',
+        title: 'Morning Launch',
+        steps: [
+          { label: 'Wake up', duration: 300 },
+          { label: 'Exercise', duration: 900 }
+        ],
+        tags: ['morning', 'energy'],
+        energyTag: 'high',
+        estimatedDuration: 1200
+      }
+
+      const result = await instantiateRoutineFromTemplate(template)
+
+      expect(createRoutine).toHaveBeenCalledWith({
+        title: 'Morning Launch',
+        steps: template.steps,
+        tags: ['morning', 'energy'],
+        energyTag: 'high',
+        estimatedDuration: 1200
+      })
+      expect(result.id).toBe('new-routine-id')
+      expect(result.title).toBe('Morning Launch')
+    })
+
+    it('should handle errors during routine creation', async () => {
+      createRoutine.mockRejectedValue(new Error('Database error'))
+
+      const template = {
+        id: 'template-1',
+        title: 'Test Template',
+        steps: []
+      }
+
+      await expect(instantiateRoutineFromTemplate(template)).rejects.toThrow(
+        'Database error'
+      )
     })
   })
 })

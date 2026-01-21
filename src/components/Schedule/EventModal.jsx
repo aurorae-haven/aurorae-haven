@@ -4,7 +4,50 @@ import Modal from '../common/Modal'
 import Icon from '../common/Icon'
 import SearchableEventSelector from './SearchableEventSelector'
 import { getCurrentDateISO } from '../../utils/timeUtils'
-import { EVENT_TYPES, VALID_EVENT_TYPES } from '../../utils/scheduleConstants'
+import { 
+  EVENT_TYPES, 
+  VALID_EVENT_TYPES,
+  MAX_TRAVEL_TIME_MINUTES,
+  MAX_PREPARATION_TIME_MINUTES
+} from '../../utils/scheduleConstants'
+import { instantiateRoutineFromTemplate } from '../../utils/scheduleHelpers'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger('EventModal')
+
+/**
+ * Helper function to clamp a time value to a valid range
+ * @param {number} value - The value to clamp
+ * @param {number} max - The maximum allowed value
+ * @returns {number} The clamped value (between 0 and max)
+ */
+const clampTimeValue = (value, max) => {
+  return Math.max(0, Math.min(value, max))
+}
+
+/**
+ * Helper function to handle time input changes with validation
+ * @param {string} inputValue - The raw input value from the input field
+ * @param {number} maxValue - The maximum allowed value
+ * @param {Function} onChange - Callback to invoke with the validated value
+ */
+const handleTimeInputChange = (inputValue, maxValue, onChange) => {
+  // Allow clearing the field to 0
+  if (inputValue === '') {
+    onChange(0)
+    return
+  }
+  
+  const parsedValue = parseInt(inputValue, 10)
+  
+  // Preserve previous value if input is invalid (NaN)
+  if (Number.isNaN(parsedValue)) {
+    return
+  }
+  
+  const clampedValue = clampTimeValue(parsedValue, maxValue)
+  onChange(clampedValue)
+}
 
 /**
  * Modal for creating and editing schedule events
@@ -27,7 +70,9 @@ function EventModal({
     day: getCurrentDateISO(),
     startTime: '09:00',
     endTime: '10:00',
-    type: validatedEventType
+    type: validatedEventType,
+    travelTime: 0,
+    preparationTime: 0
   })
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -43,7 +88,9 @@ function EventModal({
           day: initialData.day || getCurrentDateISO(),
           startTime: initialData.startTime || '09:00',
           endTime: initialData.endTime || '10:00',
-          type: initialData.type || validatedEventType
+          type: initialData.type || validatedEventType,
+          travelTime: initialData.travelTime || 0,
+          preparationTime: initialData.preparationTime || 0
         })
         setShowManualForm(true) // Show form directly if editing
       } else {
@@ -52,7 +99,9 @@ function EventModal({
           day: getCurrentDateISO(),
           startTime: '09:00',
           endTime: '10:00',
-          type: validatedEventType
+          type: validatedEventType,
+          travelTime: 0,
+          preparationTime: 0
         })
         // For routine/task, start with search; for meeting/habit, show form directly
         setShowManualForm(
@@ -108,6 +157,41 @@ function EventModal({
       )
       return false
     }
+    
+    // Validate travel time
+    if (typeof formData.travelTime === 'number') {
+      // Explicitly check for NaN
+      if (Number.isNaN(formData.travelTime)) {
+        setError('Travel time must be a valid number')
+        return false
+      }
+      if (formData.travelTime < 0) {
+        setError('Travel time cannot be negative')
+        return false
+      }
+      if (formData.travelTime > MAX_TRAVEL_TIME_MINUTES) {
+        setError(`Travel time cannot exceed ${MAX_TRAVEL_TIME_MINUTES} minutes`)
+        return false
+      }
+    }
+    
+    // Validate preparation time
+    if (typeof formData.preparationTime === 'number') {
+      // Explicitly check for NaN
+      if (Number.isNaN(formData.preparationTime)) {
+        setError('Preparation time must be a valid number')
+        return false
+      }
+      if (formData.preparationTime < 0) {
+        setError('Preparation time cannot be negative')
+        return false
+      }
+      if (formData.preparationTime > MAX_PREPARATION_TIME_MINUTES) {
+        setError(`Preparation time cannot exceed ${MAX_PREPARATION_TIME_MINUTES} minutes`)
+        return false
+      }
+    }
+    
     return true
   }
 
@@ -141,14 +225,49 @@ function EventModal({
   }
 
   // Handle selecting an existing routine/task
-  const handleItemSelect = (item) => {
-    setFormData({
-      title: item.title,
-      day: getCurrentDateISO(),
-      startTime: '09:00',
-      endTime: '10:00',
-      type: validatedEventType
-    })
+  const handleItemSelect = async (item) => {
+    // If item is a template, instantiate it as a routine first
+    if (item.isTemplate && item.type === 'routine') {
+      try {
+        logger.log('Instantiating routine from template:', item.title)
+        const instantiatedRoutine = await instantiateRoutineFromTemplate(item)
+        // Use the new routine
+        setFormData({
+          title: instantiatedRoutine.title,
+          day: getCurrentDateISO(),
+          startTime: '09:00',
+          endTime: '10:00',
+          type: validatedEventType,
+          travelTime: 0,
+          preparationTime: 0
+        })
+      } catch (err) {
+        logger.error('Failed to instantiate routine from template:', err)
+        setError('Failed to create routine from template. Please try again.')
+        // Reset to a safe state so user can retry
+        setFormData({
+          title: '',
+          day: getCurrentDateISO(),
+          startTime: '09:00',
+          endTime: '10:00',
+          type: validatedEventType,
+          travelTime: 0,
+          preparationTime: 0
+        })
+        setShowManualForm(false)
+        return
+      }
+    } else {
+      setFormData({
+        title: item.title,
+        day: getCurrentDateISO(),
+        startTime: '09:00',
+        endTime: '10:00',
+        type: validatedEventType,
+        travelTime: 0,
+        preparationTime: 0
+      })
+    }
     setShowManualForm(true)
   }
 
@@ -245,6 +364,54 @@ function EventModal({
             </div>
           </div>
 
+          <div className='form-row'>
+            <div className='form-group'>
+              <label htmlFor='event-travel-time'>
+                Travel Time (minutes)
+              </label>
+              <input
+                id='event-travel-time'
+                type='number'
+                min='0'
+                max={MAX_TRAVEL_TIME_MINUTES}
+                value={formData.travelTime}
+                onChange={(e) => handleTimeInputChange(
+                  e.target.value,
+                  MAX_TRAVEL_TIME_MINUTES,
+                  (value) => handleChange('travelTime', value)
+                )}
+                disabled={isSubmitting}
+                aria-describedby='travel-time-help'
+              />
+              <small id='travel-time-help' className='form-help'>
+                Optional time needed to travel to this event (max {MAX_TRAVEL_TIME_MINUTES} minutes)
+              </small>
+            </div>
+
+            <div className='form-group'>
+              <label htmlFor='event-preparation-time'>
+                Preparation Time (minutes)
+              </label>
+              <input
+                id='event-preparation-time'
+                type='number'
+                min='0'
+                max={MAX_PREPARATION_TIME_MINUTES}
+                value={formData.preparationTime}
+                onChange={(e) => handleTimeInputChange(
+                  e.target.value,
+                  MAX_PREPARATION_TIME_MINUTES,
+                  (value) => handleChange('preparationTime', value)
+                )}
+                disabled={isSubmitting}
+                aria-describedby='preparation-time-help'
+              />
+              <small id='preparation-time-help' className='form-help'>
+                Optional time needed to prepare for this event (max {MAX_PREPARATION_TIME_MINUTES} minutes)
+              </small>
+            </div>
+          </div>
+
           <div className='form-actions'>
             <button
               type='button'
@@ -290,7 +457,9 @@ EventModal.propTypes = {
     day: PropTypes.string,
     startTime: PropTypes.string,
     endTime: PropTypes.string,
-    type: PropTypes.string
+    type: PropTypes.string,
+    travelTime: PropTypes.number,
+    preparationTime: PropTypes.number
   })
 }
 

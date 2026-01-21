@@ -227,7 +227,9 @@ describe('EventModal Component', () => {
         day: '2025-09-20',
         startTime: '09:00',
         endTime: '10:00',
-        type: 'task'
+        type: 'task',
+        travelTime: 0,
+        preparationTime: 0
       })
     })
     expect(mockOnClose).toHaveBeenCalled()

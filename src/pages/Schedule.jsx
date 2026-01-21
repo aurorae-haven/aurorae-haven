@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
+import CalendarSubscriptionModal from '../components/Schedule/CalendarSubscriptionModal'
 import {
   createEvent,
   getEventsForDay,
   getEventsForWeek
 } from '../utils/scheduleManager'
 import { createLogger } from '../utils/logger'
-import { getCurrentDateISO } from '../utils/timeUtils'
+import { getCurrentDateISO, subtractDuration } from '../utils/timeUtils'
 import dayjs from 'dayjs'
 import {
   EVENT_TYPES,
@@ -70,6 +71,32 @@ ScheduleBlock.propTypes = {
   height: PropTypes.number.isRequired,
   isNext: PropTypes.bool,
   onClick: PropTypes.func
+}
+
+// Reusable component for travel/preparation time blocks
+function TimePreparationBlock({ type, top, height, time }) {
+  const blockClasses = `block block-preparation ${type}`
+  const label = type === 'travel' ? 'Travel' : 'Prep'
+  const ariaLabel = `${label} time: ${time}`
+
+  return (
+    <div
+      className={blockClasses}
+      style={{ top: `${top}px`, height: `${height}px` }}
+      aria-label={ariaLabel}
+      role="note"
+    >
+      <div className='title preparation-label'>{label}</div>
+      <div className='meta'>{time}</div>
+    </div>
+  )
+}
+
+TimePreparationBlock.propTypes = {
+  type: PropTypes.oneOf(['travel', 'preparation']).isRequired,
+  top: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+  time: PropTypes.string.isRequired
 }
 
 // Static configuration data - defined outside component to prevent recreation on every render
@@ -218,6 +245,7 @@ function Schedule() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedEventType, setSelectedEventType] = useState(null)
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false)
 
   // Events state
   const [events, setEvents] = useState([])
@@ -466,6 +494,12 @@ function Schedule() {
         eventType={selectedEventType}
       />
 
+      {/* Calendar Subscription Modal */}
+      <CalendarSubscriptionModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+      />
+
       {/* Error notification */}
       {error && (
         <div className='error-notification' role='alert' aria-live='assertive'>
@@ -491,6 +525,13 @@ function Schedule() {
             </span>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              className='btn'
+              onClick={() => setIsCalendarModalOpen(true)}
+              aria-label='Manage calendar subscriptions'
+            >
+              <Icon name='calendar' /> Calendars
+            </button>
             <button
               className={`btn ${viewMode === 'day' ? 'btn-active' : ''}`}
               onClick={() => handleViewModeChange('day')}
@@ -705,6 +746,60 @@ function Schedule() {
                       return acc
                     }
 
+                    // Calculate start time for all pre-event activities (travel + preparation)
+                    // This represents when the user needs to start preparing/traveling for the event
+                    const prepStartTime = subtractDuration(
+                      event.startTime,
+                      event.preparationTime || 0
+                    )
+
+                    // Render preparation time block if present
+                    if (event.preparationTime && event.preparationTime > 0) {
+                      const prepTop = timeToPosition(prepStartTime)
+                      const prepHeight = durationToHeight(
+                        prepStartTime,
+                        event.startTime
+                      )
+
+                      if (prepTop >= 0 && prepHeight > 0) {
+                        acc.push(
+                          <TimePreparationBlock
+                            key={`prep-${event.id}`}
+                            type='preparation'
+                            top={prepTop}
+                            height={prepHeight}
+                            time={`${event.preparationTime}m`}
+                          />
+                        )
+                      }
+                    }
+
+                    // Render travel time block if present
+                    if (event.travelTime && event.travelTime > 0) {
+                      const travelStartTime = subtractDuration(
+                        prepStartTime,
+                        event.travelTime
+                      )
+                      const travelTop = timeToPosition(travelStartTime)
+                      const travelHeight = durationToHeight(
+                        travelStartTime,
+                        prepStartTime
+                      )
+
+                      if (travelTop >= 0 && travelHeight > 0) {
+                        acc.push(
+                          <TimePreparationBlock
+                            key={`travel-${event.id}`}
+                            type='travel'
+                            top={travelTop}
+                            height={travelHeight}
+                            time={`${event.travelTime}m`}
+                          />
+                        )
+                      }
+                    }
+
+                    // Render main event block
                     acc.push(
                       <ScheduleBlock
                         key={`dynamic-event-${event.id}`}
