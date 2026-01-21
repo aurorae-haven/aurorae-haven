@@ -504,6 +504,20 @@
   }
 }
 
+/* Small desktop optimization (969px - 1100px) */
+@media (min-width: 969px) and (max-width: 1100px) {
+  .nav-tab {
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    gap: 4px;
+  }
+  
+  .nav-tab .icon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 @media (max-width: 640px) {
   .appbar .inner {
     padding: 10px 14px;
