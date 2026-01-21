@@ -165,16 +165,16 @@ function Layout({ children, onExport, onImport }) {
       path: '/habits',
       label: 'Habits',
       icon: 'M7 20s6-3 6-10V4M14 4s5 0 6 5c-5 1-6-5-6-5zM2 9c2-5 8-5 8-5s0 6-8 5z'
+    },
+    {
+      path: '/schedule',
+      label: 'Schedule',
+      icon: 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18'
     }
   ]
 
   // Secondary tabs in More menu
   const secondaryTabs = [
-    {
-      path: '/schedule',
-      label: 'Schedule',
-      icon: 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18'
-    },
     {
       path: '/library',
       label: 'Library',
