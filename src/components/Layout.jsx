@@ -20,7 +20,12 @@ function Layout({ children, onExport, onImport }) {
 
   // TAB-NAV-22: Focus trap and Esc to close
   useEffect(() => {
-    if (!mobileMenuOpen) return
+    if (!mobileMenuOpen) {
+      document.body.classList.remove('mobile-menu-open')
+      return
+    }
+
+    document.body.classList.add('mobile-menu-open')
 
     const handleEscape = (e) => {
       if (e.key === 'Escape') {

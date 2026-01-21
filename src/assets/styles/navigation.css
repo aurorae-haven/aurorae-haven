@@ -260,17 +260,13 @@
 /* TAB-NAV-14 & TAB-NAV-15: Mobile hamburger menu */
 .mobile-menu-overlay {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 30;
 }
 
 .mobile-menu {
   display: none;
   position: fixed;
   top: 0;
-  left: 0;
+  left: -56px;
   bottom: 0;
   width: 56px;
   background: rgba(16, 20, 44, 0.95);
@@ -279,6 +275,11 @@
   box-shadow: var(--shadow);
   z-index: 40;
   overflow-y: auto;
+  transition: left 0.3s ease;
+}
+
+.mobile-menu.open {
+  left: 0;
 }
 
 .mobile-menu-content {
@@ -350,9 +351,13 @@
     display: none;
   }
 
-  .mobile-menu-overlay,
   .mobile-menu {
     display: block;
+  }
+
+  /* Adjust appbar when menu is open */
+  body.mobile-menu-open .appbar {
+    left: 56px;
   }
 }
 
@@ -518,7 +523,14 @@
   max-width: 1240px;
   margin: 0 auto;
   padding: 70px 18px 24px;
-  transition: max-width 0.3s ease;
+  transition:
+    max-width 0.3s ease,
+    padding-left 0.3s ease;
+}
+
+/* Adjust shell when mobile menu is open */
+body.mobile-menu-open .shell {
+  padding-left: 66px;
 }
 
 /* Expand shell for Brain Dump to utilize more horizontal space on desktop */
