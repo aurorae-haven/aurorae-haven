@@ -26,6 +26,30 @@ const clampTimeValue = (value, max) => {
 }
 
 /**
+ * Helper function to handle time input changes with validation
+ * @param {string} inputValue - The raw input value from the input field
+ * @param {number} maxValue - The maximum allowed value
+ * @param {Function} onChange - Callback to invoke with the validated value
+ */
+const handleTimeInputChange = (inputValue, maxValue, onChange) => {
+  // Allow clearing the field to 0
+  if (inputValue === '') {
+    onChange(0)
+    return
+  }
+  
+  const parsedValue = parseInt(inputValue, 10)
+  
+  // Preserve previous value if input is invalid (NaN)
+  if (Number.isNaN(parsedValue)) {
+    return
+  }
+  
+  const clampedValue = clampTimeValue(parsedValue, maxValue)
+  onChange(clampedValue)
+}
+
+/**
  * Modal for creating and editing schedule events
  */
 function EventModal({
@@ -351,23 +375,11 @@ function EventModal({
                 min='0'
                 max={MAX_TRAVEL_TIME_MINUTES}
                 value={formData.travelTime}
-                onChange={(e) => {
-                  // Allow clearing the field to 0
-                  if (e.target.value === '') {
-                    handleChange('travelTime', 0)
-                    return
-                  }
-                  
-                  const parsedValue = parseInt(e.target.value, 10)
-                  
-                  // Preserve previous value if input is invalid (NaN)
-                  if (Number.isNaN(parsedValue)) {
-                    return
-                  }
-                  
-                  const clampedValue = clampTimeValue(parsedValue, MAX_TRAVEL_TIME_MINUTES)
-                  handleChange('travelTime', clampedValue)
-                }}
+                onChange={(e) => handleTimeInputChange(
+                  e.target.value,
+                  MAX_TRAVEL_TIME_MINUTES,
+                  (value) => handleChange('travelTime', value)
+                )}
                 disabled={isSubmitting}
                 aria-describedby='travel-time-help'
               />
@@ -386,23 +398,11 @@ function EventModal({
                 min='0'
                 max={MAX_PREPARATION_TIME_MINUTES}
                 value={formData.preparationTime}
-                onChange={(e) => {
-                  // Allow clearing the field to 0
-                  if (e.target.value === '') {
-                    handleChange('preparationTime', 0)
-                    return
-                  }
-                  
-                  const parsedValue = parseInt(e.target.value, 10)
-                  
-                  // Preserve previous value if input is invalid (NaN)
-                  if (Number.isNaN(parsedValue)) {
-                    return
-                  }
-                  
-                  const clampedValue = clampTimeValue(parsedValue, MAX_PREPARATION_TIME_MINUTES)
-                  handleChange('preparationTime', clampedValue)
-                }}
+                onChange={(e) => handleTimeInputChange(
+                  e.target.value,
+                  MAX_PREPARATION_TIME_MINUTES,
+                  (value) => handleChange('preparationTime', value)
+                )}
                 disabled={isSubmitting}
                 aria-describedby='preparation-time-help'
               />

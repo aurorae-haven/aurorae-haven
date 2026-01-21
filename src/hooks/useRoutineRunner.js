@@ -23,8 +23,8 @@ const TIMER_TICK_INTERVAL_MS = 1000
  * @returns {Object} Runner state and control functions
  */
 export function useRoutineRunner(routine) {
-  // Initialize runner state directly from routine parameter
-  const [state, setState] = useState(() => routine ? createRunnerState(routine) : null)
+  // Initialize runner state - effect will handle initialization when routine changes
+  const [state, setState] = useState(null)
   const [isComplete, setIsComplete] = useState(false)
   const [summary, setSummary] = useState(null)
   const prevRoutineIdRef = useRef(null)

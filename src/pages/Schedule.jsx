@@ -746,7 +746,8 @@ function Schedule() {
                       return acc
                     }
 
-                    // Calculate preparation start time once (used by both prep and travel blocks)
+                    // Calculate start time for all pre-event activities (travel + preparation)
+                    // This represents when the user needs to start preparing/traveling for the event
                     const prepStartTime = subtractDuration(
                       event.startTime,
                       event.preparationTime || 0

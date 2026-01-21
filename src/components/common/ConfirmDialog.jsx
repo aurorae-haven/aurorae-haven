@@ -40,17 +40,21 @@ function ConfirmDialog({ isOpen, title, message, onConfirm, onCancel, confirmTex
   }
 
   return (
-    // Backdrop click is a mouse-only convenience; keyboard users can press Escape or use dialog buttons.
+    // Backdrop is presentational only; interaction handled via Escape key and dialog buttons
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div 
       className="modal-overlay" 
       onClick={handleBackdropClick}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirm-dialog-title"
-      aria-describedby="confirm-dialog-message"
+      role="presentation"
     >
-      <div className="modal-container" style={{ maxWidth: '400px' }}>
+      <div 
+        className="modal-container" 
+        style={{ maxWidth: '400px' }}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-dialog-title"
+        aria-describedby="confirm-dialog-message"
+      >
         <div className="modal-header">
           <h2 id="confirm-dialog-title">{title}</h2>
         </div>

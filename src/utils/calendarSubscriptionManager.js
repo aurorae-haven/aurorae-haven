@@ -130,11 +130,18 @@ export function parseICS(icsData) {
     // Parse ICS data using node-ical
     const parsed = ical.sync.parseICS(icsData)
     const events = []
+    const MAX_EVENTS = 10000 // Limit to prevent memory exhaustion
     
     // Extract VEVENT entries
     for (const key in parsed) {
       const component = parsed[key]
       if (component.type === 'VEVENT') {
+        // Limit number of events to prevent memory exhaustion
+        if (events.length >= MAX_EVENTS) {
+          logger.warn(`Reached maximum event limit (${MAX_EVENTS}). Stopping parse.`)
+          break
+        }
+        
         // Validate that we have a start date and it's a valid Date object
         if (!component.start || !(component.start instanceof Date) || isNaN(component.start.getTime())) {
           logger.warn('Skipping event with invalid or missing start date', { uid: component.uid })
@@ -342,14 +349,43 @@ export async function syncCalendar(subscriptionId) {
       syncStatus: 'syncing'
     })
     
-    // Fetch ICS data
-    const response = await fetch(subscription.url)
-    if (!response.ok) {
-      throw new Error(`Failed to fetch calendar: ${response.statusText}`)
-    }
+    let icsEvents
     
-    const icsData = await response.text()
-    const icsEvents = parseICS(icsData)
+    // Fetch ICS data with timeout and size limit to prevent memory/hanging issues
+    const controller = new AbortController()
+    const timeoutMs = 30000 // 30 second timeout
+    const maxSizeBytes = 10 * 1024 * 1024 // 10MB max response size
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs)
+    
+    try {
+      const response = await fetch(subscription.url, { signal: controller.signal })
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch calendar: ${response.statusText}`)
+      }
+      
+      // Check content-length header if available
+      const contentLength = response.headers.get('content-length')
+      if (contentLength && parseInt(contentLength, 10) > maxSizeBytes) {
+        throw new Error(`Calendar feed too large (${Math.round(parseInt(contentLength, 10) / 1024 / 1024)}MB). Maximum size is ${Math.round(maxSizeBytes / 1024 / 1024)}MB.`)
+      }
+      
+      const icsData = await response.text()
+      
+      // Validate size after fetching (in case content-length wasn't provided)
+      if (icsData.length > maxSizeBytes) {
+        throw new Error(`Calendar feed too large (${Math.round(icsData.length / 1024 / 1024)}MB). Maximum size is ${Math.round(maxSizeBytes / 1024 / 1024)}MB.`)
+      }
+      
+      icsEvents = parseICS(icsData)
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        throw new Error('Calendar sync request timed out. Please try again later.')
+      }
+      throw error
+    } finally {
+      clearTimeout(timeoutId)
+    }
     
     // Delete old events from this calendar
     const db = await openDB()

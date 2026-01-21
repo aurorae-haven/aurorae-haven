@@ -203,7 +203,13 @@ function CalendarSubscriptionModal({ isOpen, onClose }) {
                 id='calendar-color'
                 type='color'
                 value={formData.color}
-                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                onChange={(e) => {
+                  const colorValue = e.target.value
+                  // Validate hex color format (#RRGGBB)
+                  if (/^#[0-9A-Fa-f]{6}$/.test(colorValue)) {
+                    setFormData({ ...formData, color: colorValue })
+                  }
+                }}
                 disabled={isLoading}
               />
             </div>

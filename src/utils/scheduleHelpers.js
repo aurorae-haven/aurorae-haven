@@ -209,11 +209,20 @@ async function searchRoutineTemplates(query) {
  */
 export async function instantiateRoutineFromTemplate(template) {
   try {
+    // Validate required template fields
+    if (!template || typeof template !== 'object') {
+      throw new Error('Invalid template: template must be an object')
+    }
+    
+    if (!template.title || typeof template.title !== 'string' || template.title.trim() === '') {
+      throw new Error('Invalid template: title is required and must be a non-empty string')
+    }
+    
     // Create the routine from the template
     const routineData = {
-      title: template.title,
-      steps: template.steps || [],
-      tags: template.tags || [],
+      title: template.title.trim(),
+      steps: Array.isArray(template.steps) ? template.steps : [],
+      tags: Array.isArray(template.tags) ? template.tags : [],
       energyTag: template.energyTag,
       estimatedDuration: template.duration || template.estimatedDuration || 0
     }

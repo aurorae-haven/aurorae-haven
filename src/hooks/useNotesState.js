@@ -73,10 +73,10 @@ export function useNotesState() {
     if (notes.length > 0 && !currentNoteId) {
       loadNote(notes[0])
     }
-    // loadNote is memoized via useCallback([]) with empty deps and is safe to omit as a dependency.
-    // We depend on notes.length (not the full notes array) to avoid re-loading when only note content changes.
+    // We depend on the first note's ID (not the full notes array) to detect meaningful changes.
+    // This avoids re-loading when only note content changes, but captures note reordering/replacement.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [notes.length, currentNoteId])
+  }, [notes[0]?.id, currentNoteId])
 
   // Memoize current note to avoid redundant array searches
   const currentNote = useMemo(
