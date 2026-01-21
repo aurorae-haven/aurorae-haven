@@ -3,13 +3,16 @@ import PropTypes from 'prop-types'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Icon from './common/Icon'
 import MobileMenu from './Layout/MobileMenu'
+import MoreMenu from './Layout/MoreMenu'
 
 function Layout({ children, onExport, onImport }) {
   const location = useLocation()
   const navigate = useNavigate()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false)
   const hamburgerButtonRef = useRef(null)
   const mobileMenuRef = useRef(null)
+  const moreMenuRef = useRef(null)
 
   const isActive = (path) => location.pathname === path
 
@@ -87,7 +90,8 @@ function Layout({ children, onExport, onImport }) {
     }
   }
 
-  const tabs = [
+  // Primary tabs shown on mobile bottom bar
+  const primaryTabs = [
     {
       path: '/tasks',
       label: 'Tasks',
@@ -99,19 +103,23 @@ function Layout({ children, onExport, onImport }) {
       icon: 'M12 13m-8 0a8 8 0 1 0 16 0a8 8 0 1 0 -16 0M12 9v5l3 2M9 2h6'
     },
     {
+      path: '/braindump',
+      label: 'Brain Dump',
+      icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z'
+    },
+    {
       path: '/habits',
       label: 'Habits',
       icon: 'M7 20s6-3 6-10V4M14 4s5 0 6 5c-5 1-6-5-6-5zM2 9c2-5 8-5 8-5s0 6-8 5z'
-    },
+    }
+  ]
+
+  // Secondary tabs in More menu
+  const secondaryTabs = [
     {
       path: '/schedule',
       label: 'Schedule',
       icon: 'M3 4h18v18H3zM16 2v4M8 2v4M3 10h18'
-    },
-    {
-      path: '/braindump',
-      label: 'Brain Dump',
-      icon: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M20 22H6.5A2.5 2.5 0 0 1 4 19.5V5a2 2 0 0 1 2-2H20z'
     },
     {
       path: '/library',
@@ -129,6 +137,9 @@ function Layout({ children, onExport, onImport }) {
       icon: 'M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 15 19.4a1.65 1.65 0 0 0-1 .6l-.09.1a2 2 0 0 1-3.82 0l-.09.1a1.65 1.65 0 0 0-1 .6 1.65 1.65 0 0 0-1.82-.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-.6-1l-.1-.09a2 2 0 0 1 0-3.82l.1-.09a1.65 1.65 0 0 0 .6-1A1.65 1.65 0 0 0 4.6 8.6l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-.6l.09-.1a2 2 0 0 1 3.82 0l.09.1a1.65 1.65 0 0 0 1 .6 1.65 1.65 0 0 0 1.82.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1 1.65 1.65 0 0 0 .6 1z'
     }
   ]
+
+  // All tabs for desktop
+  const tabs = [...primaryTabs, ...secondaryTabs]
 
   return (
     <>
@@ -179,7 +190,50 @@ function Layout({ children, onExport, onImport }) {
                 </Link>
               ))}
             </div>
+
+            {/* Mobile portrait bottom bar: Primary tabs + More button */}
+            <div className='mobile-bottom-tabs' role='tablist' aria-label='Mobile navigation tabs'>
+              {primaryTabs.map((tab, index) => (
+                <Link
+                  key={tab.path}
+                  className={`nav-tab ${isActive(tab.path) ? 'active' : ''}`}
+                  to={tab.path}
+                  role='tab'
+                  aria-selected={isActive(tab.path)}
+                  aria-label={tab.label}
+                  tabIndex={isActive(tab.path) ? 0 : -1}
+                  onClick={() => setMoreMenuOpen(false)}
+                >
+                  <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
+                    <path d={tab.icon} />
+                  </svg>
+                  <span>{tab.label}</span>
+                </Link>
+              ))}
+              {/* More menu button */}
+              <button
+                className={`nav-tab more-button ${secondaryTabs.some(tab => isActive(tab.path)) || moreMenuOpen ? 'active' : ''}`}
+                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                aria-expanded={moreMenuOpen}
+                aria-label='More options'
+                role='tab'
+              >
+                <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
+                  <path d='M4 6h16M4 12h16M4 18h16' />
+                </svg>
+                <span>More</span>
+              </button>
+            </div>
           </nav>
+
+          {/* More menu for mobile portrait */}
+          <MoreMenu
+            isOpen={moreMenuOpen}
+            onClose={() => setMoreMenuOpen(false)}
+            tabs={secondaryTabs}
+            isActive={isActive}
+            moreMenuRef={moreMenuRef}
+          />
 
           {/* Mobile Settings Button (tablet/phone) */}
           <Link

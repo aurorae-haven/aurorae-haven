@@ -100,6 +100,16 @@
   flex-wrap: wrap;
 }
 
+/* Hide mobile-bottom-tabs on desktop */
+.mobile-bottom-tabs {
+  display: none;
+}
+
+/* Hide more menu on desktop */
+.more-menu {
+  display: none;
+}
+
 /* TAB-NAV-07: Pill-shaped tab buttons with hover/active states */
 /* TAB-LIB-23: Touch targets ≥48×48px for better accessibility */
 .nav-tab {
@@ -282,6 +292,85 @@
   left: 0;
 }
 
+/* More menu for mobile portrait */
+.more-menu {
+  display: none;
+  position: fixed;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  background: rgba(16, 20, 44, 0.95);
+  backdrop-filter: var(--blur);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 19;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.more-menu-content {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px;
+  gap: 4px;
+}
+
+.more-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  min-width: 60px;
+  min-height: 48px;
+  border-radius: 12px;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid transparent;
+  text-decoration: none;
+  font-size: 0.7rem;
+  transition: all var(--dur) var(--ease);
+  gap: 4px;
+}
+
+.more-menu-item.active {
+  background: var(--mint);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.more-menu-item:hover:not(.active) {
+  background: rgba(140, 150, 210, 0.12);
+  color: var(--ink);
+}
+
+.more-menu-item .icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.more-menu-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
+}
+
 .mobile-menu-content {
   padding: 72px 4px 16px;
   display: flex;
@@ -390,7 +479,12 @@
     display: none;
   }
 
-  /* Show logo and settings only */
+  /* Hide mobile settings button (it's now in More menu) */
+  .mobile-settings-button {
+    display: none !important;
+  }
+
+  /* Show logo only */
   .navbar-left {
     padding: 0;
   }
@@ -404,10 +498,6 @@
     height: 20px;
   }
 
-  .mobile-settings-button {
-    margin-left: 0;
-  }
-
   /* Bottom tab bar navigation */
   .navbar-center {
     display: flex !important;
@@ -416,20 +506,19 @@
     margin: 0 8px;
   }
 
+  /* Hide desktop tabs */
   .appnav {
-    display: flex;
+    display: none !important;
+  }
+
+  /* Show mobile bottom tabs */
+  .mobile-bottom-tabs {
+    display: flex !important;
     gap: 2px;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
     justify-content: space-around;
     width: 100%;
     max-width: 100%;
-  }
-
-  .appnav::-webkit-scrollbar {
-    display: none;
   }
 
   .nav-tab {
@@ -455,9 +544,26 @@
     max-width: 60px;
   }
 
+  /* More button styling */
+  .more-button {
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  .more-button.active {
+    background: var(--mint);
+    color: var(--ink);
+  }
+
   .appbar .inner {
     padding: 6px 8px;
     gap: 8px;
+  }
+
+  /* Show More menu on portrait mobile */
+  .more-menu {
+    display: block;
   }
 }
 
