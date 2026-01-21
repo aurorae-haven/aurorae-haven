@@ -738,7 +738,7 @@ body.density-cozy {
     padding-left 0.3s ease;
 }
 
-/* Adjust shell when mobile menu is open */
+/* Adjust shell when mobile menu is open - applies to all orientations */
 body.mobile-menu-open .shell {
   padding-left: calc(66px * var(--density-multiplier));
 }
