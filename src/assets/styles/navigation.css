@@ -312,7 +312,7 @@ body.density-cozy {
 .more-menu {
   display: none;
   position: fixed;
-  bottom: 70px;
+  bottom: 0;
   left: 0;
   right: 0;
   background: rgba(16, 20, 44, 0.95);
@@ -331,6 +331,12 @@ body.density-cozy {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more-menu {
+    animation: none;
   }
 }
 
@@ -467,7 +473,7 @@ body.density-cozy {
 
   /* Priority 1: Auto-hide header in landscape mode */
   .appbar {
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, left 0.3s ease;
   }
 
   body.scrolling-down .appbar {
@@ -482,6 +488,17 @@ body.density-cozy {
   /* Keep appbar visible when menu is open */
   body.mobile-menu-open .appbar {
     transform: translateY(0) !important;
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .appbar {
+      transition: none;
+    }
+    
+    body.scrolling-down .appbar {
+      transform: none;
+    }
   }
 }
 
@@ -723,7 +740,7 @@ body.density-cozy {
 
 /* Adjust shell when mobile menu is open */
 body.mobile-menu-open .shell {
-  padding-left: 66px;
+  padding-left: calc(66px * var(--density-multiplier));
 }
 
 /* Expand shell for Brain Dump to utilize more horizontal space on desktop */
@@ -739,14 +756,16 @@ body.mobile-menu-open .shell {
   padding: calc(20px * var(--density-multiplier));
 }
 
-/* Apply density to navigation gaps and padding */
-.appnav {
-  gap: calc(6px * var(--density-multiplier));
-}
+/* Apply density to navigation gaps and padding - scoped to landscape to avoid mobile conflicts */
+@media (orientation: landscape) {
+  .appnav {
+    gap: calc(6px * var(--density-multiplier));
+  }
 
-.nav-tab {
-  padding: calc(6px * var(--density-multiplier)) calc(10px * var(--density-multiplier));
-  gap: calc(6px * var(--density-multiplier));
+  .nav-tab {
+    padding: calc(6px * var(--density-multiplier)) calc(10px * var(--density-multiplier));
+    gap: calc(6px * var(--density-multiplier));
+  }
 }
 
 .card {

@@ -50,7 +50,10 @@ MoreMenu.propTypes = {
     })
   ).isRequired,
   isActive: PropTypes.func.isRequired,
-  moreMenuRef: PropTypes.object
+  moreMenuRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) })
+  ])
 }
 
 export default MoreMenu

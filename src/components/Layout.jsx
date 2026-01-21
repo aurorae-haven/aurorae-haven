@@ -14,7 +14,6 @@ function Layout({ children, onExport, onImport }) {
   const mobileMenuRef = useRef(null)
   const moreMenuRef = useRef(null)
   const lastScrollY = useRef(0)
-  const scrollTimeout = useRef(null)
 
   const isActive = (path) => location.pathname === path
 
@@ -32,16 +31,11 @@ function Layout({ children, onExport, onImport }) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY
 
-          // Clear existing timeout
-          if (scrollTimeout.current) {
-            clearTimeout(scrollTimeout.current)
-          }
-
-          // Determine scroll direction
+          // Determine scroll direction - fixed threshold gap
           if (currentScrollY <= 50) {
             document.body.classList.add('at-top')
             document.body.classList.remove('scrolling-down', 'scrolling-up')
-          } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+          } else if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
             // Scrolling down
             document.body.classList.add('scrolling-down')
             document.body.classList.remove('scrolling-up', 'at-top')
@@ -69,9 +63,6 @@ function Layout({ children, onExport, onImport }) {
     return () => {
       window.removeEventListener('scroll', handleScroll)
       document.body.classList.remove('scrolling-down', 'scrolling-up', 'at-top')
-      if (scrollTimeout.current) {
-        clearTimeout(scrollTimeout.current)
-      }
     }
   }, [])
 
@@ -119,6 +110,34 @@ function Layout({ children, onExport, onImport }) {
       document.removeEventListener('keydown', handleFocusTrap)
     }
   }, [mobileMenuOpen])
+
+  // More menu: Escape key and click-outside handling
+  useEffect(() => {
+    if (!moreMenuOpen) return
+
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        setMoreMenuOpen(false)
+      }
+    }
+
+    const handleClickOutside = (e) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target)) {
+        // Don't close if clicking on the More button itself
+        if (!e.target.closest('.more-button')) {
+          setMoreMenuOpen(false)
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleEscape)
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [moreMenuOpen])
 
   // TAB-NAV-09: Keyboard navigation with arrow keys
   const handleTabKeyDown = (e, tabs, currentIndex) => {
@@ -253,7 +272,7 @@ function Layout({ children, onExport, onImport }) {
               aria-hidden='true'
               data-testid='mobile-tabs'
             >
-              {primaryTabs.map((tab) => (
+              {primaryTabs.map((tab, index) => (
                 <Link
                   key={`mobile-${tab.path}`}
                   className={`nav-tab ${isActive(tab.path) ? 'active' : ''}`}
@@ -261,6 +280,12 @@ function Layout({ children, onExport, onImport }) {
                   tabIndex={-1}
                   aria-hidden='true'
                   onClick={() => setMoreMenuOpen(false)}
+                  onKeyDown={(e) => {
+                    // Add keyboard navigation for mobile tabs
+                    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') {
+                      handleTabKeyDown(e, [...primaryTabs, { path: 'more', label: 'More' }], index)
+                    }
+                  }}
                 >
                   <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                     <path d={tab.icon} />
@@ -272,10 +297,18 @@ function Layout({ children, onExport, onImport }) {
               <button
                 className={`nav-tab more-button ${secondaryTabs.some(tab => isActive(tab.path)) || moreMenuOpen ? 'active' : ''}`}
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                role='button'
+                aria-haspopup='true'
                 aria-expanded={moreMenuOpen}
                 aria-label='More options'
                 tabIndex={-1}
                 aria-hidden='true'
+                onKeyDown={(e) => {
+                  // Add keyboard navigation for More button
+                  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') {
+                    handleTabKeyDown(e, [...primaryTabs, { path: 'more', label: 'More' }], primaryTabs.length)
+                  }
+                }}
               >
                 <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                   <path d='M4 6h16M4 12h16M4 18h16' />

@@ -13,9 +13,8 @@ function MobileMenu({ isOpen, onClose, tabs, isActive, mobileMenuRef }) {
     <nav
       ref={mobileMenuRef}
       id='mobile-menu'
-      className={`mobile-menu ${isOpen ? 'open' : ''}`}
-      role='dialog'
-      aria-modal='true'
+      className='mobile-menu open'
+      role='navigation'
       aria-label='Mobile navigation menu'
     >
       <div className='mobile-menu-content'>
@@ -51,7 +50,10 @@ MobileMenu.propTypes = {
     })
   ).isRequired,
   isActive: PropTypes.func.isRequired,
-  mobileMenuRef: PropTypes.object
+  mobileMenuRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.instanceOf(Element) })
+  ])
 }
 
 export default MobileMenu
