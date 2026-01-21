@@ -27,6 +27,9 @@ function Layout({ children, onExport, onImport }) {
     let ticking = false
 
     const handleScroll = () => {
+      // Throttle scroll events using requestAnimationFrame
+      // Only the first scroll event schedules an animation frame; subsequent events
+      // are ignored until the frame executes and resets ticking to false
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY
@@ -280,12 +283,6 @@ function Layout({ children, onExport, onImport }) {
                   tabIndex={-1}
                   aria-hidden='true'
                   onClick={() => setMoreMenuOpen(false)}
-                  onKeyDown={(e) => {
-                    // Add keyboard navigation for mobile tabs
-                    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') {
-                      handleTabKeyDown(e, [...primaryTabs, { path: 'more', label: 'More' }], index)
-                    }
-                  }}
                 >
                   <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                     <path d={tab.icon} />
@@ -303,12 +300,6 @@ function Layout({ children, onExport, onImport }) {
                 aria-label='More options'
                 tabIndex={-1}
                 aria-hidden='true'
-                onKeyDown={(e) => {
-                  // Add keyboard navigation for More button
-                  if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Home' || e.key === 'End') {
-                    handleTabKeyDown(e, [...primaryTabs, { path: 'more', label: 'More' }], primaryTabs.length)
-                  }
-                }}
               >
                 <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
                   <path d='M4 6h16M4 12h16M4 18h16' />

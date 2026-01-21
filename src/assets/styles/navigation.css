@@ -522,6 +522,11 @@ body.density-cozy {
     transform: translateY(0);
   }
 
+  /* Keep appbar visible when More menu is open (portrait) */
+  body.mobile-menu-open .appbar {
+    transform: translateY(0) !important;
+  }
+
   .shell {
     padding-bottom: 70px;
   }
@@ -738,7 +743,8 @@ body.density-cozy {
     padding-left 0.3s ease;
 }
 
-/* Adjust shell when mobile menu is open - applies to all orientations */
+/* Adjust shell when mobile menu is open - applies to all orientations
+   66px = 56px (menu width) + 10px (spacing gap) */
 body.mobile-menu-open .shell {
   padding-left: calc(66px * var(--density-multiplier));
 }
@@ -750,7 +756,9 @@ body.mobile-menu-open .shell {
   max-width: 1600px;
 }
 
-/* Apply density multiplier to card paddings */
+/* Apply density multiplier to card paddings
+   Note: Only outer padding is affected by density controls.
+   Internal card spacing (gaps, margins) maintains fixed values for consistent readability. */
 .card,
 .glass-card {
   padding: calc(20px * var(--density-multiplier));
