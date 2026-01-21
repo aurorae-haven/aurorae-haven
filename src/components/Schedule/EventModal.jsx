@@ -352,6 +352,12 @@ function EventModal({
                 max={MAX_TRAVEL_TIME_MINUTES}
                 value={formData.travelTime}
                 onChange={(e) => {
+                  // Allow clearing the field to 0
+                  if (e.target.value === '') {
+                    handleChange('travelTime', 0)
+                    return
+                  }
+                  
                   const parsedValue = parseInt(e.target.value, 10)
                   
                   // Preserve previous value if input is invalid (NaN)
@@ -381,6 +387,12 @@ function EventModal({
                 max={MAX_PREPARATION_TIME_MINUTES}
                 value={formData.preparationTime}
                 onChange={(e) => {
+                  // Allow clearing the field to 0
+                  if (e.target.value === '') {
+                    handleChange('preparationTime', 0)
+                    return
+                  }
+                  
                   const parsedValue = parseInt(e.target.value, 10)
                   
                   // Preserve previous value if input is invalid (NaN)
