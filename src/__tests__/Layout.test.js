@@ -57,7 +57,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
         screen.getByRole('tab', { name: /^schedule$/i })
       ).toBeInTheDocument()
       expect(
-        screen.getByRole('tab', { name: /brain dump/i })
+        screen.getByRole('tab', { name: /brain[\s\u00A0]dump/i })
       ).toBeInTheDocument()
       expect(
         screen.getByRole('tab', { name: /^library$/i })
@@ -366,7 +366,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
 
       // Check mobile menu appears
       await waitFor(() => {
-        const mobileMenu = screen.getByRole('dialog', {
+        const mobileMenu = screen.getByRole('navigation', {
           name: /mobile navigation menu/i
         })
         expect(mobileMenu).toBeInTheDocument()
