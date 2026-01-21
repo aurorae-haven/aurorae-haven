@@ -365,7 +365,7 @@ export async function syncCalendar(subscriptionId) {
       }
       
       // Check content-length header if available
-      const contentLength = response.headers.get('content-length')
+      const contentLength = response.headers?.get('content-length')
       if (contentLength && parseInt(contentLength, 10) > maxSizeBytes) {
         throw new Error(`Calendar feed too large (${Math.round(parseInt(contentLength, 10) / 1024 / 1024)}MB). Maximum size is ${Math.round(maxSizeBytes / 1024 / 1024)}MB.`)
       }
