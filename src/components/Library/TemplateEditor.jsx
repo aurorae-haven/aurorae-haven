@@ -22,16 +22,35 @@ function convertToNumberOrNull(value) {
 }
 
 function TemplateEditor({ template, onSave, onClose }) {
-  const [formData, setFormData] = useState({
-    type: 'task',
-    title: '',
-    tags: [],
-    category: '',
-    quadrant: 'urgent_important',
-    dueOffset: '',
-    steps: [],
-    energyTag: '',
-    estimatedDuration: ''
+  const [formData, setFormData] = useState(() => {
+    if (template) {
+      return {
+        type: template.type,
+        title: template.title,
+        tags: template.tags || [],
+        category: template.category || '',
+        quadrant: template.quadrant || 'urgent_important',
+        dueOffset: template.dueOffset || '',
+        steps: template.steps || [],
+        energyTag: template.energyTag || '',
+        estimatedDuration: template.estimatedDuration || '',
+        duration: template.duration || '',
+        description: template.description || ''
+      }
+    }
+    return {
+      type: 'task',
+      title: '',
+      tags: [],
+      category: '',
+      quadrant: 'urgent_important',
+      dueOffset: '',
+      steps: [],
+      energyTag: '',
+      estimatedDuration: '',
+      duration: '',
+      description: ''
+    }
   })
 
   const [tagInput, setTagInput] = useState('')
@@ -42,8 +61,11 @@ function TemplateEditor({ template, onSave, onClose }) {
   })
   const [errors, setErrors] = useState({})
 
+  // Sync form data with template prop
   useEffect(() => {
+    // Update form data when template changes
     if (template) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         type: template.type,
         title: template.title,
@@ -53,7 +75,9 @@ function TemplateEditor({ template, onSave, onClose }) {
         dueOffset: template.dueOffset || '',
         steps: template.steps || [],
         energyTag: template.energyTag || '',
-        estimatedDuration: template.estimatedDuration || ''
+        estimatedDuration: template.estimatedDuration || '',
+        duration: template.duration || '',
+        description: template.description || ''
       })
     }
   }, [template])
@@ -431,7 +455,9 @@ TemplateEditor.propTypes = {
     dueOffset: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     steps: PropTypes.arrayOf(PropTypes.object),
     energyTag: PropTypes.string,
-    estimatedDuration: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    estimatedDuration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    duration: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    description: PropTypes.string
   }),
   onSave: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired
