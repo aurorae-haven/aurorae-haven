@@ -330,8 +330,8 @@
   stroke-linejoin: round;
 }
 
-/* TAB-NAV-13: Responsive behavior for tablet/mobile */
-@media (max-width: 968px) {
+/* TAB-NAV-13: Responsive behavior for tablet/mobile landscape */
+@media (max-width: 968px) and (orientation: landscape) {
   .navbar-center {
     display: none;
   }
@@ -371,12 +371,18 @@
 
   /* Hide hamburger menu on portrait, show bottom tabs instead */
   .hamburger-button {
-    display: none !important;
+    display: none;
   }
 
   .mobile-menu-overlay,
   .mobile-menu {
-    display: none !important;
+    display: none;
+  }
+
+  /* Hide desktop-only nav elements */
+  .navbar-right .icon-button,
+  .navbar-right .btn {
+    display: none;
   }
 
   /* Show logo and settings only */
