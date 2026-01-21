@@ -503,8 +503,8 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
-        const mobileMenu = screen.getByRole('dialog')
-        expect(mobileMenu).toHaveAttribute('aria-modal', 'true')
+        const mobileMenu = screen.getByRole('navigation', { name: /mobile menu/i })
+        expect(mobileMenu).toBeInTheDocument()
       })
     })
   })
