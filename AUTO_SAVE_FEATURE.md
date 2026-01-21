@@ -32,22 +32,26 @@ This document describes the automatic save feature implementation for Aurorae Ha
 ## Key Features
 
 ### Automatic Periodic Saves
+
 - Configurable interval (1-60 minutes, default: 5 minutes)
 - Runs in background while app is open
 - Saves all data from all tabs (Schedule, Tasks, Routines, Habits, Notes, Stats, Library)
 
 ### Manual Controls
+
 - **Save Now**: Immediate save without waiting for interval
 - **Load Last Save**: Restore from most recent save file
 - **Clean Old Files**: Manual cleanup trigger
 
 ### File Management
+
 - Automatic cleanup of old files
 - Configurable retention (default: keep 10 most recent)
 - Timestamped filenames with UUID for uniqueness
 - JSON format compatible with export/import
 
 ### User Experience
+
 - Directory picker with permission handling
 - Real-time status updates
 - Last save timestamp display
@@ -61,18 +65,19 @@ aurorae_save_YYYY-MM-DD_HHMMSS_<uuid>.json
 ```
 
 Example:
+
 ```
 aurorae_save_2026-01-08_143025_a1b2c3d4.json
 ```
 
 ## Browser Compatibility
 
-| Browser | Version | Support |
-|---------|---------|---------|
-| Chrome | 86+ | ✅ Full |
-| Edge | 86+ | ✅ Full |
-| Firefox | All | ❌ No (API not implemented) |
-| Safari | 15.2+ | ⚠️ Partial (requires experimental features) |
+| Browser | Version | Support                                     |
+| ------- | ------- | ------------------------------------------- |
+| Chrome  | 86+     | ✅ Full                                     |
+| Edge    | 86+     | ✅ Full                                     |
+| Firefox | All     | ❌ No (API not implemented)                 |
+| Safari  | 15.2+   | ⚠️ Partial (requires experimental features) |
 
 **Fallback**: Manual export/import and IndexedDB backups remain available for all browsers.
 
@@ -100,6 +105,7 @@ autoSave: {
 ## Data Flow
 
 ### Save Operation
+
 1. Timer triggers or user clicks "Save Now"
 2. Collect all data via `getDataTemplate()`
 3. Verify directory handle is still valid
@@ -109,6 +115,7 @@ autoSave: {
 7. Clean old files if needed
 
 ### Load Operation
+
 1. User clicks "Load Last Save"
 2. Verify directory access
 3. List all save files in directory
@@ -121,6 +128,7 @@ autoSave: {
 ## Error Handling
 
 The implementation handles:
+
 - Directory access denied/revoked
 - File system errors
 - Invalid save files
@@ -133,7 +141,9 @@ All errors are caught and displayed to user with actionable messages.
 ## Testing Considerations
 
 ### Manual Testing Required
+
 The File System Access API requires:
+
 - User gesture (mouse click)
 - Permission dialog interaction
 - Actual file system access
@@ -141,6 +151,7 @@ The File System Access API requires:
 These cannot be automated in typical test environments.
 
 ### Recommended Test Cases
+
 1. Select directory → verify directory name displayed
 2. Enable auto-save → verify timer starts
 3. Wait for interval → verify file created
@@ -153,6 +164,7 @@ These cannot be automated in typical test environments.
 ## Future Enhancements
 
 Potential improvements:
+
 - [ ] Save to multiple directories (redundancy)
 - [ ] Compression for large datasets
 - [ ] Differential/incremental saves
@@ -166,21 +178,27 @@ Potential improvements:
 ### Key Functions
 
 #### `requestDirectoryAccess()`
+
 Opens directory picker for user selection.
 
 #### `performAutoSave()`
+
 Executes save operation with current data.
 
 #### `loadAndImportLastSave()`
+
 Loads and imports most recent save file.
 
 #### `startAutoSave(intervalMs)`
+
 Starts automatic save timer with specified interval.
 
 #### `stopAutoSave()`
+
 Stops automatic save timer.
 
 #### `cleanOldSaveFiles(keepCount)`
+
 Removes old save files beyond retention limit.
 
 ## Documentation
@@ -201,6 +219,7 @@ Removes old save files beyond retention limit.
 ## Support
 
 For issues or questions:
+
 - GitHub Issues with `auto-save` label
 - See troubleshooting section in USER_MANUAL.md
 - Check browser compatibility requirements

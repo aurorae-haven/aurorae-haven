@@ -13,13 +13,14 @@ import logger from '../../utils/logger'
  * TAB-HAB-29: Brain Dump link integration
  */
 function HabitDetailDrawer({ habit, onClose, onUpdateHabit }) {
-  if (!habit) return null
-
+  // Call hooks before any conditional returns
   const navigate = useNavigate()
   const [showVacationMode, setShowVacationMode] = useState(false)
   const [vacationStart, setVacationStart] = useState('')
   const [vacationEnd, setVacationEnd] = useState('')
   const [historyFilter, setHistoryFilter] = useState('30') // 7, 30, 90 days
+  
+  if (!habit) return null
 
   const categoryColor = getCategoryColor(habit.category)
   const completions = habit.completions || []

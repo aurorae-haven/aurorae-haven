@@ -8,7 +8,7 @@ import { generateMetadata } from './idGenerator'
 const logger = createLogger('IndexedDB')
 
 const DB_NAME = 'aurorae_haven_db'
-const DB_VERSION = 2
+const DB_VERSION = 3
 
 // Object store names
 export const STORES = {
@@ -20,7 +20,8 @@ export const STORES = {
   STATS: 'stats',
   FILE_REFS: 'file_refs',
   BACKUPS: 'backups',
-  TEMPLATES: 'templates'
+  TEMPLATES: 'templates',
+  CALENDAR_SUBSCRIPTIONS: 'calendar_subscriptions'
 }
 
 /**
@@ -122,6 +123,15 @@ export function openDB() {
         templateStore.createIndex('title', 'title', { unique: false })
         templateStore.createIndex('createdAt', 'createdAt', { unique: false })
         templateStore.createIndex('lastUsed', 'lastUsed', { unique: false })
+      }
+
+      // Calendar subscriptions storage
+      if (!db.objectStoreNames.contains(STORES.CALENDAR_SUBSCRIPTIONS)) {
+        const calendarStore = db.createObjectStore(STORES.CALENDAR_SUBSCRIPTIONS, {
+          keyPath: 'id'
+        })
+        calendarStore.createIndex('enabled', 'enabled', { unique: false })
+        calendarStore.createIndex('lastSyncedAt', 'lastSyncedAt', { unique: false })
       }
     }
   })

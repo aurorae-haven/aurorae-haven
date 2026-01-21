@@ -23,10 +23,10 @@ describe('AutoSaveFS', () => {
     test('returns false when window is undefined', () => {
       const originalWindow = global.window
       global.window = undefined
-      
+
       const result = isFileSystemAccessSupported()
       expect(result).toBe(false)
-      
+
       global.window = originalWindow
     })
   })
@@ -40,7 +40,7 @@ describe('AutoSaveFS', () => {
     test('returns stored timestamp as number', () => {
       const testTimestamp = Date.now()
       localStorage.setItem('aurorae_last_save', testTimestamp.toString())
-      
+
       const result = getLastSaveTimestamp()
       expect(result).toBe(testTimestamp)
       expect(typeof result).toBe('number')
@@ -48,7 +48,7 @@ describe('AutoSaveFS', () => {
 
     test('handles invalid timestamp gracefully', () => {
       localStorage.setItem('aurorae_last_save', 'invalid')
-      
+
       const result = getLastSaveTimestamp()
       expect(isNaN(result)).toBe(true)
     })
@@ -59,7 +59,7 @@ describe('AutoSaveFS', () => {
       // Test that the expected file name pattern is documented
       const pattern = /^aurorae_save_\d{4}-\d{2}-\d{2}_\d{6}_[a-f0-9]{8}\.json$/
       const exampleFilename = 'aurorae_save_2026-01-08_143025_a1b2c3d4.json'
-      
+
       expect(pattern.test(exampleFilename)).toBe(true)
     })
   })

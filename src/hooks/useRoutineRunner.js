@@ -1,7 +1,7 @@
 // React hook for routine runner state management
 // Integrates routine execution with React components
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
   createRunnerState,
   completeStep,
@@ -23,17 +23,22 @@ const TIMER_TICK_INTERVAL_MS = 1000
  * @returns {Object} Runner state and control functions
  */
 export function useRoutineRunner(routine) {
+  // Initialize runner state - effect will handle initialization when routine changes
   const [state, setState] = useState(null)
   const [isComplete, setIsComplete] = useState(false)
   const [summary, setSummary] = useState(null)
+  const prevRoutineIdRef = useRef(null)
 
-  // Initialize runner state when routine is provided
+  // Update runner state when routine ID changes (meaningful routine change)
+  // This resets progress if switching to a different routine
   useEffect(() => {
-    if (routine && !state) {
-      const initialState = createRunnerState(routine)
-      setState(initialState)
+    if (routine && routine.id !== prevRoutineIdRef.current) {
+      prevRoutineIdRef.current = routine.id
+      const newState = createRunnerState(routine)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Reset state when routine changes
+      setState(newState)
     }
-  }, [routine, state])
+  }, [routine])
 
   // Timer tick - TAB-RTN-52: Target 60 FPS with requestAnimationFrame
   useEffect(() => {

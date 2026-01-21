@@ -27,6 +27,7 @@ function Routines() {
   // TAB-RTN-45: Detect reduced motion preference
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrefersReducedMotion(mediaQuery.matches)
 
     const handleChange = (e) => setPrefersReducedMotion(e.matches)
@@ -83,6 +84,25 @@ function Routines() {
     }
   }, [runner])
 
+  // TAB-RTN-18: Stop/Cancel routine with confirmation
+  const handleCancelRoutine = React.useCallback(() => {
+    setShowCancelConfirm(true)
+  }, [])
+
+  const confirmCancel = React.useCallback((keepProgress) => {
+    if (keepProgress) {
+      // Keep partial progress - logs and XP are preserved in runner state
+      logger.log('Routine cancelled - progress preserved')
+    } else {
+      // Discard progress
+      if (runner.reset) runner.reset()
+      logger.log('Routine cancelled - progress discarded')
+    }
+    if (runner.cancel) runner.cancel()
+    setSelectedRoutine(null)
+    setShowCancelConfirm(false)
+  }, [runner])
+
   // TAB-RTN-44: Keyboard shortcuts
   useEffect(() => {
     if (!runner.state || !runner.state.isRunning) return
@@ -117,7 +137,7 @@ function Routines() {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [runner])
+  }, [runner, handleCancelRoutine])
 
   // Start runner when selectedRoutine and runner are ready
   React.useEffect(() => {
@@ -137,25 +157,6 @@ function Routines() {
     setToastMessage(message)
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
-  }
-
-  // TAB-RTN-18: Stop/Cancel routine with confirmation
-  const handleCancelRoutine = () => {
-    setShowCancelConfirm(true)
-  }
-
-  const confirmCancel = (keepProgress) => {
-    if (keepProgress) {
-      // Keep partial progress - logs and XP are preserved in runner state
-      logger.log('Routine cancelled - progress preserved')
-    } else {
-      // Discard progress
-      if (runner.reset) runner.reset()
-      logger.log('Routine cancelled - progress discarded')
-    }
-    if (runner.cancel) runner.cancel()
-    setSelectedRoutine(null)
-    setShowCancelConfirm(false)
   }
 
   // Handle routine data export - TAB-RTN-47

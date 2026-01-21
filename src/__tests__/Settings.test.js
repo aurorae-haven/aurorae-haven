@@ -43,7 +43,8 @@ jest.mock('../utils/settingsManager', () => ({
       enabled: key === 'autoSave.enabled' ? value : false,
       intervalMinutes: key === 'autoSave.intervalMinutes' ? value : 5,
       keepCount: key === 'autoSave.keepCount' ? value : 10,
-      directoryConfigured: key === 'autoSave.directoryConfigured' ? value : false
+      directoryConfigured:
+        key === 'autoSave.directoryConfigured' ? value : false
     }
   })),
   getSetting: jest.fn((key) => {
@@ -77,7 +78,7 @@ describe('Settings Component', () => {
   test('shows warning when File System API is not supported', () => {
     const { isFileSystemAccessSupported } = require('../utils/autoSaveFS')
     isFileSystemAccessSupported.mockReturnValue(false)
-    
+
     render(<Settings />)
     const alert = screen.getByRole('alert')
     expect(alert).toBeInTheDocument()
@@ -87,7 +88,9 @@ describe('Settings Component', () => {
   test('renders placeholder for other settings', () => {
     render(<Settings />)
     expect(screen.getByText('Other Settings')).toBeInTheDocument()
-    expect(screen.getByText(/Additional settings will be available/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/Additional settings will be available/i)
+    ).toBeInTheDocument()
   })
 
   test('component renders without crashing', () => {
@@ -95,4 +98,3 @@ describe('Settings Component', () => {
     expect(container).toBeTruthy()
   })
 })
-

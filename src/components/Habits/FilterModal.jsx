@@ -7,12 +7,15 @@ import { CATEGORY_OPTIONS } from '../../utils/habitCategories'
  * TAB-HAB-04: Filter by Type, Category, Tags, Status
  */
 function FilterModal({ isOpen, currentFilters, onApply, onClose }) {
-  const [localFilters, setLocalFilters] = useState({
+  const [localFilters, setLocalFilters] = useState(() => ({
     categories: currentFilters?.categories || [],
     status: currentFilters?.status || 'all'
-  })
+  }))
 
+  // Sync local filters with prop changes
   useEffect(() => {
+    // Update local filters when currentFilters prop changes
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalFilters({
       categories: currentFilters?.categories || [],
       status: currentFilters?.status || 'all'
