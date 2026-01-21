@@ -13,6 +13,8 @@ function Layout({ children, onExport, onImport }) {
   const hamburgerButtonRef = useRef(null)
   const mobileMenuRef = useRef(null)
   const moreMenuRef = useRef(null)
+  const lastScrollY = useRef(0)
+  const scrollTimeout = useRef(null)
 
   const isActive = (path) => location.pathname === path
 
@@ -20,6 +22,58 @@ function Layout({ children, onExport, onImport }) {
   const handleLogoClick = () => {
     navigate('/tasks')
   }
+
+  // Priority 1: Auto-hide header on scroll (landscape mode)
+  useEffect(() => {
+    let ticking = false
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY
+
+          // Clear existing timeout
+          if (scrollTimeout.current) {
+            clearTimeout(scrollTimeout.current)
+          }
+
+          // Determine scroll direction
+          if (currentScrollY <= 50) {
+            document.body.classList.add('at-top')
+            document.body.classList.remove('scrolling-down', 'scrolling-up')
+          } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+            // Scrolling down
+            document.body.classList.add('scrolling-down')
+            document.body.classList.remove('scrolling-up', 'at-top')
+          } else if (currentScrollY < lastScrollY.current) {
+            // Scrolling up
+            document.body.classList.add('scrolling-up')
+            document.body.classList.remove('scrolling-down', 'at-top')
+          }
+
+          lastScrollY.current = currentScrollY
+          ticking = false
+        })
+
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+
+    // Initial check
+    if (window.scrollY <= 50) {
+      document.body.classList.add('at-top')
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      document.body.classList.remove('scrolling-down', 'scrolling-up', 'at-top')
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current)
+      }
+    }
+  }, [])
 
   // TAB-NAV-22: Focus trap and Esc to close
   useEffect(() => {

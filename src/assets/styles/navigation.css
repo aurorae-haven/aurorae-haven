@@ -1,3 +1,19 @@
+/* Priority 3: Content Density Controls */
+/* Default: comfortable (current) */
+:root {
+  --density-multiplier: 1;
+}
+
+/* Compact density */
+body.density-compact {
+  --density-multiplier: 0.8;
+}
+
+/* Cozy density */
+body.density-cozy {
+  --density-multiplier: 0.9;
+}
+
 /* TAB-NAV-02 & TAB-NAV-16: App bar with frosted glass */
 .appbar {
   position: fixed;
@@ -448,6 +464,25 @@
   body.mobile-menu-open .appbar {
     left: 56px;
   }
+
+  /* Priority 1: Auto-hide header in landscape mode */
+  .appbar {
+    transition: transform 0.3s ease;
+  }
+
+  body.scrolling-down .appbar {
+    transform: translateY(-100%);
+  }
+
+  body.scrolling-up .appbar,
+  body.at-top .appbar {
+    transform: translateY(0);
+  }
+
+  /* Keep appbar visible when menu is open */
+  body.mobile-menu-open .appbar {
+    transform: translateY(0) !important;
+  }
 }
 
 /* Mobile/Tablet Portrait: Navbar at bottom */
@@ -457,10 +492,48 @@
     bottom: 0;
     border-top: 1px solid var(--line);
     border-bottom: none;
+    transition: transform 0.3s ease;
+  }
+
+  /* Auto-hide appbar when scrolling down (Priority 1 adaptation for portrait) */
+  body.scrolling-down .appbar {
+    transform: translateY(100%);
+  }
+
+  body.scrolling-up .appbar,
+  body.at-top .appbar {
+    transform: translateY(0);
   }
 
   .shell {
     padding-bottom: 70px;
+  }
+
+  /* Priority 2: Small mobile optimization - reduce tab bar height */
+  @media (max-width: 375px) {
+    .shell {
+      padding-bottom: 60px;
+    }
+
+    .appbar .inner {
+      padding: 4px 6px;
+    }
+
+    .logo {
+      width: 16px;
+      height: 16px;
+    }
+
+    .nav-tab {
+      padding: 3px 5px;
+      min-height: 44px;
+      font-size: 0.65rem;
+    }
+
+    .nav-tab .icon {
+      width: 18px;
+      height: 18px;
+    }
   }
 
   /* Hide hamburger menu on portrait, show bottom tabs instead */
@@ -642,7 +715,7 @@
 .shell {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 70px 18px 24px;
+  padding: calc(70px * var(--density-multiplier)) calc(18px * var(--density-multiplier)) calc(24px * var(--density-multiplier));
   transition:
     max-width 0.3s ease,
     padding-left 0.3s ease;
@@ -658,6 +731,22 @@ body.mobile-menu-open .shell {
    Users on older browsers may not see this style applied. Consider providing a fallback if broader compatibility is needed. */
 .shell:has(.brain-dump-container) {
   max-width: 1600px;
+}
+
+/* Apply density multiplier to card paddings */
+.card,
+.glass-card {
+  padding: calc(20px * var(--density-multiplier));
+}
+
+/* Apply density to navigation gaps and padding */
+.appnav {
+  gap: calc(6px * var(--density-multiplier));
+}
+
+.nav-tab {
+  padding: calc(6px * var(--density-multiplier)) calc(10px * var(--density-multiplier));
+  gap: calc(6px * var(--density-multiplier));
 }
 
 .card {
