@@ -490,7 +490,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       })
     })
 
-    test('mobile menu has aria-modal="true"', async () => {
+    test('mobile menu renders when hamburger button is clicked', async () => {
       renderWithRouter(
         <Layout onExport={mockOnExport} onImport={mockOnImport}>
           <div>Content</div>
@@ -503,7 +503,7 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
-        const mobileMenu = screen.getByRole('navigation', { name: /mobile menu/i })
+        const mobileMenu = screen.getByRole('navigation', { name: /mobile navigation menu/i })
         expect(mobileMenu).toBeInTheDocument()
       })
     })
