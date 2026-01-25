@@ -114,15 +114,11 @@ body.density-cozy {
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* Hide mobile-bottom-tabs on desktop */
 .mobile-bottom-tabs {
-  display: none;
-}
-
-/* Hide more menu on desktop */
-.more-menu {
   display: none;
 }
 
@@ -731,6 +727,53 @@ body.density-cozy {
   .nav-tab .icon {
     width: 14px;
     height: 14px;
+  }
+}
+
+/* Extra small desktop windows (769px - 968px) - desktop mode but constrained */
+@media (min-width: 769px) and (max-width: 968px) and (orientation: portrait) {
+  .appbar .inner {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .navbar-left {
+    gap: 8px;
+    padding-right: 8px;
+  }
+
+  .brand b {
+    font-size: 0.9rem;
+  }
+
+  .appnav {
+    gap: 4px;
+  }
+
+  .nav-tab {
+    font-size: 0.8rem;
+    padding: 5px 8px;
+    gap: 4px;
+  }
+
+  .nav-tab .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .navbar-right {
+    gap: 6px;
+    padding-left: 8px;
+  }
+
+  .icon-button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .icon-button .icon {
+    width: 18px;
+    height: 18px;
   }
 }
 

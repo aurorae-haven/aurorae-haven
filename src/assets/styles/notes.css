@@ -5,6 +5,20 @@
   gap: 14px;
 }
 
+/* Responsive grid for smaller desktop windows */
+@media (max-width: 1200px) {
+  .layout-dump {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout-dump {
+    grid-template-columns: 240px 1fr;
+    gap: 10px;
+  }
+}
+
 /* Brain Dump multi-note layout */
 .brain-dump-container {
   display: flex;
@@ -15,6 +29,14 @@
   transition:
     width 0.3s ease,
     max-width 0.3s ease;
+}
+
+/* Responsive gap for smaller desktop windows */
+@media (max-width: 900px) {
+  .brain-dump-container {
+    gap: 10px;
+    min-height: 400px;
+  }
 }
 
 .note-list-sidebar {
@@ -31,6 +53,15 @@
     width var(--dur) var(--ease),
     min-width var(--dur) var(--ease),
     opacity var(--dur) var(--ease);
+}
+
+/* Responsive sidebar for smaller desktop windows */
+@media (max-width: 900px) {
+  .note-list-sidebar {
+    width: 240px;
+    min-width: 240px;
+    padding: 10px;
+  }
 }
 
 .note-list-sidebar.hidden {
