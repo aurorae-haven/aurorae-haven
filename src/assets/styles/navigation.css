@@ -754,6 +754,7 @@ body.density-cozy {
     font-size: 0.8rem;
     padding: 5px 8px;
     gap: 4px;
+    min-height: 48px;
   }
 
   .nav-tab .icon {
@@ -767,8 +768,8 @@ body.density-cozy {
   }
 
   .icon-button {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
   }
 
   .icon-button .icon {
