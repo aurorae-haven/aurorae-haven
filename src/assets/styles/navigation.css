@@ -474,7 +474,9 @@ body.density-cozy {
 
   /* Priority 1: Auto-hide header in landscape mode */
   .appbar {
-    transition: transform 0.3s ease, left 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      left 0.3s ease;
   }
 
   body.scrolling-down .appbar {
@@ -497,7 +499,7 @@ body.density-cozy {
     .appbar {
       transition: none;
     }
-    
+
     body.scrolling-down .appbar {
       transform: none;
     }
@@ -534,7 +536,7 @@ body.density-cozy {
     .appbar {
       transition: none;
     }
-    
+
     body.scrolling-down .appbar {
       transform: none;
     }
@@ -725,7 +727,7 @@ body.density-cozy {
     padding: 6px 8px;
     gap: 4px;
   }
-  
+
   .nav-tab .icon {
     width: 14px;
     height: 14px;
@@ -750,7 +752,9 @@ body.density-cozy {
 .shell {
   max-width: 1240px;
   margin: 0 auto;
-  padding: calc(70px * var(--density-multiplier)) calc(18px * var(--density-multiplier)) calc(24px * var(--density-multiplier));
+  padding: calc(70px * var(--density-multiplier))
+    calc(18px * var(--density-multiplier))
+    calc(24px * var(--density-multiplier));
   transition:
     max-width 0.3s ease,
     padding-left 0.3s ease;
@@ -784,7 +788,8 @@ body.mobile-menu-open .shell {
   }
 
   .nav-tab {
-    padding: calc(6px * var(--density-multiplier)) calc(10px * var(--density-multiplier));
+    padding: calc(6px * var(--density-multiplier))
+      calc(10px * var(--density-multiplier));
     gap: calc(6px * var(--density-multiplier));
   }
 }

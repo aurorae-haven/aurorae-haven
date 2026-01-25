@@ -38,7 +38,10 @@ function Layout({ children, onExport, onImport }) {
           if (currentScrollY <= 50) {
             document.body.classList.add('at-top')
             document.body.classList.remove('scrolling-down', 'scrolling-up')
-          } else if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+          } else if (
+            currentScrollY > lastScrollY.current &&
+            currentScrollY > 50
+          ) {
             // Scrolling down
             document.body.classList.add('scrolling-down')
             document.body.classList.remove('scrolling-up', 'at-top')
@@ -114,8 +117,14 @@ function Layout({ children, onExport, onImport }) {
     }
   }, [mobileMenuOpen])
 
-  // More menu: Escape key and click-outside handling
+  // More menu: Escape key, click-outside handling, and body class management
   useEffect(() => {
+    if (moreMenuOpen) {
+      document.body.classList.add('mobile-menu-open')
+    } else {
+      document.body.classList.remove('mobile-menu-open')
+    }
+
     if (!moreMenuOpen) return
 
     const handleEscape = (e) => {
@@ -269,8 +278,8 @@ function Layout({ children, onExport, onImport }) {
             </div>
 
             {/* Mobile portrait bottom bar: Primary tabs + More button */}
-            <div 
-              className='mobile-bottom-tabs' 
+            <div
+              className='mobile-bottom-tabs'
               role='presentation'
               aria-hidden='true'
               data-testid='mobile-tabs'
@@ -292,7 +301,7 @@ function Layout({ children, onExport, onImport }) {
               ))}
               {/* More menu button */}
               <button
-                className={`nav-tab more-button ${secondaryTabs.some(tab => isActive(tab.path)) || moreMenuOpen ? 'active' : ''}`}
+                className={`nav-tab more-button ${secondaryTabs.some((tab) => isActive(tab.path)) || moreMenuOpen ? 'active' : ''}`}
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
                 aria-haspopup='true'
                 aria-expanded={moreMenuOpen}
