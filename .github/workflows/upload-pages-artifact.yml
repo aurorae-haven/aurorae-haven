@@ -8,6 +8,11 @@ on:
       - 'hotfix-*'
       - 'copilot/**'
   pull_request:
+    branches:
+      - main
+      - 'feature-*'
+      - 'hotfix-*'
+      - 'copilot/**'
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
@@ -59,12 +64,12 @@ jobs:
         id: markdown-link-check-cache
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-markdown-link-check-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-markdown-link-check-3.14.2-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-markdown-link-check-
       
       - name: Install markdown-link-check
-        run: npm install -g markdown-link-check
+        run: npm install -g markdown-link-check@3.14.2
         env:
           npm_config_prefer_offline: false
       
@@ -85,7 +90,7 @@ jobs:
         uses: actions/cache@v4
         id: gitleaks-cache
         with:
-          path: /usr/local/bin/gitleaks
+          path: ~/.local/bin/gitleaks
           key: ${{ runner.os }}-gitleaks-8.18.4
       
       - name: Install gitleaks
@@ -93,10 +98,12 @@ jobs:
         run: |
           set -euo pipefail
           GITLEAKS_VERSION="8.18.4"
+          mkdir -p ~/.local/bin
           curl -sSL -o gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
           tar -xzf gitleaks.tar.gz gitleaks
-          sudo mv gitleaks /usr/local/bin/gitleaks
-          gitleaks version
+          mv gitleaks ~/.local/bin/gitleaks
+          chmod +x ~/.local/bin/gitleaks
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
       
       - name: Run gitleaks
         run: |
@@ -114,18 +121,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Restore npm and jest cache
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: |
-            ~/.npm
-            node_modules
-          key: ${{ runner.os }}-node-jest-${{ hashFiles('package-lock.json', 'jest.config.cjs', '.babelrc') }}
-          restore-keys: |
-            ${{ runner.os }}-node-jest-
-            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci
@@ -199,18 +194,6 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-
-      - name: Restore npm and jest cache
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: |
-            ~/.npm
-            node_modules
-          key: ${{ runner.os }}-node-jest-${{ hashFiles('package-lock.json', 'jest.config.cjs', '.babelrc') }}
-          restore-keys: |
-            ${{ runner.os }}-node-jest-
-            ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm ci

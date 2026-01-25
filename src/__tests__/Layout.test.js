@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import Layout from '../components/Layout.jsx'
 
@@ -386,9 +386,25 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
+        // Get the mobile menu container
+        const mobileMenu = screen.getByRole('navigation', { name: /mobile navigation menu/i })
+        
         // Mobile menu items are links, not menuitems (accessibility fix)
-        const menuItems = screen.getAllByRole('link', { name: /tasks|routines|brain dump|habits|schedule|library|stats|settings/i })
-        expect(menuItems.length).toBeGreaterThanOrEqual(8)
+        const expectedNavItems = [
+          /tasks/i,
+          /routines/i,
+          /brain[\s\u00A0]dump/i, // support both regular and non-breaking space
+          /habits/i,
+          /schedule/i,
+          /library/i,
+          /stats/i,
+          /settings/i
+        ]
+
+        expectedNavItems.forEach((pattern) => {
+          const link = within(mobileMenu).getByRole('link', { name: pattern })
+          expect(link).toBeInTheDocument()
+        })
       })
     })
 
