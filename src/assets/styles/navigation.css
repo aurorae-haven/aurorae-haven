@@ -308,6 +308,12 @@ body.density-cozy {
   left: 0;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu {
+    transition: none;
+  }
+}
+
 /* More menu for mobile portrait */
 .more-menu {
   display: none;
@@ -466,11 +472,6 @@ body.density-cozy {
     display: block;
   }
 
-  /* Adjust appbar when menu is open */
-  body.mobile-menu-open .appbar {
-    left: 56px;
-  }
-
   /* Priority 1: Auto-hide header in landscape mode */
   .appbar {
     transition: transform 0.3s ease, left 0.3s ease;
@@ -485,8 +486,9 @@ body.density-cozy {
     transform: translateY(0);
   }
 
-  /* Keep appbar visible when menu is open */
+  /* Adjust appbar when menu is open (combined rules) */
   body.mobile-menu-open .appbar {
+    left: 56px;
     transform: translateY(0) !important;
   }
 
@@ -525,6 +527,17 @@ body.density-cozy {
   /* Keep appbar visible when More menu is open (portrait) */
   body.mobile-menu-open .appbar {
     transform: translateY(0) !important;
+  }
+
+  /* Respect user's motion preferences in portrait */
+  @media (prefers-reduced-motion: reduce) {
+    .appbar {
+      transition: none;
+    }
+    
+    body.scrolling-down .appbar {
+      transform: none;
+    }
   }
 
   .shell {

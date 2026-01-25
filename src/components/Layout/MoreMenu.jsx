@@ -23,7 +23,6 @@ function MoreMenu({ isOpen, onClose, tabs, isActive, moreMenuRef }) {
             className={`more-menu-item ${isActive(tab.path) ? 'active' : ''}`}
             to={tab.path}
             onClick={onClose}
-            role='menuitem'
             aria-current={isActive(tab.path) ? 'page' : undefined}
             aria-label={tab.label}
             title={tab.label}
