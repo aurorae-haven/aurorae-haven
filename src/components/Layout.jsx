@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Icon from './common/Icon'
 import MobileMenu from './Layout/MobileMenu'
 import MoreMenu from './Layout/MoreMenu'
+import FileInputButton from './common/FileInputButton'
 
 function Layout({ children, onExport, onImport }) {
   const location = useLocation()
@@ -372,16 +373,14 @@ function Layout({ children, onExport, onImport }) {
             <button className='btn' onClick={onExport} aria-label='Export data'>
               Export
             </button>
-            <label className='btn' style={{ cursor: 'pointer' }}>
+            <FileInputButton
+              onFileSelect={onImport}
+              accept='application/json'
+              ariaLabel='Import data file'
+              title='Import data'
+            >
               Import
-              <input
-                type='file'
-                accept='application/json'
-                style={{ display: 'none' }}
-                onChange={onImport}
-                aria-label='Import data file'
-              />
-            </label>
+            </FileInputButton>
           </div>
         </div>
       </header>

@@ -324,13 +324,14 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
     })
 
     test('import file input calls onImport handler', () => {
-      renderWithRouter(
+      const { container } = renderWithRouter(
         <Layout onExport={mockOnExport} onImport={mockOnImport}>
           <div>Content</div>
         </Layout>
       )
 
-      const importInput = screen.getByLabelText(/import data file/i)
+      // Find the hidden file input
+      const importInput = container.querySelector('input[type="file"]')
       const file = new File(['{}'], 'test.json', { type: 'application/json' })
 
       fireEvent.change(importInput, { target: { files: [file] } })
