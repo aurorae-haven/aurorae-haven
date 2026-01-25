@@ -251,7 +251,11 @@ describe('idGenerator', () => {
       expect(new Date(result.createdAt).getTime()).toBe(result.timestamp)
     })
 
-    test('generates unique IDs for same-millisecond creates without prefix', () => {
+    test('generates unique IDs for same-millisecond creates without prefix', async () => {
+      // Add delay to ensure clean timestamp for test isolation
+      // This prevents contamination from previous tests' module-level counters
+      await new Promise((resolve) => setTimeout(resolve, 10))
+      
       // Create multiple entities synchronously (within same millisecond)
       const entities = []
       for (let i = 0; i < 5; i++) {
