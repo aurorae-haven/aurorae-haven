@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 /**
  * More menu component for mobile bottom tab bar
- * Shows secondary tabs (Schedule, Library, Stats, Settings) in an expanded bar
+ * Shows secondary tabs (Library, Stats, Settings) in an expanded bar
  */
 function MoreMenu({ isOpen, onClose, tabs, isActive, moreMenuRef }) {
   if (!isOpen) return null
