@@ -17,7 +17,7 @@
   border-radius: 12px;
 }
 .calendar {
-  background: rgba(16, 20, 44, 0.3);
+  background: rgba(16, 20, 44, 0.7);
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px;
@@ -296,13 +296,13 @@
   .block-preparation {
     opacity: 1;
   }
-  
+
   .block-preparation.travel {
     background: rgba(134, 245, 224, 0.25);
     border-color: rgba(134, 245, 224, 0.8);
     border-left: 3px dashed rgba(134, 245, 224, 1);
   }
-  
+
   .block-preparation.preparation {
     background: rgba(251, 191, 36, 0.25);
     border-color: rgba(251, 191, 36, 0.8);

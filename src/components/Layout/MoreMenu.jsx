@@ -3,40 +3,34 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 
 /**
- * Mobile hamburger menu component
- * TAB-NAV-14 & TAB-NAV-22: Side menu with focus trap and keyboard navigation
+ * More menu component for mobile bottom tab bar
+ * Shows secondary tabs (Library, Stats, Settings) in an expanded bar
  */
-function MobileMenu({ isOpen, onClose, tabs, isActive, mobileMenuRef }) {
+function MoreMenu({ isOpen, onClose, tabs, isActive, moreMenuRef }) {
   if (!isOpen) return null
 
   return (
     <nav
-      ref={mobileMenuRef}
-      id='mobile-menu'
-      className='mobile-menu open'
+      ref={moreMenuRef}
+      className='more-menu'
       role='navigation'
-      aria-label='Mobile navigation menu'
+      aria-label='Additional navigation options'
     >
-      <div className='mobile-menu-content'>
+      <div className='more-menu-content'>
         {tabs.map((tab) => (
           <Link
             key={tab.path}
-            className={`mobile-menu-item ${isActive(tab.path) ? 'active' : ''}`}
+            className={`more-menu-item ${isActive(tab.path) ? 'active' : ''}`}
             to={tab.path}
             onClick={onClose}
             aria-current={isActive(tab.path) ? 'page' : undefined}
             aria-label={tab.label}
             title={tab.label}
           >
-            <svg
-              className='icon'
-              viewBox='0 0 24 24'
-              aria-hidden='true'
-              fill='none'
-              stroke='currentColor'
-            >
+            <svg className='icon' viewBox='0 0 24 24' aria-hidden='true'>
               <path d={tab.icon} />
             </svg>
+            <span>{tab.label}</span>
           </Link>
         ))}
       </div>
@@ -44,7 +38,7 @@ function MobileMenu({ isOpen, onClose, tabs, isActive, mobileMenuRef }) {
   )
 }
 
-MobileMenu.propTypes = {
+MoreMenu.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   tabs: PropTypes.arrayOf(
@@ -55,10 +49,10 @@ MobileMenu.propTypes = {
     })
   ).isRequired,
   isActive: PropTypes.func.isRequired,
-  mobileMenuRef: PropTypes.oneOfType([
+  moreMenuRef: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.shape({ current: PropTypes.instanceOf(Element) })
   ])
 }
 
-export default MobileMenu
+export default MoreMenu

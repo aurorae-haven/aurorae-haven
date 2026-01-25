@@ -84,7 +84,7 @@ function TimePreparationBlock({ type, top, height, time }) {
       className={blockClasses}
       style={{ top: `${top}px`, height: `${height}px` }}
       aria-label={ariaLabel}
-      role="note"
+      role='note'
     >
       <div className='title preparation-label'>{label}</div>
       <div className='meta'>{time}</div>

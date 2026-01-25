@@ -1,3 +1,19 @@
+/* Priority 3: Content Density Controls */
+/* Default: comfortable (current) */
+:root {
+  --density-multiplier: 1;
+}
+
+/* Compact density */
+body.density-compact {
+  --density-multiplier: 0.8;
+}
+
+/* Cozy density */
+body.density-cozy {
+  --density-multiplier: 0.9;
+}
+
 /* TAB-NAV-02 & TAB-NAV-16: App bar with frosted glass */
 .appbar {
   position: fixed;
@@ -98,6 +114,16 @@
   gap: 6px;
   align-items: center;
   flex-wrap: wrap;
+}
+
+/* Hide mobile-bottom-tabs on desktop */
+.mobile-bottom-tabs {
+  display: none;
+}
+
+/* Hide more menu on desktop */
+.more-menu {
+  display: none;
 }
 
 /* TAB-NAV-07: Pill-shaped tab buttons with hover/active states */
@@ -260,32 +286,124 @@
 /* TAB-NAV-14 & TAB-NAV-15: Mobile hamburger menu */
 .mobile-menu-overlay {
   display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 30;
 }
 
 .mobile-menu {
   display: none;
   position: fixed;
   top: 0;
-  left: 0;
+  left: -56px;
   bottom: 0;
-  width: 80px;
-  background: rgba(16, 20, 44, 0.95);
+  width: 56px;
+  background: rgba(16, 20, 44, 0.98);
   backdrop-filter: var(--blur);
   border-right: 1px solid var(--line);
   box-shadow: var(--shadow);
   z-index: 40;
   overflow-y: auto;
+  transition: left 0.3s ease;
+}
+
+.mobile-menu.open {
+  left: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu {
+    transition: none;
+  }
+}
+
+/* More menu for mobile portrait */
+.more-menu {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(16, 20, 44, 0.95);
+  backdrop-filter: var(--blur);
+  border-top: 1px solid var(--line);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 19;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .more-menu {
+    animation: none;
+  }
+}
+
+.more-menu-content {
+  display: flex;
+  justify-content: space-around;
+  padding: 8px;
+  gap: 4px;
+}
+
+.more-menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  min-width: 60px;
+  min-height: 48px;
+  border-radius: 12px;
+  color: var(--dim);
+  background: transparent;
+  border: 1px solid transparent;
+  text-decoration: none;
+  font-size: 0.7rem;
+  transition: all var(--dur) var(--ease);
+  gap: 4px;
+}
+
+.more-menu-item.active {
+  background: var(--mint);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.more-menu-item:hover:not(.active) {
+  background: rgba(140, 150, 210, 0.12);
+  color: var(--ink);
+}
+
+.more-menu-item .icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.more-menu-item span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 70px;
 }
 
 .mobile-menu-content {
-  padding: 80px 8px 16px;
+  padding: 72px 4px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* TAB-NAV-14 & TAB-NAV-15: Mobile menu items with ≥48×48px touch targets */
@@ -293,9 +411,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 56px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
   color: var(--dim);
   text-decoration: none;
   transition: all var(--dur) var(--ease);
@@ -321,8 +439,8 @@
 }
 
 .mobile-menu-item .icon {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
@@ -330,8 +448,8 @@
   stroke-linejoin: round;
 }
 
-/* TAB-NAV-13: Responsive behavior for tablet/mobile */
-@media (max-width: 968px) {
+/* TAB-NAV-13: Responsive behavior for tablet/mobile landscape */
+@media (max-width: 968px) and (orientation: landscape) {
   .navbar-center {
     display: none;
   }
@@ -350,9 +468,41 @@
     display: none;
   }
 
-  .mobile-menu-overlay,
   .mobile-menu {
     display: block;
+  }
+
+  /* Priority 1: Auto-hide header in landscape mode */
+  .appbar {
+    transition:
+      transform 0.3s ease,
+      left 0.3s ease;
+  }
+
+  body.scrolling-down .appbar {
+    transform: translateY(-100%);
+  }
+
+  body.scrolling-up .appbar,
+  body.at-top .appbar {
+    transform: translateY(0);
+  }
+
+  /* Adjust appbar when menu is open (combined rules) */
+  body.mobile-menu-open .appbar {
+    left: 56px;
+    transform: translateY(0) !important;
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .appbar {
+      transition: none;
+    }
+
+    body.scrolling-down .appbar {
+      transform: none;
+    }
   }
 }
 
@@ -363,10 +513,167 @@
     bottom: 0;
     border-top: 1px solid var(--line);
     border-bottom: none;
+    transition: transform 0.3s ease;
+  }
+
+  /* Auto-hide appbar when scrolling down (Priority 1 adaptation for portrait) */
+  body.scrolling-down .appbar {
+    transform: translateY(100%);
+  }
+
+  body.scrolling-up .appbar,
+  body.at-top .appbar {
+    transform: translateY(0);
+  }
+
+  /* Keep appbar visible when More menu is open (portrait) */
+  body.mobile-menu-open .appbar {
+    transform: translateY(0) !important;
+  }
+
+  /* Respect user's motion preferences in portrait */
+  @media (prefers-reduced-motion: reduce) {
+    .appbar {
+      transition: none;
+    }
+
+    body.scrolling-down .appbar {
+      transform: none;
+    }
   }
 
   .shell {
-    padding-bottom: 80px;
+    padding-bottom: 70px;
+  }
+
+  /* Priority 2: Small mobile optimization - reduce tab bar height */
+  @media (max-width: 375px) {
+    .shell {
+      padding-bottom: 60px;
+    }
+
+    .appbar .inner {
+      padding: 4px 6px;
+    }
+
+    .logo {
+      width: 16px;
+      height: 16px;
+    }
+
+    .nav-tab {
+      padding: 3px 5px;
+      min-height: 44px;
+      font-size: 0.65rem;
+    }
+
+    .nav-tab .icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  /* Hide hamburger menu on portrait, show bottom tabs instead */
+  .hamburger-button {
+    display: none;
+  }
+
+  .mobile-menu-overlay,
+  .mobile-menu {
+    display: none;
+  }
+
+  /* Hide desktop-only nav elements */
+  .navbar-right .icon-button,
+  .navbar-right .btn {
+    display: none;
+  }
+
+  /* Hide mobile settings button (it's now in More menu) */
+  .mobile-settings-button {
+    display: none !important;
+  }
+
+  /* Show logo only */
+  .navbar-left {
+    padding: 0;
+  }
+
+  .brand b {
+    display: none;
+  }
+
+  .logo {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Bottom tab bar navigation */
+  .navbar-center {
+    display: flex !important;
+    flex: 1;
+    justify-content: center;
+    margin: 0 8px;
+  }
+
+  /* Hide desktop tabs */
+  .appnav {
+    display: none !important;
+  }
+
+  /* Show mobile bottom tabs */
+  .mobile-bottom-tabs {
+    display: flex !important;
+    gap: 2px;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .nav-tab {
+    flex-direction: column;
+    padding: 4px 6px;
+    min-width: 44px;
+    min-height: 44px;
+    gap: 2px;
+    font-size: 0.7rem;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .nav-tab .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .nav-tab span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60px;
+  }
+
+  /* More button styling */
+  .more-button {
+    background: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  .more-button.active {
+    background: var(--mint);
+    color: var(--ink);
+  }
+
+  .appbar .inner {
+    padding: 6px 8px;
+    gap: 8px;
+  }
+
+  /* Show More menu on portrait mobile */
+  .more-menu {
+    display: block;
   }
 }
 
@@ -377,14 +684,14 @@
     left: 0;
     right: auto;
     bottom: 0;
-    width: 80px;
+    width: 64px;
     border-right: 1px solid var(--line);
     border-bottom: none;
   }
 
   .appbar .inner {
     flex-direction: column;
-    padding: 12px 8px;
+    padding: 12px 6px;
     height: 100%;
   }
 
@@ -398,13 +705,32 @@
     display: none;
   }
 
+  .logo {
+    width: 20px;
+    height: 20px;
+  }
+
   .mobile-settings-button,
   .hamburger-button {
     margin: auto 0 0;
   }
 
   .shell {
-    padding-left: 90px;
+    padding-left: 74px;
+  }
+}
+
+/* Small desktop optimization (969px - 1100px) */
+@media (min-width: 969px) and (max-width: 1100px) {
+  .nav-tab {
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    gap: 4px;
+  }
+
+  .nav-tab .icon {
+    width: 14px;
+    height: 14px;
   }
 }
 
@@ -426,8 +752,18 @@
 .shell {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 70px 18px 24px;
-  transition: max-width 0.3s ease;
+  padding: calc(70px * var(--density-multiplier))
+    calc(18px * var(--density-multiplier))
+    calc(24px * var(--density-multiplier));
+  transition:
+    max-width 0.3s ease,
+    padding-left 0.3s ease;
+}
+
+/* Adjust shell when mobile menu is open - applies to all orientations
+   66px = 56px (menu width) + 10px (spacing gap) */
+body.mobile-menu-open .shell {
+  padding-left: calc(66px * var(--density-multiplier));
 }
 
 /* Expand shell for Brain Dump to utilize more horizontal space on desktop */
@@ -435,6 +771,27 @@
    Users on older browsers may not see this style applied. Consider providing a fallback if broader compatibility is needed. */
 .shell:has(.brain-dump-container) {
   max-width: 1600px;
+}
+
+/* Apply density multiplier to card paddings
+   Note: Only outer padding is affected by density controls.
+   Internal card spacing (gaps, margins) maintains fixed values for consistent readability. */
+.card,
+.glass-card {
+  padding: calc(20px * var(--density-multiplier));
+}
+
+/* Apply density to navigation gaps and padding - scoped to landscape to avoid mobile conflicts */
+@media (orientation: landscape) {
+  .appnav {
+    gap: calc(6px * var(--density-multiplier));
+  }
+
+  .nav-tab {
+    padding: calc(6px * var(--density-multiplier))
+      calc(10px * var(--density-multiplier));
+    gap: calc(6px * var(--density-multiplier));
+  }
 }
 
 .card {
