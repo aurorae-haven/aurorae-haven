@@ -6,6 +6,7 @@ on:
       - main
       - 'feature-*'
       - 'hotfix-*'
+      - 'copilot/**'
   workflow_dispatch:
 
 permissions:
@@ -30,8 +31,24 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Restore npm and jest cache
+        uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-jest-${{ hashFiles('package-lock.json', 'jest.config.cjs', '.babelrc') }}
+          restore-keys: |
+            ${{ runner.os }}-node-jest-
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm ci
+        env:
+          # Ensure all dependencies are fetched during setup
+          npm_config_prefer_offline: false
+          npm_config_audit: false
 
       # Linting temporarily disabled - will be re-enabled later
       # - name: Run linter
@@ -47,6 +64,9 @@ jobs:
       #       exit 1
       #     }
       #     echo "✓ New code passes linting checks"
+
+      - name: Clear Jest cache
+        run: npm test -- --clearCache || true
 
       - name: Run tests
         run: npm test -- --coverage --watchAll=false
@@ -97,8 +117,24 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
+      - name: Restore npm and jest cache
+        uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-jest-${{ hashFiles('package-lock.json', 'jest.config.cjs', '.babelrc') }}
+          restore-keys: |
+            ${{ runner.os }}-node-jest-
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm ci
+        env:
+          # Ensure all dependencies are fetched during setup
+          npm_config_prefer_offline: false
+          npm_config_audit: false
 
       - name: Build React PWA with Vite
         run: npm run build

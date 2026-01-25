@@ -85,8 +85,24 @@ jobs:
           node-version: 'lts/*'
           cache: 'npm'
 
+      - name: Restore npm and jest cache
+        uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-jest-${{ hashFiles('package-lock.json', 'jest.config.cjs', '.babelrc') }}
+          restore-keys: |
+            ${{ runner.os }}-node-jest-
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
         run: npm ci || npm install
+        env:
+          # Ensure all dependencies are fetched during setup
+          npm_config_prefer_offline: false
+          npm_config_audit: false
 
       - name: Super-Linter
         uses: super-linter/super-linter@v8.2.0
@@ -147,10 +163,27 @@ jobs:
         with:
           node-version: 'lts/*'
           cache: 'npm'
+      - name: Restore npm and jest cache
+        uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-jest-${{ hashFiles('package-lock.json', 'jest.config.cjs', '.babelrc') }}
+          restore-keys: |
+            ${{ runner.os }}-node-jest-
+            ${{ runner.os }}-node-
       - name: Install
         run: npm ci --ignore-scripts
+        env:
+          # Ensure all dependencies are fetched during setup
+          npm_config_prefer_offline: false
+          npm_config_audit: false
       - name: Audit production
         run: npm audit --audit-level=high --omit=dev || (echo "Review audit output above."; exit 1)
+      - name: Clear Jest cache
+        run: npm test -- --clearCache || true
       - name: Test
         run: npm test --if-present --silent
 
