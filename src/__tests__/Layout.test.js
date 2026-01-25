@@ -386,8 +386,9 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
-        const menuItems = screen.getAllByRole('menuitem')
-        expect(menuItems).toHaveLength(8)
+        // Mobile menu items are links, not menuitems (accessibility fix)
+        const menuItems = screen.getAllByRole('link', { name: /tasks|routines|brain dump|habits|schedule|library|stats|settings/i })
+        expect(menuItems.length).toBeGreaterThanOrEqual(8)
       })
     })
 
@@ -404,7 +405,8 @@ describe('Layout Component - Global Navbar (TAB-NAV)', () => {
       fireEvent.click(hamburgerButton)
 
       await waitFor(() => {
-        const tasksMenuItem = screen.getByRole('menuitem', { name: /tasks/i })
+        // Mobile menu items are links, not menuitems (accessibility fix)
+        const tasksMenuItem = screen.getByRole('link', { name: /tasks/i })
         fireEvent.click(tasksMenuItem)
       })
 

@@ -65,8 +65,16 @@ jobs:
       #     }
       #     echo "✓ New code passes linting checks"
 
-      - name: Clear Jest cache
-        run: npm test -- --clearCache || true
+      - name: Remove Jest cache directories
+        run: |
+          echo "🧹 Removing Jest cache for fresh CI run..."
+          # Remove common Jest cache locations
+          rm -rf /tmp/jest_* || true
+          rm -rf .jest-cache || true
+          rm -rf node_modules/.cache/jest || true
+          # Clear Jest's cache via CLI
+          npm test -- --clearCache || true
+          echo "✓ Jest cache cleared"
 
       - name: Run tests
         run: npm test -- --coverage --watchAll=false
