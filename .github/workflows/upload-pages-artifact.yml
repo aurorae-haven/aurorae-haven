@@ -47,8 +47,27 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Cache markdown-link-check
+        uses: actions/cache@v4
+        id: markdown-link-check-cache
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-markdown-link-check-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-markdown-link-check-
+      
       - name: Install markdown-link-check
         run: npm install -g markdown-link-check
+        env:
+          npm_config_prefer_offline: false
+      
       - name: Check Markdown links
         run: |
           git ls-files -z '*.md' | xargs -0 -n 1 markdown-link-check -c .markdown-link-check.json -q
@@ -61,7 +80,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install gitleaks (no action)
+      
+      - name: Cache gitleaks binary
+        uses: actions/cache@v4
+        id: gitleaks-cache
+        with:
+          path: /usr/local/bin/gitleaks
+          key: ${{ runner.os }}-gitleaks-8.18.4
+      
+      - name: Install gitleaks
+        if: steps.gitleaks-cache.outputs.cache-hit != 'true'
         run: |
           set -euo pipefail
           GITLEAKS_VERSION="8.18.4"
@@ -69,6 +97,7 @@ jobs:
           tar -xzf gitleaks.tar.gz gitleaks
           sudo mv gitleaks /usr/local/bin/gitleaks
           gitleaks version
+      
       - name: Run gitleaks
         run: |
           gitleaks detect --source . --no-banner --redact
