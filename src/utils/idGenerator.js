@@ -164,11 +164,12 @@ function generateTimestampIdWithCollisionPrevention(prefix = '') {
     // Handle numeric IDs with global counter
     if (timestamp === lastTimestamp) {
       idCounter++
+      return timestamp + idCounter
     } else {
       idCounter = 0
       lastTimestamp = timestamp
+      return timestamp
     }
-    return timestamp + idCounter
   }
 }
 

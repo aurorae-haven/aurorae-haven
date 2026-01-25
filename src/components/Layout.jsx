@@ -275,7 +275,7 @@ function Layout({ children, onExport, onImport }) {
               aria-hidden='true'
               data-testid='mobile-tabs'
             >
-              {primaryTabs.map((tab, index) => (
+              {primaryTabs.map((tab) => (
                 <Link
                   key={`mobile-${tab.path}`}
                   className={`nav-tab ${isActive(tab.path) ? 'active' : ''}`}
@@ -294,7 +294,6 @@ function Layout({ children, onExport, onImport }) {
               <button
                 className={`nav-tab more-button ${secondaryTabs.some(tab => isActive(tab.path)) || moreMenuOpen ? 'active' : ''}`}
                 onClick={() => setMoreMenuOpen(!moreMenuOpen)}
-                role='button'
                 aria-haspopup='true'
                 aria-expanded={moreMenuOpen}
                 aria-label='More options'
