@@ -728,6 +728,11 @@ body.density-cozy {
     width: 14px;
     height: 14px;
   }
+
+  /* Increase shell top padding when navbar wraps to multiple rows */
+  .shell {
+    padding-top: calc(100px * var(--density-multiplier));
+  }
 }
 
 /* Extra small desktop windows (769px - 968px) - desktop mode but constrained */
@@ -775,6 +780,11 @@ body.density-cozy {
   .icon-button .icon {
     width: 18px;
     height: 18px;
+  }
+
+  /* Increase shell top padding when navbar wraps to multiple rows */
+  .shell {
+    padding-top: calc(110px * var(--density-multiplier));
   }
 }
 
