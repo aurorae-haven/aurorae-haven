@@ -24,7 +24,7 @@ The app works directly from your file system - just download, extract, and doubl
 - ✅ Service worker for offline functionality
 - ✅ PWA manifest for installation
 - ✅ All assets optimized and minified
-- ✅ Total size: 1203 KB compressed
+- ✅ Total size: 1200 KB compressed
 
 ## 📚 Full Documentation
 
@@ -42,9 +42,9 @@ Back to the main repository:
 
 This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
 
-**Last Updated**: 2026-01-21 14:59:01 UTC
-**Source Branch**: feature-ui
-**Source Commit**: bd2d951
+**Last Updated**: 2026-01-25 13:06:41 UTC
+**Source Branch**: update-pages-workflow
+**Source Commit**: 7cdafb3
 
 ---
 
