@@ -24,7 +24,7 @@ The app works directly from your file system - just download, extract, and doubl
 - ✅ Service worker for offline functionality
 - ✅ PWA manifest for installation
 - ✅ All assets optimized and minified
-- ✅ Total size: 1202 KB compressed
+- ✅ Total size: 1199 KB compressed
 
 ## 📚 Full Documentation
 
@@ -42,9 +42,9 @@ Back to the main repository:
 
 This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
 
-**Last Updated**: 2026-01-25 14:34:01 UTC
-**Source Branch**: improve-menu-and-tabs-usability
-**Source Commit**: 0d2c264
+**Last Updated**: 2026-01-25 16:30:51 UTC
+**Source Branch**: resolve-pull-request-comments
+**Source Commit**: cd28f77
 
 ---
 
