@@ -731,9 +731,9 @@ body.density-cozy {
     margin: auto 0 0;
   }
 
-  /* Show mobile menu for navigation */
+  /* Enable mobile menu for navigation (hidden by default, shows when .open class is added) */
   .mobile-menu {
-    display: block !important;
+    display: block;
   }
 
   .shell {
