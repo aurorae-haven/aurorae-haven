@@ -68,6 +68,7 @@ function Tasks() {
     setEditText('')
   }
 
+  // Export/Import functions - currently unused, will be integrated into unified data management system
   const exportTasks = () => {
     try {
       const data = JSON.stringify(tasks, null, 2)
@@ -211,26 +212,7 @@ function Tasks() {
       <div className='card'>
         <div className='card-h'>
           <strong>Tasks</strong>
-          <div className='toolbar'>
-            <button
-              className='btn'
-              onClick={exportTasks}
-              aria-label='Export tasks'
-            >
-              <Icon name='download' />
-              Export
-            </button>
-            <label className='btn' aria-label='Import tasks'>
-              <Icon name='upload' />
-              Import
-              <input
-                type='file'
-                accept='.json'
-                onChange={importTasks}
-                className='hidden-file-input'
-              />
-            </label>
-          </div>
+          {/* Import/Export removed - will be replaced by unified data management system */}
         </div>
         <div className='card-b'>
           <TaskForm
