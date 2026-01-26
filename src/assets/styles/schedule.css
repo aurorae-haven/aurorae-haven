@@ -339,6 +339,23 @@
   .calendar {
     overflow-x: auto;
   }
+
+  /* Improve button layout on mobile */
+  .card .card-h {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .card .card-h > div {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* Stack schedule controls on very small screens */
+  .card .card-h > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 480px) {

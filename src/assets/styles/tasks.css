@@ -325,4 +325,65 @@
   .matrix-quadrant {
     min-height: 250px;
   }
+
+  .add-task-form {
+    grid-template-columns: 180px 1fr auto;
+    gap: 8px;
+  }
+}
+
+/* Mobile portrait - stack form vertically and adjust matrix */
+@media (max-width: 768px) {
+  .add-task-form {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .eisenhower-matrix {
+    gap: 10px;
+  }
+
+  .matrix-quadrant {
+    min-height: 200px;
+    padding: 12px;
+  }
+
+  .quadrant-header h3 {
+    font-size: 14px;
+  }
+
+  .quadrant-header .subtitle {
+    font-size: 11px;
+  }
+
+  .task-item {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+}
+
+/* Small mobile - further reduce spacing and sizes */
+@media (max-width: 480px) {
+  .tasks-container {
+    gap: 12px;
+  }
+
+  .eisenhower-matrix {
+    gap: 8px;
+  }
+
+  .matrix-quadrant {
+    min-height: 180px;
+    padding: 10px;
+  }
+
+  .add-task-form {
+    gap: 10px;
+  }
+
+  .task-input,
+  .quadrant-select {
+    font-size: 13px;
+    padding: 8px 10px;
+  }
 }
