@@ -125,6 +125,9 @@ A comprehensive review of the Aurorae Haven application's responsive design was 
 #### Fixes Applied
 ```css
 @media (max-width: 768px) {
+  .brain-dump-container {
+    position: relative; /* Anchor sidebar positioning */
+  }
   .note-list-sidebar {
     position: absolute;
     left: 0;
@@ -134,9 +137,7 @@ A comprehensive review of the Aurorae Haven application's responsive design was 
     backdrop-filter: var(--blur);
     box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
   }
-  .note-list-sidebar.hidden {
-    transform: translateX(-100%);
-  }
+  /* Sidebar visibility controlled by React mounting/unmounting */
   .brain-dump-main {
     width: 100%;
   }
@@ -195,7 +196,7 @@ A comprehensive review of the Aurorae Haven application's responsive design was 
     max-width: 100%;
     max-height: 90vh;
     border-radius: 16px 16px 0 0;
-    animation: slideUp 0.3s ease-out;
+    animation: modalSlideUp 0.3s ease-out;
   }
 }
 ```
@@ -325,7 +326,7 @@ The application now uses consistent breakpoints across all pages:
   }
   .modal-content {
     border-radius: 16px 16px 0 0;
-    animation: slideUp 0.3s ease-out;
+    animation: modalSlideUp 0.3s ease-out;
   }
 }
 ```

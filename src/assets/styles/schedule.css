@@ -340,19 +340,19 @@
     overflow-x: auto;
   }
 
-  /* Improve button layout on mobile */
-  .card .card-h {
+  /* Improve button layout on mobile (schedule only) */
+  .layout-schedule .card .card-h {
     flex-wrap: wrap;
     gap: 8px;
   }
 
-  .card .card-h > div {
+  .layout-schedule .card .card-h > div {
     flex-wrap: wrap;
     gap: 6px;
   }
 
-  /* Stack schedule controls on very small screens */
-  .card .card-h > div:last-child {
+  /* Stack schedule controls on very small screens (schedule only) */
+  .layout-schedule .card .card-h > div:last-child {
     width: 100%;
     justify-content: flex-start;
   }

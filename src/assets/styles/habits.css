@@ -84,7 +84,7 @@
 }
 
 .habit-card:hover {
-  transform: translateY(-2px);
+  /* Note: transform disabled - conflicts with inline swipe transform in Habits.jsx */
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
