@@ -716,26 +716,38 @@ body.density-cozy {
   }
 }
 
-/* Small desktop optimization (969px - 1100px) */
+/* Small desktop optimization (969px - 1100px) - Icon-only navigation */
 @media (min-width: 969px) and (max-width: 1100px) {
-  .nav-tab {
-    font-size: 0.85rem;
-    padding: 6px 8px;
+  .appnav {
     gap: 4px;
   }
 
-  .nav-tab .icon {
-    width: 14px;
-    height: 14px;
+  .nav-tab {
+    padding: 10px;
+    min-width: 48px;
+    min-height: 48px;
+    gap: 0;
+    border-radius: 12px;
+    justify-content: center;
   }
 
-  /* Increase shell top padding when navbar wraps to multiple rows */
+  /* Hide text labels for icon-only navigation */
+  .nav-tab span {
+    display: none;
+  }
+
+  .nav-tab .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Restore standard shell padding since tabs no longer wrap */
   .shell {
-    padding-top: calc(100px * var(--density-multiplier));
+    padding-top: calc(70px * var(--density-multiplier));
   }
 }
 
-/* Extra small desktop windows (769px - 968px) - desktop mode but constrained */
+/* Extra small desktop windows (769px - 968px) - Icon-only navigation */
 @media (min-width: 769px) and (max-width: 968px) and (orientation: portrait) {
   .appbar .inner {
     gap: 8px;
@@ -752,19 +764,26 @@ body.density-cozy {
   }
 
   .appnav {
-    gap: 4px;
+    gap: 3px;
   }
 
   .nav-tab {
-    font-size: 0.8rem;
-    padding: 5px 8px;
-    gap: 4px;
+    padding: 10px;
+    min-width: 48px;
     min-height: 48px;
+    gap: 0;
+    border-radius: 12px;
+    justify-content: center;
+  }
+
+  /* Hide text labels for icon-only navigation */
+  .nav-tab span {
+    display: none;
   }
 
   .nav-tab .icon {
-    width: 14px;
-    height: 14px;
+    width: 20px;
+    height: 20px;
   }
 
   .navbar-right {
@@ -782,9 +801,9 @@ body.density-cozy {
     height: 18px;
   }
 
-  /* Increase shell top padding when navbar wraps to multiple rows */
+  /* Restore standard shell padding since tabs no longer wrap */
   .shell {
-    padding-top: calc(110px * var(--density-multiplier));
+    padding-top: calc(70px * var(--density-multiplier));
   }
 }
 
