@@ -59,9 +59,10 @@
     transform var(--dur) var(--ease);
 }
 
-/* Mobile portrait - hide sidebar by default, add toggle */
+/* Mobile portrait - sidebar becomes overlay */
 @media (max-width: 768px) {
   .brain-dump-container {
+    position: relative; /* Anchor sidebar positioning */
     gap: 0;
     min-height: 350px;
   }
@@ -77,10 +78,7 @@
     background: rgba(16, 20, 44, 0.98);
     backdrop-filter: var(--blur);
     box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
-  }
-
-  .note-list-sidebar.hidden {
-    transform: translateX(-100%);
+    /* Note: Sidebar visibility controlled by React (mount/unmount), not CSS transform */
   }
 
   .brain-dump-main {

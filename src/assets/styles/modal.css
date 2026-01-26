@@ -214,10 +214,10 @@
     max-width: 100%;
     max-height: 90vh;
     border-radius: 16px 16px 0 0;
-    animation: slideUp 0.3s ease-out;
+    animation: modalSlideUp 0.3s ease-out;
   }
 
-  @keyframes slideUp {
+  @keyframes modalSlideUp {
     from {
       transform: translateY(100%);
       opacity: 0;

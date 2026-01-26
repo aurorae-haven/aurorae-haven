@@ -129,27 +129,28 @@
   margin-bottom: 8px;
 }
 
-.empty-state {
+/* Scoped to habits page to avoid affecting other pages with .empty-state */
+.habits-page .empty-state {
   text-align: center;
   color: var(--dim);
   padding: 40px 20px;
   font-size: 1rem;
 }
 
-/* Habits-specific form groups for modal content */
-.form-group {
+/* Habits-specific form groups for modal content - scoped to habits page */
+.habits-page .form-group {
   margin-bottom: 16px;
 }
 
-.form-group label {
+.habits-page .form-group label {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
   color: var(--ink);
 }
 
-.form-group input,
-.form-group select {
+.habits-page .form-group input,
+.habits-page .form-group select {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid var(--line);
@@ -159,13 +160,14 @@
   font-size: 14px;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.habits-page .form-group input:focus,
+.habits-page .form-group select:focus {
   outline: 3px solid var(--mint);
   outline-offset: 2px;
 }
 
-.modal-actions {
+/* Scoped to habits page modals to avoid affecting other modals */
+.habits-page .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
@@ -251,11 +253,11 @@
     width: 100%;
   }
 
-  .modal-actions {
+  .habits-page .modal-actions {
     flex-direction: column;
   }
 
-  .modal-actions button {
+  .habits-page .modal-actions button {
     width: 100%;
   }
 }
