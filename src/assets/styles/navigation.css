@@ -707,13 +707,31 @@ body.density-cozy {
     height: 20px;
   }
 
-  .mobile-settings-button,
+  /* Hide desktop navigation tabs - use hamburger menu instead */
+  .appnav {
+    display: none !important;
+  }
+
+  /* Hide navbar-center and navbar-right in tablet landscape */
+  .navbar-center,
+  .navbar-right {
+    display: none !important;
+  }
+
+  /* Show hamburger menu button */
   .hamburger-button {
+    display: flex !important;
+    margin: auto 0 0;
+  }
+
+  .mobile-settings-button {
+    display: flex !important;
     margin: auto 0 0;
   }
 
   .shell {
     padding-left: 74px;
+    padding-top: 0;
   }
 }
 
