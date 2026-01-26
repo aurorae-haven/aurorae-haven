@@ -179,21 +179,23 @@ describe('Tasks Component', () => {
     expect(emptyStates.length).toBe(4) // All quadrants empty initially
   })
 
-  test('has export button', () => {
+  // Export/Import functionality removed from Tasks page (PR #372)
+  // Will be replaced with unified data management system
+  test.skip('has export button', () => {
     render(<Tasks />)
 
     const exportButton = screen.getByLabelText('Export tasks')
     expect(exportButton).toBeInTheDocument()
   })
 
-  test('has import button', () => {
+  test.skip('has import button', () => {
     render(<Tasks />)
 
     const importButton = screen.getByLabelText('Import tasks')
     expect(importButton).toBeInTheDocument()
   })
 
-  test('exports tasks as JSON', async () => {
+  test.skip('exports tasks as JSON', async () => {
     // Mock URL.createObjectURL
     const mockCreateObjectURL = jest.fn(() => 'blob:mock-url')
     const mockRevokeObjectURL = jest.fn()
@@ -268,7 +270,7 @@ describe('Tasks Component', () => {
     expect(screen.getByText('Tasks')).toBeInTheDocument()
   })
 
-  test('imports tasks from JSON file', async () => {
+  test.skip('imports tasks from JSON file', async () => {
     const { container } = render(<Tasks />)
 
     const mockTasks = {
@@ -475,7 +477,7 @@ describe('Tasks Component', () => {
   })
 
   // Tests for import validation
-  test('rejects import with duplicate task IDs', async () => {
+  test.skip('rejects import with duplicate task IDs', async () => {
     const { container } = render(<Tasks />)
 
     const duplicateTasks = {
@@ -516,7 +518,7 @@ describe('Tasks Component', () => {
     })
   })
 
-  test('rejects import with task text exceeding max length', async () => {
+  test.skip('rejects import with task text exceeding max length', async () => {
     const { container } = render(<Tasks />)
 
     const longTextTask = {
@@ -550,7 +552,7 @@ describe('Tasks Component', () => {
     })
   })
 
-  test('rejects import with invalid task structure', async () => {
+  test.skip('rejects import with invalid task structure', async () => {
     const { container } = render(<Tasks />)
 
     const invalidTasks = {
@@ -579,7 +581,7 @@ describe('Tasks Component', () => {
     })
   })
 
-  test('accepts import with numeric IDs (backward compatibility)', async () => {
+  test.skip('accepts import with numeric IDs (backward compatibility)', async () => {
     const { container } = render(<Tasks />)
 
     const legacyTasks = {
@@ -613,7 +615,7 @@ describe('Tasks Component', () => {
     })
   })
 
-  test('rejects import with missing quadrants', async () => {
+  test.skip('rejects import with missing quadrants', async () => {
     const { container } = render(<Tasks />)
 
     const incompleteTasks = {
@@ -642,7 +644,7 @@ describe('Tasks Component', () => {
   })
 
   // Tests for error notification system
-  test('displays error notification with ARIA live region', async () => {
+  test.skip('displays error notification with ARIA live region', async () => {
     const { container } = render(<Tasks />)
 
     const invalidTasks = { invalid: 'data' }
@@ -667,7 +669,7 @@ describe('Tasks Component', () => {
     })
   })
 
-  test('error notification auto-dismisses after 5 seconds', async () => {
+  test.skip('error notification auto-dismisses after 5 seconds', async () => {
     jest.useFakeTimers()
     const { container } = render(<Tasks />)
 
@@ -699,7 +701,7 @@ describe('Tasks Component', () => {
   })
 
   // Tests for export filename format
-  test('exports with feature-prefixed filename format', async () => {
+  test.skip('exports with feature-prefixed filename format', async () => {
     const mockCreateObjectURL = jest.fn(() => 'blob:mock-url')
     const mockRevokeObjectURL = jest.fn()
     const originalCreateObjectURL = global.URL.createObjectURL
@@ -809,7 +811,7 @@ describe('Tasks Component', () => {
     })
   })
 
-  test('exports and re-imports tasks with string UUIDs', async () => {
+  test.skip('exports and re-imports tasks with string UUIDs', async () => {
     const { container } = render(<Tasks />)
 
     // Add a task (which will have a UUID string ID)
