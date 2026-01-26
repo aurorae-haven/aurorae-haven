@@ -4,7 +4,6 @@ import { useTasksState } from '../hooks/useTasksState'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import TaskForm from '../components/Tasks/TaskForm'
 import TaskQuadrant from '../components/Tasks/TaskQuadrant'
-import Icon from '../components/common/Icon'
 import { URL_REVOKE_TIMEOUT_MS } from '../utils/timeConstants'
 import { TASK_TEXT_MAX_LENGTH } from '../utils/validationConstants'
 
@@ -69,6 +68,7 @@ function Tasks() {
   }
 
   // Export/Import functions - currently unused, will be integrated into unified data management system
+  // eslint-disable-next-line no-unused-vars
   const exportTasks = () => {
     try {
       const data = JSON.stringify(tasks, null, 2)
@@ -95,6 +95,7 @@ function Tasks() {
     }
   }
 
+  // eslint-disable-next-line no-unused-vars
   const importTasks = (e) => {
     const file = e.target.files[0]
     if (!file) return
