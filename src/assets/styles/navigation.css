@@ -675,7 +675,8 @@ body.density-cozy {
 
 /* Tablet Landscape: Navbar on left side */
 /* Only applies to actual tablets with limited height in landscape */
-@media (min-width: 769px) and (max-width: 968px) and (orientation: landscape) and (max-height: 768px) {
+/* Use aspect ratio to better distinguish tablets from desktop windows */
+@media (min-width: 769px) and (max-width: 1100px) and (orientation: landscape) and (max-height: 768px) and (max-aspect-ratio: 16/9) {
   .appbar {
     top: 0;
     left: 0;
@@ -729,6 +730,11 @@ body.density-cozy {
     margin: auto 0 0;
   }
 
+  /* Show mobile menu for navigation */
+  .mobile-menu {
+    display: block !important;
+  }
+
   .shell {
     padding-left: 74px;
     padding-top: 0;
@@ -778,8 +784,8 @@ body.density-cozy {
 
 /* Extra small desktop windows (769px - 968px) - Icon navigation with labels */
 /* Applies to desktop windows in any orientation */
-/* Tablet landscape (with max-height: 768px) will override this with sidebar layout */
-@media (min-width: 769px) and (max-width: 968px) {
+/* IMPORTANT: Must NOT apply to tablet landscape (handled by separate query below) */
+@media (min-width: 769px) and (max-width: 968px) and (min-height: 769px) {
   .appbar .inner {
     gap: 8px;
     padding: 8px 10px;
