@@ -340,17 +340,25 @@
   }
 
   /* Mobile toolbar - ensure buttons are usable */
+  .tasks-container .card-h {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .tasks-container .toolbar {
     display: flex;
     gap: 8px;
-    flex-wrap: wrap;
-    width: 100%;
+    flex-wrap: nowrap;
+    min-width: 0; /* Allow shrinking */
   }
 
   .tasks-container .toolbar .btn {
-    flex: 1;
-    min-width: 120px;
+    flex: 1 1 auto;
+    min-width: 100px;
+    max-width: 150px;
+    white-space: nowrap;
     justify-content: center;
+    padding: 8px 12px;
   }
 
   .eisenhower-matrix {
