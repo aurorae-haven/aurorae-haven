@@ -502,8 +502,9 @@ body.density-cozy {
   }
 }
 
-/* Mobile/Tablet Portrait: Navbar at bottom */
-@media (max-width: 968px) and (orientation: portrait) {
+/* Mobile Portrait ONLY: Navbar at bottom */
+/* Use max-height to ensure this only applies to actual mobile devices, not tall desktop windows */
+@media (max-width: 968px) and (orientation: portrait) and (max-height: 1024px) {
   .appbar {
     top: auto;
     bottom: 0;
