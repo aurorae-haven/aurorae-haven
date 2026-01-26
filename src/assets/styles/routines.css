@@ -260,6 +260,12 @@
   .routine-toolbar button {
     width: 100%;
   }
+
+  /* Hide import/export buttons on mobile/tablet - use global data management instead */
+  .btn[aria-label='Export all routine data'],
+  .btn[aria-label='Import routine data'] {
+    display: none;
+  }
 }
 
 /* TAB-RTN-38: Tablet optimization (768px - 1024px) */
