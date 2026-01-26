@@ -147,7 +147,7 @@ A comprehensive review of the Aurorae Haven application's responsive design was 
 #### Result
 - ✅ Sidebar becomes slide-out overlay
 - ✅ Full-width editor for content focus
-- ✅ Smooth slide animation (respects prefers-reduced-motion)
+- ✅ Overlay toggle (no slide animation; mount/unmount controlled by React)
 - ✅ Better mobile writing experience
 
 ---

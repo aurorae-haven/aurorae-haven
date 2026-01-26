@@ -85,11 +85,12 @@
     width: 100%;
   }
 
-  /* Hide import/export buttons on mobile - use global data management instead */
-  .card-h .toolbar .btn[aria-label='Import'],
-  .card-h .toolbar .btn[aria-label='Export'] {
-    display: none;
-  }
+}
+
+/* Hide import/export buttons on all screen sizes - use global data management instead */
+.card-h .toolbar .btn[aria-label='Import'],
+.card-h .toolbar .btn[aria-label='Export'] {
+  display: none;
 }
 
 /* Small mobile - further adjustments */

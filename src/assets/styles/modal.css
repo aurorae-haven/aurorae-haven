@@ -379,9 +379,8 @@
     gap: 12px;
   }
 
-  .modal-content {
-    max-width: calc(100% - 40px);
-  }
+  /* Removed: .modal-content max-width override - conflicts with bottom-sheet design at 768px */
+  /* Bottom sheet uses max-width: 100% for full-width mobile experience */
 
   .note-category-input {
     min-width: 120px;
