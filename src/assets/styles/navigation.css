@@ -113,7 +113,7 @@ body.density-cozy {
   display: flex;
   gap: 6px;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
 }
 
@@ -444,8 +444,8 @@ body.density-cozy {
   stroke-linejoin: round;
 }
 
-/* TAB-NAV-13: Responsive behavior for tablet/mobile landscape */
-@media (max-width: 968px) and (orientation: landscape) {
+/* TAB-NAV-13: Responsive behavior for tablet/mobile landscape (below 769px only) */
+@media (max-width: 768px) and (orientation: landscape) {
   .navbar-center {
     display: none;
   }
@@ -716,24 +716,29 @@ body.density-cozy {
   }
 }
 
-/* Small desktop optimization (969px - 1100px) - Icon-only navigation */
-@media (min-width: 969px) and (max-width: 1100px) {
+/* Small desktop optimization (969px - 1280px) - Icon-only navigation with labels */
+@media (min-width: 969px) and (max-width: 1280px) {
   .appnav {
     gap: 4px;
   }
 
   .nav-tab {
-    padding: 10px;
+    flex-direction: column;
+    padding: 8px 6px;
     min-width: 48px;
     min-height: 48px;
-    gap: 0;
+    gap: 4px;
     border-radius: 12px;
     justify-content: center;
   }
 
-  /* Hide text labels for icon-only navigation */
+  /* Show text labels below icons */
   .nav-tab span {
-    display: none;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70px;
   }
 
   .nav-tab .icon {
@@ -741,14 +746,14 @@ body.density-cozy {
     height: 20px;
   }
 
-  /* Restore standard shell padding since tabs no longer wrap */
+  /* Restore standard shell padding since tabs stay in single row */
   .shell {
     padding-top: calc(70px * var(--density-multiplier));
   }
 }
 
-/* Extra small desktop windows (769px - 968px) - Icon-only navigation */
-@media (min-width: 769px) and (max-width: 968px) and (orientation: portrait) {
+/* Extra small desktop windows (769px - 968px) - Icon navigation with labels */
+@media (min-width: 769px) and (max-width: 968px) {
   .appbar .inner {
     gap: 8px;
     padding: 8px 10px;
@@ -768,17 +773,22 @@ body.density-cozy {
   }
 
   .nav-tab {
-    padding: 10px;
+    flex-direction: column;
+    padding: 6px 4px;
     min-width: 48px;
     min-height: 48px;
-    gap: 0;
+    gap: 3px;
     border-radius: 12px;
     justify-content: center;
   }
 
-  /* Hide text labels for icon-only navigation */
+  /* Show text labels below icons */
   .nav-tab span {
-    display: none;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60px;
   }
 
   .nav-tab .icon {
@@ -801,7 +811,7 @@ body.density-cozy {
     height: 18px;
   }
 
-  /* Restore standard shell padding since tabs no longer wrap */
+  /* Restore standard shell padding since tabs stay in single row */
   .shell {
     padding-top: calc(70px * var(--density-multiplier));
   }
