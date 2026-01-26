@@ -674,7 +674,7 @@ body.density-cozy {
 }
 
 /* Tablet Landscape: Navbar on left side */
-/* This will apply to actual tablets/mobile devices in landscape */
+/* Only applies to actual tablets with limited height in landscape */
 @media (min-width: 769px) and (max-width: 968px) and (orientation: landscape) and (max-height: 768px) {
   .appbar {
     top: 0;
@@ -714,47 +714,6 @@ body.density-cozy {
 
   .shell {
     padding-left: 74px;
-  }
-}
-
-/* Desktop windows at 769-968px in landscape: Use compact top navigation */
-@media (min-width: 769px) and (max-width: 968px) and (orientation: landscape) and (min-height: 769px) {
-  .appnav {
-    gap: 3px;
-  }
-
-  .nav-tab {
-    flex-direction: column;
-    padding: 6px 4px;
-    min-width: 48px;
-    min-height: 48px;
-    gap: 3px;
-    border-radius: 12px;
-    justify-content: center;
-  }
-
-  /* Show text labels below icons */
-  .nav-tab span {
-    font-size: 0.65rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 60px;
-  }
-
-  .nav-tab .icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Hide brand text, show logo only */
-  .brand b {
-    display: none;
-  }
-
-  /* Increase shell top padding to account for taller navbar with vertical layout */
-  .shell {
-    padding-top: calc(90px * var(--density-multiplier));
   }
 }
 
@@ -800,8 +759,9 @@ body.density-cozy {
 }
 
 /* Extra small desktop windows (769px - 968px) - Icon navigation with labels */
-/* Excludes landscape orientation to avoid conflict with tablet landscape layout */
-@media (min-width: 769px) and (max-width: 968px) and (orientation: portrait) {
+/* Applies to desktop windows in any orientation */
+/* Tablet landscape (with max-height: 768px) will override this with sidebar layout */
+@media (min-width: 769px) and (max-width: 968px) {
   .appbar .inner {
     gap: 8px;
     padding: 8px 10px;
