@@ -746,6 +746,11 @@ body.density-cozy {
     height: 20px;
   }
 
+  /* Hide brand text, show logo only on smaller screens */
+  .brand b {
+    display: none;
+  }
+
   /* Increase shell top padding to account for taller navbar with vertical layout */
   .shell {
     padding-top: calc(85px * var(--density-multiplier));
@@ -764,8 +769,9 @@ body.density-cozy {
     padding-right: 8px;
   }
 
+  /* Hide brand text, show logo only */
   .brand b {
-    font-size: 0.9rem;
+    display: none;
   }
 
   .appnav {
