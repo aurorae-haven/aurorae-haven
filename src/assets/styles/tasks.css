@@ -339,6 +339,20 @@
     gap: 12px;
   }
 
+  /* Mobile toolbar - ensure buttons are usable */
+  .tasks-container .toolbar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .tasks-container .toolbar .btn {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+
   .eisenhower-matrix {
     gap: 10px;
   }
