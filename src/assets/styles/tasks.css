@@ -353,7 +353,7 @@
   }
 
   .quadrant-header .subtitle {
-    font-size: 11px;
+    font-size: 12px;
   }
 
   .task-item {
@@ -383,7 +383,7 @@
 
   .task-input,
   .quadrant-select {
-    font-size: 13px;
+    font-size: 14px;
     padding: 8px 10px;
   }
 }
