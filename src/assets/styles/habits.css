@@ -118,9 +118,13 @@
 }
 
 .today-checkbox {
-  width: 32px;
-  height: 32px;
+  /* 48×48px touch target for accessibility (WCAG 2.2 AA) */
+  width: 48px;
+  height: 48px;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .habit-streak {

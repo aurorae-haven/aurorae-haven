@@ -225,7 +225,7 @@ A comprehensive review of the Aurorae Haven application's responsive design was 
 All interactive elements maintain ≥48×48px touch targets:
 - ✅ Buttons (min-height: 48px)
 - ✅ Form controls (min-height: 48px)
-- ✅ Checkboxes (32×32px, but with padding = 48px total)
+- ✅ Checkboxes (48×48px)
 - ✅ Navigation tabs (min-height: 48px)
 
 ### Motion Preferences
