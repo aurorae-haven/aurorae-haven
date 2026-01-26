@@ -298,10 +298,12 @@ body.density-cozy {
   z-index: 40;
   overflow-y: auto;
   transition: left 0.3s ease;
+  pointer-events: none; /* Prevent interaction when closed */
 }
 
 .mobile-menu.open {
   left: 0;
+  pointer-events: auto; /* Enable interaction when open */
 }
 
 @media (prefers-reduced-motion: reduce) {
