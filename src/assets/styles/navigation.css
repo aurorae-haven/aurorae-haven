@@ -720,8 +720,8 @@ body.density-cozy {
 }
 
 /* Extra small desktop windows (769px - 968px) - Icon navigation with labels */
-/* Applies to desktop windows in any orientation */
-/* IMPORTANT: Must NOT apply to tablet landscape (handled by separate query below) */
+/* Applies to desktop windows in any orientation with sufficient height */
+/* Tablet landscape (typically <= 768px height) is excluded via the min-height constraint */
 @media (min-width: 769px) and (max-width: 968px) and (min-height: 769px) {
   .appbar .inner {
     gap: 8px;

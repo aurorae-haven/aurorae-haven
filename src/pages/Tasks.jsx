@@ -87,7 +87,6 @@ function Tasks() {
       <div className='card'>
         <div className='card-h'>
           <strong>Tasks</strong>
-          {/* Import/Export removed - will be replaced by unified data management system */}
         </div>
         <div className='card-b'>
           <TaskForm
