@@ -22,9 +22,6 @@ function Tasks() {
   const [editingTask, setEditingTask] = useState(null)
   const [editText, setEditText] = useState('')
 
-  // Error state
-  const [errorMessage, setErrorMessage] = useState('')
-
   // Drag and drop
   const { handleDragStart, handleDragOver, handleDrop } =
     useDragAndDrop(moveTask)
