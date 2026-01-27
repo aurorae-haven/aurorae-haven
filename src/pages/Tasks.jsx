@@ -84,16 +84,6 @@ function Tasks() {
 
   return (
     <div className='tasks-container'>
-      {errorMessage && (
-        <div
-          className='error-notification'
-          role='alert'
-          aria-live='assertive'
-          aria-atomic='true'
-        >
-          {errorMessage}
-        </div>
-      )}
       <div className='card'>
         <div className='card-h'>
           <strong>Tasks</strong>

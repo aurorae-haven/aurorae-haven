@@ -90,8 +90,8 @@
 /* Hide import/export buttons inside Brain Dump on all screen sizes - use global data management instead */
 /* NOTE: Using aria-label as selector couples styling to accessibility text.
    Future improvement: add data-role attributes to buttons in BrainDump.jsx */
-.layout-dump .card-h .toolbar .btn[aria-label='Import'],
-.layout-dump .card-h .toolbar .btn[aria-label='Export'] {
+.brain-dump-main .card-h .toolbar .btn[aria-label='Import'],
+.brain-dump-main .card-h .toolbar .btn[aria-label='Export'] {
   display: none;
 }
 
