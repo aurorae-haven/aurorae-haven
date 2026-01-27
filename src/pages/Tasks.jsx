@@ -7,7 +7,6 @@ import TaskQuadrant from '../components/Tasks/TaskQuadrant'
 function Tasks() {
   const {
     tasks,
-    setTasks,
     addTask,
     toggleTask,
     deleteTask,
@@ -29,11 +28,6 @@ function Tasks() {
   // Drag and drop
   const { handleDragStart, handleDragOver, handleDrop } =
     useDragAndDrop(moveTask)
-
-  const showError = (message) => {
-    setErrorMessage(message)
-    setTimeout(() => setErrorMessage(''), 5000)
-  }
 
   const handleAddTask = (e) => {
     e.preventDefault()
