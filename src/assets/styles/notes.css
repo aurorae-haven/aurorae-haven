@@ -17,6 +17,17 @@
     grid-template-columns: 240px 1fr;
     gap: 10px;
   }
+
+  .brain-dump-container {
+    gap: 10px;
+    min-height: 400px;
+  }
+
+  .note-list-sidebar {
+    width: 240px;
+    min-width: 240px;
+    padding: 10px;
+  }
 }
 
 /* Brain Dump multi-note layout */
@@ -29,14 +40,6 @@
   transition:
     width 0.3s ease,
     max-width 0.3s ease;
-}
-
-/* Responsive gap for smaller desktop windows */
-@media (max-width: 900px) {
-  .brain-dump-container {
-    gap: 10px;
-    min-height: 400px;
-  }
 }
 
 .note-list-sidebar {
@@ -52,15 +55,55 @@
   transition:
     width var(--dur) var(--ease),
     min-width var(--dur) var(--ease),
-    opacity var(--dur) var(--ease);
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
 }
 
-/* Responsive sidebar for smaller desktop windows */
-@media (max-width: 900px) {
+/* Mobile portrait - sidebar becomes overlay */
+@media (max-width: 768px) {
+  .brain-dump-container {
+    position: relative; /* Anchor sidebar positioning */
+    gap: 0;
+    min-height: 350px;
+  }
+
   .note-list-sidebar {
-    width: 240px;
-    min-width: 240px;
-    padding: 10px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 280px;
+    min-width: 280px;
+    z-index: 100;
+    background: rgba(16, 20, 44, 0.98);
+    backdrop-filter: var(--blur);
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+    /* Note: Sidebar visibility controlled by React (mount/unmount), not CSS transform */
+  }
+
+  .brain-dump-main {
+    width: 100%;
+  }
+
+}
+
+/* Hide import/export buttons inside Brain Dump on all screen sizes - use global data management instead */
+/* NOTE: Using aria-label as selector couples styling to accessibility text.
+   Future improvement: add data-role attributes to buttons in BrainDump.jsx */
+.brain-dump-main .card-h .toolbar .btn[aria-label='Import'],
+.brain-dump-main .card-h .toolbar .btn[aria-label='Export'] {
+  display: none;
+}
+
+/* Small mobile - further adjustments */
+@media (max-width: 480px) {
+  .note-list-sidebar {
+    width: 260px;
+    min-width: 260px;
+  }
+
+  .brain-dump-container {
+    min-height: 300px;
   }
 }
 

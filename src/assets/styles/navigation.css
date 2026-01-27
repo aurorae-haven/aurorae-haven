@@ -674,73 +674,9 @@ body.density-cozy {
   }
 }
 
-/* Tablet Landscape: Navbar on left side */
-/* Only applies to actual tablets with limited height in landscape */
-/* Use aspect ratio to better distinguish tablets from desktop windows */
-@media (min-width: 769px) and (max-width: 1100px) and (orientation: landscape) and (max-height: 768px) and (max-aspect-ratio: 16/9) {
-  .appbar {
-    top: 0;
-    left: 0;
-    right: auto;
-    bottom: 0;
-    width: 64px;
-    border-right: 1px solid var(--line);
-    border-bottom: none;
-  }
-
-  .appbar .inner {
-    flex-direction: column;
-    padding: 12px 6px;
-    height: 100%;
-  }
-
-  .navbar-left {
-    flex-direction: column;
-    align-items: center;
-    padding: 0;
-  }
-
-  .brand b {
-    display: none;
-  }
-
-  .logo {
-    width: 20px;
-    height: 20px;
-  }
-
-  /* Hide desktop navigation tabs - use hamburger menu instead */
-  .appnav {
-    display: none !important;
-  }
-
-  /* Hide navbar-center and navbar-right in tablet landscape */
-  .navbar-center,
-  .navbar-right {
-    display: none !important;
-  }
-
-  /* Show hamburger menu button */
-  .hamburger-button {
-    display: flex !important;
-    margin: auto 0 0;
-  }
-
-  .mobile-settings-button {
-    display: flex !important;
-    margin: auto 0 0;
-  }
-
-  /* Enable mobile menu for navigation (hidden by default, shows when .open class is added) */
-  .mobile-menu {
-    display: block;
-  }
-
-  .shell {
-    padding-left: 74px;
-    padding-top: 0;
-  }
-}
+/* Tablet Landscape: Removed - Let resized desktop windows keep top navigation */
+/* Desktop windows should maintain horizontal navigation regardless of resize */
+/* Mobile landscape (≤768px) already has sidebar navigation configured above */
 
 /* Small desktop optimization (969px - 1280px) - Icon-only navigation with labels */
 @media (min-width: 969px) and (max-width: 1280px) {
