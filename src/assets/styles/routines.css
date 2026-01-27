@@ -1,13 +1,5 @@
 /* ===== Routines (runner top with bigger current) ===== */
 
-/* Base rule: import/export buttons are hidden at all breakpoints */
-/* NOTE: Using aria-label as selector couples styling to accessibility text.
-   Future improvement: add data-role attributes to buttons in Routines.jsx */
-.btn[aria-label='Export all routine data'],
-.btn[aria-label='Import routine data'] {
-  display: none;
-}
-
 /* TAB-RTN-01: Routine Management Toolbar */
 .routine-toolbar {
   display: flex;
