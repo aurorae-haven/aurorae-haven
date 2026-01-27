@@ -87,9 +87,9 @@
 
 }
 
-/* Hide import/export buttons on all screen sizes - use global data management instead */
-.card-h .toolbar .btn[aria-label='Import'],
-.card-h .toolbar .btn[aria-label='Export'] {
+/* Hide import/export buttons inside Brain Dump on all screen sizes - use global data management instead */
+.layout-dump .card-h .toolbar .btn[aria-label='Import'],
+.layout-dump .card-h .toolbar .btn[aria-label='Export'] {
   display: none;
 }
 

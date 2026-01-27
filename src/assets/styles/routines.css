@@ -1,6 +1,6 @@
 /* ===== Routines (runner top with bigger current) ===== */
 
-/* Hide import/export buttons on all screen sizes - use global data management instead */
+/* Base rule: import/export buttons are hidden at all breakpoints */
 .btn[aria-label='Export all routine data'],
 .btn[aria-label='Import routine data'] {
   display: none;
@@ -30,8 +30,7 @@
   transition: width 0.3s ease;
 }
 
-/* Remove mobile/tablet-only hiding - now hidden on all screen sizes */
-/* @media (max-width: 768px) removed - buttons always hidden */
+/* Remove mobile/tablet-only hiding comment - buttons are hidden at all breakpoints */
 
 .runner-top {
   display: grid;
@@ -268,12 +267,6 @@
 
   .routine-toolbar button {
     width: 100%;
-  }
-
-  /* Hide import/export buttons on mobile/tablet - use global data management instead */
-  .btn[aria-label='Export all routine data'],
-  .btn[aria-label='Import routine data'] {
-    display: none;
   }
 }
 
