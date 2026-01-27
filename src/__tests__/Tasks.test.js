@@ -394,9 +394,6 @@ describe('Tasks Component', () => {
     })
   })
 
-  // Tests for error notification system
-  // Tests for export filename format
-  // Tests for double-click to edit
   test('can enter edit mode by double-clicking task text', async () => {
     render(<Tasks />)
 
