@@ -801,32 +801,17 @@ body.density-cozy {
   }
 
   /* Show mobile menu button and settings */
-  .mobile-menu-toggle {
+  .hamburger-button {
     display: flex;
   }
 
-  .mobile-settings {
+  .mobile-settings-button {
     display: flex;
   }
 
   /* Show mobile menu */
   .mobile-menu {
     display: block;
-  }
-
-  /* Vertical sidebar on left */
-  body {
-    padding-left: 64px;
-  }
-
-  .shell {
-    padding-left: 74px;
-    padding-top: 0;
-  }
-
-  /* Adjust shell when mobile menu is open */
-  body.mobile-menu-open .shell {
-    padding-left: calc(66px * var(--density-multiplier));
   }
 }
 

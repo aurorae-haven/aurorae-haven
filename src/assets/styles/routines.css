@@ -24,8 +24,7 @@
   transition: width 0.3s ease;
 }
 
-/* Remove mobile/tablet-only hiding comment - buttons are hidden at all breakpoints */
-
+/* TAB-RTN-02: Runner top layout and panel structure (no breakpoint-specific hiding here) */
 .runner-top {
   display: grid;
   grid-template-rows: auto auto;
