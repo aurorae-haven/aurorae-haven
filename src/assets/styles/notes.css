@@ -74,6 +74,12 @@
     position: relative;
     z-index: var(--z-sidebar); /* Below sidebar so + button remains clickable */
   }
+
+  /* Ensure toolbar stays above sidebar overlay on mobile */
+  .brain-dump-main .card-h {
+    position: relative;
+    z-index: calc(var(--z-editor) + 1); /* Above sidebar (101) to keep buttons clickable */
+  }
 }
 
 /* Small mobile - further adjustments */
