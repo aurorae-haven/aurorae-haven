@@ -313,7 +313,7 @@ describe('idGenerator', () => {
       expect(entity2.timestamp).toBeGreaterThan(entity1.timestamp)
     })
 
-    test('handles large number of same-millisecond creates (999+ entities)', async () => {
+    test('handles multiple same-millisecond creates with sequential counters', async () => {
       // Add delay to ensure clean timestamp for test isolation
       await new Promise((resolve) => setTimeout(resolve, 10))
 
@@ -343,7 +343,6 @@ describe('idGenerator', () => {
         
         // Verify counters are sequential starting from 1
         const firstStringId = stringIds[0]
-        const timestamp = firstStringId.split('.')[0]
         const counter = parseInt(firstStringId.split('.')[1])
         expect(counter).toBe(1)
       }
