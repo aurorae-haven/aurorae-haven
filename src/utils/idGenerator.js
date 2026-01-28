@@ -164,11 +164,14 @@ function generateTimestampIdWithCollisionPrevention(prefix = '') {
     // Handle numeric IDs with global counter
     if (timestamp === lastTimestamp) {
       idCounter++
-      return timestamp + idCounter
+      // Multiply timestamp by 1000 and add counter to ensure uniqueness
+      // This creates unique numeric IDs: timestamp000, timestamp001, timestamp002, etc.
+      return timestamp * 1000 + idCounter
     } else {
       idCounter = 0
       lastTimestamp = timestamp
-      return timestamp
+      // For first ID in a millisecond, multiply by 1000 for consistency
+      return timestamp * 1000
     }
   }
 }
