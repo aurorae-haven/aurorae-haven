@@ -631,11 +631,14 @@
   }
 
   .schedule-dropdown-menu {
-    right: auto;
-    left: 0;
-    /* Fix truncation on mobile by ensuring dropdown is not cut off */
+    /* Fix truncation on mobile by using fixed positioning */
     position: fixed;
-    max-height: 60vh;
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    margin: 0;
+    max-height: 70vh;
     overflow-y: auto;
   }
 
