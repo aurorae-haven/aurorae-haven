@@ -62,7 +62,7 @@
     bottom: 0;
     width: 280px;
     min-width: 280px;
-    z-index: 100;
+    z-index: var(--z-editor); /* Sidebar above main content so buttons remain clickable */
     background: rgba(16, 20, 44, 0.98);
     backdrop-filter: var(--blur);
     box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
@@ -72,7 +72,7 @@
   .brain-dump-main {
     width: 100%;
     position: relative;
-    z-index: var(--z-editor); /* Above sidebar (z-index: 100) to ensure toolbar buttons remain clickable */
+    z-index: var(--z-sidebar); /* Below sidebar so + button remains clickable */
   }
 }
 
