@@ -800,13 +800,17 @@ body.density-cozy {
     display: none;
   }
 
-  /* Show mobile menu button and settings */
+  /* Show mobile menu button and settings with 48x48px touch targets */
   .hamburger-button {
     display: flex;
+    width: 48px;
+    height: 48px;
   }
 
   .mobile-settings-button {
     display: flex;
+    width: 48px;
+    height: 48px;
   }
 
   /* Show mobile menu */
@@ -863,7 +867,8 @@ body.mobile-menu-open .shell {
 }
 
 /* Apply density to navigation gaps and padding - scoped to landscape to avoid mobile conflicts */
-@media (orientation: landscape) {
+/* Excludes small desktop breakpoints (769-1280px) to prevent overriding compact navigation */
+@media (orientation: landscape) and (min-width: 1281px) {
   .appnav {
     gap: calc(6px * var(--density-multiplier));
   }
