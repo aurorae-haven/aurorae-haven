@@ -26,7 +26,7 @@ body.density-cozy {
   border-bottom: 1px solid var(--line);
   box-shadow: var(--shadow);
   max-width: 100vw;
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 /* TAB-NAV-01: Three-zone layout */
@@ -678,8 +678,10 @@ body.density-cozy {
 /* Desktop windows should maintain horizontal navigation regardless of resize */
 /* Mobile landscape (≤768px) already has sidebar navigation configured above */
 
-/* Small desktop optimization (969px - 1280px) - Icon-only navigation with labels */
-@media (min-width: 969px) and (max-width: 1280px) {
+/* Small desktop optimization (769px - 1280px) - Compact navigation with labels */
+/* Starts at 769px to prevent horizontal overflow at narrower widths */
+/* Excludes tablet landscape via separate media query below */
+@media (min-width: 769px) and (max-width: 1280px) and (min-height: 769px) {
   .appnav {
     gap: 4px;
   }
@@ -719,9 +721,7 @@ body.density-cozy {
   }
 }
 
-/* Extra small desktop windows (769px - 968px) - Icon navigation with labels */
-/* Applies to desktop windows in any orientation with sufficient height */
-/* Tablet landscape (typically <= 768px height) is excluded via the min-height constraint */
+/* Tighter spacing for narrower desktop windows (769px - 968px) */
 @media (min-width: 769px) and (max-width: 968px) and (min-height: 769px) {
   .appbar .inner {
     gap: 8px;
