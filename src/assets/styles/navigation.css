@@ -856,9 +856,6 @@ body.density-cozy {
   transition:
     max-width 0.3s ease,
     padding-left 0.3s ease;
-  /* Ensure shell content is above mobile menu (z-index: 40) so buttons remain clickable */
-  position: relative;
-  z-index: var(--z-content);
 }
 
 /* Adjust shell when mobile menu is open - applies to all orientations
