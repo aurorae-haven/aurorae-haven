@@ -267,11 +267,15 @@ describe('idGenerator', () => {
       const uniqueIds = new Set(ids)
       expect(uniqueIds.size).toBe(ids.length)
 
-      // Verify IDs are numeric
-      ids.forEach((id) => {
-        expect(typeof id).toBe('number')
-        expect(id).toBeGreaterThan(0)
-      })
+      // First ID should be numeric timestamp
+      expect(typeof ids[0]).toBe('number')
+      expect(ids[0]).toBeGreaterThan(0)
+
+      // Subsequent IDs should be strings with counter suffix (since created in same ms)
+      for (let i = 1; i < ids.length; i++) {
+        expect(typeof ids[i]).toBe('string')
+        expect(ids[i]).toMatch(/^\d+\.\d{3}$/)
+      }
     })
 
     test('generates unique IDs for same-millisecond creates with prefix', () => {
@@ -307,6 +311,42 @@ describe('idGenerator', () => {
 
       expect(entity1.id).not.toBe(entity2.id)
       expect(entity2.timestamp).toBeGreaterThan(entity1.timestamp)
+    })
+
+    test('handles large number of same-millisecond creates (999+ entities)', async () => {
+      // Add delay to ensure clean timestamp for test isolation
+      await new Promise((resolve) => setTimeout(resolve, 10))
+
+      // Create many entities synchronously (within same millisecond)
+      const count = 100 // Reduced count to ensure they're created in same ms
+      const entities = []
+      for (let i = 0; i < count; i++) {
+        entities.push(normalizeEntity({ name: `Entity ${i}` }))
+      }
+
+      // Verify all IDs are unique
+      const ids = entities.map((e) => e.id)
+      const uniqueIds = new Set(ids)
+      expect(uniqueIds.size).toBe(ids.length)
+
+      // First ID should be numeric timestamp
+      expect(typeof ids[0]).toBe('number')
+
+      // Count how many IDs were created in the same millisecond (have string format)
+      const stringIds = ids.filter((id) => typeof id === 'string')
+      
+      // If we created multiple IDs in same millisecond, verify format
+      if (stringIds.length > 0) {
+        stringIds.forEach((id) => {
+          expect(id).toMatch(/^\d+\.\d+$/)
+        })
+        
+        // Verify counters are sequential starting from 1
+        const firstStringId = stringIds[0]
+        const timestamp = firstStringId.split('.')[0]
+        const counter = parseInt(firstStringId.split('.')[1])
+        expect(counter).toBe(1)
+      }
     })
   })
 

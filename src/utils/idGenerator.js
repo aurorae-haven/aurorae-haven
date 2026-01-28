@@ -164,10 +164,12 @@ function generateTimestampIdWithCollisionPrevention(prefix = '') {
     // Handle numeric IDs with global counter
     if (timestamp === lastTimestamp) {
       idCounter++
-      // Add small fractional increment to ensure uniqueness while keeping value close to timestamp
-      // This creates unique numeric IDs: timestamp.001, timestamp.002, timestamp.003, etc.
-      // Max 999 IDs per millisecond before counter rolls over to next millisecond value
-      return timestamp + idCounter / 1000
+      // When multiple IDs are generated in the same millisecond, use a string format
+      // with zero-padded counter to ensure uniqueness without numeric collisions.
+      // Format: "timestamp.001", "timestamp.002", "timestamp.003", etc.
+      // This prevents collisions with the next millisecond's timestamp and maintains
+      // clear distinction between base timestamp IDs and collision-prevented IDs.
+      return `${timestamp}.${String(idCounter).padStart(3, '0')}`
     } else {
       idCounter = 0
       lastTimestamp = timestamp
