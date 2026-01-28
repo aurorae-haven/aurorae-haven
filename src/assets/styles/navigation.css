@@ -795,10 +795,11 @@ body.density-cozy {
     display: none;
   }
 
-  .navbar-center,
-  .navbar-right {
+  .navbar-center {
     display: none;
   }
+
+  /* Keep .navbar-right visible so Export/Import buttons remain accessible */
 
   /* Show mobile menu button and settings with 48x48px touch targets */
   .hamburger-button {
