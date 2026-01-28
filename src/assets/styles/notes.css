@@ -72,7 +72,7 @@
   .brain-dump-main {
     width: 100%;
     position: relative;
-    z-index: 101; /* Above sidebar (z-index: 100) to ensure toolbar buttons remain clickable */
+    z-index: var(--z-editor); /* Above sidebar (z-index: 100) to ensure toolbar buttons remain clickable */
   }
 }
 

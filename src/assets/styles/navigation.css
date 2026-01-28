@@ -1,3 +1,14 @@
+/**
+ * Navigation Styles
+ * 
+ * Uses design tokens from tokens.css for:
+ * - Touch targets: var(--touch-min), var(--touch-comfortable)
+ * - Icon sizes: var(--icon-sm), var(--icon-md)
+ * - Font sizes: var(--font-xs), var(--font-sm)
+ * - Z-index: var(--z-mobile-menu), var(--z-content), var(--z-editor)
+ * - Shell padding: var(--shell-padding-narrow), var(--shell-padding-compact), var(--shell-padding-comfortable)
+ */
+
 /* Priority 3: Content Density Controls */
 /* Default: comfortable (current) */
 :root {
@@ -70,8 +81,8 @@ body.density-cozy {
 }
 
 .logo {
-  width: 24px;
-  height: 24px;
+  width: var(--icon-md);
+  height: var(--icon-md);
   border-radius: 7px;
   background:
     radial-gradient(
@@ -129,8 +140,8 @@ body.density-cozy {
   gap: 6px;
   align-items: center;
   padding: 6px 10px;
-  min-height: 48px;
-  min-width: 48px;
+  min-height: var(--touch-comfortable);
+  min-width: var(--touch-comfortable);
   border-radius: 20px;
   color: var(--dim);
   background: transparent;
@@ -189,8 +200,8 @@ body.density-cozy {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: var(--touch-comfortable);
+  height: var(--touch-comfortable);
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -210,8 +221,8 @@ body.density-cozy {
 }
 
 .icon-button .icon {
-  width: 20px;
-  height: 20px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
@@ -224,8 +235,8 @@ body.density-cozy {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: var(--touch-min);
+  height: var(--touch-min);
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -250,8 +261,8 @@ body.density-cozy {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: var(--touch-min);
+  height: var(--touch-min);
   background: transparent;
   border: none;
   border-radius: 8px;
@@ -270,8 +281,8 @@ body.density-cozy {
 }
 
 .hamburger-button .icon {
-  width: 24px;
-  height: 24px;
+  width: var(--icon-md);
+  height: var(--icon-md);
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
@@ -295,7 +306,7 @@ body.density-cozy {
   backdrop-filter: var(--blur);
   border-right: 1px solid var(--line);
   box-shadow: var(--shadow);
-  z-index: 40;
+  z-index: var(--z-mobile-menu);
   overflow-y: auto;
   transition: left 0.3s ease;
 }
@@ -356,13 +367,13 @@ body.density-cozy {
   justify-content: center;
   padding: 6px 8px;
   min-width: 60px;
-  min-height: 48px;
+  min-height: var(--touch-comfortable);
   border-radius: 12px;
   color: var(--dim);
   background: transparent;
   border: 1px solid transparent;
   text-decoration: none;
-  font-size: 0.7rem;
+  font-size: var(--font-sm);
   transition: all var(--dur) var(--ease);
   gap: 4px;
 }
@@ -379,8 +390,8 @@ body.density-cozy {
 }
 
 .more-menu-item .icon {
-  width: 20px;
-  height: 20px;
+  width: var(--icon-sm);
+  height: var(--icon-sm);
   stroke: currentColor;
   fill: none;
   stroke-width: 2;
@@ -407,8 +418,8 @@ body.density-cozy {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: var(--touch-comfortable);
+  height: var(--touch-comfortable);
   border-radius: 10px;
   color: var(--dim);
   text-decoration: none;
@@ -561,8 +572,8 @@ body.density-cozy {
 
     .nav-tab {
       padding: 3px 5px;
-      min-height: 44px;
-      font-size: 0.65rem;
+      min-height: var(--touch-min);
+      font-size: var(--font-xs);
     }
 
     .nav-tab .icon {
@@ -602,8 +613,8 @@ body.density-cozy {
   }
 
   .logo {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
   }
 
   /* Bottom tab bar navigation */
@@ -632,17 +643,17 @@ body.density-cozy {
   .nav-tab {
     flex-direction: column;
     padding: 4px 6px;
-    min-width: 44px;
-    min-height: 44px;
+    min-width: var(--touch-min);
+    min-height: var(--touch-min);
     gap: 2px;
-    font-size: 0.7rem;
+    font-size: var(--font-sm);
     border-radius: 12px;
     flex-shrink: 0;
   }
 
   .nav-tab .icon {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
   }
 
   .nav-tab span {
@@ -690,8 +701,8 @@ body.density-cozy {
   .nav-tab {
     flex-direction: column;
     padding: 8px 6px;
-    min-width: 48px;
-    min-height: 48px;
+    min-width: var(--touch-comfortable);
+    min-height: var(--touch-comfortable);
     gap: 4px;
     border-radius: 12px;
     justify-content: center;
@@ -699,7 +710,7 @@ body.density-cozy {
 
   /* Show text labels below icons */
   .nav-tab span {
-    font-size: 0.7rem;
+    font-size: var(--font-sm);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -707,8 +718,8 @@ body.density-cozy {
   }
 
   .nav-tab .icon {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
   }
 
   /* Hide brand text, show logo only on smaller screens */
@@ -746,8 +757,8 @@ body.density-cozy {
   .nav-tab {
     flex-direction: column;
     padding: 6px 4px;
-    min-width: 48px;
-    min-height: 48px;
+    min-width: var(--touch-comfortable);
+    min-height: var(--touch-comfortable);
     gap: 3px;
     border-radius: 12px;
     justify-content: center;
@@ -755,7 +766,7 @@ body.density-cozy {
 
   /* Show text labels below icons */
   .nav-tab span {
-    font-size: 0.65rem;
+    font-size: var(--font-xs);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -763,8 +774,8 @@ body.density-cozy {
   }
 
   .nav-tab .icon {
-    width: 20px;
-    height: 20px;
+    width: var(--icon-sm);
+    height: var(--icon-sm);
   }
 
   .navbar-right {
@@ -773,8 +784,8 @@ body.density-cozy {
   }
 
   .icon-button {
-    width: 48px;
-    height: 48px;
+    width: var(--touch-comfortable);
+    height: var(--touch-comfortable);
   }
 
   .icon-button .icon {
@@ -805,14 +816,14 @@ body.density-cozy {
   /* Show mobile menu button and settings with 48x48px touch targets */
   .hamburger-button {
     display: flex;
-    width: 48px;
-    height: 48px;
+    width: var(--touch-comfortable);
+    height: var(--touch-comfortable);
   }
 
   .mobile-settings-button {
     display: flex;
-    width: 48px;
-    height: 48px;
+    width: var(--touch-comfortable);
+    height: var(--touch-comfortable);
   }
 
   /* Show mobile menu */
@@ -847,7 +858,7 @@ body.density-cozy {
     padding-left 0.3s ease;
   /* Ensure shell content is above mobile menu (z-index: 40) so buttons remain clickable */
   position: relative;
-  z-index: 50;
+  z-index: var(--z-content);
 }
 
 /* Adjust shell when mobile menu is open - applies to all orientations
@@ -920,7 +931,7 @@ body.mobile-menu-open .shell {
   cursor: pointer;
   color: #fff;
   padding: 9px 12px;
-  min-height: 48px;
+  min-height: var(--touch-comfortable);
   border-radius: 12px;
   border: 1px solid var(--line);
   background: rgba(35, 45, 100, 0.28);

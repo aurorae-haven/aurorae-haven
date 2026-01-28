@@ -642,7 +642,7 @@
   /* Ensure schedule page content has proper z-index stacking for mobile overlays */
   .layout-schedule {
     position: relative;
-    z-index: 101;
+    z-index: var(--z-editor);
   }
 }
 
