@@ -8,7 +8,7 @@
 
 .add-task-form {
   display: grid;
-  grid-template-columns: 200px 1fr auto;
+  grid-template-columns: 1fr 200px auto;
   gap: 10px;
   align-items: center;
 }
@@ -329,7 +329,7 @@
   }
 
   .add-task-form {
-    grid-template-columns: 180px 1fr auto;
+    grid-template-columns: 1fr 180px auto;
     gap: 8px;
   }
 }
