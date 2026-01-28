@@ -458,6 +458,11 @@ body.density-cozy {
 /* TAB-NAV-13: Responsive behavior for tablet/mobile landscape */
 /* Includes phone landscape viewports (812×375, 844×390, 915×412) */
 @media (max-width: 968px) and (orientation: landscape) and (max-height: 500px) {
+  /* Increase navbar opacity for better readability on mobile */
+  .appbar {
+    background: rgba(16, 20, 44, 0.85);
+  }
+
   .navbar-center {
     display: none;
   }
@@ -523,6 +528,8 @@ body.density-cozy {
     border-top: 1px solid var(--line);
     border-bottom: none;
     transition: transform 0.3s ease;
+    /* Increase opacity for better readability on mobile */
+    background: rgba(16, 20, 44, 0.85);
   }
 
   /* Auto-hide appbar when scrolling down (Priority 1 adaptation for portrait) */
