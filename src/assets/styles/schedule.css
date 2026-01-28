@@ -633,6 +633,16 @@
   .schedule-dropdown-menu {
     right: auto;
     left: 0;
+    /* Fix truncation on mobile by ensuring dropdown is not cut off */
+    position: fixed;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  /* Ensure schedule page content has proper z-index stacking for mobile overlays */
+  .layout-schedule {
+    position: relative;
+    z-index: 101;
   }
 }
 
