@@ -358,6 +358,27 @@
   }
 }
 
+/* Additional mobile portrait fixes for very small screens */
+@media (max-width: 420px) {
+  /* Ensure Schedule page buttons don't overflow on narrow screens */
+  .layout-schedule .card .card-h {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .layout-schedule .card .card-h > div:first-child {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+  }
+
+  .layout-schedule .card .card-h > div:last-child {
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+}
+
 @media (max-width: 480px) {
   .block {
     padding: 10px 12px;
