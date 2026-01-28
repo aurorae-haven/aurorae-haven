@@ -338,13 +338,30 @@ describe('idGenerator', () => {
       // If we created multiple IDs in same millisecond, verify format
       if (stringIds.length > 0) {
         stringIds.forEach((id) => {
-          expect(id).toMatch(/^\d+\.\d+$/)
+          expect(id).toMatch(/^\d+\.\d{3}$/)
         })
         
-        // Verify counters are sequential starting from 1
-        const firstStringId = stringIds[0]
-        const counter = parseInt(firstStringId.split('.')[1])
-        expect(counter).toBe(1)
+        // Group string IDs by their millisecond timestamp and verify
+        // that counters within each group are sequential starting from 1.
+        const countersByTimestamp = {}
+        stringIds.forEach((id) => {
+          const [timestampPart, counterPart] = id.split('.')
+          const counterValue = parseInt(counterPart, 10)
+
+          if (!countersByTimestamp[timestampPart]) {
+            countersByTimestamp[timestampPart] = []
+          }
+          countersByTimestamp[timestampPart].push(counterValue)
+        })
+
+        Object.values(countersByTimestamp).forEach((counters) => {
+          const sortedCounters = counters.slice().sort((a, b) => a - b)
+
+          sortedCounters.forEach((value, index) => {
+            // For each millisecond, counters should be 1, 2, 3, ...
+            expect(value).toBe(index + 1)
+          })
+        })
       }
     })
   })
