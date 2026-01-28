@@ -339,6 +339,23 @@
   .calendar {
     overflow-x: auto;
   }
+
+  /* Improve button layout on mobile (schedule only) */
+  .layout-schedule .card .card-h {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .layout-schedule .card .card-h > div {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* Stack schedule controls on very small screens (schedule only) */
+  .layout-schedule .card .card-h > div:last-child {
+    width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 @media (max-width: 480px) {
@@ -614,8 +631,21 @@
   }
 
   .schedule-dropdown-menu {
-    right: auto;
-    left: 0;
+    /* Fix truncation on mobile by using fixed positioning */
+    position: fixed;
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    margin: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+
+  /* Ensure schedule page content has proper z-index stacking for mobile overlays */
+  .layout-schedule {
+    position: relative;
+    z-index: var(--z-editor);
   }
 }
 
