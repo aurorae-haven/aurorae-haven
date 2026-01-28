@@ -355,7 +355,6 @@
   .layout-schedule .card .card-h > div:last-child {
     width: 100%;
     justify-content: flex-start;
-    flex-wrap: wrap;
   }
 }
 
@@ -374,7 +373,6 @@
   .layout-schedule .card .card-h > div:last-child {
     width: 100%;
     display: flex;
-    flex-wrap: wrap;
     gap: 6px;
   }
 }

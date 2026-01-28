@@ -488,9 +488,8 @@ textarea {
     min-height: 200px;
   }
 
-  /* Improve toolbar button layout on mobile */
-  .note-list-header,
-  .toolbar {
+  /* Improve note list header layout on mobile */
+  .note-list-header {
     flex-wrap: wrap;
     gap: 6px;
   }
