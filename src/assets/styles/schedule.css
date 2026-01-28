@@ -362,18 +362,20 @@
 @media (max-width: 420px) {
   /* Ensure Schedule page buttons don't overflow on narrow screens */
   .layout-schedule .card .card-h {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: column !important;
+    align-items: flex-start !important;
   }
 
   .layout-schedule .card .card-h > div:first-child {
-    width: 100%;
+    width: 100% !important;
+    flex-wrap: wrap !important;
   }
 
   .layout-schedule .card .card-h > div:last-child {
-    width: 100%;
-    display: flex;
-    gap: 6px;
+    width: 100% !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
   }
 }
 
