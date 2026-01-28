@@ -12,23 +12,7 @@
   }
 }
 
-@media (max-width: 900px) {
-  .layout-dump {
-    grid-template-columns: 240px 1fr;
-    gap: 10px;
-  }
-
-  .brain-dump-container {
-    gap: 10px;
-    min-height: 400px;
-  }
-
-  .note-list-sidebar {
-    width: 240px;
-    min-width: 240px;
-    padding: 10px;
-  }
-}
+/* Removed - merged into overlay breakpoint below */
 
 /* Brain Dump multi-note layout */
 .brain-dump-container {
@@ -59,8 +43,12 @@
     transform var(--dur) var(--ease);
 }
 
-/* Mobile portrait - sidebar becomes overlay */
-@media (max-width: 768px) {
+/* Small desktop and mobile - sidebar becomes overlay to prevent content hiding */
+@media (max-width: 900px) {
+  .layout-dump {
+    grid-template-columns: 1fr;
+  }
+
   .brain-dump-container {
     position: relative; /* Anchor sidebar positioning */
     gap: 0;
