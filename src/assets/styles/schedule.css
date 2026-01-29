@@ -371,7 +371,18 @@
     width: 100% !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 8px !important;
+    gap: 4px !important; /* Reduced from 8px for tighter mobile layout */
+  }
+
+  /* Harmonize Schedule title and date sizes on mobile */
+  .layout-schedule .card .card-h strong {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+  }
+
+  .layout-schedule .card .card-h .small {
+    font-size: 0.9rem !important;
+    margin-top: 2px !important;
   }
 
   .layout-schedule .card .card-h > div:last-child {
@@ -1231,6 +1242,160 @@
 
   .calendar-subscription-actions {
     justify-content: flex-end;
+  }
+}
+
+/* ===== Week View ===== */
+.week-view {
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+.week-grid {
+  display: flex;
+  flex-direction: column;
+  min-width: 800px; /* Ensure week doesn't get too compressed */
+}
+
+.week-header {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  border-bottom: 2px solid var(--line);
+  background: var(--glass-lo);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.week-day-header {
+  padding: 12px 8px;
+  text-align: center;
+  border-left: 1px solid var(--line);
+}
+
+.week-day-header:first-child {
+  border-left: none;
+}
+
+.week-day-header.today {
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  border-radius: 8px;
+}
+
+.week-day-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.week-day-date {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4px;
+}
+
+.week-day-header.today .week-day-date {
+  color: var(--mint);
+}
+
+.week-body {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+}
+
+.week-hours {
+  border-right: 1px solid var(--line);
+  background: var(--glass-lo);
+}
+
+.week-hour {
+  height: 120px;
+  padding: 6px 8px;
+  color: var(--dim);
+  font-size: 0.85rem;
+  border-bottom: 1px dashed var(--line);
+}
+
+.week-day-column {
+  border-left: 1px solid var(--line);
+  position: relative;
+}
+
+.week-slots {
+  position: relative;
+  border-left: 1px solid var(--line);
+}
+
+.week-slots .block {
+  margin: 2px 4px;
+  font-size: 0.8rem;
+}
+
+.week-slots .block .title {
+  font-size: 0.75rem;
+}
+
+.week-slots .block .meta {
+  font-size: 0.7rem;
+}
+
+/* Week view on mobile */
+@media (max-width: 768px) {
+  .week-view {
+    overflow-x: auto;
+  }
+  
+  .week-grid {
+    min-width: 600px;
+  }
+  
+  .week-header {
+    grid-template-columns: 50px repeat(7, minmax(80px, 1fr));
+  }
+  
+  .week-body {
+    grid-template-columns: 50px repeat(7, minmax(80px, 1fr));
+  }
+  
+  .week-day-name {
+    font-size: 0.75rem;
+  }
+  
+  .week-day-date {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .week-grid {
+    min-width: 500px;
+  }
+  
+  .week-header {
+    grid-template-columns: 40px repeat(7, minmax(65px, 1fr));
+  }
+  
+  .week-body {
+    grid-template-columns: 40px repeat(7, minmax(65px, 1fr));
+  }
+  
+  .week-hour {
+    font-size: 0.7rem;
+    padding: 4px 4px;
+  }
+  
+  .week-slots .block {
+    margin: 1px 2px;
+    padding: 4px;
+  }
+  
+  .week-slots .block .title {
+    font-size: 0.65rem;
+  }
+  
+  .week-slots .block .meta {
+    font-size: 0.6rem;
   }
 }
 

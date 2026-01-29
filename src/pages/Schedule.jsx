@@ -543,6 +543,24 @@ function Schedule() {
     return grid
   }
 
+  // Generate week grid (7 days starting from selected date's week start)
+  const generateWeekGrid = () => {
+    const startOfWeek = selectedDate.startOf('week') // Sunday
+    const weekDays = []
+    
+    for (let i = 0; i < 7; i++) {
+      const day = startOfWeek.add(i, 'day')
+      const dayEvents = events.filter((event) => event.day === day.format('YYYY-MM-DD'))
+      weekDays.push({
+        date: day,
+        isToday: day.isSame(dayjs(), 'day'),
+        events: dayEvents
+      })
+    }
+    
+    return weekDays
+  }
+
   return (
     <>
       {/* Event Modal */}
@@ -577,7 +595,7 @@ function Schedule() {
 
       <div className='card'>
         <div className='card-h'>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <strong>Schedule</strong>
             <span className='small'>
               {viewMode === 'month'
@@ -799,8 +817,96 @@ function Schedule() {
                   </div>
                 </div>
               </div>
+            ) : viewMode === 'week' ? (
+              /* Week View - 7 columns for each day */
+              <div className='calendar week-view'>
+                <div className='week-grid'>
+                  {/* Day headers */}
+                  <div className='week-header'>
+                    {generateWeekGrid().map((day, index) => (
+                      <div key={index} className={`week-day-header ${day.isToday ? 'today' : ''}`}>
+                        <div className='week-day-name'>{day.date.format('ddd')}</div>
+                        <div className='week-day-date'>{day.date.format('D')}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Week grid body with time slots */}
+                  <div className='week-body'>
+                    {/* Hour labels column */}
+                    <div className='week-hours'>
+                      <div className='week-hour'>06:00</div>
+                      <div className='week-hour'>Morning</div>
+                      <div className='week-hour'>08:00</div>
+                      <div className='week-hour'>09:00</div>
+                      <div className='week-hour'>10:00</div>
+                      <div className='week-hour'>11:00</div>
+                      <div className='week-hour'>Afternoon</div>
+                      <div className='week-hour'>13:00</div>
+                      <div className='week-hour'>14:00</div>
+                      <div className='week-hour'>15:00</div>
+                      <div className='week-hour'>16:00</div>
+                      <div className='week-hour'>17:00</div>
+                      <div className='week-hour'>Evening</div>
+                      <div className='week-hour'>19:00</div>
+                      <div className='week-hour'>20:00</div>
+                      <div className='week-hour'>21:00</div>
+                    </div>
+                    {/* Day columns */}
+                    {generateWeekGrid().map((day, dayIndex) => (
+                      <div key={dayIndex} className='week-day-column'>
+                        <div className='week-slots' style={{ height: '1920px', position: 'relative' }}>
+                          {/* Time period backgrounds */}
+                          {TIME_PERIODS.map((period) => (
+                            <div
+                              key={period.className}
+                              className={period.className}
+                              style={{
+                                position: 'absolute',
+                                top: `${period.top}px`,
+                                left: '0',
+                                right: '0',
+                                height: `${period.height}px`
+                              }}
+                              aria-hidden='true'
+                            />
+                          ))}
+                          
+                          {/* Events for this day */}
+                          {day.events.map((event, eventIndex) => {
+                            const eventStart = new Date(`2000-01-01T${event.startTime}`)
+                            const eventEnd = new Date(`2000-01-01T${event.endTime}`)
+                            const startHour = eventStart.getHours()
+                            const startMinute = eventStart.getMinutes()
+                            const endHour = eventEnd.getHours()
+                            const endMinute = eventEnd.getMinutes()
+
+                            const eventTop =
+                              (startHour - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+                              (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+
+                            const durationMinutes =
+                              (endHour - startHour) * MINUTES_PER_HOUR + (endMinute - startMinute)
+                            const eventHeight = (durationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+
+                            return (
+                              <ScheduleBlock
+                                key={eventIndex}
+                                type={event.type}
+                                title={event.title}
+                                time={`${event.startTime}–${event.endTime}`}
+                                top={eventTop}
+                                height={eventHeight}
+                              />
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ) : (
-              /* Day/Week View */
+              /* Day View */
               <div className='calendar'>
               <div className='hours'>
                 <div className='hour-col'>
