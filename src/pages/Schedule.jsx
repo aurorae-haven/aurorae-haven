@@ -10,7 +10,7 @@ import {
   getEventsForRange
 } from '../utils/scheduleManager'
 import { createLogger } from '../utils/logger'
-import { getCurrentDateISO, subtractDuration } from '../utils/timeUtils'
+import { subtractDuration } from '../utils/timeUtils'
 import dayjs from 'dayjs'
 import {
   EVENT_TYPES,
