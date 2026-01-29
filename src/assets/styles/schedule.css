@@ -364,7 +364,7 @@
   .layout-schedule .card .card-h {
     flex-direction: column !important;
     align-items: flex-start !important;
-    gap: 10px !important;
+    gap: 8px !important;
   }
 
   .layout-schedule .card .card-h > div:first-child {
@@ -376,7 +376,36 @@
     width: 100% !important;
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 6px !important;
+    gap: 4px !important;
+  }
+
+  /* Compact button styling for mobile */
+  .layout-schedule .btn {
+    font-size: 13px;
+    padding: 6px 10px;
+    min-height: 32px;
+  }
+
+  .layout-schedule .btn-icon {
+    padding: 6px;
+    min-height: 32px;
+    width: 32px;
+  }
+
+  /* Reduce button text size for view mode buttons */
+  .layout-schedule .card .card-h button[aria-label*="View"] {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Hide Calendars button text, show icon only */
+  .layout-schedule .card .card-h button[aria-label="Manage calendar subscriptions"] {
+    padding: 6px 8px;
+    font-size: 0;
+  }
+
+  .layout-schedule .card .card-h button[aria-label="Manage calendar subscriptions"] .icon {
+    margin: 0;
   }
 
   /* Optimize calendar for mobile portrait */
