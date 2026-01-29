@@ -2,13 +2,20 @@ import React, { useState, useEffect, useRef } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
-import CalendarSubscriptionModal from '../components/Schedule/CalendarSubscriptionModal'
+import ConfirmDialog from '../components/common/ConfirmDialog'
 import {
   createEvent,
   getEventsForDay,
   getEventsForWeek,
   getEventsForRange
 } from '../utils/scheduleManager'
+import {
+  getCalendarSubscriptions,
+  addCalendarSubscription,
+  deleteCalendarSubscription,
+  updateCalendarSubscription,
+  syncCalendar
+} from '../utils/calendarSubscriptionManager'
 import { createLogger } from '../utils/logger'
 import { subtractDuration } from '../utils/timeUtils'
 import dayjs from 'dayjs'
@@ -249,7 +256,6 @@ function Schedule() {
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedEventType, setSelectedEventType] = useState(null)
-  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false)
 
   // Events state
   const [events, setEvents] = useState([])
@@ -258,6 +264,19 @@ function Schedule() {
 
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  // Calendar subscriptions sidebar state
+  const [showCalendars, setShowCalendars] = useState(false)
+  const [subscriptions, setSubscriptions] = useState([])
+  const [subsLoading, setSubsLoading] = useState(false)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    url: '',
+    color: '#86f5e0',
+    enabled: true
+  })
 
   // Refs for timeout cleanup and menu items caching
   const tabTimeoutRef = useRef(null)
@@ -324,6 +343,24 @@ function Schedule() {
 
     return () => clearInterval(interval)
   }, [])
+
+  // Load calendar subscriptions when calendars section is shown
+  useEffect(() => {
+    if (showCalendars) {
+      const loadSubscriptions = async () => {
+        setSubsLoading(true)
+        try {
+          const subs = await getCalendarSubscriptions()
+          setSubscriptions(subs)
+        } catch (err) {
+          logger.error('Failed to load subscriptions:', err)
+        } finally {
+          setSubsLoading(false)
+        }
+      }
+      loadSubscriptions()
+    }
+  }, [showCalendars])
 
   // Handle opening modal for adding events
   const handleAddEvent = (eventType) => {
@@ -523,6 +560,62 @@ function Schedule() {
     }
   }
 
+  // Calendar subscription handlers
+  const handleToggleCalendars = () => {
+    setShowCalendars(!showCalendars)
+  }
+
+  const handleAddSubscription = async () => {
+    if (!formData.name || !formData.url) return
+
+    try {
+      await addCalendarSubscription(formData)
+      setShowAddForm(false)
+      setFormData({ name: '', url: '', color: '#86f5e0', enabled: true })
+      // Reload subscriptions
+      const subs = await getCalendarSubscriptions()
+      setSubscriptions(subs)
+    } catch (err) {
+      logger.error('Failed to add subscription:', err)
+    }
+  }
+
+  const handleDeleteSubscription = async () => {
+    if (!confirmDelete) return
+
+    try {
+      await deleteCalendarSubscription(confirmDelete.id)
+      setConfirmDelete(null)
+      // Reload subscriptions
+      const subs = await getCalendarSubscriptions()
+      setSubscriptions(subs)
+    } catch (err) {
+      logger.error('Failed to delete subscription:', err)
+    }
+  }
+
+  const handleToggleSubscription = async (id, enabled) => {
+    try {
+      await updateCalendarSubscription(id, { enabled: !enabled })
+      // Reload subscriptions
+      const subs = await getCalendarSubscriptions()
+      setSubscriptions(subs)
+    } catch (err) {
+      logger.error('Failed to toggle subscription:', err)
+    }
+  }
+
+  const handleSyncSubscription = async (id, name) => {
+    try {
+      await syncCalendar(id)
+      logger.info(`Synced calendar: ${name}`)
+      // Could show a success toast here
+    } catch (err) {
+      logger.error(`Failed to sync calendar ${name}:`, err)
+      // Could show an error toast here
+    }
+  }
+
   // Generate month calendar grid (6 weeks x 7 days = 42 days)
   const generateMonthGrid = () => {
     const startOfMonth = selectedDate.startOf('month')
@@ -571,11 +664,17 @@ function Schedule() {
         eventType={selectedEventType}
       />
 
-      {/* Calendar Subscription Modal */}
-      <CalendarSubscriptionModal
-        isOpen={isCalendarModalOpen}
-        onClose={() => setIsCalendarModalOpen(false)}
-      />
+      {/* Confirm Delete Dialog */}
+      {confirmDelete && (
+        <ConfirmDialog
+          isOpen={!!confirmDelete}
+          title='Delete Calendar'
+          message={`Are you sure you want to delete "${confirmDelete.name}"? This action cannot be undone.`}
+          confirmLabel='Delete'
+          onConfirm={handleDeleteSubscription}
+          onCancel={() => setConfirmDelete(null)}
+        />
+      )}
 
       {/* Error notification */}
       {error && (
@@ -635,9 +734,10 @@ function Schedule() {
               </button>
             </div>
             <button
-              className='btn'
-              onClick={() => setIsCalendarModalOpen(true)}
+              className={`btn ${showCalendars ? 'btn-active' : ''}`}
+              onClick={handleToggleCalendars}
               aria-label='Manage calendar subscriptions'
+              aria-pressed={showCalendars}
             >
               <Icon name='calendar' /> Calendars
             </button>
@@ -738,7 +838,117 @@ function Schedule() {
             </div>
           )}
           <aside className='sidebar'>
-            <div className='card'>
+            {/* Calendar Subscriptions Section */}
+            {showCalendars && (
+              <div className='card'>
+                <div className='card-h'>
+                  <strong>Calendars</strong>
+                  <button
+                    className='btn btn-sm'
+                    onClick={() => setShowAddForm(!showAddForm)}
+                    aria-label={showAddForm ? 'Cancel add calendar' : 'Add calendar'}
+                  >
+                    <Icon name={showAddForm ? 'x' : 'plus'} />
+                  </button>
+                </div>
+                <div className='card-b'>
+                  {subsLoading ? (
+                    <div style={{ padding: '12px', textAlign: 'center', color: 'var(--text-dimmed)' }}>
+                      Loading...
+                    </div>
+                  ) : (
+                    <>
+                      {/* Add Form */}
+                      {showAddForm && (
+                        <div style={{ padding: '12px', borderBottom: '1px solid var(--border)' }}>
+                          <input
+                            type='text'
+                            placeholder='Calendar name'
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            style={{ width: '100%', marginBottom: '8px' }}
+                            className='input'
+                          />
+                          <input
+                            type='url'
+                            placeholder='Calendar URL (iCal/ics)'
+                            value={formData.url}
+                            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                            style={{ width: '100%', marginBottom: '8px' }}
+                            className='input'
+                          />
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <input
+                              type='color'
+                              value={formData.color}
+                              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                              style={{ width: '40px', height: '32px' }}
+                            />
+                            <button
+                              className='btn btn-primary'
+                              onClick={handleAddSubscription}
+                              style={{ flex: 1 }}
+                            >
+                              Add Calendar
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Subscriptions List */}
+                      {subscriptions.length === 0 ? (
+                        <div style={{ padding: '12px', textAlign: 'center', color: 'var(--text-dimmed)' }}>
+                          No calendars yet. Click + to add one.
+                        </div>
+                      ) : (
+                        <div className='list'>
+                          {subscriptions.map((sub) => (
+                            <div key={sub.id} className='list-row' style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div
+                                style={{
+                                  width: '12px',
+                                  height: '12px',
+                                  borderRadius: '50%',
+                                  backgroundColor: sub.color,
+                                  flexShrink: 0
+                                }}
+                              />
+                              <input
+                                type='checkbox'
+                                checked={sub.enabled}
+                                onChange={() => handleToggleSubscription(sub.id, sub.enabled)}
+                                aria-label={`Toggle ${sub.name}`}
+                              />
+                              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {sub.name}
+                              </span>
+                              <button
+                                className='btn btn-sm btn-icon'
+                                onClick={() => handleSyncSubscription(sub.id, sub.name)}
+                                aria-label={`Sync ${sub.name}`}
+                                title='Sync calendar'
+                              >
+                                <Icon name='refresh' />
+                              </button>
+                              <button
+                                className='btn btn-sm btn-icon'
+                                onClick={() => setConfirmDelete({ id: sub.id, name: sub.name })}
+                                aria-label={`Delete ${sub.name}`}
+                                title='Delete calendar'
+                              >
+                                <Icon name='trash' />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className='card' style={{ marginTop: showCalendars ? '12px' : 0 }}>
               <div className='card-h'>
                 <strong>Today&apos;s queue</strong>
               </div>
