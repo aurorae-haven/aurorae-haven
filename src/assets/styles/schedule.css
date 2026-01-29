@@ -395,27 +395,31 @@
     color: var(--paper) !important;
   }
 
-  /* Navigation controls in first row */
+  /* Navigation controls in first row - optimize horizontal space */
   .layout-schedule .card .card-h > div:last-child > div:first-child {
     grid-column: 1 / -1 !important;
     display: flex !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important; /* Changed from space-between */
     align-items: center !important;
-    gap: 8px !important;
+    gap: 4px !important; /* Reduced from 8px */
   }
 
-  /* Compact navigation buttons */
-  .layout-schedule .btn-icon {
+  /* Compact navigation arrow buttons with fixed width */
+  .layout-schedule .card .card-h > div:last-child > div:first-child button:first-child,
+  .layout-schedule .card .card-h > div:last-child > div:first-child button:last-child {
     padding: 8px !important;
     min-height: 36px !important;
+    min-width: 36px !important;
     width: 36px !important;
+    flex-shrink: 0 !important;
   }
 
-  /* Today button takes remaining space */
+  /* Today button expands to fill remaining space */
   .layout-schedule .card .card-h > div:last-child > div:first-child button:nth-child(2) {
     flex: 1 !important;
     font-size: 14px !important;
     padding: 8px 12px !important;
+    min-height: 36px !important;
   }
 
   /* Hide Calendars button on mobile - less critical */
