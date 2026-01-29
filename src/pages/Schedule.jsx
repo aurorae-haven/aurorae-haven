@@ -695,7 +695,6 @@ function Schedule() {
       <div className='card'>
         <div className='card-h'>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <strong>Schedule</strong>
             <span className='small'>
               {viewMode === 'month'
                 ? selectedDate.format('MMMM YYYY')

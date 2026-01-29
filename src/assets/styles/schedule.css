@@ -24,6 +24,12 @@
   max-height: calc(100vh - 200px);
   overflow-y: auto;
   overflow-x: hidden;
+  /* Smooth transitions for view mode changes */
+  transition: opacity 0.2s ease-in-out;
+}
+
+.calendar > * {
+  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
 .hours {
   display: grid;
