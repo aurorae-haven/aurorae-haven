@@ -360,57 +360,85 @@
 
 /* Additional mobile portrait fixes for very small screens */
 @media (max-width: 420px) {
-  /* Ensure Schedule page buttons don't overflow on narrow screens */
+  /* Mobile-first redesign for Schedule page */
   .layout-schedule .card .card-h {
     flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 8px !important;
+    align-items: stretch !important;
+    gap: 12px !important;
   }
 
   .layout-schedule .card .card-h > div:first-child {
     width: 100% !important;
-    flex-wrap: wrap !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
   }
 
   .layout-schedule .card .card-h > div:last-child {
     width: 100% !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
     gap: 4px !important;
   }
 
-  /* Compact button styling for mobile */
-  .layout-schedule .btn {
-    font-size: 13px;
-    padding: 6px 10px;
-    min-height: 32px;
-  }
-
-  .layout-schedule .btn-icon {
-    padding: 6px;
-    min-height: 32px;
-    width: 32px;
-  }
-
-  /* Reduce button text size for view mode buttons */
+  /* Create segmented control for view modes (Day/Week/Month) */
   .layout-schedule .card .card-h button[aria-label*="View"] {
-    padding: 6px 10px;
-    font-size: 12px;
+    flex: 1 !important;
+    padding: 8px 4px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
   }
 
-  /* Hide Calendars button text, show icon only */
+  .layout-schedule .card .card-h button[aria-label*="View"].btn-active {
+    background: var(--mint) !important;
+    color: var(--paper) !important;
+  }
+
+  /* Navigation controls in first row */
+  .layout-schedule .card .card-h > div:last-child > div:first-child {
+    grid-column: 1 / -1 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* Compact navigation buttons */
+  .layout-schedule .btn-icon {
+    padding: 8px !important;
+    min-height: 36px !important;
+    width: 36px !important;
+  }
+
+  /* Today button takes remaining space */
+  .layout-schedule .card .card-h > div:last-child > div:first-child button:nth-child(2) {
+    flex: 1 !important;
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* Hide Calendars button on mobile - less critical */
   .layout-schedule .card .card-h button[aria-label="Manage calendar subscriptions"] {
-    padding: 6px 8px;
-    font-size: 0;
+    display: none !important;
   }
 
-  .layout-schedule .card .card-h button[aria-label="Manage calendar subscriptions"] .icon {
-    margin: 0;
+  /* Schedule dropdown button spans full width below view modes */
+  .layout-schedule .schedule-dropdown {
+    grid-column: 1 / -1 !important;
+  }
+
+  .layout-schedule .schedule-dropdown > button {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    padding: 10px !important;
+    font-weight: 600 !important;
   }
 
   /* Optimize calendar for mobile portrait */
   .calendar {
-    max-height: calc(100vh - 280px);
+    max-height: calc(100vh - 300px);
     padding: 8px;
   }
 
