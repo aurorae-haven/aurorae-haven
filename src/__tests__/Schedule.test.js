@@ -64,13 +64,14 @@ describe('Schedule Component', () => {
     render(<Schedule />)
     const scheduleElements = screen.getAllByText(/Schedule/)
     expect(scheduleElements.length).toBeGreaterThan(0)
-    expect(screen.getByText('Today · Tue 16/09/2025')).toBeInTheDocument()
+    expect(screen.getByText('Today · 16/09/2025')).toBeInTheDocument()
   })
 
   test('renders action buttons', () => {
     render(<Schedule />)
-    expect(screen.getByRole('button', { name: /Day/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Week/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View day schedule' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View week schedule' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'View month schedule' })).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /Schedule an event/i })
     ).toBeInTheDocument()
