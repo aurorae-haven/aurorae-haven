@@ -364,6 +364,7 @@
   .layout-schedule .card .card-h {
     flex-direction: column !important;
     align-items: flex-start !important;
+    gap: 10px !important;
   }
 
   .layout-schedule .card .card-h > div:first-child {
@@ -376,6 +377,32 @@
     display: flex !important;
     flex-wrap: wrap !important;
     gap: 6px !important;
+  }
+
+  /* Optimize calendar for mobile portrait */
+  .calendar {
+    max-height: calc(100vh - 280px);
+    padding: 8px;
+  }
+
+  /* Reduce hour column width on very narrow screens */
+  .hours {
+    grid-template-columns: 50px 1fr;
+  }
+
+  .hour-col .h {
+    font-size: 0.8rem;
+    padding: 4px 4px;
+  }
+
+  /* Hide sidebar on mobile portrait to maximize calendar space */
+  .sidebar {
+    display: none;
+  }
+
+  /* Make calendar take full width without sidebar */
+  .layout-schedule {
+    grid-template-columns: 1fr;
   }
 }
 
