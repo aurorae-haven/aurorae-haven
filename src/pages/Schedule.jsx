@@ -242,6 +242,9 @@ function Schedule() {
   // View mode state - 'day' or 'week'
   const [viewMode, setViewMode] = useState('day')
 
+  // Date navigation state - track selected date (industry standard)
+  const [selectedDate, setSelectedDate] = useState(dayjs())
+
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedEventType, setSelectedEventType] = useState(null)
@@ -263,7 +266,7 @@ function Schedule() {
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
 
-  // Load events based on view mode
+  // Load events based on view mode and selected date
   useEffect(() => {
     const loadEvents = async () => {
       setIsLoading(true)
@@ -271,7 +274,7 @@ function Schedule() {
       try {
         const loadedEvents =
           viewMode === 'day'
-            ? await getEventsForDay(getCurrentDateISO())
+            ? await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
             : await getEventsForWeek()
         // Ensure loadedEvents is always an array
         setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
@@ -285,7 +288,7 @@ function Schedule() {
     }
 
     loadEvents()
-  }, [viewMode])
+  }, [viewMode, selectedDate])
 
   useEffect(() => {
     const updateCurrentTime = () => {
@@ -460,7 +463,7 @@ function Schedule() {
       // Reload events after creating new one, keeping the current view/date
       const loadedEvents =
         viewMode === 'day'
-          ? await getEventsForDay(getCurrentDateISO())
+          ? await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
           : await getEventsForWeek()
       // Ensure loadedEvents is always an array
       setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
@@ -482,6 +485,27 @@ function Schedule() {
   // Handle view mode change
   const handleViewModeChange = (mode) => {
     setViewMode(mode)
+  }
+
+  // Navigation handlers (industry standard)
+  const goToToday = () => {
+    setSelectedDate(dayjs())
+  }
+
+  const goToPrevious = () => {
+    if (viewMode === 'day') {
+      setSelectedDate((prev) => prev.subtract(1, 'day'))
+    } else {
+      setSelectedDate((prev) => prev.subtract(1, 'week'))
+    }
+  }
+
+  const goToNext = () => {
+    if (viewMode === 'day') {
+      setSelectedDate((prev) => prev.add(1, 'day'))
+    } else {
+      setSelectedDate((prev) => prev.add(1, 'week'))
+    }
   }
 
   return (
@@ -521,10 +545,39 @@ function Schedule() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <strong>Schedule</strong>
             <span className='small'>
-              Today · {dayjs().format('ddd DD/MM/YYYY')}
+              {selectedDate.isSame(dayjs(), 'day')
+                ? 'Today'
+                : selectedDate.format('ddd')} · {selectedDate.format('DD/MM/YYYY')}
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            {/* Navigation controls - Industry standard from Google Calendar/Outlook */}
+            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+              <button
+                className='btn btn-icon'
+                onClick={goToPrevious}
+                aria-label={`Previous ${viewMode}`}
+                title={`Previous ${viewMode}`}
+              >
+                <Icon name='chevronLeft' />
+              </button>
+              <button
+                className='btn'
+                onClick={goToToday}
+                aria-label='Go to today'
+                title='Go to today'
+              >
+                Today
+              </button>
+              <button
+                className='btn btn-icon'
+                onClick={goToNext}
+                aria-label={`Next ${viewMode}`}
+                title={`Next ${viewMode}`}
+              >
+                <Icon name='chevronRight' />
+              </button>
+            </div>
             <button
               className='btn'
               onClick={() => setIsCalendarModalOpen(true)}
