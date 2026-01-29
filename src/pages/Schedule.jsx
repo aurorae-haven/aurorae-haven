@@ -6,7 +6,8 @@ import CalendarSubscriptionModal from '../components/Schedule/CalendarSubscripti
 import {
   createEvent,
   getEventsForDay,
-  getEventsForWeek
+  getEventsForWeek,
+  getEventsForRange
 } from '../utils/scheduleManager'
 import { createLogger } from '../utils/logger'
 import { getCurrentDateISO, subtractDuration } from '../utils/timeUtils'
@@ -239,7 +240,7 @@ const durationToHeight = (startTime, endTime) => {
 }
 
 function Schedule() {
-  // View mode state - 'day' or 'week'
+  // View mode state - 'day', 'week', or 'month'
   const [viewMode, setViewMode] = useState('day')
 
   // Date navigation state - track selected date (industry standard)
@@ -272,10 +273,20 @@ function Schedule() {
       setIsLoading(true)
       setError('')
       try {
-        const loadedEvents =
-          viewMode === 'day'
-            ? await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
-            : await getEventsForWeek()
+        let loadedEvents
+        if (viewMode === 'day') {
+          loadedEvents = await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
+        } else if (viewMode === 'week') {
+          loadedEvents = await getEventsForWeek()
+        } else if (viewMode === 'month') {
+          // Get first and last day of the month view (includes prev/next month days)
+          const startOfMonth = selectedDate.startOf('month').startOf('week')
+          const endOfMonth = selectedDate.endOf('month').endOf('week')
+          loadedEvents = await getEventsForRange(
+            startOfMonth.format('YYYY-MM-DD'),
+            endOfMonth.format('YYYY-MM-DD')
+          )
+        }
         // Ensure loadedEvents is always an array
         setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
       } catch (err) {
@@ -495,17 +506,41 @@ function Schedule() {
   const goToPrevious = () => {
     if (viewMode === 'day') {
       setSelectedDate((prev) => prev.subtract(1, 'day'))
-    } else {
+    } else if (viewMode === 'week') {
       setSelectedDate((prev) => prev.subtract(1, 'week'))
+    } else if (viewMode === 'month') {
+      setSelectedDate((prev) => prev.subtract(1, 'month'))
     }
   }
 
   const goToNext = () => {
     if (viewMode === 'day') {
       setSelectedDate((prev) => prev.add(1, 'day'))
-    } else {
+    } else if (viewMode === 'week') {
       setSelectedDate((prev) => prev.add(1, 'week'))
+    } else if (viewMode === 'month') {
+      setSelectedDate((prev) => prev.add(1, 'month'))
     }
+  }
+
+  // Generate month calendar grid (6 weeks x 7 days = 42 days)
+  const generateMonthGrid = () => {
+    const startOfMonth = selectedDate.startOf('month')
+    const startOfGrid = startOfMonth.startOf('week') // Sunday of first week
+    const grid = []
+
+    for (let i = 0; i < 42; i++) {
+      const day = startOfGrid.add(i, 'day')
+      const dayEvents = events.filter((event) => event.day === day.format('YYYY-MM-DD'))
+      grid.push({
+        date: day,
+        isCurrentMonth: day.month() === selectedDate.month(),
+        isToday: day.isSame(dayjs(), 'day'),
+        events: dayEvents
+      })
+    }
+
+    return grid
   }
 
   return (
@@ -545,9 +580,12 @@ function Schedule() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <strong>Schedule</strong>
             <span className='small'>
-              {selectedDate.isSame(dayjs(), 'day')
-                ? 'Today'
-                : selectedDate.format('ddd')} · {selectedDate.format('DD/MM/YYYY')}
+              {viewMode === 'month'
+                ? selectedDate.format('MMMM YYYY')
+                : selectedDate.isSame(dayjs(), 'day')
+                  ? 'Today'
+                  : selectedDate.format('ddd')}{' '}
+              {viewMode !== 'month' && `· ${selectedDate.format('DD/MM/YYYY')}`}
             </span>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -600,6 +638,14 @@ function Schedule() {
               aria-pressed={viewMode === 'week'}
             >
               Week
+            </button>
+            <button
+              className={`btn ${viewMode === 'month' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('month')}
+              aria-label='View month schedule'
+              aria-pressed={viewMode === 'month'}
+            >
+              Month
             </button>
             {/* Unified dropdown for scheduling all event types */}
             <div className='schedule-dropdown'>
@@ -700,7 +746,62 @@ function Schedule() {
             </div>
           </aside>
           <section>
-            <div className='calendar'>
+            {viewMode === 'month' ? (
+              /* Month View */
+              <div className='calendar month-view'>
+                <div className='month-grid'>
+                  {/* Day headers */}
+                  <div className='month-header'>
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                      <div key={day} className='month-day-header'>
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                  {/* Date cells */}
+                  <div className='month-body'>
+                    {generateMonthGrid().map((cell, index) => (
+                      <div
+                        key={index}
+                        className={`month-cell ${!cell.isCurrentMonth ? 'other-month' : ''} ${cell.isToday ? 'today' : ''}`}
+                        onClick={() => {
+                          setSelectedDate(cell.date)
+                          setViewMode('day')
+                        }}
+                        role='button'
+                        tabIndex={0}
+                        aria-label={`${cell.date.format('MMMM D, YYYY')}${cell.events.length > 0 ? `, ${cell.events.length} event${cell.events.length > 1 ? 's' : ''}` : ''}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            setSelectedDate(cell.date)
+                            setViewMode('day')
+                          }
+                        }}
+                      >
+                        <div className='month-cell-date'>{cell.date.format('D')}</div>
+                        {cell.events.length > 0 && (
+                          <div className='month-cell-events'>
+                            {cell.events.slice(0, 3).map((event, idx) => (
+                              <div key={idx} className={`month-event ${event.type}`}>
+                                {event.title}
+                              </div>
+                            ))}
+                            {cell.events.length > 3 && (
+                              <div className='month-event-more'>
+                                +{cell.events.length - 3} more
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Day/Week View */
+              <div className='calendar'>
               <div className='hours'>
                 <div className='hour-col'>
                   <div className='h'>06:00</div>
@@ -874,6 +975,7 @@ function Schedule() {
                 </div>
               </div>
             </div>
+            )}
           </section>
         </div>
       </div>

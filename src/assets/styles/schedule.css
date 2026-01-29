@@ -1172,3 +1172,184 @@
     justify-content: flex-end;
   }
 }
+
+/* ===== Month View ===== */
+.month-view {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.month-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.month-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border-bottom: 2px solid var(--line);
+  padding: 8px 0;
+}
+
+.month-day-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--dim);
+  padding: 8px;
+}
+
+.month-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+
+.month-cell {
+  background: rgba(16, 20, 44, 0.4);
+  min-height: 100px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.month-cell:hover {
+  background: rgba(35, 45, 100, 0.3);
+}
+
+.month-cell:focus {
+  outline: 2px solid var(--mint);
+  outline-offset: -2px;
+}
+
+.month-cell.other-month {
+  opacity: 0.4;
+}
+
+.month-cell.today {
+  background: rgba(134, 245, 224, 0.15);
+  border: 2px solid var(--mint);
+}
+
+.month-cell-date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.month-cell.today .month-cell-date {
+  color: var(--mint);
+}
+
+.month-cell-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.month-event {
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-left: 3px solid;
+}
+
+.month-event.routine {
+  background: rgba(134, 245, 224, 0.2);
+  border-color: var(--mint);
+  color: var(--mint);
+}
+
+.month-event.task {
+  background: rgba(134, 192, 245, 0.2);
+  border-color: #86c0f5;
+  color: #86c0f5;
+}
+
+.month-event.meeting {
+  background: rgba(245, 134, 192, 0.2);
+  border-color: #f586c0;
+  color: #f586c0;
+}
+
+.month-event.habit {
+  background: rgba(245, 192, 134, 0.2);
+  border-color: #f5c086;
+  color: #f5c086;
+}
+
+.month-event-more {
+  font-size: 0.65rem;
+  color: var(--dim);
+  padding: 2px 4px;
+  font-style: italic;
+}
+
+/* Month view responsive */
+@media (max-width: 768px) {
+  .month-cell {
+    min-height: 80px;
+    padding: 6px;
+  }
+
+  .month-cell-date {
+    font-size: 0.8rem;
+  }
+
+  .month-event {
+    font-size: 0.7rem;
+    padding: 1px 3px;
+  }
+
+  .month-day-header {
+    font-size: 0.75rem;
+    padding: 6px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-cell {
+    min-height: 60px;
+    padding: 4px;
+  }
+
+  .month-cell-date {
+    font-size: 0.75rem;
+  }
+
+  .month-event {
+    font-size: 0.65rem;
+  }
+
+  .month-day-header {
+    font-size: 0.7rem;
+    padding: 4px 2px;
+  }
+
+  /* Show only event dots on very small screens */
+  .month-event {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    padding: 0;
+    text-indent: -9999px;
+    border-left: none;
+  }
+
+  .month-event-more {
+    display: none;
+  }
+}
