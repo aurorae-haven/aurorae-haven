@@ -734,30 +734,6 @@ function Schedule() {
             >
               <Icon name='calendar' /> Calendars
             </button>
-            <button
-              className={`btn ${viewMode === 'day' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('day')}
-              aria-label='View day schedule'
-              aria-pressed={viewMode === 'day'}
-            >
-              Day
-            </button>
-            <button
-              className={`btn ${viewMode === 'week' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('week')}
-              aria-label='View week schedule'
-              aria-pressed={viewMode === 'week'}
-            >
-              Week
-            </button>
-            <button
-              className={`btn ${viewMode === 'month' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('month')}
-              aria-label='View month schedule'
-              aria-pressed={viewMode === 'month'}
-            >
-              Month
-            </button>
             {/* Unified dropdown for scheduling all event types */}
             <div className='schedule-dropdown'>
               <button
@@ -822,6 +798,30 @@ function Schedule() {
                 </div>
               )}
             </div>
+            <button
+              className={`btn btn-view-mode ${viewMode === 'day' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('day')}
+              aria-label='View day schedule'
+              aria-pressed={viewMode === 'day'}
+            >
+              Day
+            </button>
+            <button
+              className={`btn btn-view-mode ${viewMode === 'week' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('week')}
+              aria-label='View week schedule'
+              aria-pressed={viewMode === 'week'}
+            >
+              Week
+            </button>
+            <button
+              className={`btn btn-view-mode ${viewMode === 'month' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('month')}
+              aria-label='View month schedule'
+              aria-pressed={viewMode === 'month'}
+            >
+              Month
+            </button>
           </div>
         </div>
         <div className='card-b layout-schedule'>

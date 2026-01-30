@@ -386,6 +386,16 @@
   .layout-schedule .card .card-h > div:first-child button:last-child:not(.btn-today) {
     order: 1 !important;
   }
+
+  /* View mode buttons (Day/Week/Month) appear on the right */
+  .layout-schedule .card .card-h button.btn-view-mode {
+    order: 10 !important;
+  }
+
+  /* Push first view-mode button to the right */
+  .layout-schedule .card .card-h button.btn-view-mode:first-of-type {
+    margin-left: auto !important;
+  }
 }
 
 /* Additional mobile portrait fixes for very small screens */
