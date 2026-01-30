@@ -370,25 +370,36 @@
   .layout-schedule .card .card-h {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 12px !important;
+    gap: 8px !important; /* Space between navigation row and action buttons */
   }
 
   .layout-schedule .card .card-h > div:first-child {
     width: 100% !important;
     display: flex !important;
-    flex-direction: column !important;
-    gap: 4px !important; /* Reduced from 8px for tighter mobile layout */
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 4px !important;
+    order: 1 !important; /* Navigation row with Today (date) button appears first */
   }
 
-  /* Harmonize Schedule title and date sizes on mobile */
-  .layout-schedule .card .card-h strong {
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
+  /* Compact navigation arrow buttons with fixed width */
+  .layout-schedule .card .card-h > div:first-child button:first-child,
+  .layout-schedule .card .card-h > div:first-child button:last-child {
+    padding: 8px !important;
+    min-height: 36px !important;
+    min-width: 36px !important;
+    width: 36px !important;
+    flex-shrink: 0 !important;
   }
 
-  .layout-schedule .card .card-h .small {
-    font-size: 0.9rem !important;
-    margin-top: 2px !important;
+  /* Today button (with date) expands to fill remaining space */
+  .layout-schedule .card .card-h > div:first-child button.btn-today {
+    flex: 1 !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+    min-height: 36px !important;
+    text-align: center !important;
+    font-weight: 600 !important;
   }
 
   .layout-schedule .card .card-h > div:last-child {
@@ -396,6 +407,7 @@
     display: grid !important;
     grid-template-columns: 1fr 1fr 1fr !important;
     gap: 4px !important;
+    order: 2 !important; /* Action buttons appear second */
   }
 
   /* Create segmented control for view modes (Day/Week/Month) */
@@ -410,33 +422,6 @@
   .layout-schedule .card .card-h button[aria-label*="View"].btn-active {
     background: var(--mint) !important;
     color: var(--paper) !important;
-  }
-
-  /* Navigation controls in first row - optimize horizontal space */
-  .layout-schedule .card .card-h > div:last-child > div:first-child {
-    grid-column: 1 / -1 !important;
-    display: flex !important;
-    justify-content: flex-start !important; /* Changed from space-between */
-    align-items: center !important;
-    gap: 4px !important; /* Reduced from 8px */
-  }
-
-  /* Compact navigation arrow buttons with fixed width */
-  .layout-schedule .card .card-h > div:last-child > div:first-child button:first-child,
-  .layout-schedule .card .card-h > div:last-child > div:first-child button:last-child {
-    padding: 8px !important;
-    min-height: 36px !important;
-    min-width: 36px !important;
-    width: 36px !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* Today button expands to fill remaining space */
-  .layout-schedule .card .card-h > div:last-child > div:first-child button:nth-child(2) {
-    flex: 1 !important;
-    font-size: 14px !important;
-    padding: 8px 12px !important;
-    min-height: 36px !important;
   }
 
   /* Hide Calendars button on mobile - less critical */

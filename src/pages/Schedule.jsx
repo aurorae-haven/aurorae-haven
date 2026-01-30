@@ -694,16 +694,6 @@ function Schedule() {
 
       <div className='card'>
         <div className='card-h'>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span className='small'>
-              {viewMode === 'month'
-                ? selectedDate.format('MMMM YYYY')
-                : selectedDate.isSame(dayjs(), 'day')
-                  ? 'Today'
-                  : selectedDate.format('ddd')}{' '}
-              {viewMode !== 'month' && `· ${selectedDate.format('DD/MM/YYYY')}`}
-            </span>
-          </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             {/* Navigation controls - Industry standard from Google Calendar/Outlook */}
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
@@ -716,12 +706,16 @@ function Schedule() {
                 <Icon name='chevronLeft' />
               </button>
               <button
-                className='btn'
+                className='btn btn-today'
                 onClick={goToToday}
                 aria-label='Go to today'
                 title='Go to today'
               >
-                Today
+                {viewMode === 'month'
+                  ? selectedDate.format('MMMM YYYY')
+                  : selectedDate.isSame(dayjs(), 'day')
+                    ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
+                    : selectedDate.format('DD/MM/YYYY')}
               </button>
               <button
                 className='btn btn-icon'
