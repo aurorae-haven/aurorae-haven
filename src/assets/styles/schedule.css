@@ -1289,7 +1289,7 @@
   background: var(--glass-lo);
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100; /* Increased to ensure it stays above all scrolling content */
   gap: 0 1px; /* Ensure headers don't overlap */
 }
 
@@ -1333,6 +1333,8 @@
 .week-hours {
   border-right: 1px solid var(--line);
   background: var(--glass-lo);
+  position: relative;
+  z-index: 1; /* Below headers but above background */
 }
 
 .week-hour {
@@ -1344,6 +1346,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  position: relative;
+  z-index: 1; /* Below headers (z-index: 100) */
 }
 
 .week-day-column {
@@ -1354,11 +1358,14 @@
 .week-slots {
   position: relative;
   border-left: 1px solid var(--line);
+  z-index: 2; /* Above hour labels (z-index: 1) but below headers (z-index: 100) */
 }
 
 .week-slots .block {
   margin: 2px 4px;
   font-size: 0.8rem;
+  position: relative;
+  z-index: 2; /* Ensure events stay above hour labels */
 }
 
 .week-slots .block .title {
