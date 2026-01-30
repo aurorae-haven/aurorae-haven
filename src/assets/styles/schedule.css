@@ -1405,6 +1405,63 @@
   }
 }
 
+/* Week view on mobile portrait (≤420px) */
+@media (max-width: 420px) {
+  .week-view {
+    max-height: calc(100vh - 300px); /* Account for taller mobile header */
+    overflow-x: auto;
+    overflow-y: auto;
+  }
+  
+  .week-grid {
+    min-width: 100%; /* Allow week grid to be narrower */
+    width: max-content;
+  }
+  
+  .week-header {
+    grid-template-columns: 35px repeat(7, minmax(45px, 1fr));
+  }
+  
+  .week-body {
+    grid-template-columns: 35px repeat(7, minmax(45px, 1fr));
+  }
+  
+  .week-day-header {
+    padding: 8px 4px;
+  }
+  
+  .week-day-name {
+    font-size: 0.65rem;
+  }
+  
+  .week-day-date {
+    font-size: 0.9rem;
+  }
+  
+  .week-hour {
+    font-size: 0.65rem;
+    padding: 3px 2px;
+    height: 100px; /* Reduce hour height for more compact view */
+  }
+  
+  .week-slots .block {
+    margin: 1px;
+    padding: 2px 3px;
+    font-size: 0.6rem;
+  }
+  
+  .week-slots .block .title {
+    font-size: 0.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .week-slots .block .meta {
+    display: none; /* Hide metadata on very small screens */
+  }
+}
+
 /* ===== Month View ===== */
 .month-view {
   max-height: calc(100vh - 200px);
