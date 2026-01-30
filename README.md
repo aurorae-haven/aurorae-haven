@@ -24,7 +24,7 @@ The app works directly from your file system - just download, extract, and doubl
 - ✅ Service worker for offline functionality
 - ✅ PWA manifest for installation
 - ✅ All assets optimized and minified
-- ✅ Total size: 1208 KB compressed
+- ✅ Total size: 1206 KB compressed
 
 ## 📚 Full Documentation
 
@@ -42,9 +42,9 @@ Back to the main repository:
 
 This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
 
-**Last Updated**: 2026-01-29 19:10:55 UTC
+**Last Updated**: 2026-01-30 15:29:57 UTC
 **Source Branch**: fix-mobile-portrait-bugs
-**Source Commit**: e91cf89
+**Source Commit**: 7a55c80
 
 ---
 
