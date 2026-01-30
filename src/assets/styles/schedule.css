@@ -1411,18 +1411,22 @@
     max-height: calc(100vh - 300px); /* Account for taller mobile header */
     overflow-x: auto;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
   
   .week-grid {
-    min-width: 100%; /* Allow week grid to be narrower */
+    /* Ensure minimum width shows all 7 days: 35px hour + 7*45px days = 350px */
+    min-width: max(100%, 350px);
     width: max-content;
   }
   
   .week-header {
+    /* Fixed minimum 45px per day ensures all 7 days visible */
     grid-template-columns: 35px repeat(7, minmax(45px, 1fr));
   }
   
   .week-body {
+    /* Fixed minimum 45px per day ensures all 7 days visible */
     grid-template-columns: 35px repeat(7, minmax(45px, 1fr));
   }
   
