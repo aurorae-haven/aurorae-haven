@@ -364,6 +364,30 @@
   }
 }
 
+/* Desktop: Move Today button to the left */
+@media (min-width: 421px) {
+  .layout-schedule .card .card-h > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* Today button appears first (on the left) */
+  .layout-schedule .card .card-h > div:first-child button.btn-today {
+    order: -1 !important;
+  }
+
+  /* Previous arrow button appears second */
+  .layout-schedule .card .card-h > div:first-child button:first-child:not(.btn-today) {
+    order: 0 !important;
+  }
+
+  /* Next arrow button appears third */
+  .layout-schedule .card .card-h > div:first-child button:last-child:not(.btn-today) {
+    order: 1 !important;
+  }
+}
+
 /* Additional mobile portrait fixes for very small screens */
 @media (max-width: 420px) {
   /* Mobile-first redesign for Schedule page */
@@ -1256,6 +1280,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
+  gap: 0 1px; /* Ensure headers don't overlap */
 }
 
 .week-day-header {
@@ -1306,6 +1331,9 @@
   color: var(--dim);
   font-size: 0.85rem;
   border-bottom: 1px dashed var(--line);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .week-day-column {
@@ -1400,19 +1428,20 @@
   }
   
   .week-grid {
-    /* Ensure minimum width shows all 7 days: 35px hour + 7*45px days = 350px */
-    min-width: max(100%, 350px);
+    /* Ensure minimum width shows all 7 days: 35px hour + 7*52px days = 399px */
+    min-width: 400px;
     width: max-content;
   }
   
   .week-header {
-    /* Fixed minimum 45px per day ensures all 7 days visible */
-    grid-template-columns: 35px repeat(7, minmax(45px, 1fr));
+    /* Fixed minimum 52px per day ensures all 7 days visible including Sunday */
+    grid-template-columns: 35px repeat(7, minmax(52px, 1fr));
+    gap: 0; /* Remove gap to save space */
   }
   
   .week-body {
-    /* Fixed minimum 45px per day ensures all 7 days visible */
-    grid-template-columns: 35px repeat(7, minmax(45px, 1fr));
+    /* Fixed minimum 52px per day ensures all 7 days visible including Sunday */
+    grid-template-columns: 35px repeat(7, minmax(52px, 1fr));
   }
   
   .week-day-header {
@@ -1431,6 +1460,9 @@
     font-size: 0.65rem;
     padding: 3px 2px;
     height: 100px; /* Reduce hour height for more compact view */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   .week-slots .block {
