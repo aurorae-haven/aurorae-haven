@@ -469,6 +469,12 @@ function Schedule() {
           const minuteOffset = (minutes / MINUTES_PER_HOUR) * pixelsPerHour
           position = visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
         }
+        
+        // Account for desktop week view scaling (scaleY(0.625) at >= 1024px)
+        if ((viewMode === 'week' || viewMode === '3days') && window.innerWidth >= 1024) {
+          position = position * 0.625
+        }
+        
         setCurrentTimePosition(position)
       } else {
         setCurrentTimePosition(-1) // Hide if outside schedule range
@@ -477,9 +483,15 @@ function Schedule() {
 
     updateCurrentTime()
     const interval = setInterval(updateCurrentTime, 60000) // Update every minute
+    
+    // Update on window resize to handle crossing 1024px breakpoint
+    window.addEventListener('resize', updateCurrentTime)
 
-    return () => clearInterval(interval)
-  }, [show24Hours])
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('resize', updateCurrentTime)
+    }
+  }, [show24Hours, viewMode])
 
   // Load calendar subscriptions when calendars section is shown
   useEffect(() => {
