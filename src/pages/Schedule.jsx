@@ -137,12 +137,12 @@ const SCHEDULE_BLOCKS = [
 ]
 
 const TIME_PERIODS = [
-  { className: 'time-period-morning', top: 0, height: 480 }, // 0-6 hours * 80px
-  { className: 'time-period-afternoon', top: 480, height: 480 }, // 6-12 hours * 80px
-  { className: 'time-period-evening', top: 960, height: 320 } // 12-16 hours * 80px
+  { className: 'time-period-morning', top: 0, height: 400 }, // Rows 0-4 (07:00-11:00): 5 hours * 80px = 400px
+  { className: 'time-period-afternoon', top: 400, height: 480 }, // Rows 5-10 (12:00-17:00): 6 hours * 80px = 480px
+  { className: 'time-period-evening', top: 880, height: 560 } // Rows 11-17 (18:00-00:00): 7 hours * 80px = 560px
 ]
 
-const SEPARATOR_POSITIONS = [84, 484, 964] // Adjusted for 80px per hour
+const SEPARATOR_POSITIONS = [404, 884] // Adjusted for period boundaries at 80px per hour
 
 // Get dynamic hour height from CSS custom property
 // Falls back to PIXELS_PER_HOUR constant if CSS variable not available
@@ -183,11 +183,10 @@ const generateHourLabels = (show24Hours) => {
     }))
   }
   
-  // 6am-10pm mode with period labels
+  // 7am-midnight mode with period labels
   return [
-    { label: '06:00', isLabel: false },
+    { label: '07:00', isLabel: false },
     { label: 'Morning', isLabel: true },
-    { label: '08:00', isLabel: false },
     { label: '09:00', isLabel: false },
     { label: '10:00', isLabel: false },
     { label: '11:00', isLabel: false },
@@ -200,31 +199,37 @@ const generateHourLabels = (show24Hours) => {
     { label: 'Evening', isLabel: true },
     { label: '19:00', isLabel: false },
     { label: '20:00', isLabel: false },
-    { label: '21:00', isLabel: false }
+    { label: '21:00', isLabel: false },
+    { label: '22:00', isLabel: false },
+    { label: '23:00', isLabel: false },
+    { label: '00:00', isLabel: false }
   ]
 }
 
-// Helper function to get visual row index for a given hour in 6am-10pm mode
+// Helper function to get visual row index for a given hour in 7am-midnight mode
 // Accounts for "Morning", "Afternoon", "Evening" label rows
 const getVisualRowForHour = (hour) => {
   // Map of hour to visual row index
   const hourToRow = {
-    6: 0,   // 06:00
-    7: 1,   // Falls in "Morning" label row
-    8: 2,   // 08:00
-    9: 3,   // 09:00
-    10: 4,  // 10:00
-    11: 5,  // 11:00
-    12: 6,  // Falls in "Afternoon" label row
-    13: 7,  // 13:00
-    14: 8,  // 14:00
-    15: 9,  // 15:00
-    16: 10, // 16:00
-    17: 11, // 17:00
-    18: 12, // Falls in "Evening" label row
-    19: 13, // 19:00
-    20: 14, // 20:00
-    21: 15  // 21:00
+    7: 0,   // 07:00
+    8: 1,   // Falls in "Morning" label row
+    9: 2,   // 09:00
+    10: 3,  // 10:00
+    11: 4,  // 11:00
+    12: 5,  // Falls in "Afternoon" label row
+    13: 6,  // 13:00
+    14: 7,  // 14:00
+    15: 8,  // 15:00
+    16: 9,  // 16:00
+    17: 10, // 17:00
+    18: 11, // Falls in "Evening" label row
+    19: 12, // 19:00
+    20: 13, // 20:00
+    21: 14, // 21:00
+    22: 15, // 22:00
+    23: 16, // 23:00
+    0: 17,  // 00:00 (midnight)
+    24: 17  // 24:00 (also midnight)
   }
   return hourToRow[hour] ?? 0
 }
@@ -274,7 +279,7 @@ const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, sch
 }
 
 // Convert duration in minutes to pixel height
-// Clamps event times to visible schedule window (06:00-22:00) to prevent overflow
+// Clamps event times to visible schedule window (07:00-00:00) to prevent overflow
 const durationToHeight = (startTime, endTime) => {
   // Input validation: check for null, type, and format
   if (
@@ -310,8 +315,8 @@ const durationToHeight = (startTime, endTime) => {
   }
 
   // Convert schedule hours to minutes for easier calculation
-  const scheduleStartMinutes = SCHEDULE_START_HOUR * MINUTES_PER_HOUR // 360 minutes (06:00)
-  const scheduleEndMinutes = SCHEDULE_END_HOUR * MINUTES_PER_HOUR // 1320 minutes (22:00)
+  const scheduleStartMinutes = SCHEDULE_START_HOUR * MINUTES_PER_HOUR // 420 minutes (07:00)
+  const scheduleEndMinutes = SCHEDULE_END_HOUR * MINUTES_PER_HOUR // 1440 minutes (00:00/24:00)
 
   let startTotalMinutes = startHours * MINUTES_PER_HOUR + startMinutes
   let endTotalMinutes = endHours * MINUTES_PER_HOUR + endMinutes
@@ -325,7 +330,7 @@ const durationToHeight = (startTime, endTime) => {
   }
 
   // Clamp event times to the visible schedule window to prevent overflow rendering
-  // This handles events that start before 06:00 or end after 22:00
+  // This handles events that start before 07:00 or end after 00:00
   if (startTotalMinutes < scheduleStartMinutes) {
     startTotalMinutes = scheduleStartMinutes
   }
@@ -374,7 +379,7 @@ function Schedule() {
   }, [])
   
   // Calculate dynamic slot heights based on hour height
-  const slotHeight = show24Hours ? hourHeight * 24 : hourHeight * 16
+  const slotHeight = show24Hours ? hourHeight * 24 : hourHeight * 18 // 18 visual rows for 7am-midnight with labels
 
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -464,7 +469,7 @@ function Schedule() {
             (minutes / MINUTES_PER_HOUR) * pixelsPerHour +
             SCHEDULE_VERTICAL_OFFSET
         } else {
-          // 6am-10pm mode: use visual row mapping
+          // 7am-midnight mode: use visual row mapping
           const visualRow = getVisualRowForHour(hours)
           const minuteOffset = (minutes / MINUTES_PER_HOUR) * pixelsPerHour
           position = visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
@@ -1089,9 +1094,9 @@ function Schedule() {
                       setIsSettingsOpen(false)
                     }}
                     aria-label='Toggle 24-hour display'
-                    title={show24Hours ? 'Switch to 6am-10pm view' : 'Switch to 24-hour view'}
+                    title={show24Hours ? 'Switch to 7am-midnight view' : 'Switch to 24-hour view'}
                   >
-                    🕐 {show24Hours ? 'Switch to 6am-10pm' : 'Switch to 24 Hours'}
+                    🕐 {show24Hours ? 'Switch to 7am-midnight' : 'Switch to 24 Hours'}
                   </button>
                   <button
                     onClick={handleGenerateTestData}
@@ -1381,7 +1386,7 @@ function Schedule() {
                                 (startMinute / MINUTES_PER_HOUR) * pixelsPerHour +
                                 SCHEDULE_VERTICAL_OFFSET
                             } else {
-                              // 6am-10pm mode: use visual row mapping to account for label rows
+                              // 7am-midnight mode: use visual row mapping to account for label rows
                               const visualRow = getVisualRowForHour(startHour)
                               // Calculate position within the hour based on minutes
                               const minuteOffset = (startMinute / MINUTES_PER_HOUR) * pixelsPerHour
