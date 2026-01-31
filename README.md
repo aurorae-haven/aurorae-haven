@@ -6,7 +6,7 @@ Welcome to the offline packages branch! This branch contains the latest offline 
 
 Click on the `.tar.gz` file above to download the latest offline package.
 
-**Latest Package**: `aurorae-haven-offline-v1.0.0.tar.gz`
+**Latest Package**: `aurorae-haven-offline-v1.0.1.tar.gz`
 
 ## 🚀 Quick Start
 
@@ -42,9 +42,9 @@ Back to the main repository:
 
 This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
 
-**Last Updated**: 2026-01-31 19:24:55 UTC
+**Last Updated**: 2026-01-31 19:33:21 UTC
 **Source Branch**: fix-schedule-tab-issues
-**Source Commit**: 9c6ea1f
+**Source Commit**: d7647cc
 
 ---
 
