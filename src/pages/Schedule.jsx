@@ -684,10 +684,10 @@ function Schedule() {
       setIsSettingsOpen(false)
       
       // Show success message (optional - could add a toast notification)
-      console.log(`✅ Successfully generated ${count} test events!`)
+      // Successfully generated test events
     } catch (error) {
       logger.error('Failed to generate test data:', error)
-      console.error('❌ Error generating test data:', error)
+      // Error generating test data
     }
   }
 

@@ -11,7 +11,7 @@ import { createEvent } from './scheduleManager'
  * Creates a realistic week schedule with various event types
  */
 export async function generateTestData() {
-  console.log('🎨 Generating test data for schedule...')
+  // Generating test data for schedule
   
   const today = dayjs()
   const startOfWeek = today.startOf('week').add(1, 'day') // Monday
@@ -403,11 +403,11 @@ export async function generateTestData() {
       await createEvent(event)
       createdCount++
     } catch (error) {
-      console.error('Error creating test event:', event.title, error)
+      // Error creating test event - silently skip
     }
   }
   
-  console.log(`✅ Created ${createdCount} test events`)
+  // Created test events successfully
   return createdCount
 }
 
@@ -416,5 +416,5 @@ export async function generateTestData() {
  */
 export async function clearTestData() {
   // This would require implementing a deleteAll function in scheduleManager
-  console.log('⚠️ Clear test data not implemented yet')
+  // Clear test data not implemented yet
 }
