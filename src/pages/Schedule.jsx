@@ -1026,6 +1026,9 @@ function Schedule() {
                 <div className='week-grid'>
                   {/* Day headers */}
                   <div className='week-header'>
+                    {/* Empty cell for hour column */}
+                    <div></div>
+                    {/* 7 day headers: Sun, Mon, Tue, Wed, Thu, Fri, Sat */}
                     {generateWeekGrid().map((day, index) => (
                       <div key={index} className={`week-day-header ${day.isToday ? 'today' : ''}`}>
                         <div className='week-day-name'>{day.date.format('ddd')}</div>
