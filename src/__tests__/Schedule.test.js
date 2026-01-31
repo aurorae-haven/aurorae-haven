@@ -69,9 +69,9 @@ describe('Schedule Component', () => {
 
   test('renders action buttons', () => {
     render(<Schedule />)
-    expect(screen.getByRole('button', { name: 'View day schedule' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'View week schedule' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'View month schedule' })).toBeInTheDocument()
+    // View mode dropdown button
+    expect(screen.getByRole('button', { name: 'Change view mode' })).toBeInTheDocument()
+    // Schedule event dropdown button
     expect(
       screen.getByRole('button', { name: /Schedule an event/i })
     ).toBeInTheDocument()
@@ -177,36 +177,22 @@ describe('Schedule Component', () => {
   })
 
   describe('Button Functionality', () => {
-    test('Day button is active by default', () => {
+    test('View mode dropdown shows current mode', () => {
       render(<Schedule />)
-      const dayButton = screen.getByRole('button', {
-        name: /View day schedule/i
+      const viewButton = screen.getByRole('button', {
+        name: 'Change view mode'
       })
-      expect(dayButton).toHaveClass('btn-active')
+      // Should display "1 Day" by default
+      expect(viewButton).toHaveTextContent('1 Day')
     })
 
-    test('Week button is not active by default', () => {
+    test('View mode dropdown has correct ARIA attributes', () => {
       render(<Schedule />)
-      const weekButton = screen.getByRole('button', {
-        name: /View week schedule/i
+      const viewButton = screen.getByRole('button', {
+        name: 'Change view mode'
       })
-      expect(weekButton).not.toHaveClass('btn-active')
-    })
-
-    test('Day button has correct ARIA attributes', () => {
-      render(<Schedule />)
-      const dayButton = screen.getByRole('button', {
-        name: /View day schedule/i
-      })
-      expect(dayButton).toHaveAttribute('aria-pressed', 'true')
-    })
-
-    test('Week button has correct ARIA attributes when not active', () => {
-      render(<Schedule />)
-      const weekButton = screen.getByRole('button', {
-        name: /View week schedule/i
-      })
-      expect(weekButton).toHaveAttribute('aria-pressed', 'false')
+      expect(viewButton).toHaveAttribute('aria-expanded', 'false')
+      expect(viewButton).toHaveAttribute('aria-haspopup', 'menu')
     })
 
     test('Schedule dropdown button has correct ARIA attributes', () => {
@@ -225,33 +211,61 @@ describe('Schedule Component', () => {
       expect(mockGetEventsForWeek).not.toHaveBeenCalled()
     })
 
-    test('clicking Week button switches view mode and loads week events', async () => {
+    test('clicking view dropdown opens menu', async () => {
       render(<Schedule />)
-      const weekButton = screen.getByRole('button', {
-        name: /View week schedule/i
+      const viewButton = screen.getByRole('button', {
+        name: 'Change view mode'
       })
 
-      // Click the week button using RTL's fireEvent
-      fireEvent.click(weekButton)
+      // Click to open dropdown
+      fireEvent.click(viewButton)
 
-      // Wait for state update
-      await screen.findByRole('button', { name: /View week schedule/i })
+      // Menu should now be visible with menuitem options
+      const dayMenuItem = await screen.findByRole('menuitem', { name: 'View 1 day' })
+      const weekMenuItem = await screen.findByRole('menuitem', { name: 'View 1 week' })
+      expect(dayMenuItem).toBeInTheDocument()
+      expect(weekMenuItem).toBeInTheDocument()
+    })
+
+    test('clicking week menu item switches view mode and loads week events', async () => {
+      render(<Schedule />)
+      const viewButton = screen.getByRole('button', {
+        name: 'Change view mode'
+      })
+
+      // Click to open dropdown
+      fireEvent.click(viewButton)
+
+      // Click week menu item
+      const weekMenuItem = await screen.findByRole('menuitem', { name: 'View 1 week' })
+      fireEvent.click(weekMenuItem)
 
       // Check that week events were loaded
       expect(mockGetEventsForWeek).toHaveBeenCalled()
+      
+      // Button should now show "1 Week"
+      expect(viewButton).toHaveTextContent('1 Week')
     })
 
-    test('clicking Day button after Week keeps day view active', () => {
+    test('clicking day menu item after week keeps day view active', async () => {
       render(<Schedule />)
-      const dayButton = screen.getByRole('button', {
-        name: /View day schedule/i
+      const viewButton = screen.getByRole('button', {
+        name: 'Change view mode'
       })
 
-      // Click day button (already active) using RTL's fireEvent
-      fireEvent.click(dayButton)
+      // Initially should show 1 Day
+      expect(viewButton).toHaveTextContent('1 Day')
 
-      // Day button should still be active
-      expect(dayButton).toHaveClass('btn-active')
+      // Click to open dropdown
+      fireEvent.click(viewButton)
+
+      // Click day menu item (already active)
+      const dayMenuItem = await screen.findByRole('menuitem', { name: 'View 1 day' })
+      fireEvent.click(dayMenuItem)
+
+      // Should still be on day view
+      expect(viewButton).toHaveTextContent('1 Day')
+      expect(mockGetEventsForDay).toHaveBeenCalledWith('2025-09-16')
     })
   })
 })
