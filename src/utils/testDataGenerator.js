@@ -402,7 +402,7 @@ export async function generateTestData() {
     try {
       await createEvent(event)
       createdCount++
-    } catch (error) {
+    } catch {
       // Error creating test event - silently skip
     }
   }
