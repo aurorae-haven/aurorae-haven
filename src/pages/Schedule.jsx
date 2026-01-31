@@ -142,7 +142,7 @@ const TIME_PERIODS = [
   { className: 'time-period-evening', top: 880, height: 560 } // Rows 11-17 (18:00-00:00): 7 hours * 80px = 560px
 ]
 
-const SEPARATOR_POSITIONS = [404, 884] // Adjusted for period boundaries at 80px per hour
+const SEPARATOR_POSITIONS = [84, 404, 884] // Separators after each period label (Morning, Afternoon, Evening)
 
 // Get dynamic hour height from CSS custom property
 // Falls back to PIXELS_PER_HOUR constant if CSS variable not available
