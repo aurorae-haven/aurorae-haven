@@ -1286,9 +1286,9 @@
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
   border-bottom: 2px solid var(--line);
-  background: var(--bg-primary); /* Solid background to prevent content showing through */
-  backdrop-filter: blur(10px) saturate(180%); /* Optional: frosted glass effect */
-  -webkit-backdrop-filter: blur(10px) saturate(180%); /* Safari support */
+  /* Fully opaque background - no transparency to prevent content showing through */
+  background: var(--bg-primary);
+  opacity: 1 !important; /* Force full opacity */
   position: sticky;
   top: 0;
   z-index: 100; /* Increased to ensure it stays above all scrolling content */
