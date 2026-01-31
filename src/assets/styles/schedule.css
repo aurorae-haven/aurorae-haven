@@ -1454,20 +1454,21 @@
   }
   
   .week-grid {
-    /* Ensure minimum width shows all 7 days: 35px hour + 7*52px days = 399px */
-    min-width: 400px;
+    /* Ensure minimum width shows all 7 days: 30px hour + 7*50px days = 380px */
+    /* Increased to 450px to ensure no cropping on any mobile device */
+    min-width: 450px;
     width: max-content;
   }
   
   .week-header {
-    /* Fixed minimum 52px per day ensures all 7 days visible including Sunday */
-    grid-template-columns: 35px repeat(7, minmax(52px, 1fr));
+    /* Reduced hour column to 30px, 50px minimum per day for better fit */
+    grid-template-columns: 30px repeat(7, minmax(50px, 1fr));
     gap: 0; /* Remove gap to save space */
   }
   
   .week-body {
-    /* Fixed minimum 52px per day ensures all 7 days visible including Sunday */
-    grid-template-columns: 35px repeat(7, minmax(52px, 1fr));
+    /* Match header: 30px hour + 50px minimum per day */
+    grid-template-columns: 30px repeat(7, minmax(50px, 1fr));
   }
   
   .week-day-header {
