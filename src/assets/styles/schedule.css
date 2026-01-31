@@ -1464,9 +1464,9 @@
     transform-origin: top;
   }
   
-  /* Remove min-height constraint to let content fill available space naturally */
+  /* Prevent extra space by not setting explicit height */
   .week-view {
-    height: 100%; /* Fill parent container */
+    overflow: hidden; /* Contain the scaled content without extra space */
   }
 }
 
