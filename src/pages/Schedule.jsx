@@ -109,20 +109,19 @@ TimePreparationBlock.propTypes = {
 }
 
 // Static configuration data - defined outside component to prevent recreation on every render
+// Note: top positions are calculated dynamically based on time, not hardcoded
 const SCHEDULE_BLOCKS = [
   {
     type: EVENT_TYPES.ROUTINE,
     title: 'Morning Launch',
-    time: '07:00–07:30',
-    top: 126,
-    height: 60
+    startTime: '07:00',
+    endTime: '07:30'
   },
   {
     type: EVENT_TYPES.MEETING,
     title: 'Team Standup',
-    time: '10:00–10:30',
-    top: 486,
-    height: 60,
+    startTime: '10:00',
+    endTime: '10:30',
     className: 'next-up',
     isNext: true
   },
@@ -130,9 +129,8 @@ const SCHEDULE_BLOCKS = [
     type: EVENT_TYPES.TASK,
     className: 'not-urgent-important',
     title: 'Buy groceries',
-    time: '16:00–16:30',
-    top: 1206,
-    height: 60
+    startTime: '16:00',
+    endTime: '16:30'
   }
 ]
 
@@ -369,8 +367,8 @@ function Schedule() {
       // Get available viewport height
       const viewportHeight = window.innerHeight
       
-      // Account for header and controls (navbar ~80px + controls ~60px + padding/margins ~60px = ~200px)
-      const headerOffset = 200
+      // Account for header and controls (navbar ~80px + controls ~60px + padding ~20px = ~160px)
+      const headerOffset = 160
       const availableHeight = viewportHeight - headerOffset
       
       // Calculate hour height based on number of visual rows (18 for 7am-midnight mode, 24 for 24-hour mode)
@@ -1501,12 +1499,26 @@ function Schedule() {
                   )}
 
                   {/* Schedule blocks - combine static demo blocks with dynamic events */}
-                  {SCHEDULE_BLOCKS.map((block) => (
-                    <ScheduleBlock
-                      key={`${block.type}-${block.title}-${block.time}-${block.top}`}
-                      {...block}
-                    />
-                  ))}
+                  {SCHEDULE_BLOCKS.map((block) => {
+                    // Calculate position dynamically based on time
+                    const hours = getScheduleHours(show24Hours)
+                    const top = timeToPosition(block.startTime, hours.start, hours.end, show24Hours)
+                    const height = durationToHeight(block.startTime, block.endTime)
+                    const time = `${block.startTime}–${block.endTime}`
+                    
+                    // Skip blocks outside schedule range
+                    if (top < 0 || height <= 0) return null
+                    
+                    return (
+                      <ScheduleBlock
+                        key={`${block.type}-${block.title}-${block.startTime}`}
+                        {...block}
+                        top={top}
+                        height={height}
+                        time={time}
+                      />
+                    )
+                  })}
 
                   {/* Dynamic events from database */}
                   {/* Note: User event interactions are logged (event ID only) for debugging purposes.
