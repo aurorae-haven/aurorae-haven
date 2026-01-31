@@ -1787,9 +1787,9 @@
     font-size: 0.75rem;
   }
 
+  /* Show only event dots on very small screens */
   .month-event {
     font-size: 0.65rem;
-    /* Show only event dots on very small screens */
     width: 6px;
     height: 6px;
     border-radius: 50%;
