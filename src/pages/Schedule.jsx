@@ -191,13 +191,38 @@ const generateHourLabels = (show24Hours) => {
   ]
 }
 
+// Helper function to get visual row index for a given hour in 6am-10pm mode
+// Accounts for "Morning", "Afternoon", "Evening" label rows
+const getVisualRowForHour = (hour) => {
+  // Map of hour to visual row index
+  const hourToRow = {
+    6: 0,   // 06:00
+    7: 1,   // Falls in "Morning" label row
+    8: 2,   // 08:00
+    9: 3,   // 09:00
+    10: 4,  // 10:00
+    11: 5,  // 11:00
+    12: 6,  // Falls in "Afternoon" label row
+    13: 7,  // 13:00
+    14: 8,  // 14:00
+    15: 9,  // 15:00
+    16: 10, // 16:00
+    17: 11, // 17:00
+    18: 12, // Falls in "Evening" label row
+    19: 13, // 19:00
+    20: 14, // 20:00
+    21: 15  // 21:00
+  }
+  return hourToRow[hour] ?? 0
+}
+
 // TODO: Extract timeToPosition and durationToHeight to a testable utility module
 // These functions contain complex logic for time-to-pixel conversion and boundary clamping
 // that should be thoroughly unit tested with various edge cases
 
 // Convert time string (HH:MM) to pixel position
 // Returns -1 if time is invalid or outside schedule range
-const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, scheduleEndHour = SCHEDULE_END_HOUR) => {
+const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, scheduleEndHour = SCHEDULE_END_HOUR, use24HourMode = false) => {
   // Input validation: check for null, type, and format
   if (
     !timeString ||
@@ -218,11 +243,19 @@ const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, sch
   if (hours < scheduleStartHour || hours >= scheduleEndHour) return -1
 
   // Calculate pixel position from schedule start time
-  return (
-    (hours - scheduleStartHour) * PIXELS_PER_HOUR +
-    (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
-    SCHEDULE_VERTICAL_OFFSET
-  )
+  if (use24HourMode) {
+    // 24-hour mode: direct calculation, no label rows
+    return (
+      (hours - scheduleStartHour) * PIXELS_PER_HOUR +
+      (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+      SCHEDULE_VERTICAL_OFFSET
+    )
+  } else {
+    // 6am-10pm mode: use visual row mapping to account for label rows
+    const visualRow = getVisualRowForHour(hours)
+    const minuteOffset = (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+    return visualRow * PIXELS_PER_HOUR + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+  }
 }
 
 // Convert duration in minutes to pixel height
@@ -350,6 +383,11 @@ function Schedule() {
       let loadedEvents
       if (viewMode === 'day') {
         loadedEvents = await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
+      } else if (viewMode === '3days') {
+        // Load events for 3 consecutive days starting from selectedDate
+        const startDate = selectedDate.format('YYYY-MM-DD')
+        const endDate = selectedDate.add(2, 'day').format('YYYY-MM-DD')
+        loadedEvents = await getEventsForRange(startDate, endDate)
       } else if (viewMode === 'week') {
         loadedEvents = await getEventsForWeek()
       } else if (viewMode === 'month') {
@@ -386,10 +424,19 @@ function Schedule() {
       const scheduleHours = getScheduleHours(show24Hours)
 
       if (hours >= scheduleHours.start && hours < scheduleHours.end) {
-        const position =
-          (hours - scheduleHours.start) * PIXELS_PER_HOUR +
-          (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
-          SCHEDULE_VERTICAL_OFFSET
+        let position
+        if (show24Hours) {
+          // 24-hour mode: direct calculation
+          position =
+            (hours - scheduleHours.start) * PIXELS_PER_HOUR +
+            (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+            SCHEDULE_VERTICAL_OFFSET
+        } else {
+          // 6am-10pm mode: use visual row mapping
+          const visualRow = getVisualRowForHour(hours)
+          const minuteOffset = (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+          position = visualRow * PIXELS_PER_HOUR + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+        }
         setCurrentTimePosition(position)
       } else {
         setCurrentTimePosition(-1) // Hide if outside schedule range
@@ -1280,10 +1327,20 @@ function Schedule() {
                             const endHour = eventEnd.getHours()
                             const endMinute = eventEnd.getMinutes()
 
-                            const eventTop =
-                              (startHour - hours.start) * PIXELS_PER_HOUR +
-                              (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
-                              SCHEDULE_VERTICAL_OFFSET
+                            let eventTop
+                            if (show24Hours) {
+                              // 24-hour mode: direct calculation, no label rows
+                              eventTop =
+                                (startHour - hours.start) * PIXELS_PER_HOUR +
+                                (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+                                SCHEDULE_VERTICAL_OFFSET
+                            } else {
+                              // 6am-10pm mode: use visual row mapping to account for label rows
+                              const visualRow = getVisualRowForHour(startHour)
+                              // Calculate position within the hour based on minutes
+                              const minuteOffset = (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+                              eventTop = visualRow * PIXELS_PER_HOUR + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+                            }
 
                             const durationMinutes =
                               (endHour - startHour) * MINUTES_PER_HOUR + (endMinute - startMinute)
@@ -1391,7 +1448,7 @@ function Schedule() {
                     const hours = getScheduleHours(show24Hours)
 
                     // Compute layout metrics once per event (performance optimization)
-                    const top = timeToPosition(event.startTime, hours.start, hours.end)
+                    const top = timeToPosition(event.startTime, hours.start, hours.end, show24Hours)
                     const height = durationToHeight(
                       event.startTime,
                       event.endTime
