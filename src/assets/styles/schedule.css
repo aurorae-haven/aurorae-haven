@@ -169,6 +169,10 @@
   z-index: 2;
   overflow: hidden;
   min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 4px;
 }
 
 /* Focus styles for interactive schedule blocks */
@@ -253,19 +257,24 @@
 }
 
 .block .title {
-  position: absolute;
-  left: 14px;
-  top: 12px;
   font-weight: 700;
   line-height: 1.3;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  word-break: break-word;
 }
 .block .meta {
-  position: absolute;
-  left: 14px;
-  bottom: 12px;
   font-size: 0.9rem;
   color: var(--dim);
   line-height: 1.3;
+  margin-top: auto; /* Push to bottom if space available */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Preparation and travel time blocks */
@@ -515,12 +524,10 @@
   }
 
   .block .title {
-    left: 12px;
     font-size: 0.95rem;
   }
 
   .block .meta {
-    left: 12px;
     font-size: 0.85rem;
   }
 
