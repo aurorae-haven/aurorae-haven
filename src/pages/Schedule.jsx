@@ -932,9 +932,9 @@ function Schedule() {
                       setIsSettingsOpen(false)
                     }}
                     aria-label='Toggle 24-hour display'
-                    title='Show all 24 hours instead of 6am-10pm'
+                    title={show24Hours ? 'Switch to 6am-10pm view' : 'Switch to 24-hour view'}
                   >
-                    🕐 {show24Hours ? '6am-10pm' : '24 Hours'}
+                    🕐 {show24Hours ? 'Switch to 6am-10pm' : 'Switch to 24 Hours'}
                   </button>
                   <button
                     onClick={handleGenerateTestData}
