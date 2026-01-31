@@ -857,7 +857,8 @@ body.density-cozy {
 
 /* Shell & glass cards - adjusted for fixed navbar */
 .shell {
-  max-width: 1240px;
+  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
   padding: calc(70px * var(--density-multiplier))
     calc(18px * var(--density-multiplier))
@@ -873,12 +874,7 @@ body.mobile-menu-open .shell {
   padding-left: calc(66px * var(--density-multiplier));
 }
 
-/* Expand shell for Brain Dump to utilize more horizontal space on desktop */
-/* NOTE: The :has() selector is only supported in modern browsers (Chrome 105+, Safari 15.4+, Firefox 121+).
-   Users on older browsers may not see this style applied. Consider providing a fallback if broader compatibility is needed. */
-.shell:has(.brain-dump-container) {
-  max-width: 1600px;
-}
+/* Shell already uses full width - no special case needed for Brain Dump */
 
 /* Apply density multiplier to card paddings
    Note: Only outer padding is affected by density controls.
