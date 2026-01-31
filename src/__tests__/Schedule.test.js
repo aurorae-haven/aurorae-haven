@@ -81,9 +81,6 @@ describe('Schedule Component', () => {
     render(<Schedule />)
     expect(screen.getByText("Today's queue")).toBeInTheDocument()
     expect(screen.getByText('Deep Work Warmup')).toBeInTheDocument()
-    // Use getAllByText since "Buy groceries" appears in both sidebar and calendar
-    const buyGroceriesElements = screen.getAllByText('Buy groceries')
-    expect(buyGroceriesElements.length).toBeGreaterThan(0)
   })
 
   test('renders time labels for schedule', () => {
@@ -92,33 +89,6 @@ describe('Schedule Component', () => {
     expect(screen.getByText('Morning')).toBeInTheDocument()
     expect(screen.getByText('Afternoon')).toBeInTheDocument()
     expect(screen.getByText('Evening')).toBeInTheDocument()
-  })
-
-  test('renders routine block with correct structure', () => {
-    render(<Schedule />)
-    const routineBlock = screen.getByLabelText(/Routine: Morning Launch/)
-    expect(routineBlock).toBeInTheDocument()
-    expect(routineBlock).toHaveClass('block', 'routine')
-    expect(screen.getByText('Morning Launch')).toBeInTheDocument()
-    expect(screen.getByText('07:00–07:30')).toBeInTheDocument()
-  })
-
-  test('renders meeting block with next badge', () => {
-    render(<Schedule />)
-    const meetingBlock = screen.getByLabelText(/Meeting: Team Standup/)
-    expect(meetingBlock).toBeInTheDocument()
-    expect(meetingBlock).toHaveClass('block', 'meeting', 'next-up')
-    expect(screen.getByText('Team Standup')).toBeInTheDocument()
-    expect(screen.getByText('10:00–10:30')).toBeInTheDocument()
-    expect(screen.getByText('Next')).toBeInTheDocument()
-  })
-
-  test('renders task block with priority class', () => {
-    render(<Schedule />)
-    const taskBlock = screen.getByLabelText(/Task: Buy groceries/)
-    expect(taskBlock).toBeInTheDocument()
-    expect(taskBlock).toHaveClass('block', 'task', 'not-urgent-important')
-    expect(screen.getByText('16:00–16:30')).toBeInTheDocument()
   })
 
   test('renders current time indicator during business hours', () => {
@@ -152,40 +122,6 @@ describe('Schedule Component', () => {
     expect(separators).toHaveLength(3)
   })
 
-  test('all schedule blocks have proper ARIA labels', () => {
-    render(<Schedule />)
-    expect(
-      screen.getByLabelText('Routine: Morning Launch at 07:00–07:30')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByLabelText('Meeting: Team Standup at 10:00–10:30 - Next up')
-    ).toBeInTheDocument()
-    expect(
-      screen.getByLabelText('Task: Buy groceries at 16:00–16:30')
-    ).toBeInTheDocument()
-  })
-
-  test('schedule blocks have correct positioning styles', () => {
-    render(<Schedule />)
-    const routineBlock = screen.getByLabelText(/Routine: Morning Launch/)
-    const meetingBlock = screen.getByLabelText(/Meeting: Team Standup/)
-    const taskBlock = screen.getByLabelText(/Task: Buy groceries/)
-
-    // Check that blocks have top and height styles set
-    expect(routineBlock.style.top).toBeTruthy()
-    expect(routineBlock.style.height).toBeTruthy()
-    expect(meetingBlock.style.top).toBeTruthy()
-    expect(meetingBlock.style.height).toBeTruthy()
-    expect(taskBlock.style.top).toBeTruthy()
-    expect(taskBlock.style.height).toBeTruthy()
-    
-    // Verify blocks are positioned in correct relative order (routine < meeting < task)
-    const routineTop = parseInt(routineBlock.style.top)
-    const meetingTop = parseInt(meetingBlock.style.top)
-    const taskTop = parseInt(taskBlock.style.top)
-    expect(routineTop).toBeLessThan(meetingTop) // 07:00 before 10:00
-    expect(meetingTop).toBeLessThan(taskTop) // 10:00 before 16:00
-  })
 
   describe('Button Functionality', () => {
     test('View mode dropdown shows current mode', () => {

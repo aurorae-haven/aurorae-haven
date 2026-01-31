@@ -5,6 +5,7 @@ import EventModal from '../components/Schedule/EventModal'
 import ConfirmDialog from '../components/common/ConfirmDialog'
 import {
   createEvent,
+  deleteEvent,
   getEventsForDay,
   getEventsForWeek,
   getEventsForRange
@@ -108,31 +109,7 @@ TimePreparationBlock.propTypes = {
   time: PropTypes.string.isRequired
 }
 
-// Static configuration data - defined outside component to prevent recreation on every render
-// Note: top positions are calculated dynamically based on time, not hardcoded
-const SCHEDULE_BLOCKS = [
-  {
-    type: EVENT_TYPES.ROUTINE,
-    title: 'Morning Launch',
-    startTime: '07:00',
-    endTime: '07:30'
-  },
-  {
-    type: EVENT_TYPES.MEETING,
-    title: 'Team Standup',
-    startTime: '10:00',
-    endTime: '10:30',
-    className: 'next-up',
-    isNext: true
-  },
-  {
-    type: EVENT_TYPES.TASK,
-    className: 'not-urgent-important',
-    title: 'Buy groceries',
-    startTime: '16:00',
-    endTime: '16:30'
-  }
-]
+// Static demo blocks removed - use "Generate Test Data" for realistic events
 
 // Get dynamic hour height from CSS custom property
 // Falls back to PIXELS_PER_HOUR constant if CSS variable not available
@@ -826,6 +803,30 @@ function Schedule() {
     }
   }
 
+  const handleClearTestData = async () => {
+    try {
+      // Delete all test data events from database
+      const testEvents = events.filter(event => event.isTestData)
+      
+      for (const event of testEvents) {
+        await deleteEvent(event.id)
+      }
+      
+      logger.info(`Cleared ${testEvents.length} test events`)
+      
+      // Reload events
+      await loadEvents()
+      
+      // Close settings menu
+      setIsSettingsOpen(false)
+      
+      // Successfully cleared test data
+    } catch (error) {
+      logger.error('Failed to clear test data:', error)
+      // Error clearing test data
+    }
+  }
+
   // Generate month calendar grid (6 weeks x 7 days = 42 days)
   const generateMonthGrid = () => {
     const startOfMonth = selectedDate.startOf('month')
@@ -1136,6 +1137,13 @@ function Schedule() {
                     title='Populate schedule with sample events'
                   >
                     🎨 Generate Test Data
+                  </button>
+                  <button
+                    onClick={handleClearTestData}
+                    aria-label='Clear test data'
+                    title='Remove all test events from schedule'
+                  >
+                    🗑️ Clear Test Data
                   </button>
                 </div>
               )}
@@ -1497,28 +1505,6 @@ function Schedule() {
                       <span className='current-time-label'>Now</span>
                     </div>
                   )}
-
-                  {/* Schedule blocks - combine static demo blocks with dynamic events */}
-                  {SCHEDULE_BLOCKS.map((block) => {
-                    // Calculate position dynamically based on time
-                    const hours = getScheduleHours(show24Hours)
-                    const top = timeToPosition(block.startTime, hours.start, hours.end, show24Hours)
-                    const height = durationToHeight(block.startTime, block.endTime)
-                    const time = `${block.startTime}–${block.endTime}`
-                    
-                    // Skip blocks outside schedule range
-                    if (top < 0 || height <= 0) return null
-                    
-                    return (
-                      <ScheduleBlock
-                        key={`${block.type}-${block.title}-${block.startTime}`}
-                        {...block}
-                        top={top}
-                        height={height}
-                        time={time}
-                      />
-                    )
-                  })}
 
                   {/* Dynamic events from database */}
                   {/* Note: User event interactions are logged (event ID only) for debugging purposes.
