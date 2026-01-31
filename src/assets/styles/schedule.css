@@ -1667,7 +1667,7 @@
 }
 
 .month-cell {
-  background: rgba(16, 20, 44, 0.4);
+  background: var(--glass-lo); /* Use glass-ui variable for consistency */
   min-height: 100px;
   padding: 8px;
   cursor: pointer;
@@ -1678,7 +1678,7 @@
 }
 
 .month-cell:hover {
-  background: rgba(35, 45, 100, 0.3);
+  background: var(--glass-md); /* More pronounced glass effect on hover */
 }
 
 .month-cell:focus {
@@ -1691,7 +1691,7 @@
 }
 
 .month-cell.today {
-  background: rgba(134, 245, 224, 0.15);
+  background: color-mix(in srgb, var(--mint) 12%, var(--glass-md)); /* Glass-ui with mint accent */
   border: 2px solid var(--mint);
 }
 
@@ -1789,21 +1789,18 @@
 
   .month-event {
     font-size: 0.65rem;
-  }
-
-  .month-day-header {
-    font-size: 0.7rem;
-    padding: 4px 2px;
-  }
-
-  /* Show only event dots on very small screens */
-  .month-event {
+    /* Show only event dots on very small screens */
     width: 6px;
     height: 6px;
     border-radius: 50%;
     padding: 0;
     text-indent: -9999px;
     border-left: none;
+  }
+
+  .month-day-header {
+    font-size: 0.7rem;
+    padding: 4px 2px;
   }
 
   .month-event-more {
