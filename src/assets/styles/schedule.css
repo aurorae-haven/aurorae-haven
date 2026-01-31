@@ -39,7 +39,7 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px;
-  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
+  max-height: calc(100vh - 100px); /* Further reduced offset to maximize vertical space */
   overflow-y: auto;
   overflow-x: hidden;
   /* Smooth transitions for view mode changes */
@@ -496,7 +496,7 @@
 
   /* Optimize calendar for mobile portrait */
   .calendar {
-    max-height: calc(100vh - 300px);
+    max-height: calc(100vh - 260px); /* Reduced from 300px for better space usage */
     padding: 8px;
   }
 
@@ -1464,10 +1464,9 @@
     transform-origin: top;
   }
   
-  /* Adjust container height to match scaled content */
+  /* Remove min-height constraint to let content fill available space naturally */
   .week-view {
-    /* 16 hours * 50px = 800px for default, 24 hours * 50px = 1200px for 24h mode */
-    min-height: 850px;
+    height: 100%; /* Fill parent container */
   }
 }
 
