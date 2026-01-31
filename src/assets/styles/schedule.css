@@ -1347,7 +1347,7 @@
 }
 
 .week-hour {
-  height: 120px;
+  height: 80px; /* Reduced from 120px to 80px for better overview */
   padding: 6px 8px;
   color: var(--dim);
   font-size: 0.85rem;
@@ -1356,7 +1356,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   position: relative;
-  z-index: 1; /* Below headers (z-index: 100) */
+  z-index: 0; /* Below headers (z-index: 100) - ensure hours don't show through */
 }
 
 .week-day-column {
@@ -1687,5 +1687,108 @@
 
   .month-event-more {
     display: none;
+  }
+}
+
+/* ===== Settings Dropdown (Mobile) ===== */
+.settings-dropdown {
+  position: relative;
+  display: none; /* Hidden by default, shown on mobile */
+}
+
+.btn-settings {
+  display: none !important; /* Hidden by default */
+}
+
+.settings-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--glass-hi);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.settings-dropdown-menu button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+  text-align: left;
+}
+
+.settings-dropdown-menu button:hover {
+  background: var(--glass-lo);
+}
+
+/* ===== Desktop Button Ordering (≥421px) ===== */
+@media (min-width: 421px) {
+  /* Today button on left */
+  .layout-schedule .card .card-h button.btn-today {
+    order: -1 !important;
+  }
+
+  /* View mode buttons on right */
+  .layout-schedule .card .card-h button.btn-view-mode {
+    order: 10 !important;
+  }
+
+  /* Push first view mode button to right edge */
+  .layout-schedule .card .card-h button.btn-view-mode:first-of-type {
+    margin-left: auto !important;
+  }
+
+  /* Hide settings button on desktop */
+  .btn-settings {
+    display: none !important;
+  }
+  
+  /* Show Calendars button on desktop */
+  .btn-calendars {
+    display: flex !important;
+  }
+}
+
+/* ===== Mobile Complete Layout (≤420px) ===== */
+@media (max-width: 420px) {
+  /* Show settings button on mobile */
+  .settings-dropdown {
+    display: block;
+  }
+
+  .btn-settings {
+    display: flex !important;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 8px;
+  }
+
+  /* Hide Calendars button on mobile (accessible via settings) */
+  .btn-calendars {
+    display: none !important;
+  }
+
+  /* Row 1: Navigation + Settings (4 columns) */
+  .layout-schedule .card .card-h > div:first-child {
+    display: grid !important;
+    grid-template-columns: 36px 1fr 36px auto !important; /* Prev | Today | Next | Settings */
+    gap: 4px !important;
+  }
+
+  /* Smaller hour height for mobile week view */
+  .week-hour {
+    height: 60px !important; /* Even smaller on mobile for better overview */
   }
 }

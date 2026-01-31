@@ -729,9 +729,34 @@ function Schedule() {
               >
                 <Icon name='chevronRight' />
               </button>
+              {/* Settings button - mobile only, opens dropdown with Calendars */}
+              <div className='settings-dropdown'>
+                <button
+                  className='btn btn-icon btn-settings'
+                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                  aria-label='Settings'
+                  aria-expanded={isSettingsOpen}
+                  title='Settings'
+                >
+                  <Icon name='settings' />
+                </button>
+                {isSettingsOpen && (
+                  <div className='settings-dropdown-menu'>
+                    <button
+                      onClick={() => {
+                        setShowCalendars(!showCalendars)
+                        setIsSettingsOpen(false)
+                      }}
+                      aria-label='Manage calendars'
+                    >
+                      <Icon name='calendar' /> Calendars
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             <button
-              className={`btn ${showCalendars ? 'btn-active' : ''}`}
+              className={`btn btn-calendars ${showCalendars ? 'btn-active' : ''}`}
               onClick={handleToggleCalendars}
               aria-label='Manage calendar subscriptions'
               aria-pressed={showCalendars}
