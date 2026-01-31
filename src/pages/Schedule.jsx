@@ -144,14 +144,29 @@ const TIME_PERIODS = [
 
 const SEPARATOR_POSITIONS = [84, 484, 964] // Adjusted for 80px per hour
 
+// Get dynamic schedule range based on 24-hour setting
+const getScheduleHours = (show24Hours) => {
+  if (show24Hours) {
+    return {
+      start: 0,
+      end: 24,
+      total: 24
+    }
+  }
+  return {
+    start: SCHEDULE_START_HOUR,
+    end: SCHEDULE_END_HOUR,
+    total: SCHEDULE_END_HOUR - SCHEDULE_START_HOUR
+  }
+}
+
 // TODO: Extract timeToPosition and durationToHeight to a testable utility module
 // These functions contain complex logic for time-to-pixel conversion and boundary clamping
 // that should be thoroughly unit tested with various edge cases
 
 // Convert time string (HH:MM) to pixel position
-// Schedule starts at 06:00 (SCHEDULE_START_HOUR), each hour is 80px (PIXELS_PER_HOUR)
 // Returns -1 if time is invalid or outside schedule range
-const timeToPosition = (timeString) => {
+const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, scheduleEndHour = SCHEDULE_END_HOUR) => {
   // Input validation: check for null, type, and format
   if (
     !timeString ||
@@ -168,12 +183,12 @@ const timeToPosition = (timeString) => {
 
   // Validate numeric conversion
   if (isNaN(hours) || isNaN(minutes)) return -1
-  // Check if time falls within schedule window (06:00-22:00)
-  if (hours < SCHEDULE_START_HOUR || hours >= SCHEDULE_END_HOUR) return -1
+  // Check if time falls within schedule window
+  if (hours < scheduleStartHour || hours >= scheduleEndHour) return -1
 
   // Calculate pixel position from schedule start time
   return (
-    (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+    (hours - scheduleStartHour) * PIXELS_PER_HOUR +
     (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
     SCHEDULE_VERTICAL_OFFSET
   )
@@ -262,6 +277,9 @@ function Schedule() {
   const [events, setEvents] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // Display settings
+  const [show24Hours, setShow24Hours] = useState(false) // Toggle for 24-hour display
 
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -874,6 +892,16 @@ function Schedule() {
                     aria-label='Manage calendars'
                   >
                     <Icon name='calendar' /> Calendars
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShow24Hours(!show24Hours)
+                      setIsSettingsOpen(false)
+                    }}
+                    aria-label='Toggle 24-hour display'
+                    title='Show all 24 hours instead of 6am-10pm'
+                  >
+                    🕐 {show24Hours ? '6am-10pm' : '24 Hours'}
                   </button>
                   <button
                     onClick={handleGenerateTestData}
