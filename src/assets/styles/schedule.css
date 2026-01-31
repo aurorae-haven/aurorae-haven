@@ -1,4 +1,22 @@
 /* ===== Schedule ===== */
+:root {
+  /* Responsive hour height - can be adjusted based on screen size */
+  --hour-height: 80px;
+}
+
+/* Adjust hour height for larger screens to use vertical space better */
+@media (min-height: 900px) {
+  :root {
+    --hour-height: 100px;
+  }
+}
+
+@media (min-height: 1080px) {
+  :root {
+    --hour-height: 120px;
+  }
+}
+
 .layout-schedule {
   display: grid;
   grid-template-columns: 300px 1fr;
@@ -21,7 +39,7 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px;
-  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
+  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
   overflow-y: auto;
   overflow-x: hidden;
   /* Smooth transitions for view mode changes */
@@ -38,7 +56,7 @@
 }
 .hour-col {
   display: grid;
-  grid-template-rows: repeat(16, 80px); /* 16 hours * 80px = 1280px total */
+  grid-template-rows: repeat(16, var(--hour-height)); /* Responsive hour height */
 }
 .hour-col .h {
   border-bottom: 1px dashed var(--line);
@@ -1341,7 +1359,7 @@
 
 /* ===== Week View ===== */
 .week-view {
-  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
+  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
   overflow: auto;
 }
 
@@ -1416,7 +1434,7 @@
 }
 
 .week-hour {
-  height: 80px; /* Default: 80px for mobile/tablet */
+  height: var(--hour-height); /* Responsive hour height */
   padding: 6px 8px;
   color: var(--dim);
   font-size: 0.85rem;
@@ -1602,7 +1620,7 @@
 
 /* ===== 3-Day View ===== */
 .threeday-view {
-  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
+  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
   overflow-x: auto;
   overflow-y: auto;
 }
@@ -1632,7 +1650,7 @@
 
 /* ===== Month View ===== */
 .month-view {
-  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
+  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
   overflow-y: auto;
 }
 

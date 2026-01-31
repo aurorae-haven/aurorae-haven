@@ -144,6 +144,19 @@ const TIME_PERIODS = [
 
 const SEPARATOR_POSITIONS = [84, 484, 964] // Adjusted for 80px per hour
 
+// Get dynamic hour height from CSS custom property
+// Falls back to PIXELS_PER_HOUR constant if CSS variable not available
+const getHourHeight = () => {
+  if (typeof window === 'undefined') return PIXELS_PER_HOUR
+  const rootStyles = getComputedStyle(document.documentElement)
+  const hourHeight = rootStyles.getPropertyValue('--hour-height').trim()
+  if (hourHeight) {
+    const parsed = parseInt(hourHeight, 10)
+    return isNaN(parsed) ? PIXELS_PER_HOUR : parsed
+  }
+  return PIXELS_PER_HOUR
+}
+
 // Get dynamic schedule range based on 24-hour setting
 const getScheduleHours = (show24Hours) => {
   if (show24Hours) {
@@ -242,19 +255,21 @@ const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, sch
   // Check if time falls within schedule window
   if (hours < scheduleStartHour || hours >= scheduleEndHour) return -1
 
+  const pixelsPerHour = getHourHeight() // Get dynamic hour height
+
   // Calculate pixel position from schedule start time
   if (use24HourMode) {
     // 24-hour mode: direct calculation, no label rows
     return (
-      (hours - scheduleStartHour) * PIXELS_PER_HOUR +
-      (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+      (hours - scheduleStartHour) * pixelsPerHour +
+      (minutes / MINUTES_PER_HOUR) * pixelsPerHour +
       SCHEDULE_VERTICAL_OFFSET
     )
   } else {
     // 6am-10pm mode: use visual row mapping to account for label rows
     const visualRow = getVisualRowForHour(hours)
-    const minuteOffset = (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
-    return visualRow * PIXELS_PER_HOUR + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+    const minuteOffset = (minutes / MINUTES_PER_HOUR) * pixelsPerHour
+    return visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
   }
 }
 
@@ -323,7 +338,7 @@ const durationToHeight = (startTime, endTime) => {
     0,
     endTotalMinutes - startTotalMinutes
   )
-  return (visibleDurationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+  return (visibleDurationMinutes / MINUTES_PER_HOUR) * getHourHeight()
 }
 
 function Schedule() {
@@ -344,6 +359,22 @@ function Schedule() {
 
   // Display settings
   const [show24Hours, setShow24Hours] = useState(false) // Toggle for 24-hour display
+  
+  // Dynamic hour height (recalculated on mount and resize)
+  const [hourHeight, setHourHeight] = useState(PIXELS_PER_HOUR)
+  
+  // Update hour height from CSS on mount and resize
+  useEffect(() => {
+    const updateHourHeight = () => {
+      setHourHeight(getHourHeight())
+    }
+    updateHourHeight()
+    window.addEventListener('resize', updateHourHeight)
+    return () => window.removeEventListener('resize', updateHourHeight)
+  }, [])
+  
+  // Calculate dynamic slot heights based on hour height
+  const slotHeight = show24Hours ? hourHeight * 24 : hourHeight * 16
 
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -422,20 +453,21 @@ function Schedule() {
       const minutes = now.getMinutes()
       
       const scheduleHours = getScheduleHours(show24Hours)
+      const pixelsPerHour = getHourHeight() // Get dynamic hour height
 
       if (hours >= scheduleHours.start && hours < scheduleHours.end) {
         let position
         if (show24Hours) {
           // 24-hour mode: direct calculation
           position =
-            (hours - scheduleHours.start) * PIXELS_PER_HOUR +
-            (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+            (hours - scheduleHours.start) * pixelsPerHour +
+            (minutes / MINUTES_PER_HOUR) * pixelsPerHour +
             SCHEDULE_VERTICAL_OFFSET
         } else {
           // 6am-10pm mode: use visual row mapping
           const visualRow = getVisualRowForHour(hours)
-          const minuteOffset = (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
-          position = visualRow * PIXELS_PER_HOUR + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+          const minuteOffset = (minutes / MINUTES_PER_HOUR) * pixelsPerHour
+          position = visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
         }
         setCurrentTimePosition(position)
       } else {
@@ -1289,7 +1321,7 @@ function Schedule() {
                     {/* Day columns */}
                     {(viewMode === 'week' ? generateWeekGrid() : generate3DaysGrid()).map((day, dayIndex) => (
                       <div key={dayIndex} className='week-day-column'>
-                        <div className='week-slots' style={{ height: show24Hours ? '1920px' : '1280px', position: 'relative' }}>
+                        <div className='week-slots' style={{ height: `${slotHeight}px`, position: 'relative' }}>
                           {/* Time period backgrounds */}
                           {TIME_PERIODS.map((period) => (
                             <div
@@ -1327,24 +1359,26 @@ function Schedule() {
                             const endHour = eventEnd.getHours()
                             const endMinute = eventEnd.getMinutes()
 
+                            const pixelsPerHour = getHourHeight() // Get dynamic hour height
+                            
                             let eventTop
                             if (show24Hours) {
                               // 24-hour mode: direct calculation, no label rows
                               eventTop =
-                                (startHour - hours.start) * PIXELS_PER_HOUR +
-                                (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+                                (startHour - hours.start) * pixelsPerHour +
+                                (startMinute / MINUTES_PER_HOUR) * pixelsPerHour +
                                 SCHEDULE_VERTICAL_OFFSET
                             } else {
                               // 6am-10pm mode: use visual row mapping to account for label rows
                               const visualRow = getVisualRowForHour(startHour)
                               // Calculate position within the hour based on minutes
-                              const minuteOffset = (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
-                              eventTop = visualRow * PIXELS_PER_HOUR + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+                              const minuteOffset = (startMinute / MINUTES_PER_HOUR) * pixelsPerHour
+                              eventTop = visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
                             }
 
                             const durationMinutes =
                               (endHour - startHour) * MINUTES_PER_HOUR + (endMinute - startMinute)
-                            const eventHeight = (durationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+                            const eventHeight = (durationMinutes / MINUTES_PER_HOUR) * pixelsPerHour
 
                             return (
                               <ScheduleBlock
@@ -1377,7 +1411,7 @@ function Schedule() {
                     </div>
                   ))}
                 </div>
-                <div className='slots' style={{ height: show24Hours ? '1920px' : '1280px' }}>
+                <div className='slots' style={{ height: `${slotHeight}px` }}>
                   {/* Time period backgrounds */}
                   {TIME_PERIODS.map((period) => (
                     <div
@@ -1468,7 +1502,7 @@ function Schedule() {
 
                     // Render preparation time block if present
                     if (event.preparationTime && event.preparationTime > 0) {
-                      const prepTop = timeToPosition(prepStartTime, hours.start, hours.end)
+                      const prepTop = timeToPosition(prepStartTime, hours.start, hours.end, show24Hours)
                       const prepHeight = durationToHeight(
                         prepStartTime,
                         event.startTime
@@ -1493,7 +1527,7 @@ function Schedule() {
                         prepStartTime,
                         event.travelTime
                       )
-                      const travelTop = timeToPosition(travelStartTime, hours.start, hours.end)
+                      const travelTop = timeToPosition(travelStartTime, hours.start, hours.end, show24Hours)
                       const travelHeight = durationToHeight(
                         travelStartTime,
                         prepStartTime
