@@ -1359,14 +1359,18 @@
 
 /* ===== Week View ===== */
 .week-view {
-  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
+  /* Don't override calendar's max-height, inherit it */
+  /* max-height is already set by .calendar */
   overflow: auto;
+  /* Ensure the glass background from .calendar is visible */
+  /* background, border, border-radius, padding are inherited from .calendar */
 }
 
 .week-grid {
   display: flex;
   flex-direction: column;
   min-width: 840px; /* Updated: 100px hour column + 7 days minimum */
+  /* Remove any background that might override .calendar */
 }
 
 .week-header {
@@ -1555,7 +1559,7 @@
 /* Week view on mobile portrait (≤420px) */
 @media (max-width: 420px) {
   .week-view {
-    max-height: calc(100vh - 180px); /* Account for taller mobile header, still more space */
+    /* Don't override max-height, let .calendar handle it with its media query */
     overflow-x: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
@@ -1620,15 +1624,19 @@
 
 /* ===== 3-Day View ===== */
 .threeday-view {
-  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
+  /* Don't override calendar's max-height, inherit it */
+  /* max-height is already set by .calendar */
   overflow-x: auto;
   overflow-y: auto;
+  /* Ensure the glass background from .calendar is visible */
+  /* background, border, border-radius, padding are inherited from .calendar */
 }
 
 .threeday-grid {
   display: flex;
   flex-direction: column;
   min-width: 600px; /* 100px hour column + 3 days */
+  /* Remove any background that might override .calendar */
 }
 
 .threeday-header {
@@ -1650,8 +1658,11 @@
 
 /* ===== Month View ===== */
 .month-view {
-  max-height: calc(100vh - 120px); /* Reduced offset for maximum vertical space */
+  /* Don't override calendar's max-height, inherit it */
+  /* max-height is already set by .calendar */
   overflow-y: auto;
+  /* Ensure the glass background from .calendar is visible */
+  /* background, border, border-radius, padding are inherited from .calendar */
 }
 
 .month-grid {
