@@ -361,28 +361,28 @@ function Schedule() {
   const [hourHeight, setHourHeight] = useState(PIXELS_PER_HOUR)
   
   // Calculate hour height dynamically to fit content on screen without scrolling
-  const calculateDynamicHourHeight = () => {
-    if (typeof window === 'undefined') return PIXELS_PER_HOUR
-    
-    // Get available viewport height
-    const viewportHeight = window.innerHeight
-    
-    // Account for header and controls (navbar ~80px + controls ~60px + padding/margins ~60px = ~200px)
-    const headerOffset = 200
-    const availableHeight = viewportHeight - headerOffset
-    
-    // Calculate hour height based on number of visual rows (18 for 7am-midnight mode, 24 for 24-hour mode)
-    const numRows = show24Hours ? 24 : 18
-    const calculatedHeight = Math.floor(availableHeight / numRows)
-    
-    // Set reasonable bounds: minimum 40px, maximum 120px per hour
-    const minHeight = 40
-    const maxHeight = 120
-    return Math.max(minHeight, Math.min(maxHeight, calculatedHeight))
-  }
-  
   // Update hour height on mount, resize, and view mode change
   useEffect(() => {
+    const calculateDynamicHourHeight = () => {
+      if (typeof window === 'undefined') return PIXELS_PER_HOUR
+      
+      // Get available viewport height
+      const viewportHeight = window.innerHeight
+      
+      // Account for header and controls (navbar ~80px + controls ~60px + padding/margins ~60px = ~200px)
+      const headerOffset = 200
+      const availableHeight = viewportHeight - headerOffset
+      
+      // Calculate hour height based on number of visual rows (18 for 7am-midnight mode, 24 for 24-hour mode)
+      const numRows = show24Hours ? 24 : 18
+      const calculatedHeight = Math.floor(availableHeight / numRows)
+      
+      // Set reasonable bounds: minimum 40px, maximum 120px per hour
+      const minHeight = 40
+      const maxHeight = 120
+      return Math.max(minHeight, Math.min(maxHeight, calculatedHeight))
+    }
+    
     const updateHourHeight = () => {
       const dynamicHeight = calculateDynamicHourHeight()
       setHourHeight(dynamicHeight)
