@@ -294,7 +294,7 @@ const durationToHeight = (startTime, endTime) => {
 }
 
 function Schedule() {
-  // View mode state - 'day', 'week', or 'month'
+  // View mode state - 'day', '3days', 'week', or 'month'
   const [viewMode, setViewMode] = useState('day')
 
   // Date navigation state - track selected date (industry standard)
@@ -317,6 +317,9 @@ function Schedule() {
 
   // Settings dropdown state (mobile only)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+
+  // View mode dropdown state
+  const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false)
 
   // Calendar subscriptions sidebar state
   const [showCalendars, setShowCalendars] = useState(false)
@@ -598,6 +601,8 @@ function Schedule() {
   const goToPrevious = () => {
     if (viewMode === 'day') {
       setSelectedDate((prev) => prev.subtract(1, 'day'))
+    } else if (viewMode === '3days') {
+      setSelectedDate((prev) => prev.subtract(3, 'day'))
     } else if (viewMode === 'week') {
       setSelectedDate((prev) => prev.subtract(1, 'week'))
     } else if (viewMode === 'month') {
@@ -608,6 +613,8 @@ function Schedule() {
   const goToNext = () => {
     if (viewMode === 'day') {
       setSelectedDate((prev) => prev.add(1, 'day'))
+    } else if (viewMode === '3days') {
+      setSelectedDate((prev) => prev.add(3, 'day'))
     } else if (viewMode === 'week') {
       setSelectedDate((prev) => prev.add(1, 'week'))
     } else if (viewMode === 'month') {
@@ -730,6 +737,23 @@ function Schedule() {
     return weekDays // Returns Mon, Tue, Wed, Thu, Fri, Sat, Sun
   }
 
+  const generate3DaysGrid = () => {
+    // Generate 3 consecutive days starting from selectedDate
+    const threeDays = []
+    
+    for (let i = 0; i < 3; i++) {
+      const day = selectedDate.add(i, 'day')
+      const dayEvents = events.filter((event) => event.day === day.format('YYYY-MM-DD'))
+      threeDays.push({
+        date: day,
+        isToday: day.isSame(dayjs(), 'day'),
+        events: dayEvents
+      })
+    }
+    
+    return threeDays
+  }
+
   return (
     <>
       {/* Event Modal */}
@@ -790,9 +814,11 @@ function Schedule() {
             >
               {viewMode === 'month'
                 ? selectedDate.format('MMMM YYYY')
-                : selectedDate.isSame(dayjs(), 'day')
-                  ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
-                  : selectedDate.format('DD/MM/YYYY')}
+                : viewMode === '3days'
+                  ? `${selectedDate.format('MMM D')} - ${selectedDate.add(2, 'day').format('MMM D, YYYY')}`
+                  : selectedDate.isSame(dayjs(), 'day')
+                    ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
+                    : selectedDate.format('DD/MM/YYYY')}
             </button>
             <button
               className='btn btn-icon'
@@ -878,31 +904,71 @@ function Schedule() {
           </div>
 
           {/* Right: View Mode + Settings Group */}
-          <div className='button-group view-group'>
-            <button
-              className={`btn btn-view-mode ${viewMode === 'day' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('day')}
-              aria-label='View day schedule'
-              aria-pressed={viewMode === 'day'}
-            >
-              Day
-            </button>
-            <button
-              className={`btn btn-view-mode ${viewMode === 'week' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('week')}
-              aria-label='View week schedule'
-              aria-pressed={viewMode === 'week'}
-            >
-              Week
-            </button>
-            <button
-              className={`btn btn-view-mode ${viewMode === 'month' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('month')}
-              aria-label='View month schedule'
-              aria-pressed={viewMode === 'month'}
-            >
-              Month
-            </button>
+          <div className='button-group settings-group'>
+            {/* View Mode Dropdown */}
+            <div className='view-mode-dropdown'>
+              <button
+                className='btn btn-view-mode'
+                onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}
+                aria-label='Change view mode'
+                aria-expanded={isViewDropdownOpen}
+                aria-haspopup='menu'
+              >
+                {viewMode === 'day' && '1 Day'}
+                {viewMode === '3days' && '3 Days'}
+                {viewMode === 'week' && '1 Week'}
+                {viewMode === 'month' && '1 Month'}
+                <Icon name='chevronDown' />
+              </button>
+              {isViewDropdownOpen && (
+                <div className='view-dropdown-menu' role='menu'>
+                  <button
+                    className={`view-dropdown-item ${viewMode === 'day' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('day')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 1 day'
+                  >
+                    1 Day
+                  </button>
+                  <button
+                    className={`view-dropdown-item ${viewMode === '3days' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('3days')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 3 days'
+                  >
+                    3 Days
+                  </button>
+                  <button
+                    className={`view-dropdown-item ${viewMode === 'week' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('week')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 1 week'
+                  >
+                    1 Week
+                  </button>
+                  <button
+                    className={`view-dropdown-item ${viewMode === 'month' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('month')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 1 month'
+                  >
+                    1 Month
+                  </button>
+                </div>
+              )}
+            </div>
             
             {/* Settings button with dropdown */}
             <div className='settings-dropdown'>
@@ -1144,24 +1210,24 @@ function Schedule() {
                   </div>
                 </div>
               </div>
-            ) : viewMode === 'week' ? (
-              /* Week View - 7 columns for each day */
-              <div className='calendar week-view'>
-                <div className='week-grid'>
+            ) : viewMode === 'week' || viewMode === '3days' ? (
+              /* Week View or 3 Days View - 7 or 3 columns for each day */
+              <div className={`calendar ${viewMode === 'week' ? 'week-view' : 'threeday-view'}`}>
+                <div className={viewMode === 'week' ? 'week-grid' : 'threeday-grid'}>
                   {/* Day headers */}
-                  <div className='week-header'>
-                    {/* Empty cell for hour column - aligns with .week-hours below */}
+                  <div className={viewMode === 'week' ? 'week-header' : 'threeday-header'}>
+                    {/* Empty cell for hour column - aligns with hours below */}
                     <div className='week-header-spacer'></div>
-                    {/* 7 day headers: Mon, Tue, Wed, Thu, Fri, Sat, Sun */}
-                    {generateWeekGrid().map((day, index) => (
+                    {/* Day headers */}
+                    {(viewMode === 'week' ? generateWeekGrid() : generate3DaysGrid()).map((day, index) => (
                       <div key={index} className={`week-day-header ${day.isToday ? 'today' : ''}`}>
                         <div className='week-day-name'>{day.date.format('ddd')}</div>
                         <div className='week-day-date'>{day.date.format('D')}</div>
                       </div>
                     ))}
                   </div>
-                  {/* Week grid body with time slots */}
-                  <div className='week-body'>
+                  {/* Week/3-day grid body with time slots */}
+                  <div className={viewMode === 'week' ? 'week-body' : 'threeday-body'}>
                     {/* Hour labels column */}
                     <div className='week-hours'>
                       {generateHourLabels(show24Hours).map((hour, index) => (
@@ -1174,7 +1240,7 @@ function Schedule() {
                       ))}
                     </div>
                     {/* Day columns */}
-                    {generateWeekGrid().map((day, dayIndex) => (
+                    {(viewMode === 'week' ? generateWeekGrid() : generate3DaysGrid()).map((day, dayIndex) => (
                       <div key={dayIndex} className='week-day-column'>
                         <div className='week-slots' style={{ height: show24Hours ? '1920px' : '1280px', position: 'relative' }}>
                           {/* Time period backgrounds */}
@@ -1216,7 +1282,8 @@ function Schedule() {
 
                             const eventTop =
                               (startHour - hours.start) * PIXELS_PER_HOUR +
-                              (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+                              (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
+                              SCHEDULE_VERTICAL_OFFSET
 
                             const durationMinutes =
                               (endHour - startHour) * MINUTES_PER_HOUR + (endMinute - startMinute)

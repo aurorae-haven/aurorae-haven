@@ -21,7 +21,7 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
   overflow-y: auto;
   overflow-x: hidden;
   /* Smooth transitions for view mode changes */
@@ -33,7 +33,7 @@
 }
 .hours {
   display: grid;
-  grid-template-columns: 80px 1fr;
+  grid-template-columns: 100px 1fr;
   gap: 0;
 }
 .hour-col {
@@ -770,6 +770,75 @@
   flex-shrink: 0;
 }
 
+/* View mode dropdown styles */
+.view-mode-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.view-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 4px;
+  background: var(--bg);
+  border: 1px solid var(--base);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ink) 15%, transparent);
+  z-index: 1000;
+  min-width: 120px;
+  overflow: hidden;
+  animation: dropdownSlideDown 0.25s ease-out;
+}
+
+@keyframes dropdownSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Respect user's reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .view-dropdown-menu {
+    animation: none;
+  }
+}
+
+.view-dropdown-item {
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 14px;
+  transition: background-color 0.15s ease;
+}
+
+.view-dropdown-item:hover,
+.view-dropdown-item:focus {
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  outline: none;
+}
+
+.view-dropdown-item.active {
+  background: color-mix(in srgb, var(--mint) 15%, transparent);
+  color: var(--mint);
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-dropdown-item {
+    transition: none;
+  }
+}
+
 @media (max-width: 768px) {
   .event-form .form-row {
     grid-template-columns: 1fr;
@@ -1272,19 +1341,19 @@
 
 /* ===== Week View ===== */
 .week-view {
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
   overflow: auto;
 }
 
 .week-grid {
   display: flex;
   flex-direction: column;
-  min-width: 800px; /* Ensure week doesn't get too compressed */
+  min-width: 840px; /* Updated: 100px hour column + 7 days minimum */
 }
 
 .week-header {
   display: grid;
-  grid-template-columns: 60px repeat(7, 1fr);
+  grid-template-columns: 100px repeat(7, 1fr);
   border-bottom: 2px solid var(--line);
   /* Fully opaque background - no transparency to prevent content showing through */
   background: var(--bg-primary);
@@ -1336,7 +1405,7 @@
 
 .week-body {
   display: grid;
-  grid-template-columns: 60px repeat(7, 1fr);
+  grid-template-columns: 100px repeat(7, 1fr);
 }
 
 .week-hours {
@@ -1468,7 +1537,7 @@
 /* Week view on mobile portrait (≤420px) */
 @media (max-width: 420px) {
   .week-view {
-    max-height: calc(100vh - 300px); /* Account for taller mobile header */
+    max-height: calc(100vh - 180px); /* Account for taller mobile header, still more space */
     overflow-x: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
@@ -1531,9 +1600,39 @@
   }
 }
 
+/* ===== 3-Day View ===== */
+.threeday-view {
+  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.threeday-grid {
+  display: flex;
+  flex-direction: column;
+  min-width: 600px; /* 100px hour column + 3 days */
+}
+
+.threeday-header {
+  display: grid;
+  grid-template-columns: 100px repeat(3, 1fr);
+  border-bottom: 2px solid var(--line);
+  background: var(--bg-primary);
+  opacity: 1 !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  gap: 0 1px;
+}
+
+.threeday-body {
+  display: grid;
+  grid-template-columns: 100px repeat(3, 1fr);
+}
+
 /* ===== Month View ===== */
 .month-view {
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 140px); /* Reduced offset for more vertical space */
   overflow-y: auto;
 }
 
