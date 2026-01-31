@@ -24,7 +24,7 @@ The app works directly from your file system - just download, extract, and doubl
 - ✅ Service worker for offline functionality
 - ✅ PWA manifest for installation
 - ✅ All assets optimized and minified
-- ✅ Total size: 1205 KB compressed
+- ✅ Total size: 1211 KB compressed
 
 ## 📚 Full Documentation
 
@@ -42,9 +42,9 @@ Back to the main repository:
 
 This branch is automatically updated on every build. Check the commit timestamp to see when the package was last updated.
 
-**Last Updated**: 2026-01-31 18:41:00 UTC
+**Last Updated**: 2026-01-31 18:44:12 UTC
 **Source Branch**: fix-schedule-tab-issues
-**Source Commit**: 2e24b02
+**Source Commit**: 72f92b9
 
 ---
 
