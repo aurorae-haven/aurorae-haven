@@ -859,10 +859,13 @@ body.density-cozy {
 .shell {
   max-width: 100%;
   width: 100%;
+  min-height: calc(100vh - 70px * var(--density-multiplier));
   margin: 0 auto;
   padding: calc(70px * var(--density-multiplier))
     calc(18px * var(--density-multiplier))
     calc(24px * var(--density-multiplier));
+  display: flex;
+  flex-direction: column;
   transition:
     max-width 0.3s ease,
     padding-left 0.3s ease;
