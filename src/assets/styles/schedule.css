@@ -1745,36 +1745,59 @@
 
 .month-event {
   font-size: 0.75rem;
-  padding: 2px 4px;
-  border-radius: 4px;
+  padding: 4px 6px;
+  border-radius: 8px; /* Increased from 4px to match block styling */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   border-left: 3px solid;
+  /* Match day/week view block styling */
+  border: 1px solid rgba(150, 200, 255, 0.24);
+  border-left: 3px solid #86f5e0;
+  transition: all 0.2s ease;
 }
 
+.month-event:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .month-event:hover {
+    transform: none;
+  }
+}
+
+/* Routine events - default mint color (same as .block default) */
 .month-event.routine {
-  background: rgba(134, 245, 224, 0.2);
-  border-color: var(--mint);
-  color: var(--mint);
+  background: rgba(142, 200, 255, 0.14);
+  border-color: rgba(150, 200, 255, 0.24);
+  border-left: 3px solid #86f5e0;
+  color: var(--ink);
 }
 
+/* Task events - match .block.task styling */
 .month-event.task {
-  background: rgba(134, 192, 245, 0.2);
-  border-color: #86c0f5;
-  color: #86c0f5;
+  background: rgba(200, 180, 255, 0.14);
+  border-color: rgba(200, 180, 255, 0.24);
+  border-left: 3px solid rgba(200, 180, 255, 0.5);
+  color: var(--ink);
 }
 
+/* Meeting events - match .block.meeting styling */
 .month-event.meeting {
-  background: rgba(245, 134, 192, 0.2);
-  border-color: #f586c0;
-  color: #f586c0;
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.24);
+  border-left: 3px solid #94a3b8;
+  color: var(--ink);
 }
 
+/* Habit events - match .block.habit styling */
 .month-event.habit {
-  background: rgba(245, 192, 134, 0.2);
-  border-color: #f5c086;
-  color: #f5c086;
+  background: rgba(20, 184, 166, 0.14);
+  border-color: rgba(20, 184, 166, 0.24);
+  border-left: 3px solid #14b8a6;
+  color: var(--ink);
 }
 
 .month-event-more {
@@ -1797,7 +1820,7 @@
 
   .month-event {
     font-size: 0.7rem;
-    padding: 1px 3px;
+    padding: 3px 5px; /* Slightly reduced padding for mobile */
   }
 
   .month-day-header {
