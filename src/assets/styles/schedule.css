@@ -24,6 +24,12 @@
   max-height: calc(100vh - 200px);
   overflow-y: auto;
   overflow-x: hidden;
+  /* Smooth transitions for view mode changes */
+  transition: opacity 0.2s ease-in-out;
+}
+
+.calendar > * {
+  transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
 .hours {
   display: grid;
@@ -32,7 +38,7 @@
 }
 .hour-col {
   display: grid;
-  grid-template-rows: repeat(16, 120px);
+  grid-template-rows: repeat(16, 80px); /* 16 hours * 80px = 1280px total */
 }
 .hour-col .h {
   border-bottom: 1px dashed var(--line);
@@ -355,6 +361,145 @@
   .layout-schedule .card .card-h > div:last-child {
     width: 100%;
     justify-content: flex-start;
+  }
+}
+
+/* Desktop: Move Today button to the left */
+@media (min-width: 421px) {
+  .layout-schedule .card .card-h > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  /* Today button appears first (on the left) */
+  .layout-schedule .card .card-h > div:first-child button.btn-today {
+    order: -1 !important;
+  }
+
+  /* Previous arrow button appears second */
+  .layout-schedule .card .card-h > div:first-child button:first-child:not(.btn-today) {
+    order: 0 !important;
+  }
+
+  /* Next arrow button appears third */
+  .layout-schedule .card .card-h > div:first-child button:last-child:not(.btn-today) {
+    order: 1 !important;
+  }
+
+  /* View mode buttons (Day/Week/Month) appear on the right */
+  .layout-schedule .card .card-h button.btn-view-mode {
+    order: 10 !important;
+  }
+
+  /* Push first view-mode button to the right */
+  .layout-schedule .card .card-h button.btn-view-mode:first-of-type {
+    margin-left: auto !important;
+  }
+}
+
+/* Additional mobile portrait fixes for very small screens */
+@media (max-width: 420px) {
+  /* Mobile-first redesign for Schedule page */
+  .layout-schedule .card .card-h {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important; /* Space between navigation row and action buttons */
+  }
+
+  .layout-schedule .card .card-h > div:first-child {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 4px !important;
+    order: 1 !important; /* Navigation row with Today (date) button appears first */
+  }
+
+  /* Compact navigation arrow buttons with fixed width */
+  .layout-schedule .card .card-h > div:first-child button:first-child,
+  .layout-schedule .card .card-h > div:first-child button:last-child {
+    padding: 8px !important;
+    min-height: 36px !important;
+    min-width: 36px !important;
+    width: 36px !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Today button (with date) expands to fill remaining space */
+  .layout-schedule .card .card-h > div:first-child button.btn-today {
+    flex: 1 !important;
+    font-size: 13px !important;
+    padding: 8px 12px !important;
+    min-height: 36px !important;
+    text-align: center !important;
+    font-weight: 600 !important;
+  }
+
+  .layout-schedule .card .card-h > div:last-child {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 4px !important;
+    order: 2 !important; /* Action buttons appear second */
+  }
+
+  /* Create segmented control for view modes (Day/Week/Month) */
+  .layout-schedule .card .card-h button[aria-label*="View"] {
+    flex: 1 !important;
+    padding: 8px 4px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+  }
+
+  .layout-schedule .card .card-h button[aria-label*="View"].btn-active {
+    background: var(--mint) !important;
+    color: var(--paper) !important;
+  }
+
+  /* Hide Calendars button on mobile - less critical */
+  .layout-schedule .card .card-h button[aria-label="Manage calendar subscriptions"] {
+    display: none !important;
+  }
+
+  /* Schedule dropdown button spans full width below view modes */
+  .layout-schedule .schedule-dropdown {
+    grid-column: 1 / -1 !important;
+  }
+
+  .layout-schedule .schedule-dropdown > button {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    padding: 10px !important;
+    font-weight: 600 !important;
+  }
+
+  /* Optimize calendar for mobile portrait */
+  .calendar {
+    max-height: calc(100vh - 300px);
+    padding: 8px;
+  }
+
+  /* Reduce hour column width on very narrow screens */
+  .hours {
+    grid-template-columns: 50px 1fr;
+  }
+
+  .hour-col .h {
+    font-size: 0.8rem;
+    padding: 4px 4px;
+  }
+
+  /* Hide sidebar on mobile portrait to maximize calendar space */
+  .sidebar {
+    display: none;
+  }
+
+  /* Make calendar take full width without sidebar */
+  .layout-schedule {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1122,5 +1267,575 @@
 
   .calendar-subscription-actions {
     justify-content: flex-end;
+  }
+}
+
+/* ===== Week View ===== */
+.week-view {
+  max-height: calc(100vh - 200px);
+  overflow: auto;
+}
+
+.week-grid {
+  display: flex;
+  flex-direction: column;
+  min-width: 800px; /* Ensure week doesn't get too compressed */
+}
+
+.week-header {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  border-bottom: 2px solid var(--line);
+  /* Fully opaque background - no transparency to prevent content showing through */
+  background: var(--bg-primary);
+  opacity: 1 !important; /* Force full opacity */
+  position: sticky;
+  top: 0;
+  z-index: 100; /* Increased to ensure it stays above all scrolling content */
+  gap: 0 1px; /* Ensure headers don't overlap */
+}
+
+.week-header-spacer {
+  /* Empty spacer cell that aligns with hour column below */
+  background: transparent;
+  border-right: 1px solid var(--line);
+}
+
+.week-day-header {
+  padding: 12px 8px;
+  text-align: center;
+  border-left: 1px solid var(--line);
+}
+
+/* First day header (Monday) should not have left border since spacer has right border */
+.week-header-spacer + .week-day-header {
+  border-left: none;
+}
+
+.week-day-header.today {
+  background: color-mix(in srgb, var(--mint) 10%, transparent);
+  border-radius: 8px;
+}
+
+.week-day-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.week-day-date {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 4px;
+}
+
+.week-day-header.today .week-day-date {
+  color: var(--mint);
+}
+
+.week-body {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+}
+
+.week-hours {
+  border-right: 1px solid var(--line);
+  background: var(--glass-lo);
+  position: relative;
+  z-index: 1; /* Below headers but above background */
+}
+
+.week-hour {
+  height: 80px; /* Default: 80px for mobile/tablet */
+  padding: 6px 8px;
+  color: var(--dim);
+  font-size: 0.85rem;
+  border-bottom: 1px dashed var(--line);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  position: relative;
+  z-index: 0; /* Below headers (z-index: 100) - ensure hours don't show through */
+}
+
+/* Desktop: Reduce week hour height to 50px max for better overview */
+@media (min-width: 1024px) {
+  .week-hour {
+    height: 50px;
+    padding: 4px 6px;
+    font-size: 0.75rem;
+  }
+  
+  /* Scale week grid to match 50px hour height (50/80 = 0.625) */
+  .week-view .week-grid {
+    transform: scaleY(0.625);
+    transform-origin: top;
+  }
+  
+  /* Adjust container height to match scaled content */
+  .week-view {
+    /* 16 hours * 50px = 800px for default, 24 hours * 50px = 1200px for 24h mode */
+    min-height: 850px;
+  }
+}
+
+.week-day-column {
+  border-left: 1px solid var(--line);
+  position: relative;
+}
+
+.week-slots {
+  position: relative;
+  border-left: 1px solid var(--line);
+  z-index: 2; /* Above hour labels (z-index: 1) but below headers (z-index: 100) */
+}
+
+.week-slots .block {
+  margin: 2px 4px;
+  font-size: 0.8rem;
+  position: relative;
+  z-index: 2; /* Ensure events stay above hour labels */
+}
+
+.week-slots .block .title {
+  font-size: 0.75rem;
+}
+
+.week-slots .block .meta {
+  font-size: 0.7rem;
+}
+
+/* Week view on mobile */
+@media (max-width: 768px) {
+  .week-view {
+    overflow-x: auto;
+  }
+  
+  .week-grid {
+    min-width: 600px;
+  }
+  
+  .week-header {
+    grid-template-columns: 50px repeat(7, minmax(80px, 1fr));
+  }
+  
+  .week-body {
+    grid-template-columns: 50px repeat(7, minmax(80px, 1fr));
+  }
+  
+  .week-day-name {
+    font-size: 0.75rem;
+  }
+  
+  .week-day-date {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .week-grid {
+    min-width: 500px;
+  }
+  
+  .week-header {
+    grid-template-columns: 40px repeat(7, minmax(65px, 1fr));
+  }
+  
+  .week-body {
+    grid-template-columns: 40px repeat(7, minmax(65px, 1fr));
+  }
+  
+  .week-hour {
+    font-size: 0.7rem;
+    padding: 4px 4px;
+  }
+  
+  .week-slots .block {
+    margin: 1px 2px;
+    padding: 4px;
+  }
+  
+  .week-slots .block .title {
+    font-size: 0.65rem;
+  }
+  
+  .week-slots .block .meta {
+    font-size: 0.6rem;
+  }
+}
+
+/* Week view on mobile portrait (≤420px) */
+@media (max-width: 420px) {
+  .week-view {
+    max-height: calc(100vh - 300px); /* Account for taller mobile header */
+    overflow-x: auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+  
+  .week-grid {
+    /* Ensure minimum width shows all 7 days: 30px hour + 7*50px days = 380px */
+    /* Increased to 450px to ensure no cropping on any mobile device */
+    min-width: 450px;
+    width: max-content;
+  }
+  
+  .week-header {
+    /* Reduced hour column to 30px, 50px minimum per day for better fit */
+    grid-template-columns: 30px repeat(7, minmax(50px, 1fr));
+    gap: 0; /* Remove gap to save space */
+  }
+  
+  .week-body {
+    /* Match header: 30px hour + 50px minimum per day */
+    grid-template-columns: 30px repeat(7, minmax(50px, 1fr));
+  }
+  
+  .week-day-header {
+    padding: 8px 4px;
+  }
+  
+  .week-day-name {
+    font-size: 0.65rem;
+  }
+  
+  .week-day-date {
+    font-size: 0.9rem;
+  }
+  
+  .week-hour {
+    font-size: 0.65rem;
+    padding: 3px 2px;
+    height: 100px; /* Reduce hour height for more compact view */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .week-slots .block {
+    margin: 1px;
+    padding: 2px 3px;
+    font-size: 0.6rem;
+  }
+  
+  .week-slots .block .title {
+    font-size: 0.6rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  .week-slots .block .meta {
+    display: none; /* Hide metadata on very small screens */
+  }
+}
+
+/* ===== Month View ===== */
+.month-view {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.month-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.month-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border-bottom: 2px solid var(--line);
+  padding: 8px 0;
+}
+
+.month-day-header {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--dim);
+  padding: 8px;
+}
+
+.month-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+
+.month-cell {
+  background: rgba(16, 20, 44, 0.4);
+  min-height: 100px;
+  padding: 8px;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.month-cell:hover {
+  background: rgba(35, 45, 100, 0.3);
+}
+
+.month-cell:focus {
+  outline: 2px solid var(--mint);
+  outline-offset: -2px;
+}
+
+.month-cell.other-month {
+  opacity: 0.4;
+}
+
+.month-cell.today {
+  background: rgba(134, 245, 224, 0.15);
+  border: 2px solid var(--mint);
+}
+
+.month-cell-date {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.month-cell.today .month-cell-date {
+  color: var(--mint);
+}
+
+.month-cell-events {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.month-event {
+  font-size: 0.75rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-left: 3px solid;
+}
+
+.month-event.routine {
+  background: rgba(134, 245, 224, 0.2);
+  border-color: var(--mint);
+  color: var(--mint);
+}
+
+.month-event.task {
+  background: rgba(134, 192, 245, 0.2);
+  border-color: #86c0f5;
+  color: #86c0f5;
+}
+
+.month-event.meeting {
+  background: rgba(245, 134, 192, 0.2);
+  border-color: #f586c0;
+  color: #f586c0;
+}
+
+.month-event.habit {
+  background: rgba(245, 192, 134, 0.2);
+  border-color: #f5c086;
+  color: #f5c086;
+}
+
+.month-event-more {
+  font-size: 0.65rem;
+  color: var(--dim);
+  padding: 2px 4px;
+  font-style: italic;
+}
+
+/* Month view responsive */
+@media (max-width: 768px) {
+  .month-cell {
+    min-height: 80px;
+    padding: 6px;
+  }
+
+  .month-cell-date {
+    font-size: 0.8rem;
+  }
+
+  .month-event {
+    font-size: 0.7rem;
+    padding: 1px 3px;
+  }
+
+  .month-day-header {
+    font-size: 0.75rem;
+    padding: 6px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .month-cell {
+    min-height: 60px;
+    padding: 4px;
+  }
+
+  .month-cell-date {
+    font-size: 0.75rem;
+  }
+
+  .month-event {
+    font-size: 0.65rem;
+  }
+
+  .month-day-header {
+    font-size: 0.7rem;
+    padding: 4px 2px;
+  }
+
+  /* Show only event dots on very small screens */
+  .month-event {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    padding: 0;
+    text-indent: -9999px;
+    border-left: none;
+  }
+
+  .month-event-more {
+    display: none;
+  }
+}
+
+/* ===== Settings Dropdown (Mobile) ===== */
+.settings-dropdown {
+  position: relative;
+  display: none; /* Hidden by default, shown on mobile */
+}
+
+.btn-settings {
+  display: none !important; /* Hidden by default */
+}
+
+.settings-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--glass-hi);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 180px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.settings-dropdown-menu button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--ink);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+  text-align: left;
+}
+
+.settings-dropdown-menu button:hover {
+  background: var(--glass-lo);
+}
+
+/* ===== Desktop Button Grouping (≥421px) ===== */
+@media (min-width: 421px) {
+  /* Main header layout with button groups */
+  .layout-schedule .card .card-h {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  /* Button group styling */
+  .button-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* Navigation group on the left */
+  .nav-group {
+    order: 1;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  /* Action group in center-left */
+  .action-group {
+    order: 2;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* View mode + settings group on the right */
+  .view-group {
+    order: 3;
+    margin-left: auto; /* Push to right */
+    background: rgba(255, 255, 255, 0.02);
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  /* Hide settings button on desktop, show in view-group */
+  .btn-settings {
+    display: flex !important;
+  }
+  
+  /* Show Calendars button on desktop */
+  .btn-calendars {
+    display: flex !important;
+  }
+}
+
+/* ===== Mobile Complete Layout (≤420px) ===== */
+@media (max-width: 420px) {
+  /* Show settings button on mobile */
+  .settings-dropdown {
+    display: block;
+  }
+
+  .btn-settings {
+    display: flex !important;
+    min-width: 36px;
+    min-height: 36px;
+    padding: 8px;
+  }
+
+  /* Hide Calendars button on mobile (accessible via settings) */
+  .btn-calendars {
+    display: none !important;
+  }
+
+  /* Row 1: Navigation + Settings (4 columns) */
+  .layout-schedule .card .card-h > div:first-child {
+    display: grid !important;
+    grid-template-columns: 36px 1fr 36px auto !important; /* Prev | Today | Next | Settings */
+    gap: 4px !important;
+  }
+
+  /* Smaller hour height for mobile week view */
+  .week-hour {
+    height: 60px !important; /* Even smaller on mobile for better overview */
   }
 }

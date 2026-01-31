@@ -1,15 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
-import CalendarSubscriptionModal from '../components/Schedule/CalendarSubscriptionModal'
+import ConfirmDialog from '../components/common/ConfirmDialog'
 import {
   createEvent,
   getEventsForDay,
-  getEventsForWeek
+  getEventsForWeek,
+  getEventsForRange
 } from '../utils/scheduleManager'
+import {
+  getCalendarSubscriptions,
+  addCalendarSubscription,
+  deleteCalendarSubscription,
+  updateCalendarSubscription,
+  syncCalendar
+} from '../utils/calendarSubscriptionManager'
 import { createLogger } from '../utils/logger'
-import { getCurrentDateISO, subtractDuration } from '../utils/timeUtils'
+import { subtractDuration } from '../utils/timeUtils'
+import { generateTestData } from '../utils/testDataGenerator'
 import dayjs from 'dayjs'
 import {
   EVENT_TYPES,
@@ -128,21 +137,67 @@ const SCHEDULE_BLOCKS = [
 ]
 
 const TIME_PERIODS = [
-  { className: 'time-period-morning', top: 0, height: 720 },
-  { className: 'time-period-afternoon', top: 720, height: 720 },
-  { className: 'time-period-evening', top: 1440, height: 480 }
+  { className: 'time-period-morning', top: 0, height: 480 }, // 0-6 hours * 80px
+  { className: 'time-period-afternoon', top: 480, height: 480 }, // 6-12 hours * 80px
+  { className: 'time-period-evening', top: 960, height: 320 } // 12-16 hours * 80px
 ]
 
-const SEPARATOR_POSITIONS = [126, 726, 1446]
+const SEPARATOR_POSITIONS = [84, 484, 964] // Adjusted for 80px per hour
+
+// Get dynamic schedule range based on 24-hour setting
+const getScheduleHours = (show24Hours) => {
+  if (show24Hours) {
+    return {
+      start: 0,
+      end: 24,
+      total: 24
+    }
+  }
+  return {
+    start: SCHEDULE_START_HOUR,
+    end: SCHEDULE_END_HOUR,
+    total: SCHEDULE_END_HOUR - SCHEDULE_START_HOUR
+  }
+}
+
+// Generate hour labels based on 24-hour display setting
+const generateHourLabels = (show24Hours) => {
+  if (show24Hours) {
+    // 24-hour mode: 00:00 to 23:00, no period labels
+    return Array.from({ length: 24 }, (_, i) => ({
+      label: `${String(i).padStart(2, '0')}:00`,
+      isLabel: false
+    }))
+  }
+  
+  // 6am-10pm mode with period labels
+  return [
+    { label: '06:00', isLabel: false },
+    { label: 'Morning', isLabel: true },
+    { label: '08:00', isLabel: false },
+    { label: '09:00', isLabel: false },
+    { label: '10:00', isLabel: false },
+    { label: '11:00', isLabel: false },
+    { label: 'Afternoon', isLabel: true },
+    { label: '13:00', isLabel: false },
+    { label: '14:00', isLabel: false },
+    { label: '15:00', isLabel: false },
+    { label: '16:00', isLabel: false },
+    { label: '17:00', isLabel: false },
+    { label: 'Evening', isLabel: true },
+    { label: '19:00', isLabel: false },
+    { label: '20:00', isLabel: false },
+    { label: '21:00', isLabel: false }
+  ]
+}
 
 // TODO: Extract timeToPosition and durationToHeight to a testable utility module
 // These functions contain complex logic for time-to-pixel conversion and boundary clamping
 // that should be thoroughly unit tested with various edge cases
 
 // Convert time string (HH:MM) to pixel position
-// Schedule starts at 06:00 (SCHEDULE_START_HOUR), each hour is 120px (PIXELS_PER_HOUR)
 // Returns -1 if time is invalid or outside schedule range
-const timeToPosition = (timeString) => {
+const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, scheduleEndHour = SCHEDULE_END_HOUR) => {
   // Input validation: check for null, type, and format
   if (
     !timeString ||
@@ -159,12 +214,12 @@ const timeToPosition = (timeString) => {
 
   // Validate numeric conversion
   if (isNaN(hours) || isNaN(minutes)) return -1
-  // Check if time falls within schedule window (06:00-22:00)
-  if (hours < SCHEDULE_START_HOUR || hours >= SCHEDULE_END_HOUR) return -1
+  // Check if time falls within schedule window
+  if (hours < scheduleStartHour || hours >= scheduleEndHour) return -1
 
   // Calculate pixel position from schedule start time
   return (
-    (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+    (hours - scheduleStartHour) * PIXELS_PER_HOUR +
     (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
     SCHEDULE_VERTICAL_OFFSET
   )
@@ -239,21 +294,42 @@ const durationToHeight = (startTime, endTime) => {
 }
 
 function Schedule() {
-  // View mode state - 'day' or 'week'
+  // View mode state - 'day', 'week', or 'month'
   const [viewMode, setViewMode] = useState('day')
+
+  // Date navigation state - track selected date (industry standard)
+  const [selectedDate, setSelectedDate] = useState(dayjs())
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedEventType, setSelectedEventType] = useState(null)
-  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false)
 
   // Events state
   const [events, setEvents] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // Display settings
+  const [show24Hours, setShow24Hours] = useState(false) // Toggle for 24-hour display
+
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  // Settings dropdown state (mobile only)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+
+  // Calendar subscriptions sidebar state
+  const [showCalendars, setShowCalendars] = useState(false)
+  const [subscriptions, setSubscriptions] = useState([])
+  const [subsLoading, setSubsLoading] = useState(false)
+  const [showAddForm, setShowAddForm] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    url: '',
+    color: '#86f5e0',
+    enabled: true
+  })
 
   // Refs for timeout cleanup and menu items caching
   const tabTimeoutRef = useRef(null)
@@ -263,40 +339,52 @@ function Schedule() {
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
 
-  // Load events based on view mode
-  useEffect(() => {
-    const loadEvents = async () => {
-      setIsLoading(true)
-      setError('')
-      try {
-        const loadedEvents =
-          viewMode === 'day'
-            ? await getEventsForDay(getCurrentDateISO())
-            : await getEventsForWeek()
-        // Ensure loadedEvents is always an array
-        setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
-      } catch (err) {
-        logger.error('Failed to load events:', err)
-        setEvents([])
-        setError('Failed to load schedule events')
-      } finally {
-        setIsLoading(false)
+  // Load events function (extracted so it can be reused)
+  const loadEvents = useCallback(async () => {
+    setIsLoading(true)
+    setError('')
+    try {
+      let loadedEvents
+      if (viewMode === 'day') {
+        loadedEvents = await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
+      } else if (viewMode === 'week') {
+        loadedEvents = await getEventsForWeek()
+      } else if (viewMode === 'month') {
+        // Get first and last day of the month view (includes prev/next month days)
+        const startOfMonth = selectedDate.startOf('month').startOf('week')
+        const endOfMonth = selectedDate.endOf('month').endOf('week')
+        loadedEvents = await getEventsForRange(
+          startOfMonth.format('YYYY-MM-DD'),
+          endOfMonth.format('YYYY-MM-DD')
+        )
       }
+      // Ensure loadedEvents is always an array
+      setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
+    } catch (err) {
+      logger.error('Failed to load events:', err)
+      setEvents([])
+      setError('Failed to load schedule events')
+    } finally {
+      setIsLoading(false)
     }
+  }, [viewMode, selectedDate])
 
+  // Load events based on view mode and selected date
+  useEffect(() => {
     loadEvents()
-  }, [viewMode])
+  }, [loadEvents])
 
   useEffect(() => {
     const updateCurrentTime = () => {
       const now = new Date()
       const hours = now.getHours()
       const minutes = now.getMinutes()
+      
+      const scheduleHours = getScheduleHours(show24Hours)
 
-      // Position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
-      if (hours >= SCHEDULE_START_HOUR && hours < SCHEDULE_END_HOUR) {
+      if (hours >= scheduleHours.start && hours < scheduleHours.end) {
         const position =
-          (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+          (hours - scheduleHours.start) * PIXELS_PER_HOUR +
           (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
           SCHEDULE_VERTICAL_OFFSET
         setCurrentTimePosition(position)
@@ -309,7 +397,25 @@ function Schedule() {
     const interval = setInterval(updateCurrentTime, 60000) // Update every minute
 
     return () => clearInterval(interval)
-  }, [])
+  }, [show24Hours])
+
+  // Load calendar subscriptions when calendars section is shown
+  useEffect(() => {
+    if (showCalendars) {
+      const loadSubscriptions = async () => {
+        setSubsLoading(true)
+        try {
+          const subs = await getCalendarSubscriptions()
+          setSubscriptions(subs)
+        } catch (err) {
+          logger.error('Failed to load subscriptions:', err)
+        } finally {
+          setSubsLoading(false)
+        }
+      }
+      loadSubscriptions()
+    }
+  }, [showCalendars])
 
   // Handle opening modal for adding events
   const handleAddEvent = (eventType) => {
@@ -460,7 +566,7 @@ function Schedule() {
       // Reload events after creating new one, keeping the current view/date
       const loadedEvents =
         viewMode === 'day'
-          ? await getEventsForDay(getCurrentDateISO())
+          ? await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
           : await getEventsForWeek()
       // Ensure loadedEvents is always an array
       setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
@@ -484,6 +590,146 @@ function Schedule() {
     setViewMode(mode)
   }
 
+  // Navigation handlers (industry standard)
+  const goToToday = () => {
+    setSelectedDate(dayjs())
+  }
+
+  const goToPrevious = () => {
+    if (viewMode === 'day') {
+      setSelectedDate((prev) => prev.subtract(1, 'day'))
+    } else if (viewMode === 'week') {
+      setSelectedDate((prev) => prev.subtract(1, 'week'))
+    } else if (viewMode === 'month') {
+      setSelectedDate((prev) => prev.subtract(1, 'month'))
+    }
+  }
+
+  const goToNext = () => {
+    if (viewMode === 'day') {
+      setSelectedDate((prev) => prev.add(1, 'day'))
+    } else if (viewMode === 'week') {
+      setSelectedDate((prev) => prev.add(1, 'week'))
+    } else if (viewMode === 'month') {
+      setSelectedDate((prev) => prev.add(1, 'month'))
+    }
+  }
+
+  // Calendar subscription handlers
+  const handleToggleCalendars = () => {
+    setShowCalendars(!showCalendars)
+  }
+
+  const handleAddSubscription = async () => {
+    if (!formData.name || !formData.url) return
+
+    try {
+      await addCalendarSubscription(formData)
+      setShowAddForm(false)
+      setFormData({ name: '', url: '', color: '#86f5e0', enabled: true })
+      // Reload subscriptions
+      const subs = await getCalendarSubscriptions()
+      setSubscriptions(subs)
+    } catch (err) {
+      logger.error('Failed to add subscription:', err)
+    }
+  }
+
+  const handleDeleteSubscription = async () => {
+    if (!confirmDelete) return
+
+    try {
+      await deleteCalendarSubscription(confirmDelete.id)
+      setConfirmDelete(null)
+      // Reload subscriptions
+      const subs = await getCalendarSubscriptions()
+      setSubscriptions(subs)
+    } catch (err) {
+      logger.error('Failed to delete subscription:', err)
+    }
+  }
+
+  const handleToggleSubscription = async (id, enabled) => {
+    try {
+      await updateCalendarSubscription(id, { enabled: !enabled })
+      // Reload subscriptions
+      const subs = await getCalendarSubscriptions()
+      setSubscriptions(subs)
+    } catch (err) {
+      logger.error('Failed to toggle subscription:', err)
+    }
+  }
+
+  const handleSyncSubscription = async (id, name) => {
+    try {
+      await syncCalendar(id)
+      logger.info(`Synced calendar: ${name}`)
+      // Could show a success toast here
+    } catch (err) {
+      logger.error(`Failed to sync calendar ${name}:`, err)
+      // Could show an error toast here
+    }
+  }
+
+  // Test data handler
+  const handleGenerateTestData = async () => {
+    try {
+      const count = await generateTestData()
+      logger.info(`Generated ${count} test events`)
+      
+      // Reload events
+      await loadEvents()
+      
+      // Close settings menu
+      setIsSettingsOpen(false)
+      
+      // Show success message (optional - could add a toast notification)
+      // Successfully generated test events
+    } catch (error) {
+      logger.error('Failed to generate test data:', error)
+      // Error generating test data
+    }
+  }
+
+  // Generate month calendar grid (6 weeks x 7 days = 42 days)
+  const generateMonthGrid = () => {
+    const startOfMonth = selectedDate.startOf('month')
+    const startOfGrid = startOfMonth.startOf('week') // Sunday of first week
+    const grid = []
+
+    for (let i = 0; i < 42; i++) {
+      const day = startOfGrid.add(i, 'day')
+      const dayEvents = events.filter((event) => event.day === day.format('YYYY-MM-DD'))
+      grid.push({
+        date: day,
+        isCurrentMonth: day.month() === selectedDate.month(),
+        isToday: day.isSame(dayjs(), 'day'),
+        events: dayEvents
+      })
+    }
+
+    return grid
+  }
+
+  // Generate week grid (7 days starting from selected date's week start)
+  const generateWeekGrid = () => {
+    // Start from Monday (add 1 day to Sunday start)
+    const startOfWeek = selectedDate.startOf('week').add(1, 'day') // Monday
+    const weekDays = []
+    
+    for (let i = 0; i < 7; i++) {
+      const day = startOfWeek.add(i, 'day')
+      const dayEvents = events.filter((event) => event.day === day.format('YYYY-MM-DD'))
+      weekDays.push({
+        date: day,
+        isToday: day.isSame(dayjs(), 'day'),
+        events: dayEvents
+      })
+    }
+    
+    return weekDays // Returns Mon, Tue, Wed, Thu, Fri, Sat, Sun
+  }
+
   return (
     <>
       {/* Event Modal */}
@@ -494,11 +740,17 @@ function Schedule() {
         eventType={selectedEventType}
       />
 
-      {/* Calendar Subscription Modal */}
-      <CalendarSubscriptionModal
-        isOpen={isCalendarModalOpen}
-        onClose={() => setIsCalendarModalOpen(false)}
-      />
+      {/* Confirm Delete Dialog */}
+      {confirmDelete && (
+        <ConfirmDialog
+          isOpen={!!confirmDelete}
+          title='Delete Calendar'
+          message={`Are you sure you want to delete "${confirmDelete.name}"? This action cannot be undone.`}
+          confirmLabel='Delete'
+          onConfirm={handleDeleteSubscription}
+          onCancel={() => setConfirmDelete(null)}
+        />
+      )}
 
       {/* Error notification */}
       {error && (
@@ -518,54 +770,65 @@ function Schedule() {
 
       <div className='card'>
         <div className='card-h'>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <strong>Schedule</strong>
-            <span className='small'>
-              Today · {dayjs().format('ddd DD/MM/YYYY')}
-            </span>
-          </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          {/* Button groups for clear visual hierarchy - Industry standard UX */}
+          
+          {/* Left: Navigation Group */}
+          <div className='button-group nav-group'>
             <button
-              className='btn'
-              onClick={() => setIsCalendarModalOpen(true)}
+              className='btn btn-icon'
+              onClick={goToPrevious}
+              aria-label={`Previous ${viewMode}`}
+              title={`Previous ${viewMode}`}
+            >
+              <Icon name='chevronLeft' />
+            </button>
+            <button
+              className='btn btn-today'
+              onClick={goToToday}
+              aria-label='Go to today'
+              title='Go to today'
+            >
+              {viewMode === 'month'
+                ? selectedDate.format('MMMM YYYY')
+                : selectedDate.isSame(dayjs(), 'day')
+                  ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
+                  : selectedDate.format('DD/MM/YYYY')}
+            </button>
+            <button
+              className='btn btn-icon'
+              onClick={goToNext}
+              aria-label={`Next ${viewMode}`}
+              title={`Next ${viewMode}`}
+            >
+              <Icon name='chevronRight' />
+            </button>
+          </div>
+
+          {/* Center-Left: Action Group */}
+          <div className='button-group action-group'>
+            {/* Calendars button - desktop only */}
+            <button
+              className={`btn btn-calendars ${showCalendars ? 'btn-active' : ''}`}
+              onClick={handleToggleCalendars}
               aria-label='Manage calendar subscriptions'
+              aria-pressed={showCalendars}
             >
               <Icon name='calendar' /> Calendars
             </button>
-            <button
-              className={`btn ${viewMode === 'day' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('day')}
-              aria-label='View day schedule'
-              aria-pressed={viewMode === 'day'}
-            >
-              Day
-            </button>
-            <button
-              className={`btn ${viewMode === 'week' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('week')}
-              aria-label='View week schedule'
-              aria-pressed={viewMode === 'week'}
-            >
-              Week
-            </button>
+            
             {/* Unified dropdown for scheduling all event types */}
             <div className='schedule-dropdown'>
               <button
                 className='btn'
                 onClick={(e) => {
-                  // Handle both mouse and keyboard activation
-                  // Keyboard (Space/Enter) activation is handled in onKeyDown to enable preventDefault
-                  // This onClick filters out keyboard-initiated clicks (detail === 0) to prevent double-triggering
                   if (e.detail !== 0) {
-                    // detail is 0 for keyboard-initiated clicks
                     toggleDropdown(e)
                   }
                 }}
                 onKeyDown={(e) => {
-                  // Only respond to Enter and Space keys for dropdown toggle
                   const key = e.key
                   if (key === 'Enter' || key === ' ') {
-                    e.preventDefault() // Prevent default to avoid double-triggering onClick
+                    e.preventDefault()
                     toggleDropdown(e)
                   }
                 }}
@@ -613,6 +876,77 @@ function Schedule() {
               )}
             </div>
           </div>
+
+          {/* Right: View Mode + Settings Group */}
+          <div className='button-group view-group'>
+            <button
+              className={`btn btn-view-mode ${viewMode === 'day' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('day')}
+              aria-label='View day schedule'
+              aria-pressed={viewMode === 'day'}
+            >
+              Day
+            </button>
+            <button
+              className={`btn btn-view-mode ${viewMode === 'week' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('week')}
+              aria-label='View week schedule'
+              aria-pressed={viewMode === 'week'}
+            >
+              Week
+            </button>
+            <button
+              className={`btn btn-view-mode ${viewMode === 'month' ? 'btn-active' : ''}`}
+              onClick={() => handleViewModeChange('month')}
+              aria-label='View month schedule'
+              aria-pressed={viewMode === 'month'}
+            >
+              Month
+            </button>
+            
+            {/* Settings button with dropdown */}
+            <div className='settings-dropdown'>
+              <button
+                className='btn btn-icon btn-settings'
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                aria-label='Settings'
+                aria-expanded={isSettingsOpen}
+                title='Settings'
+              >
+                <Icon name='settings' />
+              </button>
+              {isSettingsOpen && (
+                <div className='settings-dropdown-menu'>
+                  <button
+                    onClick={() => {
+                      setShowCalendars(!showCalendars)
+                      setIsSettingsOpen(false)
+                    }}
+                    aria-label='Manage calendars'
+                  >
+                    <Icon name='calendar' /> Calendars
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShow24Hours(!show24Hours)
+                      setIsSettingsOpen(false)
+                    }}
+                    aria-label='Toggle 24-hour display'
+                    title={show24Hours ? 'Switch to 6am-10pm view' : 'Switch to 24-hour view'}
+                  >
+                    🕐 {show24Hours ? 'Switch to 6am-10pm' : 'Switch to 24 Hours'}
+                  </button>
+                  <button
+                    onClick={handleGenerateTestData}
+                    aria-label='Generate test data'
+                    title='Populate schedule with sample events'
+                  >
+                    🎨 Generate Test Data
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
         <div className='card-b layout-schedule'>
           {isLoading && (
@@ -621,7 +955,117 @@ function Schedule() {
             </div>
           )}
           <aside className='sidebar'>
-            <div className='card'>
+            {/* Calendar Subscriptions Section */}
+            {showCalendars && (
+              <div className='card'>
+                <div className='card-h'>
+                  <strong>Calendars</strong>
+                  <button
+                    className='btn btn-sm'
+                    onClick={() => setShowAddForm(!showAddForm)}
+                    aria-label={showAddForm ? 'Cancel add calendar' : 'Add calendar'}
+                  >
+                    <Icon name={showAddForm ? 'x' : 'plus'} />
+                  </button>
+                </div>
+                <div className='card-b'>
+                  {subsLoading ? (
+                    <div style={{ padding: '12px', textAlign: 'center', color: 'var(--text-dimmed)' }}>
+                      Loading...
+                    </div>
+                  ) : (
+                    <>
+                      {/* Add Form */}
+                      {showAddForm && (
+                        <div style={{ padding: '12px', borderBottom: '1px solid var(--border)' }}>
+                          <input
+                            type='text'
+                            placeholder='Calendar name'
+                            value={formData.name}
+                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                            style={{ width: '100%', marginBottom: '8px' }}
+                            className='input'
+                          />
+                          <input
+                            type='url'
+                            placeholder='Calendar URL (iCal/ics)'
+                            value={formData.url}
+                            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                            style={{ width: '100%', marginBottom: '8px' }}
+                            className='input'
+                          />
+                          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                            <input
+                              type='color'
+                              value={formData.color}
+                              onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                              style={{ width: '40px', height: '32px' }}
+                            />
+                            <button
+                              className='btn btn-primary'
+                              onClick={handleAddSubscription}
+                              style={{ flex: 1 }}
+                            >
+                              Add Calendar
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Subscriptions List */}
+                      {subscriptions.length === 0 ? (
+                        <div style={{ padding: '12px', textAlign: 'center', color: 'var(--text-dimmed)' }}>
+                          No calendars yet. Click + to add one.
+                        </div>
+                      ) : (
+                        <div className='list'>
+                          {subscriptions.map((sub) => (
+                            <div key={sub.id} className='list-row' style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div
+                                style={{
+                                  width: '12px',
+                                  height: '12px',
+                                  borderRadius: '50%',
+                                  backgroundColor: sub.color,
+                                  flexShrink: 0
+                                }}
+                              />
+                              <input
+                                type='checkbox'
+                                checked={sub.enabled}
+                                onChange={() => handleToggleSubscription(sub.id, sub.enabled)}
+                                aria-label={`Toggle ${sub.name}`}
+                              />
+                              <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                {sub.name}
+                              </span>
+                              <button
+                                className='btn btn-sm btn-icon'
+                                onClick={() => handleSyncSubscription(sub.id, sub.name)}
+                                aria-label={`Sync ${sub.name}`}
+                                title='Sync calendar'
+                              >
+                                <Icon name='refresh' />
+                              </button>
+                              <button
+                                className='btn btn-sm btn-icon'
+                                onClick={() => setConfirmDelete({ id: sub.id, name: sub.name })}
+                                aria-label={`Delete ${sub.name}`}
+                                title='Delete calendar'
+                              >
+                                <Icon name='trash' />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div className='card' style={{ marginTop: showCalendars ? '12px' : 0 }}>
               <div className='card-h'>
                 <strong>Today&apos;s queue</strong>
               </div>
@@ -647,27 +1091,169 @@ function Schedule() {
             </div>
           </aside>
           <section>
-            <div className='calendar'>
+            {viewMode === 'month' ? (
+              /* Month View */
+              <div className='calendar month-view'>
+                <div className='month-grid'>
+                  {/* Day headers */}
+                  <div className='month-header'>
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                      <div key={day} className='month-day-header'>
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                  {/* Date cells */}
+                  <div className='month-body'>
+                    {generateMonthGrid().map((cell, index) => (
+                      <div
+                        key={index}
+                        className={`month-cell ${!cell.isCurrentMonth ? 'other-month' : ''} ${cell.isToday ? 'today' : ''}`}
+                        onClick={() => {
+                          setSelectedDate(cell.date)
+                          setViewMode('day')
+                        }}
+                        role='button'
+                        tabIndex={0}
+                        aria-label={`${cell.date.format('MMMM D, YYYY')}${cell.events.length > 0 ? `, ${cell.events.length} event${cell.events.length > 1 ? 's' : ''}` : ''}`}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            setSelectedDate(cell.date)
+                            setViewMode('day')
+                          }
+                        }}
+                      >
+                        <div className='month-cell-date'>{cell.date.format('D')}</div>
+                        {cell.events.length > 0 && (
+                          <div className='month-cell-events'>
+                            {cell.events.slice(0, 3).map((event, idx) => (
+                              <div key={idx} className={`month-event ${event.type}`}>
+                                {event.title}
+                              </div>
+                            ))}
+                            {cell.events.length > 3 && (
+                              <div className='month-event-more'>
+                                +{cell.events.length - 3} more
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : viewMode === 'week' ? (
+              /* Week View - 7 columns for each day */
+              <div className='calendar week-view'>
+                <div className='week-grid'>
+                  {/* Day headers */}
+                  <div className='week-header'>
+                    {/* Empty cell for hour column - aligns with .week-hours below */}
+                    <div className='week-header-spacer'></div>
+                    {/* 7 day headers: Mon, Tue, Wed, Thu, Fri, Sat, Sun */}
+                    {generateWeekGrid().map((day, index) => (
+                      <div key={index} className={`week-day-header ${day.isToday ? 'today' : ''}`}>
+                        <div className='week-day-name'>{day.date.format('ddd')}</div>
+                        <div className='week-day-date'>{day.date.format('D')}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Week grid body with time slots */}
+                  <div className='week-body'>
+                    {/* Hour labels column */}
+                    <div className='week-hours'>
+                      {generateHourLabels(show24Hours).map((hour, index) => (
+                        <div 
+                          key={index} 
+                          className={`week-hour ${hour.isLabel ? 'time-period-label' : ''}`}
+                        >
+                          {hour.label}
+                        </div>
+                      ))}
+                    </div>
+                    {/* Day columns */}
+                    {generateWeekGrid().map((day, dayIndex) => (
+                      <div key={dayIndex} className='week-day-column'>
+                        <div className='week-slots' style={{ height: show24Hours ? '1920px' : '1280px', position: 'relative' }}>
+                          {/* Time period backgrounds */}
+                          {TIME_PERIODS.map((period) => (
+                            <div
+                              key={period.className}
+                              className={period.className}
+                              style={{
+                                position: 'absolute',
+                                top: `${period.top}px`,
+                                left: '0',
+                                right: '0',
+                                height: `${period.height}px`
+                              }}
+                              aria-hidden='true'
+                            />
+                          ))}
+                          
+                          {/* Current time indicator - only show on today's column */}
+                          {day.isToday && currentTimePosition > 0 && (
+                            <div
+                              className='current-time-indicator'
+                              style={{ top: `${currentTimePosition}px` }}
+                              aria-label='Current time'
+                            >
+                              <span className='current-time-label'>Now</span>
+                            </div>
+                          )}
+                          
+                          {/* Events for this day */}
+                          {day.events.map((event, eventIndex) => {
+                            const hours = getScheduleHours(show24Hours)
+                            const eventStart = new Date(`2000-01-01T${event.startTime}`)
+                            const eventEnd = new Date(`2000-01-01T${event.endTime}`)
+                            const startHour = eventStart.getHours()
+                            const startMinute = eventStart.getMinutes()
+                            const endHour = eventEnd.getHours()
+                            const endMinute = eventEnd.getMinutes()
+
+                            const eventTop =
+                              (startHour - hours.start) * PIXELS_PER_HOUR +
+                              (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+
+                            const durationMinutes =
+                              (endHour - startHour) * MINUTES_PER_HOUR + (endMinute - startMinute)
+                            const eventHeight = (durationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+
+                            return (
+                              <ScheduleBlock
+                                key={eventIndex}
+                                type={event.type}
+                                title={event.title}
+                                time={`${event.startTime}–${event.endTime}`}
+                                top={eventTop}
+                                height={eventHeight}
+                              />
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              /* Day View */
+              <div className='calendar'>
               <div className='hours'>
                 <div className='hour-col'>
-                  <div className='h'>06:00</div>
-                  <div className='h time-period-label'>Morning</div>
-                  <div className='h'>08:00</div>
-                  <div className='h'>09:00</div>
-                  <div className='h'>10:00</div>
-                  <div className='h'>11:00</div>
-                  <div className='h time-period-label'>Afternoon</div>
-                  <div className='h'>13:00</div>
-                  <div className='h'>14:00</div>
-                  <div className='h'>15:00</div>
-                  <div className='h'>16:00</div>
-                  <div className='h'>17:00</div>
-                  <div className='h time-period-label'>Evening</div>
-                  <div className='h'>19:00</div>
-                  <div className='h'>20:00</div>
-                  <div className='h'>21:00</div>
+                  {generateHourLabels(show24Hours).map((hour, index) => (
+                    <div 
+                      key={index} 
+                      className={`h ${hour.isLabel ? 'time-period-label' : ''}`}
+                    >
+                      {hour.label}
+                    </div>
+                  ))}
                 </div>
-                <div className='slots' style={{ height: '1920px' }}>
+                <div className='slots' style={{ height: show24Hours ? '1920px' : '1280px' }}>
                   {/* Time period backgrounds */}
                   {TIME_PERIODS.map((period) => (
                     <div
@@ -734,8 +1320,11 @@ function Schedule() {
                       return acc
                     }
 
+                    // Get dynamic schedule hours based on display mode
+                    const hours = getScheduleHours(show24Hours)
+
                     // Compute layout metrics once per event (performance optimization)
-                    const top = timeToPosition(event.startTime)
+                    const top = timeToPosition(event.startTime, hours.start, hours.end)
                     const height = durationToHeight(
                       event.startTime,
                       event.endTime
@@ -755,7 +1344,7 @@ function Schedule() {
 
                     // Render preparation time block if present
                     if (event.preparationTime && event.preparationTime > 0) {
-                      const prepTop = timeToPosition(prepStartTime)
+                      const prepTop = timeToPosition(prepStartTime, hours.start, hours.end)
                       const prepHeight = durationToHeight(
                         prepStartTime,
                         event.startTime
@@ -780,7 +1369,7 @@ function Schedule() {
                         prepStartTime,
                         event.travelTime
                       )
-                      const travelTop = timeToPosition(travelStartTime)
+                      const travelTop = timeToPosition(travelStartTime, hours.start, hours.end)
                       const travelHeight = durationToHeight(
                         travelStartTime,
                         prepStartTime
@@ -821,6 +1410,7 @@ function Schedule() {
                 </div>
               </div>
             </div>
+            )}
           </section>
         </div>
       </div>

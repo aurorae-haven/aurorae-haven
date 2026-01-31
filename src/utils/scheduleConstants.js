@@ -19,8 +19,8 @@ export const VALID_EVENT_TYPES = Object.values(EVENT_TYPES)
 export const SCHEDULE_START_HOUR = 6
 export const SCHEDULE_END_HOUR = 22
 
-// Display constants - each hour occupies 120 pixels in the UI
-export const PIXELS_PER_HOUR = 120
+// Display constants - each hour occupies 80 pixels in the UI (reduced for better overview)
+export const PIXELS_PER_HOUR = 80
 export const SCHEDULE_VERTICAL_OFFSET = 6
 
 // Default event duration (in minutes)
