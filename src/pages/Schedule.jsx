@@ -136,19 +136,19 @@ const SCHEDULE_BLOCKS = [
 ]
 
 const TIME_PERIODS = [
-  { className: 'time-period-morning', top: 0, height: 720 },
-  { className: 'time-period-afternoon', top: 720, height: 720 },
-  { className: 'time-period-evening', top: 1440, height: 480 }
+  { className: 'time-period-morning', top: 0, height: 480 }, // 0-6 hours * 80px
+  { className: 'time-period-afternoon', top: 480, height: 480 }, // 6-12 hours * 80px
+  { className: 'time-period-evening', top: 960, height: 320 } // 12-16 hours * 80px
 ]
 
-const SEPARATOR_POSITIONS = [126, 726, 1446]
+const SEPARATOR_POSITIONS = [84, 484, 964] // Adjusted for 80px per hour
 
 // TODO: Extract timeToPosition and durationToHeight to a testable utility module
 // These functions contain complex logic for time-to-pixel conversion and boundary clamping
 // that should be thoroughly unit tested with various edge cases
 
 // Convert time string (HH:MM) to pixel position
-// Schedule starts at 06:00 (SCHEDULE_START_HOUR), each hour is 120px (PIXELS_PER_HOUR)
+// Schedule starts at 06:00 (SCHEDULE_START_HOUR), each hour is 80px (PIXELS_PER_HOUR)
 // Returns -1 if time is invalid or outside schedule range
 const timeToPosition = (timeString) => {
   // Input validation: check for null, type, and format
@@ -1089,7 +1089,7 @@ function Schedule() {
                     {/* Day columns */}
                     {generateWeekGrid().map((day, dayIndex) => (
                       <div key={dayIndex} className='week-day-column'>
-                        <div className='week-slots' style={{ height: '1920px', position: 'relative' }}>
+                        <div className='week-slots' style={{ height: '1280px', position: 'relative' }}>
                           {/* Time period backgrounds */}
                           {TIME_PERIODS.map((period) => (
                             <div
@@ -1105,6 +1105,17 @@ function Schedule() {
                               aria-hidden='true'
                             />
                           ))}
+                          
+                          {/* Current time indicator - only show on today's column */}
+                          {day.isToday && currentTimePosition > 0 && (
+                            <div
+                              className='current-time-indicator'
+                              style={{ top: `${currentTimePosition}px` }}
+                              aria-label='Current time'
+                            >
+                              <span className='current-time-label'>Now</span>
+                            </div>
+                          )}
                           
                           {/* Events for this day */}
                           {day.events.map((event, eventIndex) => {
@@ -1162,7 +1173,7 @@ function Schedule() {
                   <div className='h'>20:00</div>
                   <div className='h'>21:00</div>
                 </div>
-                <div className='slots' style={{ height: '1920px' }}>
+                <div className='slots' style={{ height: '1280px' }}>
                   {/* Time period backgrounds */}
                   {TIME_PERIODS.map((period) => (
                     <div

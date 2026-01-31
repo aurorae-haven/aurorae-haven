@@ -38,7 +38,7 @@
 }
 .hour-col {
   display: grid;
-  grid-template-rows: repeat(16, 120px);
+  grid-template-rows: repeat(16, 80px); /* 16 hours * 80px = 1280px total */
 }
 .hour-col .h {
   border-bottom: 1px dashed var(--line);
