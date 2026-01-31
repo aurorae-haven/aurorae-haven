@@ -265,6 +265,9 @@ function Schedule() {
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
+  // Settings dropdown state (mobile only)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+
   // Calendar subscriptions sidebar state
   const [showCalendars, setShowCalendars] = useState(false)
   const [subscriptions, setSubscriptions] = useState([])
@@ -638,7 +641,8 @@ function Schedule() {
 
   // Generate week grid (7 days starting from selected date's week start)
   const generateWeekGrid = () => {
-    const startOfWeek = selectedDate.startOf('week') // Sunday
+    // Start from Monday (add 1 day to Sunday start)
+    const startOfWeek = selectedDate.startOf('week').add(1, 'day') // Monday
     const weekDays = []
     
     for (let i = 0; i < 7; i++) {
@@ -651,7 +655,7 @@ function Schedule() {
       })
     }
     
-    return weekDays
+    return weekDays // Returns Mon, Tue, Wed, Thu, Fri, Sat, Sun
   }
 
   return (
@@ -1026,9 +1030,9 @@ function Schedule() {
                 <div className='week-grid'>
                   {/* Day headers */}
                   <div className='week-header'>
-                    {/* Empty cell for hour column */}
-                    <div></div>
-                    {/* 7 day headers: Sun, Mon, Tue, Wed, Thu, Fri, Sat */}
+                    {/* Empty cell for hour column - aligns with .week-hours below */}
+                    <div className='week-header-spacer'></div>
+                    {/* 7 day headers: Mon, Tue, Wed, Thu, Fri, Sat, Sun */}
                     {generateWeekGrid().map((day, index) => (
                       <div key={index} className={`week-day-header ${day.isToday ? 'today' : ''}`}>
                         <div className='week-day-name'>{day.date.format('ddd')}</div>

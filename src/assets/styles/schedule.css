@@ -1295,13 +1295,20 @@
   gap: 0 1px; /* Ensure headers don't overlap */
 }
 
+.week-header-spacer {
+  /* Empty spacer cell that aligns with hour column below */
+  background: transparent;
+  border-right: 1px solid var(--line);
+}
+
 .week-day-header {
   padding: 12px 8px;
   text-align: center;
   border-left: 1px solid var(--line);
 }
 
-.week-day-header:first-child {
+/* First day header (Monday) should not have left border since spacer has right border */
+.week-header-spacer + .week-day-header {
   border-left: none;
 }
 
