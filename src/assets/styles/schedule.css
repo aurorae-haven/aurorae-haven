@@ -1388,7 +1388,7 @@
 
 .week-header-spacer {
   /* Empty spacer cell that aligns with hour column below */
-  background: transparent;
+  background: var(--bg-primary); /* Match header background to prevent hours showing through */
   border-right: 1px solid var(--line);
 }
 
