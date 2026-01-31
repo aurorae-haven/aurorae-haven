@@ -18,6 +18,7 @@ import {
 } from '../utils/calendarSubscriptionManager'
 import { createLogger } from '../utils/logger'
 import { subtractDuration } from '../utils/timeUtils'
+import { generateTestData } from '../utils/testDataGenerator'
 import dayjs from 'dayjs'
 import {
   EVENT_TYPES,
@@ -619,6 +620,26 @@ function Schedule() {
     }
   }
 
+  // Test data handler
+  const handleGenerateTestData = async () => {
+    try {
+      const count = await generateTestData()
+      logger.info(`Generated ${count} test events`)
+      
+      // Reload events
+      await loadEvents()
+      
+      // Close settings menu
+      setIsSettingsOpen(false)
+      
+      // Show success message (optional - could add a toast notification)
+      console.log(`✅ Successfully generated ${count} test events!`)
+    } catch (error) {
+      logger.error('Failed to generate test data:', error)
+      console.error('❌ Error generating test data:', error)
+    }
+  }
+
   // Generate month calendar grid (6 weeks x 7 days = 42 days)
   const generateMonthGrid = () => {
     const startOfMonth = selectedDate.startOf('month')
@@ -750,6 +771,13 @@ function Schedule() {
                       aria-label='Manage calendars'
                     >
                       <Icon name='calendar' /> Calendars
+                    </button>
+                    <button
+                      onClick={handleGenerateTestData}
+                      aria-label='Generate test data'
+                      title='Populate schedule with sample events'
+                    >
+                      🎨 Generate Test Data
                     </button>
                   </div>
                 )}
