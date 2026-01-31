@@ -88,7 +88,7 @@ describe('Schedule Component', () => {
 
   test('renders time labels for schedule', () => {
     render(<Schedule />)
-    expect(screen.getByText('06:00')).toBeInTheDocument()
+    expect(screen.getByText('07:00')).toBeInTheDocument()
     expect(screen.getByText('Morning')).toBeInTheDocument()
     expect(screen.getByText('Afternoon')).toBeInTheDocument()
     expect(screen.getByText('Evening')).toBeInTheDocument()
@@ -129,8 +129,8 @@ describe('Schedule Component', () => {
   })
 
   test('hides current time indicator outside business hours', () => {
-    // Set time to 23:00 (11 PM - outside schedule range)
-    jest.setSystemTime(new Date('2025-09-16T23:00:00'))
+    // Set time to 01:00 (1 AM - outside schedule range of 7am-midnight)
+    jest.setSystemTime(new Date('2025-09-16T01:00:00'))
     render(<Schedule />)
     expect(screen.queryByLabelText('Current time')).not.toBeInTheDocument()
   })
