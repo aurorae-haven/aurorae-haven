@@ -16,8 +16,8 @@ export const EVENT_TYPES = {
 export const VALID_EVENT_TYPES = Object.values(EVENT_TYPES)
 
 // Schedule time range constants (in hours, 24-hour format)
-export const SCHEDULE_START_HOUR = 6
-export const SCHEDULE_END_HOUR = 22
+export const SCHEDULE_START_HOUR = 7
+export const SCHEDULE_END_HOUR = 24 // Midnight (00:00 next day)
 
 // Display constants - each hour occupies 80 pixels in the UI (reduced for better overview)
 export const PIXELS_PER_HOUR = 80

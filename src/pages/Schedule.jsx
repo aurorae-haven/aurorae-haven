@@ -5,6 +5,7 @@ import EventModal from '../components/Schedule/EventModal'
 import ConfirmDialog from '../components/common/ConfirmDialog'
 import {
   createEvent,
+  deleteEvent,
   getEventsForDay,
   getEventsForWeek,
   getEventsForRange
@@ -108,41 +109,20 @@ TimePreparationBlock.propTypes = {
   time: PropTypes.string.isRequired
 }
 
-// Static configuration data - defined outside component to prevent recreation on every render
-const SCHEDULE_BLOCKS = [
-  {
-    type: EVENT_TYPES.ROUTINE,
-    title: 'Morning Launch',
-    time: '07:00–07:30',
-    top: 126,
-    height: 60
-  },
-  {
-    type: EVENT_TYPES.MEETING,
-    title: 'Team Standup',
-    time: '10:00–10:30',
-    top: 486,
-    height: 60,
-    className: 'next-up',
-    isNext: true
-  },
-  {
-    type: EVENT_TYPES.TASK,
-    className: 'not-urgent-important',
-    title: 'Buy groceries',
-    time: '16:00–16:30',
-    top: 1206,
-    height: 60
+// Static demo blocks removed - use "Generate Test Data" for realistic events
+
+// Get dynamic hour height from CSS custom property
+// Falls back to PIXELS_PER_HOUR constant if CSS variable not available
+const getHourHeight = () => {
+  if (typeof window === 'undefined') return PIXELS_PER_HOUR
+  const rootStyles = getComputedStyle(document.documentElement)
+  const hourHeight = rootStyles.getPropertyValue('--hour-height').trim()
+  if (hourHeight) {
+    const parsed = parseInt(hourHeight, 10)
+    return isNaN(parsed) ? PIXELS_PER_HOUR : parsed
   }
-]
-
-const TIME_PERIODS = [
-  { className: 'time-period-morning', top: 0, height: 480 }, // 0-6 hours * 80px
-  { className: 'time-period-afternoon', top: 480, height: 480 }, // 6-12 hours * 80px
-  { className: 'time-period-evening', top: 960, height: 320 } // 12-16 hours * 80px
-]
-
-const SEPARATOR_POSITIONS = [84, 484, 964] // Adjusted for 80px per hour
+  return PIXELS_PER_HOUR
+}
 
 // Get dynamic schedule range based on 24-hour setting
 const getScheduleHours = (show24Hours) => {
@@ -170,11 +150,10 @@ const generateHourLabels = (show24Hours) => {
     }))
   }
   
-  // 6am-10pm mode with period labels
+  // 7am-midnight mode with period labels
   return [
-    { label: '06:00', isLabel: false },
+    { label: '07:00', isLabel: false },
     { label: 'Morning', isLabel: true },
-    { label: '08:00', isLabel: false },
     { label: '09:00', isLabel: false },
     { label: '10:00', isLabel: false },
     { label: '11:00', isLabel: false },
@@ -187,8 +166,39 @@ const generateHourLabels = (show24Hours) => {
     { label: 'Evening', isLabel: true },
     { label: '19:00', isLabel: false },
     { label: '20:00', isLabel: false },
-    { label: '21:00', isLabel: false }
+    { label: '21:00', isLabel: false },
+    { label: '22:00', isLabel: false },
+    { label: '23:00', isLabel: false },
+    { label: '00:00', isLabel: false }
   ]
+}
+
+// Helper function to get visual row index for a given hour in 7am-midnight mode
+// Accounts for "Morning", "Afternoon", "Evening" label rows
+const getVisualRowForHour = (hour) => {
+  // Map of hour to visual row index
+  const hourToRow = {
+    7: 0,   // 07:00
+    8: 1,   // Falls in "Morning" label row
+    9: 2,   // 09:00
+    10: 3,  // 10:00
+    11: 4,  // 11:00
+    12: 5,  // Falls in "Afternoon" label row
+    13: 6,  // 13:00
+    14: 7,  // 14:00
+    15: 8,  // 15:00
+    16: 9,  // 16:00
+    17: 10, // 17:00
+    18: 11, // Falls in "Evening" label row
+    19: 12, // 19:00
+    20: 13, // 20:00
+    21: 14, // 21:00
+    22: 15, // 22:00
+    23: 16, // 23:00
+    0: 17,  // 00:00 (midnight)
+    24: 17  // 24:00 (also midnight)
+  }
+  return hourToRow[hour] ?? 0
 }
 
 // TODO: Extract timeToPosition and durationToHeight to a testable utility module
@@ -197,7 +207,7 @@ const generateHourLabels = (show24Hours) => {
 
 // Convert time string (HH:MM) to pixel position
 // Returns -1 if time is invalid or outside schedule range
-const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, scheduleEndHour = SCHEDULE_END_HOUR) => {
+const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, scheduleEndHour = SCHEDULE_END_HOUR, use24HourMode = false) => {
   // Input validation: check for null, type, and format
   if (
     !timeString ||
@@ -217,16 +227,26 @@ const timeToPosition = (timeString, scheduleStartHour = SCHEDULE_START_HOUR, sch
   // Check if time falls within schedule window
   if (hours < scheduleStartHour || hours >= scheduleEndHour) return -1
 
+  const pixelsPerHour = getHourHeight() // Get dynamic hour height
+
   // Calculate pixel position from schedule start time
-  return (
-    (hours - scheduleStartHour) * PIXELS_PER_HOUR +
-    (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
-    SCHEDULE_VERTICAL_OFFSET
-  )
+  if (use24HourMode) {
+    // 24-hour mode: direct calculation, no label rows
+    return (
+      (hours - scheduleStartHour) * pixelsPerHour +
+      (minutes / MINUTES_PER_HOUR) * pixelsPerHour +
+      SCHEDULE_VERTICAL_OFFSET
+    )
+  } else {
+    // 6am-10pm mode: use visual row mapping to account for label rows
+    const visualRow = getVisualRowForHour(hours)
+    const minuteOffset = (minutes / MINUTES_PER_HOUR) * pixelsPerHour
+    return visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+  }
 }
 
 // Convert duration in minutes to pixel height
-// Clamps event times to visible schedule window (06:00-22:00) to prevent overflow
+// Clamps event times to visible schedule window (07:00-00:00) to prevent overflow
 const durationToHeight = (startTime, endTime) => {
   // Input validation: check for null, type, and format
   if (
@@ -262,8 +282,8 @@ const durationToHeight = (startTime, endTime) => {
   }
 
   // Convert schedule hours to minutes for easier calculation
-  const scheduleStartMinutes = SCHEDULE_START_HOUR * MINUTES_PER_HOUR // 360 minutes (06:00)
-  const scheduleEndMinutes = SCHEDULE_END_HOUR * MINUTES_PER_HOUR // 1320 minutes (22:00)
+  const scheduleStartMinutes = SCHEDULE_START_HOUR * MINUTES_PER_HOUR // 420 minutes (07:00)
+  const scheduleEndMinutes = SCHEDULE_END_HOUR * MINUTES_PER_HOUR // 1440 minutes (00:00/24:00)
 
   let startTotalMinutes = startHours * MINUTES_PER_HOUR + startMinutes
   let endTotalMinutes = endHours * MINUTES_PER_HOUR + endMinutes
@@ -277,7 +297,7 @@ const durationToHeight = (startTime, endTime) => {
   }
 
   // Clamp event times to the visible schedule window to prevent overflow rendering
-  // This handles events that start before 06:00 or end after 22:00
+  // This handles events that start before 07:00 or end after 00:00
   if (startTotalMinutes < scheduleStartMinutes) {
     startTotalMinutes = scheduleStartMinutes
   }
@@ -290,11 +310,11 @@ const durationToHeight = (startTime, endTime) => {
     0,
     endTotalMinutes - startTotalMinutes
   )
-  return (visibleDurationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+  return (visibleDurationMinutes / MINUTES_PER_HOUR) * getHourHeight()
 }
 
 function Schedule() {
-  // View mode state - 'day', 'week', or 'month'
+  // View mode state - 'day', '3days', 'week', or 'month'
   const [viewMode, setViewMode] = useState('day')
 
   // Date navigation state - track selected date (industry standard)
@@ -311,12 +331,76 @@ function Schedule() {
 
   // Display settings
   const [show24Hours, setShow24Hours] = useState(false) // Toggle for 24-hour display
+  
+  // Dynamic hour height (recalculated on mount and resize)
+  const [hourHeight, setHourHeight] = useState(PIXELS_PER_HOUR)
+  
+  // Calculate hour height dynamically to fit content on screen without scrolling
+  // Update hour height on mount, resize, and view mode change
+  useEffect(() => {
+    const calculateDynamicHourHeight = () => {
+      if (typeof window === 'undefined') return PIXELS_PER_HOUR
+      
+      // Get available viewport height
+      const viewportHeight = window.innerHeight
+      
+      // Account for header and controls (navbar ~80px + controls ~60px + padding ~20px = ~160px)
+      const headerOffset = 160
+      const availableHeight = viewportHeight - headerOffset
+      
+      // Calculate hour height based on number of visual rows (18 for 7am-midnight mode, 24 for 24-hour mode)
+      const numRows = show24Hours ? 24 : 18
+      const calculatedHeight = Math.floor(availableHeight / numRows)
+      
+      // Set reasonable bounds: minimum 40px, maximum 120px per hour
+      const minHeight = 40
+      const maxHeight = 120
+      return Math.max(minHeight, Math.min(maxHeight, calculatedHeight))
+    }
+    
+    const updateHourHeight = () => {
+      const dynamicHeight = calculateDynamicHourHeight()
+      setHourHeight(dynamicHeight)
+      
+      // Update CSS custom property so CSS can use the same value
+      if (typeof document !== 'undefined') {
+        document.documentElement.style.setProperty('--hour-height', `${dynamicHeight}px`)
+      }
+    }
+    
+    updateHourHeight()
+    window.addEventListener('resize', updateHourHeight)
+    return () => window.removeEventListener('resize', updateHourHeight)
+  }, [show24Hours]) // Recalculate when 24-hour mode changes
+  
+  // Calculate dynamic slot heights based on hour height
+  const slotHeight = show24Hours ? hourHeight * 24 : hourHeight * 18 // 18 visual rows for 7am-midnight with labels
+
+  // Calculate time periods dynamically based on hour height
+  // Rows 0-4 (07:00-11:00): 5 rows for morning
+  // Rows 5-10 (12:00-17:00): 6 rows for afternoon  
+  // Rows 11-17 (18:00-00:00): 7 rows for evening
+  const timePeriods = [
+    { className: 'time-period-morning', top: 0, height: hourHeight * 5 },
+    { className: 'time-period-afternoon', top: hourHeight * 5, height: hourHeight * 6 },
+    { className: 'time-period-evening', top: hourHeight * 11, height: hourHeight * 7 }
+  ]
+  
+  // Separator positions after each period label (rows 1, 5, 11)
+  const separatorPositions = [
+    hourHeight * 1 + 4, // After "Morning" label (row 1) + 4px visual offset
+    hourHeight * 5 + 4, // After "Afternoon" label (row 5) + 4px visual offset
+    hourHeight * 11 + 4 // After "Evening" label (row 11) + 4px visual offset
+  ]
 
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   // Settings dropdown state (mobile only)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+
+  // View mode dropdown state
+  const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false)
 
   // Calendar subscriptions sidebar state
   const [showCalendars, setShowCalendars] = useState(false)
@@ -347,6 +431,11 @@ function Schedule() {
       let loadedEvents
       if (viewMode === 'day') {
         loadedEvents = await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
+      } else if (viewMode === '3days') {
+        // Load events for 3 consecutive days starting from selectedDate
+        const startDate = selectedDate.format('YYYY-MM-DD')
+        const endDate = selectedDate.add(2, 'day').format('YYYY-MM-DD')
+        loadedEvents = await getEventsForRange(startDate, endDate)
       } else if (viewMode === 'week') {
         loadedEvents = await getEventsForWeek()
       } else if (viewMode === 'month') {
@@ -381,12 +470,25 @@ function Schedule() {
       const minutes = now.getMinutes()
       
       const scheduleHours = getScheduleHours(show24Hours)
+      const pixelsPerHour = getHourHeight() // Get dynamic hour height
 
       if (hours >= scheduleHours.start && hours < scheduleHours.end) {
-        const position =
-          (hours - scheduleHours.start) * PIXELS_PER_HOUR +
-          (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
-          SCHEDULE_VERTICAL_OFFSET
+        let position
+        if (show24Hours) {
+          // 24-hour mode: direct calculation
+          position =
+            (hours - scheduleHours.start) * pixelsPerHour +
+            (minutes / MINUTES_PER_HOUR) * pixelsPerHour +
+            SCHEDULE_VERTICAL_OFFSET
+        } else {
+          // 7am-midnight mode: use visual row mapping
+          const visualRow = getVisualRowForHour(hours)
+          const minuteOffset = (minutes / MINUTES_PER_HOUR) * pixelsPerHour
+          position = visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+        }
+        
+        // No scaling needed - hour heights are now calculated dynamically
+        
         setCurrentTimePosition(position)
       } else {
         setCurrentTimePosition(-1) // Hide if outside schedule range
@@ -395,9 +497,15 @@ function Schedule() {
 
     updateCurrentTime()
     const interval = setInterval(updateCurrentTime, 60000) // Update every minute
+    
+    // Update on window resize to handle crossing 1024px breakpoint
+    window.addEventListener('resize', updateCurrentTime)
 
-    return () => clearInterval(interval)
-  }, [show24Hours])
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('resize', updateCurrentTime)
+    }
+  }, [show24Hours, viewMode])
 
   // Load calendar subscriptions when calendars section is shown
   useEffect(() => {
@@ -598,6 +706,8 @@ function Schedule() {
   const goToPrevious = () => {
     if (viewMode === 'day') {
       setSelectedDate((prev) => prev.subtract(1, 'day'))
+    } else if (viewMode === '3days') {
+      setSelectedDate((prev) => prev.subtract(3, 'day'))
     } else if (viewMode === 'week') {
       setSelectedDate((prev) => prev.subtract(1, 'week'))
     } else if (viewMode === 'month') {
@@ -608,6 +718,8 @@ function Schedule() {
   const goToNext = () => {
     if (viewMode === 'day') {
       setSelectedDate((prev) => prev.add(1, 'day'))
+    } else if (viewMode === '3days') {
+      setSelectedDate((prev) => prev.add(3, 'day'))
     } else if (viewMode === 'week') {
       setSelectedDate((prev) => prev.add(1, 'week'))
     } else if (viewMode === 'month') {
@@ -691,6 +803,30 @@ function Schedule() {
     }
   }
 
+  const handleClearTestData = async () => {
+    try {
+      // Delete all test data events from database
+      const testEvents = events.filter(event => event.isTestData)
+      
+      for (const event of testEvents) {
+        await deleteEvent(event.id)
+      }
+      
+      logger.info(`Cleared ${testEvents.length} test events`)
+      
+      // Reload events
+      await loadEvents()
+      
+      // Close settings menu
+      setIsSettingsOpen(false)
+      
+      // Successfully cleared test data
+    } catch (error) {
+      logger.error('Failed to clear test data:', error)
+      // Error clearing test data
+    }
+  }
+
   // Generate month calendar grid (6 weeks x 7 days = 42 days)
   const generateMonthGrid = () => {
     const startOfMonth = selectedDate.startOf('month')
@@ -728,6 +864,23 @@ function Schedule() {
     }
     
     return weekDays // Returns Mon, Tue, Wed, Thu, Fri, Sat, Sun
+  }
+
+  const generate3DaysGrid = () => {
+    // Generate 3 consecutive days starting from selectedDate
+    const threeDays = []
+    
+    for (let i = 0; i < 3; i++) {
+      const day = selectedDate.add(i, 'day')
+      const dayEvents = events.filter((event) => event.day === day.format('YYYY-MM-DD'))
+      threeDays.push({
+        date: day,
+        isToday: day.isSame(dayjs(), 'day'),
+        events: dayEvents
+      })
+    }
+    
+    return threeDays
   }
 
   return (
@@ -790,9 +943,11 @@ function Schedule() {
             >
               {viewMode === 'month'
                 ? selectedDate.format('MMMM YYYY')
-                : selectedDate.isSame(dayjs(), 'day')
-                  ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
-                  : selectedDate.format('DD/MM/YYYY')}
+                : viewMode === '3days'
+                  ? `${selectedDate.format('MMM D')} - ${selectedDate.add(2, 'day').format('MMM D, YYYY')}`
+                  : selectedDate.isSame(dayjs(), 'day')
+                    ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
+                    : selectedDate.format('DD/MM/YYYY')}
             </button>
             <button
               className='btn btn-icon'
@@ -878,31 +1033,71 @@ function Schedule() {
           </div>
 
           {/* Right: View Mode + Settings Group */}
-          <div className='button-group view-group'>
-            <button
-              className={`btn btn-view-mode ${viewMode === 'day' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('day')}
-              aria-label='View day schedule'
-              aria-pressed={viewMode === 'day'}
-            >
-              Day
-            </button>
-            <button
-              className={`btn btn-view-mode ${viewMode === 'week' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('week')}
-              aria-label='View week schedule'
-              aria-pressed={viewMode === 'week'}
-            >
-              Week
-            </button>
-            <button
-              className={`btn btn-view-mode ${viewMode === 'month' ? 'btn-active' : ''}`}
-              onClick={() => handleViewModeChange('month')}
-              aria-label='View month schedule'
-              aria-pressed={viewMode === 'month'}
-            >
-              Month
-            </button>
+          <div className='button-group settings-group'>
+            {/* View Mode Dropdown */}
+            <div className='view-mode-dropdown'>
+              <button
+                className='btn btn-view-mode'
+                onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}
+                aria-label='Change view mode'
+                aria-expanded={isViewDropdownOpen}
+                aria-haspopup='menu'
+              >
+                {viewMode === 'day' && '1 Day'}
+                {viewMode === '3days' && '3 Days'}
+                {viewMode === 'week' && '1 Week'}
+                {viewMode === 'month' && '1 Month'}
+                <Icon name='chevronDown' />
+              </button>
+              {isViewDropdownOpen && (
+                <div className='view-dropdown-menu' role='menu'>
+                  <button
+                    className={`view-dropdown-item ${viewMode === 'day' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('day')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 1 day'
+                  >
+                    1 Day
+                  </button>
+                  <button
+                    className={`view-dropdown-item ${viewMode === '3days' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('3days')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 3 days'
+                  >
+                    3 Days
+                  </button>
+                  <button
+                    className={`view-dropdown-item ${viewMode === 'week' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('week')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 1 week'
+                  >
+                    1 Week
+                  </button>
+                  <button
+                    className={`view-dropdown-item ${viewMode === 'month' ? 'active' : ''}`}
+                    role='menuitem'
+                    onClick={() => {
+                      handleViewModeChange('month')
+                      setIsViewDropdownOpen(false)
+                    }}
+                    aria-label='View 1 month'
+                  >
+                    1 Month
+                  </button>
+                </div>
+              )}
+            </div>
             
             {/* Settings button with dropdown */}
             <div className='settings-dropdown'>
@@ -932,9 +1127,9 @@ function Schedule() {
                       setIsSettingsOpen(false)
                     }}
                     aria-label='Toggle 24-hour display'
-                    title={show24Hours ? 'Switch to 6am-10pm view' : 'Switch to 24-hour view'}
+                    title={show24Hours ? 'Switch to 7am-midnight view' : 'Switch to 24-hour view'}
                   >
-                    🕐 {show24Hours ? 'Switch to 6am-10pm' : 'Switch to 24 Hours'}
+                    🕐 {show24Hours ? 'Switch to 7am-midnight' : 'Switch to 24 Hours'}
                   </button>
                   <button
                     onClick={handleGenerateTestData}
@@ -942,6 +1137,13 @@ function Schedule() {
                     title='Populate schedule with sample events'
                   >
                     🎨 Generate Test Data
+                  </button>
+                  <button
+                    onClick={handleClearTestData}
+                    aria-label='Clear test data'
+                    title='Remove all test events from schedule'
+                  >
+                    🗑️ Clear Test Data
                   </button>
                 </div>
               )}
@@ -1144,24 +1346,24 @@ function Schedule() {
                   </div>
                 </div>
               </div>
-            ) : viewMode === 'week' ? (
-              /* Week View - 7 columns for each day */
-              <div className='calendar week-view'>
-                <div className='week-grid'>
+            ) : viewMode === 'week' || viewMode === '3days' ? (
+              /* Week View or 3 Days View - 7 or 3 columns for each day */
+              <div className={`calendar ${viewMode === 'week' ? 'week-view' : 'threeday-view'}`}>
+                <div className={viewMode === 'week' ? 'week-grid' : 'threeday-grid'}>
                   {/* Day headers */}
-                  <div className='week-header'>
-                    {/* Empty cell for hour column - aligns with .week-hours below */}
+                  <div className={viewMode === 'week' ? 'week-header' : 'threeday-header'}>
+                    {/* Empty cell for hour column - aligns with hours below */}
                     <div className='week-header-spacer'></div>
-                    {/* 7 day headers: Mon, Tue, Wed, Thu, Fri, Sat, Sun */}
-                    {generateWeekGrid().map((day, index) => (
+                    {/* Day headers */}
+                    {(viewMode === 'week' ? generateWeekGrid() : generate3DaysGrid()).map((day, index) => (
                       <div key={index} className={`week-day-header ${day.isToday ? 'today' : ''}`}>
                         <div className='week-day-name'>{day.date.format('ddd')}</div>
                         <div className='week-day-date'>{day.date.format('D')}</div>
                       </div>
                     ))}
                   </div>
-                  {/* Week grid body with time slots */}
-                  <div className='week-body'>
+                  {/* Week/3-day grid body with time slots */}
+                  <div className={viewMode === 'week' ? 'week-body' : 'threeday-body'}>
                     {/* Hour labels column */}
                     <div className='week-hours'>
                       {generateHourLabels(show24Hours).map((hour, index) => (
@@ -1174,11 +1376,11 @@ function Schedule() {
                       ))}
                     </div>
                     {/* Day columns */}
-                    {generateWeekGrid().map((day, dayIndex) => (
+                    {(viewMode === 'week' ? generateWeekGrid() : generate3DaysGrid()).map((day, dayIndex) => (
                       <div key={dayIndex} className='week-day-column'>
-                        <div className='week-slots' style={{ height: show24Hours ? '1920px' : '1280px', position: 'relative' }}>
+                        <div className='week-slots' style={{ height: `${slotHeight}px`, position: 'relative' }}>
                           {/* Time period backgrounds */}
-                          {TIME_PERIODS.map((period) => (
+                          {timePeriods.map((period) => (
                             <div
                               key={period.className}
                               className={period.className}
@@ -1214,13 +1416,26 @@ function Schedule() {
                             const endHour = eventEnd.getHours()
                             const endMinute = eventEnd.getMinutes()
 
-                            const eventTop =
-                              (startHour - hours.start) * PIXELS_PER_HOUR +
-                              (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+                            const pixelsPerHour = getHourHeight() // Get dynamic hour height
+                            
+                            let eventTop
+                            if (show24Hours) {
+                              // 24-hour mode: direct calculation, no label rows
+                              eventTop =
+                                (startHour - hours.start) * pixelsPerHour +
+                                (startMinute / MINUTES_PER_HOUR) * pixelsPerHour +
+                                SCHEDULE_VERTICAL_OFFSET
+                            } else {
+                              // 7am-midnight mode: use visual row mapping to account for label rows
+                              const visualRow = getVisualRowForHour(startHour)
+                              // Calculate position within the hour based on minutes
+                              const minuteOffset = (startMinute / MINUTES_PER_HOUR) * pixelsPerHour
+                              eventTop = visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
+                            }
 
                             const durationMinutes =
                               (endHour - startHour) * MINUTES_PER_HOUR + (endMinute - startMinute)
-                            const eventHeight = (durationMinutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
+                            const eventHeight = (durationMinutes / MINUTES_PER_HOUR) * pixelsPerHour
 
                             return (
                               <ScheduleBlock
@@ -1253,9 +1468,9 @@ function Schedule() {
                     </div>
                   ))}
                 </div>
-                <div className='slots' style={{ height: show24Hours ? '1920px' : '1280px' }}>
+                <div className='slots' style={{ height: `${slotHeight}px` }}>
                   {/* Time period backgrounds */}
-                  {TIME_PERIODS.map((period) => (
+                  {timePeriods.map((period) => (
                     <div
                       key={period.className}
                       className={period.className}
@@ -1271,7 +1486,7 @@ function Schedule() {
                   ))}
 
                   {/* Time period separators */}
-                  {SEPARATOR_POSITIONS.map((position) => (
+                  {separatorPositions.map((position) => (
                     <div
                       key={`separator-${position}`}
                       className='time-period-separator'
@@ -1290,14 +1505,6 @@ function Schedule() {
                       <span className='current-time-label'>Now</span>
                     </div>
                   )}
-
-                  {/* Schedule blocks - combine static demo blocks with dynamic events */}
-                  {SCHEDULE_BLOCKS.map((block) => (
-                    <ScheduleBlock
-                      key={`${block.type}-${block.title}-${block.time}-${block.top}`}
-                      {...block}
-                    />
-                  ))}
 
                   {/* Dynamic events from database */}
                   {/* Note: User event interactions are logged (event ID only) for debugging purposes.
@@ -1324,7 +1531,7 @@ function Schedule() {
                     const hours = getScheduleHours(show24Hours)
 
                     // Compute layout metrics once per event (performance optimization)
-                    const top = timeToPosition(event.startTime, hours.start, hours.end)
+                    const top = timeToPosition(event.startTime, hours.start, hours.end, show24Hours)
                     const height = durationToHeight(
                       event.startTime,
                       event.endTime
@@ -1344,7 +1551,7 @@ function Schedule() {
 
                     // Render preparation time block if present
                     if (event.preparationTime && event.preparationTime > 0) {
-                      const prepTop = timeToPosition(prepStartTime, hours.start, hours.end)
+                      const prepTop = timeToPosition(prepStartTime, hours.start, hours.end, show24Hours)
                       const prepHeight = durationToHeight(
                         prepStartTime,
                         event.startTime
@@ -1369,7 +1576,7 @@ function Schedule() {
                         prepStartTime,
                         event.travelTime
                       )
-                      const travelTop = timeToPosition(travelStartTime, hours.start, hours.end)
+                      const travelTop = timeToPosition(travelStartTime, hours.start, hours.end, show24Hours)
                       const travelHeight = durationToHeight(
                         travelStartTime,
                         prepStartTime
