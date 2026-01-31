@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import Icon from '../components/common/Icon'
 import EventModal from '../components/Schedule/EventModal'
@@ -160,6 +160,37 @@ const getScheduleHours = (show24Hours) => {
   }
 }
 
+// Generate hour labels based on 24-hour display setting
+const generateHourLabels = (show24Hours) => {
+  if (show24Hours) {
+    // 24-hour mode: 00:00 to 23:00, no period labels
+    return Array.from({ length: 24 }, (_, i) => ({
+      label: `${String(i).padStart(2, '0')}:00`,
+      isLabel: false
+    }))
+  }
+  
+  // 6am-10pm mode with period labels
+  return [
+    { label: '06:00', isLabel: false },
+    { label: 'Morning', isLabel: true },
+    { label: '08:00', isLabel: false },
+    { label: '09:00', isLabel: false },
+    { label: '10:00', isLabel: false },
+    { label: '11:00', isLabel: false },
+    { label: 'Afternoon', isLabel: true },
+    { label: '13:00', isLabel: false },
+    { label: '14:00', isLabel: false },
+    { label: '15:00', isLabel: false },
+    { label: '16:00', isLabel: false },
+    { label: '17:00', isLabel: false },
+    { label: 'Evening', isLabel: true },
+    { label: '19:00', isLabel: false },
+    { label: '20:00', isLabel: false },
+    { label: '21:00', isLabel: false }
+  ]
+}
+
 // TODO: Extract timeToPosition and durationToHeight to a testable utility module
 // These functions contain complex logic for time-to-pixel conversion and boundary clamping
 // that should be thoroughly unit tested with various edge cases
@@ -308,50 +339,52 @@ function Schedule() {
   // Calculate current time position for time indicator
   const [currentTimePosition, setCurrentTimePosition] = useState(0)
 
+  // Load events function (extracted so it can be reused)
+  const loadEvents = useCallback(async () => {
+    setIsLoading(true)
+    setError('')
+    try {
+      let loadedEvents
+      if (viewMode === 'day') {
+        loadedEvents = await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
+      } else if (viewMode === 'week') {
+        loadedEvents = await getEventsForWeek()
+      } else if (viewMode === 'month') {
+        // Get first and last day of the month view (includes prev/next month days)
+        const startOfMonth = selectedDate.startOf('month').startOf('week')
+        const endOfMonth = selectedDate.endOf('month').endOf('week')
+        loadedEvents = await getEventsForRange(
+          startOfMonth.format('YYYY-MM-DD'),
+          endOfMonth.format('YYYY-MM-DD')
+        )
+      }
+      // Ensure loadedEvents is always an array
+      setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
+    } catch (err) {
+      logger.error('Failed to load events:', err)
+      setEvents([])
+      setError('Failed to load schedule events')
+    } finally {
+      setIsLoading(false)
+    }
+  }, [viewMode, selectedDate])
+
   // Load events based on view mode and selected date
   useEffect(() => {
-    const loadEvents = async () => {
-      setIsLoading(true)
-      setError('')
-      try {
-        let loadedEvents
-        if (viewMode === 'day') {
-          loadedEvents = await getEventsForDay(selectedDate.format('YYYY-MM-DD'))
-        } else if (viewMode === 'week') {
-          loadedEvents = await getEventsForWeek()
-        } else if (viewMode === 'month') {
-          // Get first and last day of the month view (includes prev/next month days)
-          const startOfMonth = selectedDate.startOf('month').startOf('week')
-          const endOfMonth = selectedDate.endOf('month').endOf('week')
-          loadedEvents = await getEventsForRange(
-            startOfMonth.format('YYYY-MM-DD'),
-            endOfMonth.format('YYYY-MM-DD')
-          )
-        }
-        // Ensure loadedEvents is always an array
-        setEvents(Array.isArray(loadedEvents) ? loadedEvents : [])
-      } catch (err) {
-        logger.error('Failed to load events:', err)
-        setEvents([])
-        setError('Failed to load schedule events')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     loadEvents()
-  }, [viewMode, selectedDate])
+  }, [loadEvents])
 
   useEffect(() => {
     const updateCurrentTime = () => {
       const now = new Date()
       const hours = now.getHours()
       const minutes = now.getMinutes()
+      
+      const scheduleHours = getScheduleHours(show24Hours)
 
-      // Position = (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR + (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR + SCHEDULE_VERTICAL_OFFSET
-      if (hours >= SCHEDULE_START_HOUR && hours < SCHEDULE_END_HOUR) {
+      if (hours >= scheduleHours.start && hours < scheduleHours.end) {
         const position =
-          (hours - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+          (hours - scheduleHours.start) * PIXELS_PER_HOUR +
           (minutes / MINUTES_PER_HOUR) * PIXELS_PER_HOUR +
           SCHEDULE_VERTICAL_OFFSET
         setCurrentTimePosition(position)
@@ -364,7 +397,7 @@ function Schedule() {
     const interval = setInterval(updateCurrentTime, 60000) // Update every minute
 
     return () => clearInterval(interval)
-  }, [])
+  }, [show24Hours])
 
   // Load calendar subscriptions when calendars section is shown
   useEffect(() => {
@@ -1131,27 +1164,19 @@ function Schedule() {
                   <div className='week-body'>
                     {/* Hour labels column */}
                     <div className='week-hours'>
-                      <div className='week-hour'>06:00</div>
-                      <div className='week-hour'>Morning</div>
-                      <div className='week-hour'>08:00</div>
-                      <div className='week-hour'>09:00</div>
-                      <div className='week-hour'>10:00</div>
-                      <div className='week-hour'>11:00</div>
-                      <div className='week-hour'>Afternoon</div>
-                      <div className='week-hour'>13:00</div>
-                      <div className='week-hour'>14:00</div>
-                      <div className='week-hour'>15:00</div>
-                      <div className='week-hour'>16:00</div>
-                      <div className='week-hour'>17:00</div>
-                      <div className='week-hour'>Evening</div>
-                      <div className='week-hour'>19:00</div>
-                      <div className='week-hour'>20:00</div>
-                      <div className='week-hour'>21:00</div>
+                      {generateHourLabels(show24Hours).map((hour, index) => (
+                        <div 
+                          key={index} 
+                          className={`week-hour ${hour.isLabel ? 'time-period-label' : ''}`}
+                        >
+                          {hour.label}
+                        </div>
+                      ))}
                     </div>
                     {/* Day columns */}
                     {generateWeekGrid().map((day, dayIndex) => (
                       <div key={dayIndex} className='week-day-column'>
-                        <div className='week-slots' style={{ height: '1280px', position: 'relative' }}>
+                        <div className='week-slots' style={{ height: show24Hours ? '1920px' : '1280px', position: 'relative' }}>
                           {/* Time period backgrounds */}
                           {TIME_PERIODS.map((period) => (
                             <div
@@ -1181,6 +1206,7 @@ function Schedule() {
                           
                           {/* Events for this day */}
                           {day.events.map((event, eventIndex) => {
+                            const hours = getScheduleHours(show24Hours)
                             const eventStart = new Date(`2000-01-01T${event.startTime}`)
                             const eventEnd = new Date(`2000-01-01T${event.endTime}`)
                             const startHour = eventStart.getHours()
@@ -1189,7 +1215,7 @@ function Schedule() {
                             const endMinute = eventEnd.getMinutes()
 
                             const eventTop =
-                              (startHour - SCHEDULE_START_HOUR) * PIXELS_PER_HOUR +
+                              (startHour - hours.start) * PIXELS_PER_HOUR +
                               (startMinute / MINUTES_PER_HOUR) * PIXELS_PER_HOUR
 
                             const durationMinutes =
@@ -1218,24 +1244,16 @@ function Schedule() {
               <div className='calendar'>
               <div className='hours'>
                 <div className='hour-col'>
-                  <div className='h'>06:00</div>
-                  <div className='h time-period-label'>Morning</div>
-                  <div className='h'>08:00</div>
-                  <div className='h'>09:00</div>
-                  <div className='h'>10:00</div>
-                  <div className='h'>11:00</div>
-                  <div className='h time-period-label'>Afternoon</div>
-                  <div className='h'>13:00</div>
-                  <div className='h'>14:00</div>
-                  <div className='h'>15:00</div>
-                  <div className='h'>16:00</div>
-                  <div className='h'>17:00</div>
-                  <div className='h time-period-label'>Evening</div>
-                  <div className='h'>19:00</div>
-                  <div className='h'>20:00</div>
-                  <div className='h'>21:00</div>
+                  {generateHourLabels(show24Hours).map((hour, index) => (
+                    <div 
+                      key={index} 
+                      className={`h ${hour.isLabel ? 'time-period-label' : ''}`}
+                    >
+                      {hour.label}
+                    </div>
+                  ))}
                 </div>
-                <div className='slots' style={{ height: '1280px' }}>
+                <div className='slots' style={{ height: show24Hours ? '1920px' : '1280px' }}>
                   {/* Time period backgrounds */}
                   {TIME_PERIODS.map((period) => (
                     <div
@@ -1302,8 +1320,11 @@ function Schedule() {
                       return acc
                     }
 
+                    // Get dynamic schedule hours based on display mode
+                    const hours = getScheduleHours(show24Hours)
+
                     // Compute layout metrics once per event (performance optimization)
-                    const top = timeToPosition(event.startTime)
+                    const top = timeToPosition(event.startTime, hours.start, hours.end)
                     const height = durationToHeight(
                       event.startTime,
                       event.endTime
@@ -1323,7 +1344,7 @@ function Schedule() {
 
                     // Render preparation time block if present
                     if (event.preparationTime && event.preparationTime > 0) {
-                      const prepTop = timeToPosition(prepStartTime)
+                      const prepTop = timeToPosition(prepStartTime, hours.start, hours.end)
                       const prepHeight = durationToHeight(
                         prepStartTime,
                         event.startTime
@@ -1348,7 +1369,7 @@ function Schedule() {
                         prepStartTime,
                         event.travelTime
                       )
-                      const travelTop = timeToPosition(travelStartTime)
+                      const travelTop = timeToPosition(travelStartTime, hours.start, hours.end)
                       const travelHeight = durationToHeight(
                         travelStartTime,
                         prepStartTime
