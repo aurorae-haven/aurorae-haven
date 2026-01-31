@@ -719,70 +719,43 @@ function Schedule() {
 
       <div className='card'>
         <div className='card-h'>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            {/* Navigation controls - Industry standard from Google Calendar/Outlook */}
-            <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-              <button
-                className='btn btn-icon'
-                onClick={goToPrevious}
-                aria-label={`Previous ${viewMode}`}
-                title={`Previous ${viewMode}`}
-              >
-                <Icon name='chevronLeft' />
-              </button>
-              <button
-                className='btn btn-today'
-                onClick={goToToday}
-                aria-label='Go to today'
-                title='Go to today'
-              >
-                {viewMode === 'month'
-                  ? selectedDate.format('MMMM YYYY')
-                  : selectedDate.isSame(dayjs(), 'day')
-                    ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
-                    : selectedDate.format('DD/MM/YYYY')}
-              </button>
-              <button
-                className='btn btn-icon'
-                onClick={goToNext}
-                aria-label={`Next ${viewMode}`}
-                title={`Next ${viewMode}`}
-              >
-                <Icon name='chevronRight' />
-              </button>
-              {/* Settings button - mobile only, opens dropdown with Calendars */}
-              <div className='settings-dropdown'>
-                <button
-                  className='btn btn-icon btn-settings'
-                  onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-                  aria-label='Settings'
-                  aria-expanded={isSettingsOpen}
-                  title='Settings'
-                >
-                  <Icon name='settings' />
-                </button>
-                {isSettingsOpen && (
-                  <div className='settings-dropdown-menu'>
-                    <button
-                      onClick={() => {
-                        setShowCalendars(!showCalendars)
-                        setIsSettingsOpen(false)
-                      }}
-                      aria-label='Manage calendars'
-                    >
-                      <Icon name='calendar' /> Calendars
-                    </button>
-                    <button
-                      onClick={handleGenerateTestData}
-                      aria-label='Generate test data'
-                      title='Populate schedule with sample events'
-                    >
-                      🎨 Generate Test Data
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
+          {/* Button groups for clear visual hierarchy - Industry standard UX */}
+          
+          {/* Left: Navigation Group */}
+          <div className='button-group nav-group'>
+            <button
+              className='btn btn-icon'
+              onClick={goToPrevious}
+              aria-label={`Previous ${viewMode}`}
+              title={`Previous ${viewMode}`}
+            >
+              <Icon name='chevronLeft' />
+            </button>
+            <button
+              className='btn btn-today'
+              onClick={goToToday}
+              aria-label='Go to today'
+              title='Go to today'
+            >
+              {viewMode === 'month'
+                ? selectedDate.format('MMMM YYYY')
+                : selectedDate.isSame(dayjs(), 'day')
+                  ? `Today · ${selectedDate.format('DD/MM/YYYY')}`
+                  : selectedDate.format('DD/MM/YYYY')}
+            </button>
+            <button
+              className='btn btn-icon'
+              onClick={goToNext}
+              aria-label={`Next ${viewMode}`}
+              title={`Next ${viewMode}`}
+            >
+              <Icon name='chevronRight' />
+            </button>
+          </div>
+
+          {/* Center-Left: Action Group */}
+          <div className='button-group action-group'>
+            {/* Calendars button - desktop only */}
             <button
               className={`btn btn-calendars ${showCalendars ? 'btn-active' : ''}`}
               onClick={handleToggleCalendars}
@@ -791,24 +764,20 @@ function Schedule() {
             >
               <Icon name='calendar' /> Calendars
             </button>
+            
             {/* Unified dropdown for scheduling all event types */}
             <div className='schedule-dropdown'>
               <button
                 className='btn'
                 onClick={(e) => {
-                  // Handle both mouse and keyboard activation
-                  // Keyboard (Space/Enter) activation is handled in onKeyDown to enable preventDefault
-                  // This onClick filters out keyboard-initiated clicks (detail === 0) to prevent double-triggering
                   if (e.detail !== 0) {
-                    // detail is 0 for keyboard-initiated clicks
                     toggleDropdown(e)
                   }
                 }}
                 onKeyDown={(e) => {
-                  // Only respond to Enter and Space keys for dropdown toggle
                   const key = e.key
                   if (key === 'Enter' || key === ' ') {
-                    e.preventDefault() // Prevent default to avoid double-triggering onClick
+                    e.preventDefault()
                     toggleDropdown(e)
                   }
                 }}
@@ -855,6 +824,10 @@ function Schedule() {
                 </div>
               )}
             </div>
+          </div>
+
+          {/* Right: View Mode + Settings Group */}
+          <div className='button-group view-group'>
             <button
               className={`btn btn-view-mode ${viewMode === 'day' ? 'btn-active' : ''}`}
               onClick={() => handleViewModeChange('day')}
@@ -879,6 +852,39 @@ function Schedule() {
             >
               Month
             </button>
+            
+            {/* Settings button with dropdown */}
+            <div className='settings-dropdown'>
+              <button
+                className='btn btn-icon btn-settings'
+                onClick={() => setIsSettingsOpen(!isSettingsOpen)}
+                aria-label='Settings'
+                aria-expanded={isSettingsOpen}
+                title='Settings'
+              >
+                <Icon name='settings' />
+              </button>
+              {isSettingsOpen && (
+                <div className='settings-dropdown-menu'>
+                  <button
+                    onClick={() => {
+                      setShowCalendars(!showCalendars)
+                      setIsSettingsOpen(false)
+                    }}
+                    aria-label='Manage calendars'
+                  >
+                    <Icon name='calendar' /> Calendars
+                  </button>
+                  <button
+                    onClick={handleGenerateTestData}
+                    aria-label='Generate test data'
+                    title='Populate schedule with sample events'
+                  >
+                    🎨 Generate Test Data
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <div className='card-b layout-schedule'>

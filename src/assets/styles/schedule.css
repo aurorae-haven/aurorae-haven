@@ -1734,26 +1734,51 @@
   background: var(--glass-lo);
 }
 
-/* ===== Desktop Button Ordering (≥421px) ===== */
+/* ===== Desktop Button Grouping (≥421px) ===== */
 @media (min-width: 421px) {
-  /* Today button on left */
-  .layout-schedule .card .card-h button.btn-today {
-    order: -1 !important;
+  /* Main header layout with button groups */
+  .layout-schedule .card .card-h {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
   }
 
-  /* View mode buttons on right */
-  .layout-schedule .card .card-h button.btn-view-mode {
-    order: 10 !important;
+  /* Button group styling */
+  .button-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
   }
 
-  /* Push first view mode button to right edge */
-  .layout-schedule .card .card-h button.btn-view-mode:first-of-type {
-    margin-left: auto !important;
+  /* Navigation group on the left */
+  .nav-group {
+    order: 1;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 4px;
+    border-radius: 8px;
   }
 
-  /* Hide settings button on desktop */
+  /* Action group in center-left */
+  .action-group {
+    order: 2;
+    display: flex;
+    gap: 8px;
+  }
+
+  /* View mode + settings group on the right */
+  .view-group {
+    order: 3;
+    margin-left: auto; /* Push to right */
+    background: rgba(255, 255, 255, 0.02);
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  /* Hide settings button on desktop, show in view-group */
   .btn-settings {
-    display: none !important;
+    display: flex !important;
   }
   
   /* Show Calendars button on desktop */
