@@ -136,14 +136,6 @@ const SCHEDULE_BLOCKS = [
   }
 ]
 
-const TIME_PERIODS = [
-  { className: 'time-period-morning', top: 0, height: 400 }, // Rows 0-4 (07:00-11:00): 5 hours * 80px = 400px
-  { className: 'time-period-afternoon', top: 400, height: 480 }, // Rows 5-10 (12:00-17:00): 6 hours * 80px = 480px
-  { className: 'time-period-evening', top: 880, height: 560 } // Rows 11-17 (18:00-00:00): 7 hours * 80px = 560px
-]
-
-const SEPARATOR_POSITIONS = [84, 404, 884] // Separators after each period label (Morning, Afternoon, Evening)
-
 // Get dynamic hour height from CSS custom property
 // Falls back to PIXELS_PER_HOUR constant if CSS variable not available
 const getHourHeight = () => {
@@ -368,18 +360,63 @@ function Schedule() {
   // Dynamic hour height (recalculated on mount and resize)
   const [hourHeight, setHourHeight] = useState(PIXELS_PER_HOUR)
   
-  // Update hour height from CSS on mount and resize
+  // Calculate hour height dynamically to fit content on screen without scrolling
+  const calculateDynamicHourHeight = () => {
+    if (typeof window === 'undefined') return PIXELS_PER_HOUR
+    
+    // Get available viewport height
+    const viewportHeight = window.innerHeight
+    
+    // Account for header and controls (navbar ~80px + controls ~60px + padding/margins ~60px = ~200px)
+    const headerOffset = 200
+    const availableHeight = viewportHeight - headerOffset
+    
+    // Calculate hour height based on number of visual rows (18 for 7am-midnight mode, 24 for 24-hour mode)
+    const numRows = show24Hours ? 24 : 18
+    const calculatedHeight = Math.floor(availableHeight / numRows)
+    
+    // Set reasonable bounds: minimum 40px, maximum 120px per hour
+    const minHeight = 40
+    const maxHeight = 120
+    return Math.max(minHeight, Math.min(maxHeight, calculatedHeight))
+  }
+  
+  // Update hour height on mount, resize, and view mode change
   useEffect(() => {
     const updateHourHeight = () => {
-      setHourHeight(getHourHeight())
+      const dynamicHeight = calculateDynamicHourHeight()
+      setHourHeight(dynamicHeight)
+      
+      // Update CSS custom property so CSS can use the same value
+      if (typeof document !== 'undefined') {
+        document.documentElement.style.setProperty('--hour-height', `${dynamicHeight}px`)
+      }
     }
+    
     updateHourHeight()
     window.addEventListener('resize', updateHourHeight)
     return () => window.removeEventListener('resize', updateHourHeight)
-  }, [])
+  }, [show24Hours]) // Recalculate when 24-hour mode changes
   
   // Calculate dynamic slot heights based on hour height
   const slotHeight = show24Hours ? hourHeight * 24 : hourHeight * 18 // 18 visual rows for 7am-midnight with labels
+
+  // Calculate time periods dynamically based on hour height
+  // Rows 0-4 (07:00-11:00): 5 rows for morning
+  // Rows 5-10 (12:00-17:00): 6 rows for afternoon  
+  // Rows 11-17 (18:00-00:00): 7 rows for evening
+  const timePeriods = [
+    { className: 'time-period-morning', top: 0, height: hourHeight * 5 },
+    { className: 'time-period-afternoon', top: hourHeight * 5, height: hourHeight * 6 },
+    { className: 'time-period-evening', top: hourHeight * 11, height: hourHeight * 7 }
+  ]
+  
+  // Separator positions after each period label (rows 1, 5, 11)
+  const separatorPositions = [
+    hourHeight * 1 + 4, // After "Morning" label (row 1) + 4px visual offset
+    hourHeight * 5 + 4, // After "Afternoon" label (row 5) + 4px visual offset
+    hourHeight * 11 + 4 // After "Evening" label (row 11) + 4px visual offset
+  ]
 
   // Dropdown state for event type selector
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -475,10 +512,7 @@ function Schedule() {
           position = visualRow * pixelsPerHour + minuteOffset + SCHEDULE_VERTICAL_OFFSET
         }
         
-        // Account for desktop week view scaling (scaleY(0.625) at >= 1024px)
-        if ((viewMode === 'week' || viewMode === '3days') && window.innerWidth >= 1024) {
-          position = position * 0.625
-        }
+        // No scaling needed - hour heights are now calculated dynamically
         
         setCurrentTimePosition(position)
       } else {
@@ -1340,7 +1374,7 @@ function Schedule() {
                       <div key={dayIndex} className='week-day-column'>
                         <div className='week-slots' style={{ height: `${slotHeight}px`, position: 'relative' }}>
                           {/* Time period backgrounds */}
-                          {TIME_PERIODS.map((period) => (
+                          {timePeriods.map((period) => (
                             <div
                               key={period.className}
                               className={period.className}
@@ -1430,7 +1464,7 @@ function Schedule() {
                 </div>
                 <div className='slots' style={{ height: `${slotHeight}px` }}>
                   {/* Time period backgrounds */}
-                  {TIME_PERIODS.map((period) => (
+                  {timePeriods.map((period) => (
                     <div
                       key={period.className}
                       className={period.className}
@@ -1446,7 +1480,7 @@ function Schedule() {
                   ))}
 
                   {/* Time period separators */}
-                  {SEPARATOR_POSITIONS.map((position) => (
+                  {separatorPositions.map((position) => (
                     <div
                       key={`separator-${position}`}
                       className='time-period-separator'

@@ -1,20 +1,8 @@
 /* ===== Schedule ===== */
 :root {
-  /* Responsive hour height - can be adjusted based on screen size */
-  --hour-height: 80px;
-}
-
-/* Adjust hour height for larger screens to use vertical space better */
-@media (min-height: 900px) {
-  :root {
-    --hour-height: 100px;
-  }
-}
-
-@media (min-height: 1080px) {
-  :root {
-    --hour-height: 120px;
-  }
+  /* Dynamic hour height - calculated by JavaScript based on available viewport space */
+  /* Default fallback if JavaScript hasn't set it yet */
+  --hour-height: 60px;
 }
 
 .layout-schedule {
@@ -39,7 +27,7 @@
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 10px;
-  max-height: calc(100vh - 100px); /* Further reduced offset to maximize vertical space */
+  /* No max-height - allow content to naturally fit based on dynamic hour heights */
   overflow-y: auto;
   overflow-x: hidden;
   /* Smooth transitions for view mode changes */
@@ -496,7 +484,7 @@
 
   /* Optimize calendar for mobile portrait */
   .calendar {
-    max-height: calc(100vh - 260px); /* Reduced from 300px for better space usage */
+    /* No max-height on mobile either - content sized dynamically */
     padding: 8px;
   }
 
@@ -1458,15 +1446,9 @@
     font-size: 0.75rem;
   }
   
-  /* Scale week grid to match 50px hour height (50/80 = 0.625) */
-  .week-view .week-grid {
-    transform: scaleY(0.625);
-    transform-origin: top;
-  }
-  
-  /* Prevent extra space by not setting explicit height */
+  /* No scaling needed - hour heights are calculated dynamically to fit viewport */
   .week-view {
-    overflow: hidden; /* Contain the scaled content without extra space */
+    overflow: hidden; /* Contain content */
   }
 }
 
